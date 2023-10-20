@@ -3,7 +3,7 @@
     "path": "~/Desktop/Zresidual/README.Rmd",
     "project_path": "README.Rmd",
     "type": "r_markdown",
-    "hash": "393044472",
+    "hash": "0",
     "contents": "",
     "dirty": false,
     "created": 1697774235949.0,
@@ -12,15 +12,15 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "211,329",
-        "scrollLine": "202"
+        "cursorPosition": "211,312",
+        "scrollLine": "199"
     },
     "folds": "",
-    "lastKnownWriteTime": 1697774396,
+    "lastKnownWriteTime": 1697774948,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1697774396839,
+    "last_content_update": 1697774948212,
     "read_only": false,
     "read_only_alternatives": []
 }

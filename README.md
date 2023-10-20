@@ -250,13 +250,13 @@ the normality of censored Z-residuals.
 
 ``` r
 sw.test.zresid(Zresid.LeukSurv.wbc)
-#> [1] 0.1600146
+#> [1] 0.1629132
 sw.test.zresid(Zresid.LeukSurv.logwbc)
-#> [1] 0.3460284
+#> [1] 0.4495265
 sf.test.zresid(Zresid.LeukSurv.wbc)
-#> [1] 0.3058087
+#> [1] 0.1855772
 sf.test.zresid(Zresid.LeukSurv.logwbc)
-#> [1] 0.5065284
+#> [1] 0.6877729
 gof.censore.zresid(censored.Zresidual=censored.Zresid.LeukSurv.wbc,censored=LeukSurv$cens)
 #> [1] 0.5702324
 gof.censore.zresid(censored.Zresidual=censored.Zresid.LeukSurv.logwbc,censored=LeukSurv$cens)
@@ -272,31 +272,31 @@ to examine the equality of variances.
 
 ``` r
 anov.test.zresid(Zresid.LeukSurv.wbc,fitted.values=fit_LeukSurv_wbc$linear.predictors, k.anova=10)
-#> [1] 0.7989347
+#> [1] 0.900054
 anov.test.zresid(Zresid.LeukSurv.logwbc,fitted.values=fit_LeukSurv_logwbc$linear.predictors, k.anova=10)
-#> [1] 0.6646573
+#> [1] 0.9473825
 
 bartlett.test.zresid(Zresid.LeukSurv.wbc,fitted.values=fit_LeukSurv_wbc$linear.predictors, k.bl=10)
-#> [1] 0.8264447
+#> [1] 0.7676993
 bartlett.test.zresid(Zresid.LeukSurv.logwbc,fitted.values=fit_LeukSurv_logwbc$linear.predictors, k.bl=10)
-#> [1] 0.6582579
+#> [1] 0.608667
 
 anov.test.zresid(Zresid.LeukSurv.wbc,fitted.values=LeukSurv$wbc, k.anova=10)
-#> [1] 0.5619662
+#> [1] 0.5097228
 anov.test.zresid(Zresid.LeukSurv.logwbc,fitted.values=LeukSurv$logwbc, k.anova=10)
-#> [1] 0.0001208363
+#> [1] 2.653113e-05
 
 bartlett.test.zresid(Zresid.LeukSurv.wbc,fitted.values=LeukSurv$wbc, k.bl=10)
-#> [1] 0.7579971
+#> [1] 0.9861155
 bartlett.test.zresid(Zresid.LeukSurv.logwbc,fitted.values=LeukSurv$logwbc, k.bl=10)
-#> [1] 0.03232696
+#> [1] 0.531069
 ```
 
 The Z-residual test p-values quoted above contain randomness because of
 the randomization in generating Z-residuals. To ensure the robustness of
 the model diagnostics results, we generated 1000 replicated test
 p-values with 1000 sets of regenerated Z-residuals for each test method.
-We also provide the $\pmin$ values for diagnosing the two models with
+We also provide the $p_{min}$ values for diagnosing the two models with
 Z-residual-based tests.
 
 ``` r
@@ -340,30 +340,30 @@ for(j in 1:n_sims ){
                                          k.anova=10)
 }
 pmin.sw.LeukSurv.wbc<-bounds_pvalues(pv=sw.LeukSurv.wbc);pmin.sw.LeukSurv.wbc
-#> [1] 0.4827634
+#> [1] 0.4868665
 pmin.sf.LeukSurv.wbc<-bounds_pvalues(pv=sf.LeukSurv.wbc);pmin.sf.LeukSurv.wbc
-#> [1] 0.6879623
+#> [1] 0.6896968
 pmin.aov.lp.LeukSurv.wbc<-bounds_pvalues(pv=anov.LeukSurv.lp.wbc);pmin.aov.lp.LeukSurv.wbc
-#> [1] 0.9892779
+#> [1] 0.9884546
 pmin.aov.wbc.LeukSurv<-bounds_pvalues(pv=anov.LeukSurv.wbc);pmin.aov.wbc.LeukSurv
-#> [1] 0.7869433
+#> [1] 0.7785412
 
 pmin.sw.LeukSurv.lwbc<-bounds_pvalues(pv=sw.LeukSurv.lwbc);pmin.sw.LeukSurv.lwbc
-#> [1] 0.6039648
+#> [1] 0.5853159
 pmin.sf.LeukSurv.lwbc<-bounds_pvalues(pv=sf.LeukSurv.lwbc);pmin.sf.LeukSurv.lwbc
-#> [1] 0.7944623
+#> [1] 0.7838551
 pmin.aov.lp.LeukSurv.lwbc<-bounds_pvalues(pv=anov.LeukSurv.lp.lwbc);pmin.aov.lp.LeukSurv.lwbc
-#> [1] 0.9820093
+#> [1] 0.9796103
 pmin.aov.lwbc.LeukSurv<-bounds_pvalues(pv=anov.LeukSurv.lwbc);pmin.aov.lwbc.LeukSurv
-#> [1] 1.562201e-05
+#> [1] 2.203423e-05
 ```
 
 The histograms of 1000 replicated Z-residual test p-values for the wbc
 and lwbc models. The red vertical lines in these histograms show the
-upper bound summaries of these replicated p-values, $\pmin$. These
+upper bound summaries of these replicated p-values, $p_{min}$. These
 histograms show that the Z-SW, Z-SF, and Z-AOV with LP tests for both
 models give a large proportion of p-values greater than 0.05, and the
-large p-values result in large $\pmin$ values. In contrast, the
+large p-values result in large $p_{min}$ values. In contrast, the
 replicated Z-AOV with log(wbc) p-values for the lwbc model are almost
 all smaller than 0.001. The consistently small Z-AOV with log(wbc)
 p-values further confirm that the log transformation of wbc is
