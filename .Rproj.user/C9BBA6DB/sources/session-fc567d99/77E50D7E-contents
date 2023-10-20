@@ -1,0 +1,22 @@
+#main functions
+export("Zresidual")
+
+
+#plots
+export("plot.zresid")
+export("qqnorm.zresid")
+export("boxplot.zresid")
+
+
+#tests
+export("sw.test.zresid")
+export("sf.test.zresid")
+export("gof.censore.zresid")
+export("anov.test.zresid")
+export("bartlett.test.zresid")
+
+import(survival)
+import(nortest)
+import(EnvStats)
+
+#useDynLib(Zresidual, .registration = TRUE)

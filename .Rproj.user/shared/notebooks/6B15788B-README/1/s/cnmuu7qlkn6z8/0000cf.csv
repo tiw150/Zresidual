@@ -1,0 +1,6 @@
+"0","par(mfrow = c(2,2),mar=c(4,4,1.5,2))"
+"0","plot.zresid.fitted.value(Zresid.LeukSurv.wbc,"
+"0","                         fitted.values=fit_LeukSurv_wbc$linear.predictors,"
+"0","                         xlab=""Linear Predictor"","
+"0","                         cenered=LeukSurv$cens,"
+"0","                         main.title = ""Z-residual Scatterplot of wbc model"")"

@@ -1,0 +1,43 @@
+library(Zresidual)
+library(survival)
+data("drs")
+head(drs)
+drs$subject_id<-as.factor(drs$subject_id)
+drs$treated<-as.factor(drs$treated)
+drs$laser_type<-as.factor(drs$laser_type)
+drs$diabetes_type<-as.factor(drs$diabetes_type)
+
+
+#############fit the coxph model with frailty#################
+fit_drs  <- tryCatch(
+  coxph(Surv(time, status) ~ treated + age_at_onset +
+          laser_type+ diabetes_type+
+          frailty(subject_id, distribution="gamma"), data= drs),
+  error = function(e) NA,
+  warning = function(w) NA
+)
+#############Calculate residuals###############################
+allresid.drs<-Zresidual(fit.object = fit_drs,data= drs)
+Zresid.drs<-allresid.drs$Zresid
+censored.Zresid.drs<-allresid.drs$censored.Zresid
+
+
+########################### Graphical Diagnosis##################
+plot.zresid(Zresid.drs)
+qqnorm.zresid (Zresid.drs)
+boxplot.zresid(Zresid.drs,fitted.values=drs$age_at_onset)
+boxplot.zresid(Zresid.drs,fitted.values=drs$treated)
+
+########################### Statistical test Diagnosis##################
+sw.test.zresid(Zresid.drs)
+sf.test.zresid(Zresid.drs)
+gof.censore.zresid(censored.Zresidual=censored.Zresid.drs,censored=drs$status)
+
+anov.test.zresid(Zresid.kidney,fitted.values=fit_drs$linear.predictors, k.anova=10)
+bartlett.test.zresid(Zresid.kidney,fitted.values=fit_drs$linear.predictors, k.bl=10)
+
+anov.test.zresid(Zresid.drs,fitted.values=drs$age_at_onset, k.anova=10)
+bartlett.test.zresid(Zresid.drs,fitted.values=drs$age_at_onset, k.bl=10)
+
+anov.test.zresid(Zresid.drs,fitted.values=drs$treated, k.anova=10)
+bartlett.test.zresid(Zresid.drs,fitted.values=drs$treated, k.bl=10)

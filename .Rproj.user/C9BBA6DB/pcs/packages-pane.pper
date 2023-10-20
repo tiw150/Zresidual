@@ -1,0 +1,7 @@
+{
+    "installOptions": {
+        "installFromRepository": true,
+        "libraryPath": "/Users/WTX/Library/R/arm64/4.2/library",
+        "installDependencies": true
+    }
+}

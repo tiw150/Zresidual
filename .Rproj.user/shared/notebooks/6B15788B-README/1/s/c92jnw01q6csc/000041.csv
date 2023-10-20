@@ -1,0 +1,8 @@
+"0",""
+"0","km.ln.LeukSurv.lwbc <- survfit(Surv(ucs.LeukSurv.logwbc, LeukSurv$cens)~1,type='fleming')"
+"0","id.ln.LeukSurv.lwbc<-order(ucs.LeukSurv.logwbc)"
+"0",""
+"0","plot(km.ln.LeukSurv.lwbc, fun=""cumhaz"", xlab=(""Cox-Snell Residuals""),"
+"0","     ylab=(""Cumulative Hazard Function""),"
+"0","     main=""CS Residuals of lwbc model"","
+"0","     ylim= c(0,4),xlim=c(0,4))"

@@ -1,0 +1,93 @@
+---
+output: github_document
+---
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# Z-residual
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of Z-residual is ....
+
+
+## Installation
+
+You can install the development version of this package from [GitHub](https://github.com/) with:
+
+```r
+# install.packages("devtools")
+devtools::install_github("tiw150/Zresidual")
+```
+
+## Example
+
+This is a basic example which shows you how to use Z-residual to diagnoses some models
+
+```{r example, message=FALSE}
+library(Zresidual)
+## basic example code
+data.kidney <- survival::kidney
+head(data.kidney)
+data.kidney$sex <- ifelse(data.kidney$sex == 1, "male", "female")
+data.kidney$id<-as.factor(data.kidney$id)
+```
+
+We can fit a coxph model with:
+
+```{r fixed-model}
+fit_kidney <- tryCatch(
+  coxph(Surv(time, status) ~ age + sex + disease+
+          frailty(id, distribution="gamma"), data= data.kidney),
+  error = function(e) NA,
+  warning = function(w) NA
+)
+```
+
+Once the model is fitted, we can calculate Z-residual.....
+
+```{r}
+Zresid.kidney <- Zresidual(fit.object = fit_kidney, 
+                    data = data.kidney)
+```
+
+We then can show the plot and tests
+
+```{r}
+plot.zresid(Zresidual=Zresid.kidney)
+
+```
+
+
+
+```{r}
+qqnorm.zresid (Zresidual=Zresid.kidney)
+
+```
+
+
+
+```{r}
+boxplot.zresid(Zresidual,fitted.values)
+
+```
+
+
+
+```{r}
+sw.test.zresid(Zresidual)
+sf.test.zresid(Zresidual)
+gof.censore.zresid(censored.Zresidual,censored)
+anov.test.zresid(Zresidual,fitted.values, k.anova=10)
+bartlett.test.zresid(Zresidual,fitted.values, k.bl=10)
+
+```

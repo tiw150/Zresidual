@@ -1,0 +1,3 @@
+"0","points(km.ln.LeukSurv.lwbc$time, -log(km.ln.LeukSurv.lwbc$surv),"
+"0","       col=c(""blue"",""darkolivegreen4"")[LeukSurv$cens[id.ln.LeukSurv.lwbc]+1],"
+"0","       pch=c(3,2)[LeukSurv$cens[id.ln.LeukSurv.lwbc]+1] )"

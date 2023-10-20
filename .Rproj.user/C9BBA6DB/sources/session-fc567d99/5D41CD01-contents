@@ -1,0 +1,48 @@
+###hurdle.p
+hurdlep <- data.frame(age,family,ancestry,obesity,logn,y = otu)
+hurdlep1<-glmmTMB(y~offset(logn)+ancestry+obesity+(1|age)+(1|family),
+                  data=subset(hurdlep,y>0),ziformula =~0,
+                  family=list(family="truncated_poisson",link="log"))
+hurdlep2<-glmmTMB((y>0)~offset(logn)+ancestry+obesity+(1|age)+(1|family),
+                  data=hurdlep,ziformula =~0,family=binomial)
+
+###hurdle.nb
+hurdlenb <- data.frame( age,family,ancestry,obesity,logn,y = otu)
+
+hurdlenb1<-glmmTMB(y~offset(logn)+ancestry+obesity+(1|age)+(1|family),
+                   data=subset(hurdlenb,y>0),ziformula =~0,
+                   family=list(family="truncated_nbinom2",link="log"))
+
+hurdlenb2<-glmmTMB((y>0)~offset(logn)+ancestry+obesity+(1|age)+(1|family),
+                   data=hurdlenb,ziformula =~0,family=binomial)
+
+
+###ZIP
+object1<-glmmTMB(y~offset(logn)+ancestry+obesity+(1|age)+(1|family),data=hurdlep,
+                 ziformula=~offset(logn)+ancestry+obesity+(1|age)+(1|family),family=poisson)
+###ZINB
+object2<-glmmTMB(y~offset(logn)+ancestry+obesity+(1|age)+(1|family),data=hurdlenb,
+                 ziformula=~offset(logn)+ancestry+obesity+(1|age)+(1|family),family=nbinom2)
+###Poisson
+object3<-glmmTMB(y~offset(logn)+ancestry+obesity+(1|age)+(1|family),
+                 data=hurdlep,ziformula=~0,family=poisson)
+###negative binomial
+object4<-glmmTMB(y~offset(logn)+ancestry+obesity+(1|age)+(1|family),
+                 data=hurdlenb,ziformula=~0,family=nbinom2)
+
+#rqr output
+outhurdlep<-rqrhurdle(hurdlep1,hurdlep2,hurdlep)
+outhurdlenb<-rqrhurdle(hurdlenb1,hurdlenb2,hurdlenb)
+outZIP<-rqr(object1)
+outZINB<-rqr(object2)
+outpoisson<-rqr(object3)
+outnb<-rqr(object4)
+
+
+library(actuar)
+library(glmmTMB)
+data(Salamanders)
+m3 <- glmmTMB(count ~ spp + mined + (1|site),
+              zi=~spp + mined,
+              family=truncated_poisson, data=Salamanders)
+

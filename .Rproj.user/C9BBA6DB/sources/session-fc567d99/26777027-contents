@@ -1,0 +1,706 @@
+setwd("~/Desktop/frailty_model/z_residual/real_data")
+source("~/Desktop/frailty_model/z_residual/allresiduals.R")
+library("survival")
+library("EnvStats")
+library("nortest")
+library("dplyr")
+library("spBayesSurv")
+library("dvmisc")
+library("frailtySurv")
+data("LeukSurv")
+LeukSurv<-LeukSurv[LeukSurv$age<60,]
+is.factor(LeukSurv$district)
+is.factor(LeukSurv$sex)
+LeukSurv$district<-as.factor(LeukSurv$district)
+LeukSurv$sex<-as.factor(LeukSurv$sex)
+LeukSurv$wbc_log<- log(LeukSurv$wbc+0.001)
+
+fit_LeukSurv_logwbc  <- tryCatch(
+  coxph(Surv(time, cens) ~ age +sex + wbc_log + tpi +
+          frailty(district, distribution="gamma"), data= LeukSurv),
+  error = function(e) NA,
+  warning = function(w) NA
+)
+#fix_var_logwbc<-model.matrix(~.,data = LeukSurv[,c(5,6,10,8),drop=FALSE])[,-1,drop=FALSE]
+#risk_score_logwbc<-fix_var_logwbc %*% fit_LeukSurv_logwbc$coefficient+
+#  fit_LeukSurv_logwbc$frail[LeukSurv$district]
+
+AIC(fit_LeukSurv_logwbc)
+resid_LeukSurv_logwbc<-zresidual.coxph (fit_coxph = fit_LeukSurv_logwbc,
+                                        traindata = LeukSurv,
+                                        newdata = LeukSurv)
+sw_nrsp<-shapiro.test(resid_LeukSurv_logwbc$nrsp)$p.value;sw_nrsp
+anov_nrsp1<-test.nl.aov(qresidual=resid_LeukSurv_logwbc$nrsp, 
+                       fitted.values=fit_LeukSurv_logwbc$linear.predictors,
+                       k.anova=10);anov_nrsp1
+
+anov_nrsp_wbc_log1<-test.nl.aov(qresidual=resid_LeukSurv_logwbc$nrsp, 
+                               fitted.values=LeukSurv$wbc_log,
+                               k.anova=10);anov_nrsp_wbc_log1
+
+anov_nrsp_tpi<-test.nl.aov(qresidual=resid_LeukSurv_logwbc$nrsp, 
+                           fitted.values=LeukSurv$tpi,
+                           k.anova=10);anov_nrsp_tpi
+anov_nrsp_age<-test.nl.aov(qresidual=resid_LeukSurv_logwbc$nrsp, 
+                           fitted.values=LeukSurv$age,
+                           k.anova=10);anov_nrsp_age
+censored<- LeukSurv$cens ==0
+sf_nusp_logwbc<-as.numeric(gofTestCensored(resid_LeukSurv_logwbc$nusp,
+                                      censored, test = "sf", 
+                                      censoring.side = "right",
+                                      distribution = "norm")$p.value)
+
+km.ucs.LeukSurv_logwbc <- survfit(Surv(resid_LeukSurv_logwbc$ucs,
+                                       LeukSurv$cens)~1,type='fleming')
+id.ucs.LeukSurv_logwbc<-order(resid_LeukSurv_logwbc$ucs)
+
+
+fit_LeukSurv_wbc  <- tryCatch(
+  coxph(Surv(time, cens) ~ age  +sex+ wbc +tpi  +
+          frailty(district, distribution="gamma"), data= LeukSurv),
+  error = function(e) NA,
+  warning = function(w) NA
+)
+#fix_var_wbc<-model.matrix(~.,data = LeukSurv[,c(5,6,7,8),drop=FALSE])[,-1,drop=FALSE]
+#risk_score_wbc<-fix_var_wbc %*% fit_LeukSurv_wbc$coefficient+
+#  fit_LeukSurv_wbc$frail[LeukSurv$district]
+
+AIC(fit_LeukSurv_wbc)
+resid_LeukSurv_wbc<-zresidual.coxph (fit_coxph = fit_LeukSurv_wbc,
+                                    traindata = LeukSurv,
+                                    newdata = LeukSurv)
+sw_nrsp_t<-shapiro.test(resid_LeukSurv_wbc$nrsp)$p.value;sw_nrsp_t
+anov_nrsp_t1<-test.nl.aov(qresidual=resid_LeukSurv_wbc$nrsp, 
+                         fitted.values=fit_LeukSurv_wbc$linear.predictors,
+                         k.anova=10);anov_nrsp_t1
+
+
+anov_nrsp_wbc1<-test.nl.aov(qresidual=resid_LeukSurv_wbc$nrsp, 
+                           fitted.values=LeukSurv$wbc_log,
+                           k.anova=10);anov_nrsp_wbc1
+
+
+anov_nrsp_tpi<-test.nl.aov(qresidual=resid_LeukSurv_wbc$nrsp, 
+                           fitted.values=LeukSurv$tpi,
+                           k.anova=10);anov_nrsp_tpi
+anov_nrsp_age<-test.nl.aov(qresidual=resid_LeukSurv_wbc$nrsp, 
+                           fitted.values=LeukSurv$age,
+                           k.anova=10);anov_nrsp_age
+censored<- LeukSurv$cens ==0
+sf_nusp_wbc<-as.numeric(gofTestCensored(resid_LeukSurv_wbc$nusp,
+                                           censored, test = "sf", 
+                                           censoring.side = "right",
+                                           distribution = "norm")$p.value)
+
+km.ucs.LeukSurv_wbc <- survfit(Surv(resid_LeukSurv_wbc$ucs,LeukSurv$cens)~1,
+                            type='fleming')
+id.ucs.LeukSurv_wbc<-order(resid_LeukSurv_wbc$ucs)
+
+
+pdf( "leuksurv_logwbc_plot.pdf",width=6.5,height=12)
+par(mfrow = c(6,2),mar=c(4,4,2,2))
+ymax1=max(range(resid_LeukSurv_logwbc$nrsp,resid_LeukSurv_wbc$nrsp,3))
+ymin1=min(range(resid_LeukSurv_logwbc$nrsp,resid_LeukSurv_wbc$nrsp,-3))
+ymax2=max(range(km.ucs.LeukSurv_logwbc$cumhaz,km.ucs.LeukSurv_wbc$cumhaz))
+ymin2=min(range(km.ucs.LeukSurv_logwbc$cumhaz,km.ucs.LeukSurv_wbc$cumhaz))
+xmax2=max(range(km.ucs.LeukSurv_logwbc$time,km.ucs.LeukSurv_wbc$time))
+xmin2=min(range(km.ucs.LeukSurv_logwbc$time,km.ucs.LeukSurv_wbc$time))
+# the cumhaz plot
+plot(km.ucs.LeukSurv_wbc, fun="cumhaz", 
+     xlab="Unmodified Cox-Snell Residuals",
+     ylab="Cumulative Hazard Function",
+     main="CHF of CS Residuals of wbc Model",
+     ylim=c(ymin2,ymax2),xlim=c(xmin2,xmax2))
+abline(0, 1, col="blue", lty=2)
+points(km.ucs.LeukSurv_wbc$time, -log(km.ucs.LeukSurv_wbc$surv), 
+       col=c("blue","darkolivegreen4")[LeukSurv$cens[id.ucs.LeukSurv_wbc]+1],
+       pch=c(3,2)[LeukSurv$cens[id.ucs.LeukSurv_wbc]+1])
+legend(x = "bottom", inset = c(0, -0.36), 
+       legend = c("Uncensored", "Censored"), 
+       col=c("darkolivegreen4","blue"),
+       pch=c(2,3),horiz=TRUE,cex=1,xpd = TRUE,bty="n")
+
+plot(km.ucs.LeukSurv_logwbc, fun="cumhaz", 
+     xlab="Unmodified Cox-Snell Residuals",
+     ylab="Cumulative Hazard Function",
+     main="CHF of CS Residuals of lwbc Model",
+     ylim=c(ymin2,ymax2),xlim=c(xmin2,xmax2))
+abline(0, 1, col="blue", lty=2)
+points(km.ucs.LeukSurv_logwbc$time, -log(km.ucs.LeukSurv_logwbc$surv), 
+       col=c("blue","darkolivegreen4")[LeukSurv$cens[id.ucs.LeukSurv_logwbc]+1],
+       pch=c(3,2)[LeukSurv$cens[id.ucs.LeukSurv_logwbc]+1])
+legend(x = "bottom", inset = c(0, -0.36), 
+       legend = c("Uncensored", "Censored"), 
+       col=c("darkolivegreen4","blue"),
+       pch=c(2,3),horiz=TRUE,cex=1,xpd = TRUE,bty="n")
+
+#The QQ plot
+qqnorm(resid_LeukSurv_wbc$nrsp,xlab="Theoretical Quantiles", 
+       ylab="Sample Quantiles",
+       main="Z-Residual QQ Plot of wbc Model",
+       ylim=c(ymin1,ymax1))
+qqline(resid_LeukSurv_wbc$nrsp)
+text(-1.5, 2.8, paste0("Z-SW p-value = ", sprintf("%3.2f",sw_nrsp_t)))
+
+qqnorm(resid_LeukSurv_logwbc$nrsp,xlab="Theoretical Quantiles", 
+       ylab="Sample Quantiles",
+       main="Z-Residual QQ Plot of lwbc Model",
+       ylim=c(ymin1,ymax1))
+qqline(resid_LeukSurv_logwbc$nrsp)
+text(-1.5, 2.8, paste0("Z-SW p-value = ", sprintf("%3.2f",sw_nrsp)))
+
+#residual plot
+plot(fit_LeukSurv_wbc$linear.predictors,resid_LeukSurv_wbc$nrsp,
+     xlab="Linear Predictor",ylab="Z-Residual",
+     col=c("blue","darkolivegreen4")[LeukSurv$cens+1],
+     pch=c(3,2)[LeukSurv$cens+1],
+     main="Z-Residual Scatterplot of wbc Model",
+     ylim=c(ymin1,ymax1))
+abline(h=c(3,-3),col="grey")
+lines(lowess(resid_LeukSurv_wbc$nrsp ~fit_LeukSurv_wbc$linear.predictors),
+      col = "red",lwd = 3)
+legend(x = "bottom", inset = c(0, -0.36), 
+       legend = c("Uncensored", "Censored"), col=c("darkolivegreen4","blue"),
+       pch=c(2,3),horiz=TRUE,cex=1,xpd = TRUE,bty="n")
+
+plot(fit_LeukSurv_logwbc$linear.predictors,resid_LeukSurv_logwbc$nrsp,
+     xlab="Linear Predictor",ylab="Z-Residual",
+     col=c("blue","darkolivegreen4")[LeukSurv$cens+1],
+     pch=c(3,2)[LeukSurv$cens+1],
+     main="Z-Residual Scatterplot of lwbc Model",
+     ylim=c(ymin1,ymax1))
+abline(h=c(3,-3),col="grey")
+lines(lowess(resid_LeukSurv_logwbc$nrsp ~fit_LeukSurv_logwbc$linear.predictors),
+      col = "red",lwd = 3)
+legend(x = "bottom", inset = c(0, -0.36), 
+       legend = c("Uncensored", "Censored"), col=c("darkolivegreen4","blue"),
+       pch=c(2,3),horiz=TRUE,cex=1,xpd = TRUE,bty="n")
+
+lpred.bin_t <- cut(fit_LeukSurv_wbc$linear.predictors, 10)
+plot(lpred.bin_t,resid_LeukSurv_wbc$nrsp,xlab="Linear Predictor", 
+     ylab="Z-Residual",
+     main="Z-Residual Boxplot of wbc Model",
+     ylim=c(ymin1,4))
+text(3.8, 3.8, paste0("Z-AOV-LP p-value = ", sprintf("%3.2f",anov_nrsp_t1)))
+lpred.bin <- cut(fit_LeukSurv_logwbc$linear.predictors, 10)
+plot(lpred.bin,resid_LeukSurv_logwbc$nrsp,xlab="Linear Predictor",
+     ylab="Z-Residual",
+     main="Z-Residual Boxplot of lwbc Model",
+     ylim=c(ymin1,4)) 
+text(3.8, 3.8, paste0("Z-AOV-LP p-value = ", sprintf("%3.2f",anov_nrsp1)))
+
+plot(LeukSurv$wbc_log ,resid_LeukSurv_wbc$nrsp,ylab="Z-Residual",
+     col=c("blue","darkolivegreen4")[LeukSurv$cens+1],
+     pch=c(3,2)[LeukSurv$cens+1],
+     main="Z-Residual Scatterplot of wbc Model",
+     xlab="log(wbc)",
+     ylim=c(ymin1,ymax1))
+abline(h=c(3,-3),col="grey")
+lines(lowess(resid_LeukSurv_wbc$nrsp ~LeukSurv$wbc_log),
+      col = "red",lwd = 3)
+legend(x = "bottom", inset = c(0, -0.36), 
+       legend = c("Uncensored", "Censored"), col=c("darkolivegreen4","blue"),
+       pch=c(2,3),horiz=TRUE,cex=1,xpd = TRUE,bty="n")
+plot(LeukSurv$wbc_log ,resid_LeukSurv_logwbc$nrsp,ylab="Z-Residual",
+     col=c("blue","darkolivegreen4")[LeukSurv$cens+1],
+     pch=c(3,2)[LeukSurv$cens+1],
+     main="Z-Residual Scatterplot of lwbc Model",xlab="log(wbc)",
+     ylim=c(ymin1,ymax1))
+abline(h=c(3,-3),col="grey")
+lines(lowess(resid_LeukSurv_logwbc$nrsp ~LeukSurv$wbc_log),
+      col = "red",lwd = 3)
+legend(x = "bottom", inset = c(0, -0.36), 
+       legend = c("Uncensored", "Censored"), col=c("darkolivegreen4","blue"),
+       pch=c(2,3),horiz=TRUE,cex=1,xpd = TRUE,bty="n")
+
+wbc_t <- cut(LeukSurv$wbc_log, 10)
+plot(wbc_t,resid_LeukSurv_wbc$nrsp,
+     xlab="log(wbc)",ylab="Z-Residual",
+     main="Z-Residual Boxplot of wbc Model",ylim=c(ymin1,4.5))
+text(4.3, 4.2, paste0("Z-AOV-log(wbc) p-value = ", sprintf("%3.2f",anov_nrsp_wbc1)))
+lwbc <- cut(LeukSurv$wbc_log, 10)
+plot(lwbc,resid_LeukSurv_logwbc$nrsp,
+     xlab="log(wbc)",ylab="Z-Residual",
+     main="Z-Residual Boxplot of lwbc Model",ylim=c(ymin1,4.5))
+text(4.3, 4.2, paste0("Z-AOV-log(wbc) p-value = ", sprintf("%3.2f",anov_nrsp_wbc_log1)))
+
+dev.off()
+
+
+
+mre_logwbc <- resid(fit_LeukSurv_logwbc, type="martingale")
+mre_wbc <- resid(fit_LeukSurv_wbc, type="martingale")
+dre_logwbc <- resid(fit_LeukSurv_logwbc, type="deviance")
+dre_wbc<- resid(fit_LeukSurv_wbc, type="deviance")
+
+pdf( "Leuk_Martdev_logwbc_plot.pdf",width=8,height=6)
+par(mfrow = c(2,2),mar=c(4,4,2,2))
+ymax=max(range(mre_logwbc,mre_wbc,dre_logwbc,dre_wbc ), 
+         na.rm = TRUE)
+ymin=min(range(mre_logwbc,mre_wbc,dre_logwbc,dre_wbc ), 
+         na.rm = TRUE)
+plot(LeukSurv$wbc_log ,mre_wbc,ylab="Martingale",
+     xlab="log(wbc)",
+     main="Martingale Residual Plot of wbc Model",
+     col=c("blue","darkolivegreen4")[LeukSurv$cens+1],
+     pch=c(3,2)[LeukSurv$cens+1],
+     ylim=c(ymin,ymax)) 
+abline(h=c(3,-3),col="grey")
+lines(lowess(mre_wbc~ LeukSurv$wbc_log ),
+      col = "red",lwd = 3)
+legend(x = "bottom", inset = c(0, -0.28), 
+       legend = c("Uncensored", "Censored"),
+       col=c("darkolivegreen4","blue"),
+       pch=c(2,3),horiz=TRUE,cex=1,xpd = TRUE,bty="n")
+
+plot(LeukSurv$wbc_log ,mre_logwbc,ylab="Martingale",
+     xlab="log(wbc)",
+     main="Martingale Residual Plot of lwbc Model",
+     col=c("blue","darkolivegreen4")[LeukSurv$cens+1],
+     pch=c(3,2)[LeukSurv$cens+1],
+     ylim=c(ymin,ymax)) 
+abline(h=c(3,-3),col="grey")
+lines(lowess(mre_logwbc~ LeukSurv$wbc_log ),
+      col = "red",lwd = 3)
+legend(x = "bottom", inset = c(0, -0.28), 
+       legend = c("Uncensored", "Censored"),
+       col=c("darkolivegreen4","blue"),
+       pch=c(2,3),horiz=TRUE,cex=1,xpd = TRUE,bty="n")
+
+plot(LeukSurv$wbc_log ,dre_wbc,ylab="Deviance",
+     xlab="log(wbc)",
+     main="Deviance Residual Plot of wbc Model",
+     col=c("blue","darkolivegreen4")[LeukSurv$cens+1],
+     pch=c(3,2)[LeukSurv$cens+1],
+     ylim=c(ymin,ymax)) 
+abline(h=c(3,-3),col="grey")
+lines(lowess(dre_wbc~ LeukSurv$wbc_log ),
+      col = "red",lwd = 3)
+legend(x = "bottom", inset = c(0, -0.28), 
+       legend = c("Uncensored", "Censored"),
+       col=c("darkolivegreen4","blue"),
+       pch=c(2,3),horiz=TRUE,cex=1,xpd = TRUE,bty="n")
+plot(LeukSurv$wbc_log ,dre_logwbc,ylab="Deviance",
+     xlab="log(wbc)",
+     main="Deviance Residual Plot of lwbc Model",
+     col=c("blue","darkolivegreen4")[LeukSurv$cens+1],
+     pch=c(3,2)[LeukSurv$cens+1],
+     ylim=c(ymin,ymax)) 
+abline(h=c(3,-3),col="grey")
+lines(lowess(dre_logwbc~ LeukSurv$wbc_log ),
+      col = "red",lwd = 3)
+legend(x = "bottom", inset = c(0, -0.28), 
+       legend = c("Uncensored", "Censored"),
+       col=c("darkolivegreen4","blue"),
+       pch=c(2,3),horiz=TRUE,cex=1,xpd = TRUE,bty="n")
+
+dev.off()
+
+# pdf( "Leuk_Martdev_wbc_plot.pdf",width=6,height=6)
+# par(mfrow = c(2,2),mar=c(4,4,2,2))
+# ymax=max(range(mre_logwbc,mre_wbc,dre_logwbc,dre_wbc ), 
+#          na.rm = TRUE)
+# ymin=min(range(mre_logwbc,mre_wbc,dre_logwbc,dre_wbc ), 
+#          na.rm = TRUE)
+# plot(LeukSurv$wbc_log ,mre_logwbc,ylab="Martingale",
+#      xlab="log(wbc)",
+#      main="Martg Residual plot with log(wbc)",
+#      col=c("blue","darkolivegreen4")[LeukSurv$cens+1],
+#      pch=c(3,2)[LeukSurv$cens+1],
+#      ylim=c(ymin,ymax)) 
+# abline(h=c(3,-3),col="grey")
+# lines(lowess(mre_logwbc~ LeukSurv$wbc_log ),
+#       col = "red",lwd = 3)
+# legend(x = "bottom", inset = c(0, -0.28), 
+#        legend = c("Uncensored", "Censored"),
+#        col=c("darkolivegreen4","blue"),
+#        pch=c(2,3),horiz=TRUE,cex=1,xpd = TRUE,bty="n")
+# 
+# plot(LeukSurv$wbc ,mre_wbc,ylab="Martingale",
+#      xlab="wbc",
+#      main="Martg Residual plot with wbc",
+#      col=c("blue","darkolivegreen4")[LeukSurv$cens+1],
+#      pch=c(3,2)[LeukSurv$cens+1],
+#      ylim=c(ymin,ymax)) 
+# abline(h=c(3,-3),col="grey")
+# lines(lowess(mre_wbc~ LeukSurv$wbc ),
+#       col = "red",lwd = 3)
+# legend(x = "bottom", inset = c(0, -0.28), 
+#        legend = c("Uncensored", "Censored"),
+#        col=c("darkolivegreen4","blue"),
+#        pch=c(2,3),horiz=TRUE,cex=1,xpd = TRUE,bty="n")
+# 
+# 
+# plot(LeukSurv$wbc_log ,dre_logwbc,ylab="Deviance",
+#      xlab="log(wbc)",
+#      main="Dev. Residual plot with log(wbc)",
+#      col=c("blue","darkolivegreen4")[LeukSurv$cens+1],
+#      pch=c(3,2)[LeukSurv$cens+1],
+#      ylim=c(ymin,ymax)) 
+# abline(h=c(3,-3),col="grey")
+# lines(lowess(dre_logwbc~ LeukSurv$wbc_log ),
+#       col = "red",lwd = 3)
+# legend(x = "bottom", inset = c(0, -0.28), 
+#        legend = c("Uncensored", "Censored"),
+#        col=c("darkolivegreen4","blue"),
+#        pch=c(2,3),horiz=TRUE,cex=1,xpd = TRUE,bty="n")
+# 
+# plot(LeukSurv$wbc,dre_wbc,ylab="Deviance",
+#      xlab="wbc",
+#      main="Dev. Residual plot with wbc",
+#      col=c("blue","darkolivegreen4")[LeukSurv$cens+1],
+#      pch=c(3,2)[LeukSurv$cens+1],
+#      ylim=c(ymin,ymax)) 
+# abline(h=c(3,-3),col="grey")
+# lines(lowess(dre_wbc~ LeukSurv$wbc),
+#       col = "red",lwd = 3)
+# legend(x = "bottom", inset = c(0, -0.28), 
+#        legend = c("Uncensored", "Censored"),
+#        col=c("darkolivegreen4","blue"),
+#        pch=c(2,3),horiz=TRUE,cex=1,xpd = TRUE,bty="n")
+# dev.off()
+
+
+plot(LeukSurv$age ,resid_LeukSurv_logwbc$nrsp,ylab="Z",
+     col=c("blue","darkolivegreen4")[LeukSurv$cens+1],
+     pch=c(3,2)[LeukSurv$cens+1],
+     main="Z Residual plot",
+     ylim=c(ymin,ymax))
+lines(lowess(resid_LeukSurv_logwbc$nrsp ~LeukSurv$age),
+      col = "red",lwd = 3)
+plot(LeukSurv$tpi ,resid_LeukSurv_logwbc$nrsp,ylab="Z",
+     col=c("blue","darkolivegreen4")[LeukSurv$cens+1],
+     pch=c(3,2)[LeukSurv$cens+1],
+     main="Z Residual plot",
+     ylim=c(ymin,ymax))
+lines(lowess(resid_LeukSurv_logwbc$nrsp ~LeukSurv$tpi),
+      col = "red",lwd = 3)
+#resid(fit_LeukSurv_logwbc,type="schoenfeld")
+
+
+#################################################
+fit_LeukSurv_wbc  <- tryCatch(
+  coxph(Surv(time, cens) ~ age  +sex+ wbc +tpi  +
+          frailty(district, distribution="gamma"), data= LeukSurv),
+  error = function(e) NA,
+  warning = function(w) NA
+)
+#fix_var_wbc<-model.matrix(~.,data = LeukSurv[,c(5,6,7,8),drop=FALSE])[,-1,drop=FALSE]
+#risk_score_wbc<-fix_var_wbc %*% fit_LeukSurv_wbc$coefficient+
+#  fit_LeukSurv_wbc$frail[LeukSurv$district]
+                        
+fit_LeukSurv_logwbc  <- tryCatch(
+  coxph(Surv(time, cens) ~ age +sex + wbc_log + tpi +
+          frailty(district, distribution="gamma"), data= LeukSurv),
+  error = function(e) NA,
+  warning = function(w) NA
+)
+#fix_var_logwbc<-model.matrix(~.,data = LeukSurv[,c(5,6,10,8),drop=FALSE])[,-1,drop=FALSE]
+#risk_score_logwbc<-fix_var_logwbc %*% fit_LeukSurv_logwbc$coefficient+
+#  fit_LeukSurv_logwbc$frail[LeukSurv$district]
+n_sims<-1000
+cur_time = proc.time()
+sw_wbc<- rep(0,n_sims)
+anov_wbc_lp<- rep(0,n_sims)
+anov_wbc<- rep(0,n_sims)
+sf_wbc<- rep(0,n_sims)
+sw_logwbc<- rep(0,n_sims)
+anov_logwbc_lp<- rep(0,n_sims)
+anov_logwbc<- rep(0,n_sims)
+sf_logwbc<- rep(0,n_sims)
+for(j in 1:n_sims ){
+  cat(paste('Simulation ',j,' out of ',n_sims,'\n'))
+  if(j ==2){
+    elapsed=as.numeric(proc.time()-cur_time)[3]
+    cat(paste("Time for 1 simulation: ",elapsed/3600," hours \n"))
+    cat(paste("Estimated time remaining: ",elapsed/3600*(n_sims-1)," hours \n"))
+  }
+  resid_LeukSurv_wbc<-zresidual.coxph (fit_coxph = fit_LeukSurv_wbc,
+                                    traindata = LeukSurv,
+                                    newdata = LeukSurv)
+  sw_wbc[j]<-shapiro.test(resid_LeukSurv_wbc$nrsp)$p.value
+  anov_wbc[j]<-test.nl.aov(qresidual=resid_LeukSurv_wbc$nrsp, 
+                                     #fitted.values=LeukSurv$wbc_log,
+                                     fitted.values=LeukSurv$wbc,
+                                     k.anova=10)
+  anov_wbc_lp[j]<-test.nl.aov(qresidual=resid_LeukSurv_wbc$nrsp, 
+                              fitted.values=fit_LeukSurv_wbc$linear.predictors,
+                               k.anova=10)
+  
+  sf_wbc[j]<-sf.test(resid_LeukSurv_wbc$nrsp)$p.value
+
+  resid_LeukSurv_logwbc<-zresidual.coxph (fit_coxph = fit_LeukSurv_logwbc,
+                                          traindata = LeukSurv,
+                                          newdata = LeukSurv)
+  sw_logwbc[j]<-shapiro.test(resid_LeukSurv_logwbc$nrsp)$p.value
+  anov_logwbc[j]<-test.nl.aov(qresidual=resid_LeukSurv_logwbc$nrsp, 
+                              fitted.values=LeukSurv$wbc_log,
+                              k.anova=10)
+  anov_logwbc_lp[j]<-test.nl.aov(qresidual=resid_LeukSurv_logwbc$nrsp, 
+                                  fitted.values=fit_LeukSurv_logwbc$linear.predictors,
+                                  k.anova=10)
+  sf_logwbc[j]<-sf.test(resid_LeukSurv_logwbc$nrsp)$p.value
+}
+
+mean(sw_wbc < 0.05)
+#0.059
+mean(anov_wbc_lp< 0.05)
+#0
+mean(anov_wbc< 0.05)
+#0.493
+mean(sf_wbc< 0.05)
+#0.03
+
+mean(sw_logwbc < 0.05)
+# 0.027
+mean(anov_logwbc_lp< 0.05)
+#0
+mean(anov_logwbc< 0.05)
+#1
+mean(sf_logwbc< 0.05)
+#0.022
+save(sw_wbc,anov_wbc_lp,anov_wbc,sf_wbc,
+     sw_logwbc,anov_logwbc_lp,anov_logwbc,sf_logwbc,
+     file= "~/Desktop/frailty_model/z_residual/real_data/LeukSurv.RData")
+
+bounds_pvalues <- function (pv)
+{
+  pv <- pv[is.finite(pv)]
+  n <- length (pv)
+  if(n<=0) stop("There is no value in 'pv'")
+  pv.sorted <- sort(pv)
+  corrected.pv <- pmin(1, pv.sorted*n/1:n)
+  pv.min <- min(corrected.pv)
+  pv.min
+}
+pmin_sw<-bounds_pvalues(pv=sw_wbc);pmin_sw
+pmin_swlogwbc<-bounds_pvalues(pv=sw_logwbc);pmin_swlogwbc
+
+pmin_sf<-bounds_pvalues(pv=sf_wbc);pmin_sf
+pmin_sflogwbc<-bounds_pvalues(pv=sf_logwbc);pmin_sflogwbc
+
+pmin_aovwbc_lp<-bounds_pvalues(pv=anov_wbc_lp);pmin_aovwbc_lp
+pmin_aovlogwbc_lp<-bounds_pvalues(pv=anov_logwbc_lp);pmin_aovlogwbc_lp
+
+pmin_aovwbc<-bounds_pvalues(pv=anov_wbc);pmin_aovwbc
+pmin_aovlogwbc<-bounds_pvalues(pv=anov_logwbc);pmin_aovlogwbc
+
+
+pdf( "hist_pvalue.pdf",width=8,height=12)
+par(mfrow = c(4,2),mar=c(4,4,2,2))
+xmax1=max(range(sw_wbc,sf_wbc,anov_wbc_lp,anov_wbc,sw_logwbc,
+                sf_logwbc,anov_logwbc_lp,anov_logwbc))
+xmin1=min(range(sw_wbc,sf_wbc,anov_wbc_lp,anov_wbc,sw_logwbc,
+                sf_logwbc,anov_logwbc_lp,anov_logwbc))
+hist(sw_wbc,main="Replicated Z-SW P-values for wbc Model",breaks=20,
+     xlab="Z-SW P-values for wbc Model",xlim=c(xmin1,xmax1))
+abline(v=pmin_sw,col="red")
+hist(sw_logwbc,main="Replicated Z-SW P-values for lwbc Model",breaks=20,
+     xlab="Z-SW P-values for lwbc Model",xlim=c(xmin1,xmax1))
+abline(v=pmin_swlogwbc,col="red")
+
+hist(sf_wbc,main="Replicated Z-SF P-values for wbc Model",breaks=20,
+     xlab="Z-SF P-values for wbc Model",xlim=c(xmin1,xmax1))
+abline(v=pmin_sf,col="red")
+hist(sf_logwbc,main="Replicated Z-SF P-values for lwbc Model",breaks=20,
+     xlab="Z-SF P-values for lwbc Model",xlim=c(xmin1,xmax1))
+abline(v=pmin_sflogwbc,col="red")
+
+hist(anov_wbc_lp,main="Replicated Z-AOV-LP P-values for wbc Model",breaks=20,
+     xlab="Z-AOV-LP P-values for wbc Model",xlim=c(xmin1,xmax1))
+abline(v=pmin_aovwbc_lp,col="red")
+hist(anov_logwbc_lp,main="Replicated Z-AOV-LP P-values for lwbc Model",breaks=20,
+     xlab="Z-AOV-LP P-values for lwbc Model",xlim=c(xmin1,xmax1))
+abline(v=pmin_aovlogwbc_lp,col="red")
+
+hist(anov_wbc,main="Replicated Z-AOV-wbc P-values for wbc Model",breaks=20,
+     xlab="Z-AOV-log(wbc) P-values for wbc Model",xlim=c(xmin1,xmax1))
+abline(v=pmin_aovwbc,col="red")
+hist(anov_logwbc,main="Replicated Z-AOV-log(wbc) P-values for lwbc Model",breaks=20,
+     xlab="Z-AOV-log(wbc) P-values for lwbc Model",xlim=c(xmin1,0.005))
+abline(v=pmin_aovlogwbc,col="red")
+
+dev.off()
+
+
+#########other transformation for wbc#############################################
+#################################################################################
+data("LeukSurv")
+LeukSurv<-LeukSurv[LeukSurv$age<60,]
+is.factor(LeukSurv$district)
+is.factor(LeukSurv$sex)
+LeukSurv$district<-as.factor(LeukSurv$district)
+LeukSurv$sex<-as.factor(LeukSurv$sex)
+LeukSurv$wbc_sq<- (LeukSurv$wbc)^2
+LeukSurv$wbc_sqrt<- sqrt(LeukSurv$wbc)
+LeukSurv$wbc_over1<- (LeukSurv$wbc)^(1/3)
+LeukSurv$wbc_log<- log(LeukSurv$wbc+0.001)
+
+fit_LeukSurv_wbc_sq  <- tryCatch(
+  coxph(Surv(time, cens) ~ age  +sex+ wbc_sq +tpi  +
+          frailty(district, distribution="gamma"), data= LeukSurv),
+  error = function(e) NA,
+  warning = function(w) NA
+);fit_LeukSurv_wbc_sq
+AIC(fit_LeukSurv_wbc_sq)
+
+fit_LeukSurv_wbc_sqrt  <- tryCatch(
+  coxph(Surv(time, cens) ~ age +sex + wbc_sqrt + tpi +
+          frailty(district, distribution="gamma"), data= LeukSurv),
+  error = function(e) NA,
+  warning = function(w) NA
+);fit_LeukSurv_wbc_sqrt
+AIC(fit_LeukSurv_wbc_sqrt)
+
+fit_LeukSurv_wbc_over1  <- tryCatch(
+  coxph(Surv(time, cens) ~ age +sex + wbc_over1 + tpi +
+          frailty(district, distribution="gamma"), data= LeukSurv),
+  error = function(e) NA,
+  warning = function(w) NA
+);fit_LeukSurv_wbc_over1
+AIC(fit_LeukSurv_wbc_over1)
+
+n_sims<-1000
+cur_time = proc.time()
+sw_wbc_sq<- rep(0,n_sims)
+sf_wbc_sq<- rep(0,n_sims)
+anov_wbc_sq<- rep(0,n_sims)
+anov_wbc_sq_lp<- rep(0,n_sims)
+
+sw_wbc_sqrt<- rep(0,n_sims)
+sf_wbc_sqrt<- rep(0,n_sims)
+anov_wbc_sqrt<- rep(0,n_sims)
+anov_wbc_sqrt_lp<- rep(0,n_sims)
+
+sw_wbc_over1<- rep(0,n_sims)
+sf_wbc_over1<- rep(0,n_sims)
+anov_wbc_over1<- rep(0,n_sims)
+anov_wbc_over1_lp<- rep(0,n_sims)
+
+for(j in 1:n_sims ){
+  cat(paste('Simulation ',j,' out of ',n_sims,'\n'))
+  if(j ==2){
+    elapsed=as.numeric(proc.time()-cur_time)[3]
+    cat(paste("Time for 1 simulation: ",elapsed/3600," hours \n"))
+    cat(paste("Estimated time remaining: ",elapsed/3600*(n_sims-1)," hours \n"))
+  }
+  resid_LeukSurv_wbc_sq<-zresidual.coxph (fit_coxph = fit_LeukSurv_wbc_sq,
+                                          traindata = LeukSurv,
+                                          newdata = LeukSurv)
+  sw_wbc_sq[j]<-shapiro.test(resid_LeukSurv_wbc_sq$nrsp)$p.value
+  sf_wbc_sq[j]<-sf.test(resid_LeukSurv_wbc_sq$nrsp)$p.value
+  anov_wbc_sq[j]<-test.nl.aov(qresidual=resid_LeukSurv_wbc_sq$nrsp, 
+                            fitted.values=LeukSurv$wbc_sq,
+                            k.anova=10)
+  anov_wbc_sq_lp[j]<-test.nl.aov(qresidual=resid_LeukSurv_wbc_sq$nrsp, 
+                               fitted.values=fit_LeukSurv_wbc_sq$linear.predictors,
+                               k.anova=10)
+  
+  resid_LeukSurv_wbc_sqrt<-zresidual.coxph (fit_coxph = fit_LeukSurv_wbc_sqrt,
+                                          traindata = LeukSurv,
+                                          newdata = LeukSurv)
+  sw_wbc_sqrt[j]<-shapiro.test(resid_LeukSurv_wbc_sqrt$nrsp)$p.value
+  sf_wbc_sqrt[j]<-sf.test(resid_LeukSurv_wbc_sqrt$nrsp)$p.value
+  anov_wbc_sqrt[j]<-test.nl.aov(qresidual=resid_LeukSurv_wbc_sqrt$nrsp, 
+                               fitted.values=LeukSurv$wbc_sqrt,
+                               k.anova=10)
+  anov_wbc_sqrt_lp[j]<-test.nl.aov(qresidual=resid_LeukSurv_wbc_sqrt$nrsp, 
+                                  fitted.values=fit_LeukSurv_wbc_sqrt$linear.predictors,
+                                  k.anova=10)
+  
+  resid_LeukSurv_wbc_over1<-zresidual.coxph (fit_coxph = fit_LeukSurv_wbc_over1,
+                                            traindata = LeukSurv,
+                                            newdata = LeukSurv)
+  sw_wbc_over1[j]<-shapiro.test(resid_LeukSurv_wbc_over1$nrsp)$p.value
+  sf_wbc_over1[j]<-sf.test(resid_LeukSurv_wbc_over1$nrsp)$p.value
+  anov_wbc_over1[j]<-test.nl.aov(qresidual=resid_LeukSurv_wbc_over1$nrsp, 
+                              fitted.values=LeukSurv$wbc_over1,
+                              k.anova=10)
+  anov_wbc_over1_lp[j]<-test.nl.aov(qresidual=resid_LeukSurv_wbc_over1$nrsp, 
+                                 fitted.values=fit_LeukSurv_wbc_over1$linear.predictors,
+                                 k.anova=10)
+}
+censored<- LeukSurv$cens ==0
+sf_nusp_wbcsq<-as.numeric(gofTestCensored(resid_LeukSurv_wbc_sq$nusp,
+                                           censored, test = "sf", 
+                                           censoring.side = "right",
+                                           distribution = "norm")$p.value)
+sf_nusp_wbcsq
+sf_nusp_wbcsqrt<-as.numeric(gofTestCensored(resid_LeukSurv_wbc_sqrt$nusp,
+                                          censored, test = "sf", 
+                                          censoring.side = "right",
+                                          distribution = "norm")$p.value)
+sf_nusp_wbcsqrt
+resid_LeukSurv_wbc_over1<-as.numeric(gofTestCensored(resid_LeukSurv_wbc_over1$nusp,
+                                            censored, test = "sf", 
+                                            censoring.side = "right",
+                                            distribution = "norm")$p.value)
+resid_LeukSurv_wbc_over1
+
+
+mean(sw_wbc_sq < 0.05)
+#0.037
+mean(sf_wbc_sq < 0.05)
+#0.019
+mean(anov_wbc_sq< 0.05)
+#0.11
+mean(anov_wbc_sq_lp< 0.05)
+#0
+mean(sw_wbc_sqrt < 0.05)
+# 0.03
+mean(sf_wbc_sqrt < 0.05)
+#0.018
+mean(anov_wbc_sqrt< 0.05)
+#0
+mean(anov_wbc_sqrt_lp< 0.05)
+#0
+mean(sw_wbc_over1 < 0.05)
+#0.029
+mean(sf_wbc_over1 < 0.05)
+#0.022
+mean(anov_wbc_over1< 0.05)
+#0.002
+mean(anov_wbc_over1_lp< 0.05)
+#0
+
+
+bounds_pvalues <- function (pv)
+{
+  pv <- pv[is.finite(pv)]
+  n <- length (pv)
+  if(n<=0) stop("There is no value in 'pv'")
+  pv.sorted <- sort(pv)
+  corrected.pv <- pmin(1, pv.sorted*n/1:n)
+  pv.min <- min(corrected.pv)
+  pv.min
+}
+pmin_sw_wbc_sq<-bounds_pvalues(pv=sw_wbc_sq);pmin_wbc_sq
+pmin_sw_wbc_sqrt<-bounds_pvalues(pv=sw_wbc_sqrt);pmin_sw_wbc_sqrt
+pmin_sw_wbc_over1<-bounds_pvalues(pv=sw_wbc_over1);pmin_sw_wbc_over1
+
+pmin_sf_wbc_sq<-bounds_pvalues(pv=sf_wbc_sq);pmin_sf_wbc_sq
+pmin_sf_wbc_sqrt<-bounds_pvalues(pv=sf_wbc_sqrt);pmin_sf_wbc_sqrt
+pmin_sf_wbc_over1<-bounds_pvalues(pv=sf_wbc_over1);pmin_sf_wbc_over1
+
+
+pmin_aovwbc_sq<-bounds_pvalues(pv=anov_wbc_sq);pmin_aovwbc_sq
+pmin_anovwbc_sqrt<-bounds_pvalues(pv=anov_wbc_sqrt);pmin_anovwbc_sqrt
+pmin_anovwbc_over1<-bounds_pvalues(pv=anov_wbc_over1);pmin_anovwbc_over1
+
+pmin_aovwbc_sq_lp<-bounds_pvalues(pv=anov_wbc_sq_lp);pmin_aovwbc_sq_lp
+pmin_aovwbc_sqrt_lp<-bounds_pvalues(pv=anov_wbc_sqrt_lp);pmin_aovwbc_sqrt_lp
+pmin_aovwbc_over1_lp<-bounds_pvalues(pv=anov_wbc_over1_lp);pmin_aovwbc_over1_lp
+
+
+sqwbc <- cut(LeukSurv$wbc_log, 10)
+plot(sqwbc,resid_LeukSurv_wbc_sq$nrsp,
+     xlab="log(wbc)",ylab="Z-Residual",
+     main="Z-Residual Boxplot of lwbc Model")
+
+sqwbc <- cut(LeukSurv$wbc, 10)
+plot(sqwbc,resid_LeukSurv_wbc_sq$nrsp,
+     xlab="log(wbc)",ylab="Z-Residual",
+     main="Z-Residual Boxplot of lwbc Model")
+
+plot(LeukSurv$wbc)
+plot(LeukSurv$wbc_log)

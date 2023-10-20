@@ -1,0 +1,70 @@
+library(Zresidual)
+library(survival)
+data("kidney")
+head(kidney)
+kidney$sex <- ifelse(kidney$sex == 1, "male", "female")
+kidney$sex<-as.factor(kidney$sex)
+kidney$id<-as.factor(kidney$id)
+
+#############fit the coxph model with frailty#################
+fit_kidney <- tryCatch(
+  coxph(Surv(time, status) ~ age + sex + disease+
+          frailty(id, distribution="gamma"), data= kidney),
+  error = function(e) NA,
+  warning = function(w) NA
+)
+#############Calculate residuals###############################
+
+allresid.kidney<-Zresidual(fit.object = fit_kidney,data= kidney)
+Zresid.kidney<-allresid.kidney$Zresid
+censored.Zresid.kidney<-allresid.kidney$censored.Zresid
+
+########################### Graphical Diagnosis##################
+plot.zresid(Zresid.kidney)
+qqnorm.zresid (Zresid.kidney)
+boxplot.zresid(Zresid.kidney,fitted.values=kidney$age)
+boxplot.zresid(Zresid.kidney,fitted.values=kidney$sex)
+
+########################### Statistical test Diagnosis##################
+sw.test.zresid(Zresid.kidney)
+sf.test.zresid(Zresid.kidney)
+gof.censore.zresid(censored.Zresidual=censored.Zresid.kidney,censored=kidney$status)
+
+anov.test.zresid(Zresid.kidney,fitted.values=fit_kidney$linear.predictors, k.anova=10)
+bartlett.test.zresid(Zresid.kidney,fitted.values=fit_kidney$linear.predictors, k.bl=10)
+
+anov.test.zresid(Zresid.kidney,fitted.values=kidney$age, k.anova=10)
+bartlett.test.zresid(Zresid.kidney,fitted.values=kidney$age, k.bl=10)
+
+anov.test.zresid(Zresid.kidney,fitted.values=kidney$sex, k.anova=10)
+bartlett.test.zresid(Zresid.kidney,fitted.values=kidney$sex, k.bl=10)
+
+################pmin value############################
+
+n_sims<-1000
+cur_time = proc.time()
+sw.kidney<- rep(0,n_sims)
+sf.kidney<- rep(0,n_sims)
+anov.kidney.lp<- rep(0,n_sims)
+
+for(j in 1:n_sims ){
+  cat(paste('Simulation ',j,' out of ',n_sims,'\n'))
+  if(j ==2){
+    elapsed=as.numeric(proc.time()-cur_time)[3]
+    cat(paste("Time for 1 simulation: ",elapsed/3600," hours \n"))
+    cat(paste("Estimated time remaining: ",elapsed/3600*(n_sims-1)," hours \n"))
+  }
+  allresid.kidney<-Zresidual(fit.object = fit_kidney,data= kidney)
+  Zresid.kidney<-allresid.kidney$Zresid
+
+  sw.kidney[j]<-sw.test.zresid(Zresid.kidney)
+  sf.kidney[j]<-sf.test.zresid(Zresid.kidney)
+
+  anov.kidney.lp[j]<-anov.test.zresid(Zresid.kidney,
+                                      fitted.values=fit_kidney$linear.predictors,
+                                      k.anova=10)
+}
+pmin.sw.kidney<-bounds_pvalues(pv=sw.kidney);pmin.sw.kidney
+pmin.sf.kidney<-bounds_pvalues(pv=sf.kidney);pmin.sf.kidney
+pmin.aov.lp.kidney<-bounds_pvalues(pv=anov.kidney.lp);pmin.aov.lp.kidney
+

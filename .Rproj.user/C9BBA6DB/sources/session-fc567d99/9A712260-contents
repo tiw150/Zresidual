@@ -1,0 +1,272 @@
+---
+title: "Untitled"
+author: "Tingxuan Wu"
+date: "2023-10-18"
+output:
+  pdf_document: default
+  html_document: default
+---
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+## Example
+
+This example provides a fundamental illustration of using the Z-residuals for diagnosing both the overall goodness of fit and the functional form of covariates in a real application for modelling the survival times of acute myeloid leukemia patients. 
+
+The dataset employed in our analysis contains 411 patients who were recorded at the M. D. Anderson Cancer Center between 1980 and 1996. These patients were under the age of 60 and hailed from 24 administrative districts. The data collected information on the survival time for acute myeloid leukemia and prognostic factors, including  age, sex, white blood cell count (wbc) at diagnosis, and the townsend score (tpi) for which higher values indicate less affluent areas. The censoring rate is 29.2%. The response variable of interest is the survival time in days, which is the time from entry to the study or  death.
+
+```{r example, message=FALSE}
+library(Zresidual)
+library(survival)
+## basic example code
+data("LeukSurv")
+head(LeukSurv)
+LeukSurv<-LeukSurv[LeukSurv$age<60,]
+#is.factor(LeukSurv$district)
+#is.factor(LeukSurv$sex)
+LeukSurv$district<-as.factor(LeukSurv$district)
+LeukSurv$sex<-as.factor(LeukSurv$sex)
+```
+
+We fitted a shared frailty model with covariates wbc, age, sex and tpi.
+
+```{r}
+fit_LeukSurv <- tryCatch(
+  coxph(Surv(time, cens) ~ age  +sex+ wbc +tpi  +
+          frailty(district, distribution="gamma"), data= LeukSurv),
+  error = function(e) NA,
+  warning = function(w) NA
+)
+fit_LeukSurv
+```
+
+Once the model is fitted, we can calculate Z-residual, censored Z-residual and other residuals.
+
+```{r}
+allresid.LeukSurv<-Zresidual(fit.object=fit_LeukSurv,data= LeukSurv)
+```
+
+
+```{r}
+#Z-residual
+Zresid.LeukSurv<-allresid.LeukSurv$Zresid
+#censored Z-residual
+censored.Zresid.LeukSurv<-allresid.LeukSurv$censored.Zresid
+#Survival Probabilities
+sp.LeukSurv<-allresid.LeukSurv$SP
+#unmodified CS residuals
+ucs.LeukSurv<-allresid.LeukSurv$ucs
+#modified CS residuals
+mcs.LeukSurv<-allresid.LeukSurv$mcs
+#Martingale residuals
+martg.LeukSurv<-allresid.LeukSurv$martg
+#Deviance residuals
+dev.LeukSurv<-allresid.LeukSurv$dev
+
+```
+
+We then can show the plots and tests about Z-residual.
+
+A QQ plot based on Z-residuals can be used to graphically assess the model's overall GOF, and Shapiro-Wilk (SW) or Shapiro-Francia (SF) normality tests applied to Z-residuals can be used to numerically test the overall GOF of the model.
+
+We can see that the QQ plots of Z-residuals align well with the 45 $^\circ$ diagonal line. The Z-SW tests also gives large p-value for the model, where Z-SW is the test method that the normality of Z-residuals is tested with the SW test.
+
+```{r}
+qqnorm.zresid (Zresid.LeukSurv)
+
+```
+
+The index scatterplots of Z-residuals 
+
+```{r}
+plot.zresid(Zresid.LeukSurv)
+
+```
+
+
+The Z-residuals can be divided into $k$ groups by cutting the linear predictors or covariates into equally-spaced intervals. Then we can check whether the Z-residuals of the $k$ groups are homogeneously distributed. A quantitative method to assess the homogeneity of such grouped Z-residuals is to test the equality of group means or variances of the Z-residuals. We employ the F-test in ANOVA to assess the equality of means and Bartlett's test to examine the equality of variances.
+
+The scatterplots of Z-residuals against the linear predictor don't exhibit visible trends; their LOWESS lines are very close to the horizontal line at 0. 
+```{r}
+plot.zresid.fitted.value(Zresid.LeukSurv,
+                         fitted.values=fit_LeukSurv$linear.predictors,
+                         xlab="Linear Predictor",
+                         cenered=LeukSurv$cens)
+
+```
+
+
+The boxplots of Z-residuals grouped by cutting linear predictors into equal-spaced intervals appear to have equal means and variance across groups. The Z-AOV and Z-BL for linear predictors tests also gives large p-values for the model, where Z-AOV and Z-BL are the methods of applying ANOVA and Bartlett to test the equality of the means and variances of Z-residuals against the groups formed with the linear predictor.
+
+```{r}
+boxplot.zresid(Zresid.LeukSurv,fitted.values=fit_LeukSurv$linear.predictors)
+
+```
+
+The scatterplots of the Z-residuals against covariate wbc shows the LOWESS curve of  the wbc model appears to align well with the horizontal line at 0.
+
+```{r}
+plot.zresid.fitted.value(Zresid.LeukSurv,
+                         fitted.values=LeukSurv$wbc,
+                         xlab="wbc",
+                         cenered=LeukSurv$cens)
+
+```
+
+The boxplots of the Z-residuals against continuous covariate wbc shows the grouped Z-residuals appear to have equal means and variances across groups. The p-values of Z-AOV and Z-BL are larger for the model as shown in the boxplots.
+
+```{r}
+boxplot.zresid(Zresid.LeukSurv,fitted.values=LeukSurv$wbc)
+
+```
+
+The boxplots of the Z-residuals against categorical covariate sex shows the grouped Z-residuals appear to have equal means and variances across groups. The p-values of Z-AOV and Z-BL are greater than 0.05.
+
+```{r}
+boxplot.zresid(Zresid.LeukSurv,fitted.values=LeukSurv$sex)
+
+```
+
+The Shapiro-Wilk (SW) or Shapiro-Francia (SF) normality tests applied to Z-residuals can be used to numerically test the overall GOF of the model. Moreover, the Shapiro-Franciard (SF) test can be employed to assess the normality of censored data. The diagnosis of the GOF of survival probabilities can be converted into a diagnosis of the normality of the censored Z-residuals. Thus, by utilizing the gofTestCensored function from the R package EnvStats, one can examine the normality of censored Z-residuals. 
+
+```{r}
+sw.test.zresid(Zresid.LeukSurv)
+sf.test.zresid(Zresid.LeukSurv)
+gof.censore.zresid(censored.Zresidual=censored.Zresid.LeukSurv,censored=LeukSurv$cens)
+```
+
+The Z-residuals can be divided into $k$ groups by cutting the covariates or linear predictors into equally-spaced intervals. To quantitatively evaluate the homogeneity of grouped Z-residuals, we propose testing the equality of group means and group variances. For this purpose, we employ the F-test in ANOVA to assess the equality of means and Bartlett's test to examine the equality of variances.
+
+```{r}
+anov.test.zresid(Zresid.LeukSurv,fitted.values=fit_LeukSurv$linear.predictors, k.anova=10)
+bartlett.test.zresid(Zresid.LeukSurv,fitted.values=fit_LeukSurv$linear.predictors, k.bl=10)
+
+anov.test.zresid(Zresid.LeukSurv,fitted.values=LeukSurv$wbc, k.anova=10)
+bartlett.test.zresid(Zresid.LeukSurv,fitted.values=LeukSurv$wbc, k.bl=10)
+
+anov.test.zresid(Zresid.LeukSurv,fitted.values=LeukSurv$sex, k.anova=10)
+bartlett.test.zresid(Zresid.LeukSurv,fitted.values=LeukSurv$sex, k.bl=10)
+
+```
+
+The Z-residual test p-values quoted above contain randomness because of the randomization in generating Z-residuals. To ensure the robustness of the model diagnostics results, we generated 1000 replicated test p-values with 1000 sets of regenerated Z-residuals for each test method. 
+
+```{r}
+n_sims<-1000
+cur_time = proc.time()
+sw.LeukSurv<- rep(0,n_sims)
+sf.LeukSurv<- rep(0,n_sims)
+anov.LeukSurv.lp<- rep(0,n_sims)
+anov.LeukSurv.wbc<- rep(0,n_sims)
+for(j in 1:n_sims ){
+  allresid.LeukSurv<-Zresidual(fit.object = fit_LeukSurv,data= LeukSurv)
+  Zresid.LeukSurv<-allresid.LeukSurv$Zresid
+
+  sw.LeukSurv[j]<-sw.test.zresid(Zresid.LeukSurv)
+  sf.LeukSurv[j]<-sf.test.zresid(Zresid.LeukSurv)
+
+  anov.LeukSurv.lp[j]<-anov.test.zresid(Zresid.LeukSurv,
+                                   fitted.values=fit_LeukSurv$linear.predictors,
+                                   k.anova=10)
+  anov.LeukSurv.wbc[j]<-anov.test.zresid(Zresid.LeukSurv,
+                                         fitted.values=LeukSurv$wbc,
+                                         k.anova=10)
+}
+pmin.sw.LeukSurv<-bounds_pvalues(pv=sw.LeukSurv);pmin.sw.LeukSurv
+pmin.sf.LeukSurv<-bounds_pvalues(pv=sf.LeukSurv);pmin.sf.LeukSurv
+pmin.aov.lp.LeukSurv<-bounds_pvalues(pv=anov.LeukSurv.lp);pmin.aov.lp.LeukSurv
+pmin.aov.wbc.LeukSurv<-bounds_pvalues(pv=anov.LeukSurv.wbc);pmin.aov.wbc.LeukSurv
+
+
+```
+
+
+
+```{r}
+par(mfrow = c(2,2),mar=c(4,4,2,2))
+hist(sw.LeukSurv,main="Replicated Z-SW P-values",breaks=20,
+     xlab="Z-SW P-values")
+abline(v=pmin.sw.LeukSurv,col="red")
+
+hist(sf.LeukSurv,main="Replicated Z-SF P-values",breaks=20,
+     xlab="Z-SF P-values")
+abline(v=pmin.sf.LeukSurv,col="red")
+
+hist(anov.LeukSurv.lp,main="Replicated Z-AOV with LP P-values",breaks=20,
+     xlab="Z-AOV with LP P-values")
+abline(v=pmin.aov.lp.LeukSurv,col="red")
+
+hist(anov.LeukSurv.wbc,main="Replicated Z-AOV with wbc P-values",breaks=20,
+     xlab="Z-AOV with wbc P-values")
+abline(v=pmin.aov.wbc.LeukSurv,col="red")
+
+```
+
+
+The overall GOF tests and graphical checking with Cox-Snell residuals show that both the model provide adequate fits to the dataset. The estimated CHFs of the  CS residuals of the model align closely along the $45^{\circ}$ diagonal line.
+
+```{r}
+##unmodified CS residuals
+km.ln.LeukSurv <- survfit(Surv(ucs.LeukSurv, LeukSurv$cens)~1,type='fleming')
+id.ln.LeukSurv<-order(ucs.LeukSurv)
+
+plot(km.ln.LeukSurv, fun="cumhaz", xlab=("Cox-Snell Residuals"),
+     ylab=("Cumulative Hazard Function"),
+     main="Log-normal, Cum. Hazard of CS Residuals",
+     ylim= c(0,4),xlim=c(0,4))
+abline(0, 1, col="red", lty=2)
+points(km.ln.LeukSurv$time, -log(km.ln.LeukSurv$surv),
+       col=c("blue","darkolivegreen4")[LeukSurv$cens[id.ln.LeukSurv]+1],
+       pch=c(3,2)[LeukSurv$cens[id.ln.LeukSurv]+1] )
+legend(x = "topleft",
+       legend = c("Uncensored", "Censored"), col=c("darkolivegreen4","blue"),
+       pch=c(2,3),cex=1,xpd = TRUE,bty="L")
+
+
+```
+
+The martingale residuals are mostly within the interval (-3, 1); the LOWESS curves in the scatterplots of martingale residuals under the model is very close to horizontal lines. 
+
+```{r}
+#Martingale residuals
+plot(LeukSurv$wbc,martg.LeukSurv,ylab="Martingale",
+     xlab="wbc",
+     main="Martingale Residual Plot",
+     col=c("blue","darkolivegreen4")[LeukSurv$cens+1],
+     pch=c(3,2)[LeukSurv$cens+1])
+#abline(h=c(3,-3),col="grey")
+lines(lowess(martg.LeukSurv~ LeukSurv$wbc),
+      col = "red",lwd = 3)
+legend(x = "bottomright",
+       legend = c("Uncensored", "Censored"),
+       col=c("darkolivegreen4","blue"),
+       pch=c(2,3),cex=1,xpd = TRUE,bty="l")
+
+```
+
+The deviance residuals are more symmetrically distributed than martingale residuals and they are mostly within the interval (-3, 3). The LOWESS curves in the scatterplots of  deviance residuals is very close to horizontal lines.
+
+```{r}
+#Deviance residuals
+plot(LeukSurv$wbc ,dev.LeukSurv,ylab="Deviance",
+     xlab="wbc",
+     main="Deviance Residual Plot",
+     col=c("blue","darkolivegreen4")[LeukSurv$cens+1],
+     pch=c(3,2)[LeukSurv$cens+1])
+#abline(h=c(3,-3),col="grey")
+lines(lowess(dev.LeukSurv~ LeukSurv$wbc),
+      col = "red",lwd = 3)
+legend(x = "bottomright",
+       legend = c("Uncensored", "Censored"),
+       col=c("darkolivegreen4","blue"),
+       pch=c(2,3),cex=1,xpd = TRUE,bty="l")
+
+```
+
+

@@ -1,0 +1,92 @@
+simulate_x<-function(n,l1,l2,l3,l4,l5,l6,meanT)
+{
+  factor1<-as.factor(sample(c(1:l1),n,replace=TRUE))
+  factor2<-as.factor(sample(c(1:l2),n,replace=TRUE))
+  factor3<-as.factor(sample(c(1:l3),n,replace=TRUE))
+  factor4<-as.factor(sample(c(1:l4),n,replace=TRUE))
+  factor5<-as.factor(sample(c(1:l5),n,replace=TRUE))
+  factor6<-as.factor(sample(c(1:l6),n,replace=TRUE))
+  logn<- log (rpois(n, meanT))
+  data.frame(logn,factor1,factor2,factor3,factor4,factor5,factor6)
+}
+variables<-simulate_x(800,5,5,5,10,10,10,300000)
+##simulated from zero-modified poisson model
+library(actuar)
+simulate_one_otu_p<-function(n,variables,l1,l2,l3,l4,l5,l6,
+                             sig_factor1,sig_factor2,sig_factor3,sig_factor4,sig_factor5,
+                             sig_factor6, betafactor0=1, betafactor0s=-0.2)
+{
+  y <- integer (n)
+  maxsim <- 100
+  nsim <- 0
+  while (mean (y==0) > 0.8 & nsim < maxsim) {
+    betafactor1<-rnorm(l1,sd=sig_factor1)
+    betafactor2<-rnorm(l2,sd=sig_factor2)
+    betafactor3<-rnorm(l3,sd=sig_factor3)
+    betafactor4<-rnorm(l4,sd=sig_factor4)
+    betafactor5<-rnorm(l5,sd=sig_factor5)
+    betafactor6<-rnorm(l6,sd=sig_factor6)
+    mu<-exp(variables[,"logn"]+betafactor0+betafactor1[variables[,"factor1"]]+
+              betafactor2[variables[,"factor2"]]+betafactor3[variables[,"factor3"]]+
+              betafactor4[variables[,"factor4"]]+betafactor5[variables[,"factor5"]]+
+              betafactor6[variables[,"factor6"]])
+    betafactor1s<-rnorm(l1,sd=sig_factor1*20)
+    betafactor2s<-rnorm(l2,sd=sig_factor2*20)
+    betafactor3s<-rnorm(l3,sd=sig_factor3*20)
+    betafactor4s<-rnorm(l4,sd=sig_factor4*20)
+    betafactor5s<-rnorm(l5,sd=sig_factor5*20)
+    betafactor6s<-rnorm(l6,sd=sig_factor6*20)
+    mu0<-exp(betafactor0s+betafactor1s[variables[,"factor1"]]+
+               betafactor2s[variables[,"factor2"]]+betafactor3s[variables[,"factor3"]]+
+               betafactor4s[variables[,"factor4"]]+betafactor5s[variables[,"factor5"]]+
+               betafactor6s[variables[,"factor6"]])
+    p0<-mu0/(1+mu0)
+    y<-rzmpois(n,mu,p0)
+    nsim <- nsim + 1
+  }
+  if (nsim == maxsim ){
+    warning("maximum number of simulation reached!")
+  }
+  y }
+nsmp <- nrow (variables)
+simdata<-data.frame(matrix(data=NA,nrow=nsmp,ncol=3000))
+for(i in 1:3000){
+  simdata[,i]<-simulate_one_otu_p(nsmp,variables,5,5,5,10,10,10,0.1,0.1,0.1,0.1,0.1,0.1)
+  print(i)
+}
+ifold=1
+simdatatotal<-cbind(variables,simdata)
+hurdlep <- data.frame( variables,y = as.integer(simdatatotal[,ifold+7]))
+
+hurdle1.r<-glmmTMB(y~offset(logn)+factor1+factor2+factor3+(1|factor4)+(1|factor5)+(1|factor6),
+                   data=subset(hurdlep,y>0),ziformula =~0,
+                   family=list(family="truncated_poisson",link="log"))
+hurdle2.r<-glmmTMB((y>0)~factor1+factor2+factor3+(1|factor4)+(1|factor5)+(1|factor6),
+                   data=hurdlep,ziformula =~0,family=binomial)
+
+name.y <- names(hurdle1.r$frame)[[1]]
+y <- hurdlep[,name.y]
+family<-family(hurdle1.r)$family
+mu<-predict(hurdle1.r,newdata=hurdlep,zitype="conditional")
+size<-sigma(hurdle1.r)
+
+m<-hurdle2.r$modelInfo$nobs
+pi<- 1-predict(hurdle2.r,newdata = hurdlep, type="response")
+
+###1.wrong model poisson
+object1<-glmmTMB(y~offset(logn)+factor1+factor2+factor3+(1|factor4)+(1|factor5)+(1|factor6),
+                 data=hurdlep,ziformula=~0,family=poisson)
+###2.wrong model zero inflated poisson
+object2<-glmmTMB(y~offset(logn)+factor1+factor2+factor3+(1|factor4)+(1|factor5)+(1|factor6),
+                 data=hurdlep, ziformula=~factor1+factor2+factor3+(1|factor4)+(1|factor5)+(1|factor6),
+                 family=poisson)
+
+
+hurdlenb <- data.frame( variables,y = as.integer(data[,ifold+7]))
+###1.wrong model negative binomial
+object3<-glmmTMB(y~offset(logn)+factor1+factor2+factor3+(1|factor4)+(1|factor5)+(1|factor6),
+                 data=hurdlep,ziformula=~0,family=nbinom2)
+###2.wrong model zero-inflated negative binomial
+object4<-glmmTMB(y~offset(logn)+factor1+factor2+factor3+(1|factor4)+(1|factor5)+(1|factor6),
+                 data=hurdlep, ziformula=~factor1+factor2+factor3+(1|factor4)+(1|factor5)+(1|factor6),
+                 family=nbinom2)

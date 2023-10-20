@@ -1,0 +1,5 @@
+"0","plot.zresid.fitted.value(Zresid.LeukSurv.logwbc,"
+"0","                         fitted.values=fit_LeukSurv_logwbc$linear.predictors,"
+"0","                         xlab=""Linear Predictor"","
+"0","                         cenered=LeukSurv$cens,"
+"0","                         main.title = ""Z-residual Scatterplot of lwbc model"")"

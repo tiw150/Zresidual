@@ -1,0 +1,42 @@
+library(Zresidual)
+library(survival)
+data("LeukSurv")
+head(LeukSurv)
+LeukSurv<-LeukSurv[LeukSurv$age<60,]
+is.factor(LeukSurv$district)
+is.factor(LeukSurv$sex)
+LeukSurv$district<-as.factor(LeukSurv$district)
+LeukSurv$sex<-as.factor(LeukSurv$sex)
+
+#############fit the coxph model with frailty#################
+fit_LeukSurv <- tryCatch(
+  coxph(Surv(time, cens) ~ age  +sex+ wbc +tpi  +
+          frailty(district, distribution="gamma"), data= LeukSurv),
+  error = function(e) NA,
+  warning = function(w) NA
+)
+#############Calculate residuals###############################
+allresid.LeukSurv<-Zresidual(fit.object = fit_LeukSurv,data= LeukSurv)
+Zresid.LeukSurv<-allresid.LeukSurv$Zresid
+censored.Zresid.LeukSurv<-allresid.LeukSurv$censored.Zresid
+
+
+########################### Graphical Diagnosis##################
+plot.zresid(Zresid.LeukSurv)
+qqnorm.zresid (Zresid.LeukSurv)
+boxplot.zresid(Zresid.LeukSurv,fitted.values=LeukSurv$wbc)
+boxplot.zresid(Zresid.LeukSurv,fitted.values=LeukSurv$sex)
+
+########################### Statistical test Diagnosis##################
+sw.test.zresid(Zresid.LeukSurv)
+sf.test.zresid(Zresid.LeukSurv)
+gof.censore.zresid(censored.Zresidual=censored.Zresid.LeukSurv,censored=LeukSurv$cens)
+
+anov.test.zresid(Zresid.kidney,fitted.values=fit_LeukSurv$linear.predictors, k.anova=10)
+bartlett.test.zresid(Zresid.kidney,fitted.values=fit_LeukSurv$linear.predictors, k.bl=10)
+
+anov.test.zresid(Zresid.LeukSurv,fitted.values=LeukSurv$wbc, k.anova=10)
+bartlett.test.zresid(Zresid.LeukSurv,fitted.values=LeukSurv$wbc, k.bl=10)
+
+anov.test.zresid(Zresid.LeukSurv,fitted.values=LeukSurv$sex, k.anova=10)
+bartlett.test.zresid(Zresid.LeukSurv,fitted.values=LeukSurv$sex, k.bl=10)

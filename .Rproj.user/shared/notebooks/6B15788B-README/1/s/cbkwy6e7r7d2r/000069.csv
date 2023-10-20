@@ -1,0 +1,3 @@
+"0","#abline(h=c(3,-3),col=""grey"")"
+"0","lines(lowess(martg.LeukSurv.wbc~ LeukSurv$wbc),"
+"0","      col = ""red"",lwd = 3)"

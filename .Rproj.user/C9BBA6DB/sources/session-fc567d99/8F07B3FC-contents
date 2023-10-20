@@ -1,0 +1,26 @@
+Zresidual<- function(fit.object, data)
+{
+  # Required packages:
+  if (!requireNamespace("pacman")) {install.packages("pacman")}
+  pacman::p_load("survival", "stringr")
+  form<- fit.object$call
+  get_object_name<-gsub(".*[(]([^.]+)[,].*", "\\1", form)[1]
+
+  if( get_object_name=="coxph") {
+    frailty_terms<- attr(fit.object$terms, "specials")$frailty
+
+    if (!is.null(frailty_terms)){
+      Zresid_fun <-Zresidual.coxph.frailty(fit_coxph=fit.object,traindata=data,newdata=data)
+
+      } else Zresid_fun <- Zresidual.coxph(fit_coxph=fit.object,newdata=data)
+    }
+
+  if (get_object_name=="survreg") {
+    Zresid_fun <- Zresidual.survreg(survreg_fit=fit.object,newdata=data)
+    }
+
+  Zresid_fun
+}
+
+
+

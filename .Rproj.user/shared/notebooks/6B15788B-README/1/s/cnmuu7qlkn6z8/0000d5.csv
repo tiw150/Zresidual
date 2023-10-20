@@ -1,0 +1,2 @@
+"0","boxplot.zresid(Zresid.LeukSurv.logwbc,fitted.values=fit_LeukSurv_logwbc$linear.predictors,"
+"0","               main.title = ""Z-residual Boxplot of lwbc model"",xlab=""Linear Predictor"")"

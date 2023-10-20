@@ -1,0 +1,5 @@
+"0","legend(x = ""bottomright"","
+"0","       legend = c(""Uncensored"", ""Censored""),"
+"0","       col=c(""darkolivegreen4"",""blue""),"
+"0","       pch=c(2,3),cex=0.4,xpd = TRUE,bty=""l"",horiz=TRUE)"
+"0",""
