@@ -12,7 +12,7 @@ Zresidual(fit.object, data)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{fit.object}{The fit object are ’coxph’, ’survreg’.
+  \item{fit.object}{The fit object are ’coxph’, ’survreg’ and ’glmmTMB’ .
 %%     ~~Describe \code{x} here~~
 }
 \item{data}{A data that used for fitting the survival model.
