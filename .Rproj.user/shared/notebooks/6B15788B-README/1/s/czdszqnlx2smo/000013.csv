@@ -1,2 +1,0 @@
-"0","par(mfrow = c(1,2),mar=c(4,4,2,2))"
-"0","qqnorm.zresid (Zresid.LeukSurv.wbc,main.title = ""Z-residual QQ plot of wbc model"")"

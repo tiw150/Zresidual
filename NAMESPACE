@@ -1,14 +1,15 @@
 #main functions
 export("Zresidual")
 export("print.Zresidual")
+export("residuals")
+export("print.residuals")
 
 S3method(print, Zresidual)
-
+S3method(print, residuals)
 #plots
 export("plot.zresid")
 export("qqnorm.zresid")
 export("boxplot.zresid")
-export("plot.zresid.fitted.value")
 
 #tests
 export("sw.test.zresid")

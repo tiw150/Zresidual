@@ -1,7 +1,0 @@
-"0","#Martingale residuals"
-"0","par(mfrow = c(1,2))"
-"0","plot(LeukSurv$wbc,martg.LeukSurv.wbc,ylab=""Martingale"","
-"0","     xlab=""wbc"","
-"0","     main= title(main=""Martingale Residual Plot of wbc Model"",cex.main=0.8),"
-"0","     col=c(""blue"",""darkolivegreen4"")[LeukSurv$cens+1],"
-"0","     pch=c(3,2)[LeukSurv$cens+1])"

@@ -1,4 +1,4 @@
-residual.surv<- function(fit_coxph, newdata,
+residuals<- function(fit.object, data,
                              residual.type=c("censored Z-residual", "Cox-Snell",
                                              "martingale", "deviance"))
 {

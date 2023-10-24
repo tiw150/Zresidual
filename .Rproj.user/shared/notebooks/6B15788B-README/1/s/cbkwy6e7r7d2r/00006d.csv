@@ -1,6 +1,0 @@
-"0",""
-"0","plot(LeukSurv$logwbc,martg.LeukSurv.logwbc,ylab=""Martingale"","
-"0","     xlab=""log(wbc)"","
-"0","     main=title(main=""Martingale Residual Plot of lwbc Model"",cex.main=0.8),"
-"0","     col=c(""blue"",""darkolivegreen4"")[LeukSurv$cens+1],"
-"0","     pch=c(3,2)[LeukSurv$cens+1])"

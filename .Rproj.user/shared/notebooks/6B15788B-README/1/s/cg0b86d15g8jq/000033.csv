@@ -1,3 +1,0 @@
-"0","par(mfrow = c(1,2))"
-"0",""
-"0","boxplot.zresid(Zresid.LeukSurv.wbc,fitted.values=LeukSurv$sex,xlab=""sex"",main.title = ""Z-residual Boxplot of wbc model"")"

@@ -1,3 +1,0 @@
-"0","legend(x = ""topleft"","
-"0","       legend = c(""Uncensored"", ""Censored""), col=c(""darkolivegreen4"",""blue""),"
-"0","       pch=c(2,3),cex=1,xpd = TRUE,bty=""L"")"
