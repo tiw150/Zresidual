@@ -1,5 +1,7 @@
 ######Z-residual ################################
-Zresidual.coxph.frailty <- function (fit_coxph, traindata, newdata)
+residual.coxph.frailty <- function (fit_coxph, traindata, newdata,
+                                    residual.type=c("censored Z-residual", "Cox-Snell",
+                                                    "martingale", "deviance"))
 {
   if (!requireNamespace("pacman")) {
     install.packages("pacman")
@@ -103,27 +105,48 @@ Zresidual.coxph.frailty <- function (fit_coxph, traindata, newdata)
   censored <- which(Y_new[,3]==0)
   n.censored <- length(censored)
 
-  #Z-residual
-  RSP <- SP
-  RSP[censored] <- RSP[censored]*runif(n.censored)
-  Zresid <- -qnorm(RSP)
-  #####
+  if (residual.type == "censored Z-residual"){
+    #Normalized unmodified SPs
+    USP<-SP
+    USP[USP==1] <- .999999999
+    resid<- -qnorm(USP)
+  }
+  if (residual.type == "Cox-Snell"){
+    # Unmodified CS residual
+    resid<- -log(SP)
+  }
+
+  if (residual.type == "martingale"){
+    #Martingale Residual
+    ucs<- -log(SP)
+    resid<- Y_new[,3] - ucs
+  }
+
+  if (residual.type == "deviance"){
+    #Deviance Residual
+    ucs<- -log(SP)
+    martg<-Y_new[,3] - ucs
+    resid<- sign(martg)* sqrt((-2)*(martg+Y_new[,3]*log(Y_new[,3]-martg)))
+  }
+
   censored.status<- (as.matrix(Y_new)[,-1])[,2]
 
-  Zresid.value<-as.matrix(Zresid)
-  colnames(Zresid.value)[1] <- "Z-residual"
+  resid.value<-as.matrix(resid)
+  colnames(resid.value)[1] <- residual.type
 
-  class(Zresid.value) <- c("Zresid", class(Zresid.value))
+  class(resid.value) <- c("resid", class(resid.value))
 
-  attributes(Zresid.value) <- c(attributes(Zresid.value), list(
+  attributes(resid.value) <- c(attributes(resid.value), list(
     Survival.Prob= SP,
     linear.pred = lp_new,
     censored.status= censored.status,
     object.model.frame=mf_new
 
   ))
-  return(Zresid.value)
-
+  return(resid.value)
 }
+
+
+
 
 

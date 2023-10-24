@@ -1,5 +1,7 @@
 #input: survreg_fit is a survreg object
-Zresidual.survreg<-function(survreg_fit,newdata)
+residual.survreg<-function(survreg_fit,newdata,
+                           residual.type=c("censored Z-residual", "Cox-Snell",
+                                           "martingale", "deviance"))
 {
   distr<-survreg_fit$dist
   parms<- as.numeric(survreg_fit[["parms"]])
@@ -32,28 +34,48 @@ Zresidual.survreg<-function(survreg_fit,newdata)
   }else stop ("The distribution is not supported")
   censored <- which(as.matrix(y)[,-1]==0)
   n.censored <- length(censored)
-  # Z-residual
-  RSP <- SP
-  RSP[censored] <- RSP[censored]*runif(n.censored)
-  Zresid <- -qnorm(RSP)
 
-  #####
+  if (residual.type == "censored Z-residual"){
+    #Normalized unmodified SPs
+    USP<-SP
+    USP[USP==1] <- .999999999
+    resid<- -qnorm(USP)
+  }
+  if (residual.type == "Cox-Snell"){
+    # Unmodified CS residual
+    resid<- -log(SP)
+  }
+
+  if (residual.type == "martingale"){
+    #Martingale Residual
+    ucs<- -log(SP)
+    resid<- y[,3] - ucs
+  }
+
+  if (residual.type == "deviance"){
+    #Deviance Residual
+    ucs<- -log(SP)
+    martg<-y[,3] - ucs
+    resid<- sign(martg)* sqrt((-2)*(martg+y[,3]*log(y[,3]-martg)))
+  }
+
   censored.status<- (as.matrix(y)[,-1])[,2]
   lp<-fix_var %*%survreg_fit$coefficients
 
-  Zresid.value<-as.matrix(Zresid)
-  colnames(Zresid.value)[1] <- "Z-residual"
+  resid.value<-as.matrix(resid)
+  colnames(resid.value)[1] <- residual.type
 
-  class(Zresid.value) <- c("Zresid", class(Zresid.value))
+  class(resid.value) <- c("resid", class(resid.value))
 
-  attributes(Zresid.value) <- c(attributes(Zresid.value), list(
+  attributes(resid.value) <- c(attributes(resid.value), list(
     Survival.Prob= SP,
     linear.pred = lp,
     censored.status= censored.status,
     object.model.frame=mf
 
   ))
-  return(Zresid.value)
+  return(resid.value)
+
 
 }
 

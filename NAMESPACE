@@ -1,6 +1,8 @@
 #main functions
 export("Zresidual")
+export("print.Zresidual")
 
+S3method(print, Zresidual)
 
 #plots
 export("plot.zresid")

@@ -1,6 +1,0 @@
-"0","LeukSurv<-LeukSurv[LeukSurv$age<60,]"
-"0","#is.factor(LeukSurv$district)"
-"0","#is.factor(LeukSurv$sex)"
-"0","LeukSurv$district<-as.factor(LeukSurv$district)"
-"0","LeukSurv$sex<-as.factor(LeukSurv$sex)"
-"0","LeukSurv$logwbc<- log(LeukSurv$wbc+0.001)"

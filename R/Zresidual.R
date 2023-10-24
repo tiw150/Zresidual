@@ -3,7 +3,11 @@ Zresidual<- function(fit.object, data, fit.object2=NULL)
   # Required packages:
   if (!requireNamespace("pacman")) {install.packages("pacman")}
   pacman::p_load("survival", "stringr", "glmmTMB","actuar")
+
   form<- fit.object$call
+
+ # if (is.na(form)) stop("a fit.object is required")
+
   get_object_name<-gsub(".*[(]([^.]+)[,].*", "\\1", form)[1]
 
   # the coxph function in the survival package
@@ -15,7 +19,7 @@ Zresidual<- function(fit.object, data, fit.object2=NULL)
 
       Zresid_fun <-Zresidual.coxph.frailty(fit_coxph=fit.object,traindata=data,newdata=data)
 
-      } else Zresid_fun <- Zresidual.coxph(fit_coxph=fit.object,newdata=data)
+      } else Zresid_fun <- Zresidual.coxph(fit_coxph=fit.object, newdata=data)
     }
 
   # the survreg function in the survival package
@@ -40,7 +44,6 @@ Zresidual<- function(fit.object, data, fit.object2=NULL)
 
      }else stop ("The distribution is not supported")
    }
-
 
   Zresid_fun
 }

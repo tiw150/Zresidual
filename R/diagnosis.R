@@ -12,40 +12,6 @@ as.character.na <- function(x)
     label.x
 }
 
-plot.zresid <- function(Zresidual,main.title="Z-Residual Scatterplot",
-                        outlier.return=FALSE,...)
-{
-    id.infinity <- which (!is.finite(Zresidual))
-    if(length(id.infinity)>0L){
-        value.notfinite <- as.character.na(Zresidual[id.infinity])
-        max.non.infinity <- max(abs(Zresidual[-id.infinity]))
-        Zresidual[id.infinity] <-
-            sign.na(Zresidual[id.infinity])* (max.non.infinity + 0.1)
-        message("Non-finite Zresiduals exist! The model or the fitting process has a problem!")
-    }
-    ylim0 <- max( qnorm(c(0.9999)), max(abs(Zresidual)))
-    is.outlier <- (abs(Zresidual) >3)
-    plot.default (Zresidual, ylab = "Z-Residual",
-          ylim = c(-ylim0,ylim0),
-          col = c(1,2)[is.outlier + 1],
-          main =main.title
-    )
-    if(length(id.infinity)>0L){
-        text(id.infinity+5, Zresidual[id.infinity],
-             labels = value.notfinite,
-             #adj = c(0,0),
-             col=2)
-    }
-    hlines <- c(1.96,3); hlines2 <- -hlines
-    abline(h= c(hlines,hlines2), lty=3, col="grey")
-    if(outlier.return)
-    {
-       cat("Outlier Indices:", which(is.outlier), "\n")
-       invisible(list(outliers=which(is.outlier)))
-    }
-}
-
-
 # sel.finite <- function(x) {
 #     id.inf <- !is.finite(x);
 #    # if(sum(id.inf)>1L) message("Infinity Exists:",which(id.inf));
@@ -86,13 +52,13 @@ qqnorm.zresid <- function (Zresidual,main.title = "Normal Q-Q Plot",
 }
 
 
-gof.censore.zresid <- function (censored.Zresidual,censored)
+gof.censore.zresid <- function (censored.Zresidual)
 {
   id.negtv.inf <- which(is.infinite(censored.Zresidual) & censored.Zresidual < 0)
   id.pos.inf <- which(is.infinite(censored.Zresidual) & censored.Zresidual > 0)
   censored.Zresidual[id.negtv.inf]<- -1e10
   censored.Zresidual[id.pos.inf]<- 1e10
-
+  censored<-attr(censored.Zresidual, "censored.status")
   gofTestCensored(censored.Zresidual,censored, test = "sf",
                   censoring.side = "right",
                   distribution = "norm")$p.value
@@ -212,4 +178,35 @@ plot.zresid.fitted.value <- function(Zresidual,fitted.values,cenered,
 
 }
 
-
+plot.zresid <- function(Zresidual,main.title="Z-Residual Scatterplot",
+                        outlier.return=FALSE,...)
+{
+  id.infinity <- which (!is.finite(Zresidual))
+  if(length(id.infinity)>0L){
+    value.notfinite <- as.character.na(Zresidual[id.infinity])
+    max.non.infinity <- max(abs(Zresidual[-id.infinity]))
+    Zresidual[id.infinity] <-
+      sign.na(Zresidual[id.infinity])* (max.non.infinity + 0.1)
+    message("Non-finite Zresiduals exist! The model or the fitting process has a problem!")
+  }
+  ylim0 <- max( qnorm(c(0.9999)), max(abs(Zresidual)))
+  is.outlier <- (abs(Zresidual) >3)
+  plot.default (Zresidual, ylab = "Z-Residual",
+                ylim = c(-ylim0,ylim0),
+                col = c(1,2)[is.outlier + 1],
+                main =main.title
+  )
+  if(length(id.infinity)>0L){
+    text(id.infinity+5, Zresidual[id.infinity],
+         labels = value.notfinite,
+         #adj = c(0,0),
+         col=2)
+  }
+  hlines <- c(1.96,3); hlines2 <- -hlines
+  abline(h= c(hlines,hlines2), lty=3, col="grey")
+  if(outlier.return)
+  {
+    cat("Outlier Indices:", which(is.outlier), "\n")
+    invisible(list(outliers=which(is.outlier)))
+  }
+}

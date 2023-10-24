@@ -1,7 +1,6 @@
 #input: coxfit_fit is a coxph object
 Zresidual.coxph<-function (fit_coxph, newdata)
 {
-  explp<-exp(fit_coxph$linear.predictors)
   basecumhaz<-basehaz(fit_coxph,centered = F)
   t<-basecumhaz$time
   H_0<-basecumhaz$hazard
@@ -20,7 +19,6 @@ Zresidual.coxph<-function (fit_coxph, newdata)
     Y_new <- Surv(rep(0, nrow(Y_new)), Y_new[,1], Y_new[,2])
   }
   H0_new<-f(Y_new[,2])
-
   #Survival Function
   SP<- exp(-as.vector(explp_new)*H0_new)
   censored <- which(Y_new[,3]==0)
@@ -29,28 +27,24 @@ Zresidual.coxph<-function (fit_coxph, newdata)
   RSP <- SP
   RSP[censored] <- RSP[censored]*runif(n.censored)
   Zresid <- -qnorm(RSP)
-  #Normalized unmodified SPs
-  USP<-SP
-  USP[USP==1] <- .999999999
-  censored.Zresid<- -qnorm(USP)
-  # Unmodified CS residual
-  ucs<- -log(SP)
-  # Modified CS residual
-  MSP<- SP
-  MSP[censored] <- SP[censored]/exp(1)
-  mcs <- -log(MSP)
-  #Normalized MSPs
-  MSP<- SP
-  MSP[censored] <- SP[censored]/exp(1)
-  nmsp<- -qnorm(MSP)
-  #Martingale Residual
-  martg<- Y_new[,3] - ucs
-  #Deviance Residual
-  dev<- sign(martg)* sqrt((-2)*(martg+Y_new[,3]*log(Y_new[,3]-martg)))
-  list(Zresid=Zresid,censored.Zresid=censored.Zresid,SP=SP,
-       ucs=ucs,mcs=mcs,martg=martg,dev=dev)
-}
+  #####
+  censored.status<- (as.matrix(Y_new)[,-1])[,2]
+  lp.new<-fix_var_new %*% fit_coxph$coefficients
 
+  Zresid.value<-as.matrix(Zresid)
+  colnames(Zresid.value)[1] <- "Z-residual"
+
+  class(Zresid.value) <- c("Zresid", class(Zresid.value))
+
+  attributes(Zresid.value) <- c(attributes(Zresid.value), list(
+      Survival.Prob= SP,
+      linear.pred = lp.new,
+      censored.status= censored.status,
+      object.model.frame=mf_new
+
+  ))
+  return(Zresid.value)
+}
 
 
 #input: coxfit_fit is a coxph object

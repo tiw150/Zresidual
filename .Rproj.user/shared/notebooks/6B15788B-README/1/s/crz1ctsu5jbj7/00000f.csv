@@ -1,5 +1,0 @@
-"0","library(Zresidual)"
-"0","library(survival)"
-"0","## basic example code"
-"0","data(""LeukSurv"")"
-"0","head(LeukSurv)"
