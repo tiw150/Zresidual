@@ -1,11 +1,13 @@
 #main functions
-export("Zresidual")
-export("print.Zresidual")
-export("residuals")
-export("print.residuals")
+S3method(print,Zresidual)
+S3method(print,residuals)
 
-S3method(print, Zresidual)
-S3method(print, residuals)
+export(Zresidual)
+#export(print.Zresidual)
+export(residuals)
+#export(print.residuals)
+
+
 #plots
 export("plot.zresid")
 export("qqnorm.zresid")

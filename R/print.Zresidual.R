@@ -1,4 +1,5 @@
+
 print.Zresidual <- function(x){
-  x<-print(as.vector(x))
-  x
+  UseMethod("print")
+  print(as.vector(x))
 }
