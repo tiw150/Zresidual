@@ -76,12 +76,12 @@ qqnorm.zresid <- function (Zresidual,main.title = "Normal Q-Q Plot",
 
 gof.censore.zresid <- function (censored.Zresidual)
 {
-  censored.Zresidual<- as.vector(censored.Zresidual)
   id.negtv.inf <- which(is.infinite(censored.Zresidual) & censored.Zresidual < 0)
   id.pos.inf <- which(is.infinite(censored.Zresidual) & censored.Zresidual > 0)
   censored.Zresidual[id.negtv.inf]<- -1e10
   censored.Zresidual[id.pos.inf]<- 1e10
-  censored.status<-as.vector(attr(censored.Zresidual, "censored.status"))
+  censored.status<-attr(censored.Zresidual, "censored.status")
+  censored.Zresidual<- as.vector(censored.Zresidual)
   gofTestCensored(censored.Zresidual,censored=censored.status, test = "sf",
                   censoring.side = "right",
                   distribution = "norm")$p.value

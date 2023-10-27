@@ -194,8 +194,7 @@ anov.LeukSurv.lp.lwbc<- rep(0,n_sims)
 anov.LeukSurv.lwbc<- rep(0,n_sims)
 
 for(j in 1:n_sims ){
-  allresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,data= LeukSurv)
-  Zresid.LeukSurv.wbc<-allresid.LeukSurv.wbc$Zresid
+  Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,data= LeukSurv)
 
   sw.LeukSurv.wbc[j]<-sw.test.zresid(Zresid.LeukSurv.wbc)
   sf.LeukSurv.wbc[j]<-sf.test.zresid(Zresid.LeukSurv.wbc)
@@ -207,18 +206,17 @@ for(j in 1:n_sims ){
                                          fitted.values=LeukSurv$wbc,
                                          k.anova=10)
   
-  allresid.LeukSurv.lwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,data= LeukSurv)
-  Zresid.LeukSurv.lwbc<-allresid.LeukSurv.lwbc$Zresid
+  Zresid.LeukSurv.lwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,data= LeukSurv)
 
   sw.LeukSurv.lwbc[j]<-sw.test.zresid(Zresid.LeukSurv.lwbc)
   sf.LeukSurv.lwbc[j]<-sf.test.zresid(Zresid.LeukSurv.lwbc)
 
   anov.LeukSurv.lp.lwbc[j]<-anov.test.zresid(Zresid.LeukSurv.lwbc,
-                                   fitted.values=fit_LeukSurv_logwbc$linear.predictors,
-                                   k.anova=10)
+                                             fitted.values=fit_LeukSurv_logwbc$linear.predictors,
+                                             k.anova=10)
   anov.LeukSurv.lwbc[j]<-anov.test.zresid(Zresid.LeukSurv.lwbc,
-                                         fitted.values=LeukSurv$logwbc,
-                                         k.anova=10)
+                                          fitted.values=LeukSurv$logwbc,
+                                          k.anova=10)
 }
 pmin.sw.LeukSurv.wbc<-bounds_pvalues(pv=sw.LeukSurv.wbc);pmin.sw.LeukSurv.wbc
 pmin.sf.LeukSurv.wbc<-bounds_pvalues(pv=sf.LeukSurv.wbc);pmin.sf.LeukSurv.wbc

@@ -56,7 +56,18 @@ outcome variable.
 
 ``` r
 library(Zresidual)
+#> 
+#> Attaching package: 'Zresidual'
+#> The following object is masked from 'package:stats':
+#> 
+#>     residuals
 library(survival)
+library(EnvStats)
+#> 
+#> Attaching package: 'EnvStats'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     predict, predict.lm
 ## basic example code
 data("LeukSurv")
 head(LeukSurv)
@@ -99,38 +110,10 @@ Once the model is fitted, we can calculate Z-residual, censored
 Z-residual and other residuals for two models.
 
 ``` r
-allresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,data= LeukSurv)
+Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,data= LeukSurv)
 #> Loading required namespace: pacman
-#Z-residual
-Zresid.LeukSurv.wbc<-allresid.LeukSurv.wbc$Zresid
-#censored Z-residual
-censored.Zresid.LeukSurv.wbc<-allresid.LeukSurv.wbc$censored.Zresid
-#Survival Probabilities
-sp.LeukSurv.wbc<-allresid.LeukSurv.wbc$SP
-#unmodified CS residuals
-ucs.LeukSurv.wbc<-allresid.LeukSurv.wbc$ucs
-#modified CS residuals
-mcs.LeukSurv.wbc<-allresid.LeukSurv.wbc$mcs
-#Martingale residuals
-martg.LeukSurv.wbc<-allresid.LeukSurv.wbc$martg
-#Deviance residuals
-dev.LeukSurv.wbc<-allresid.LeukSurv.wbc$dev
 
-allresid.LeukSurv.logwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,data= LeukSurv)
-#Z-residual
-Zresid.LeukSurv.logwbc<-allresid.LeukSurv.logwbc$Zresid
-#censored Z-residual
-censored.Zresid.LeukSurv.logwbc<-allresid.LeukSurv.logwbc$censored.Zresid
-#Survival Probabilities
-sp.LeukSurv.logwbc<-allresid.LeukSurv.logwbc$SP
-#unmodified CS residuals
-ucs.LeukSurv.logwbc<-allresid.LeukSurv.logwbc$ucs
-#modified CS residuals
-mcs.LeukSurv.logwbc<-allresid.LeukSurv.logwbc$mcs
-#Martingale residuals
-martg.LeukSurv.logwbc<-allresid.LeukSurv.logwbc$martg
-#Deviance residuals
-dev.LeukSurv.logwbc<-allresid.LeukSurv.logwbc$dev
+Zresid.LeukSurv.logwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,data= LeukSurv)
 ```
 
 Diagnosis of the overall (GOF) and the Functional Form of Covariates
@@ -174,16 +157,14 @@ formed with the linear predictor.
 
 ``` r
 par(mfrow = c(2,2),mar=c(4,4,1.5,2))
-plot.zresid.fitted.value(Zresid.LeukSurv.wbc,
-                         fitted.values=fit_LeukSurv_wbc$linear.predictors,
-                         xlab="Linear Predictor",
-                         cenered=LeukSurv$cens,
-                         main.title = "Z-residual Scatterplot of wbc model")
-plot.zresid.fitted.value(Zresid.LeukSurv.logwbc,
-                         fitted.values=fit_LeukSurv_logwbc$linear.predictors,
-                         xlab="Linear Predictor",
-                         cenered=LeukSurv$cens,
-                         main.title = "Z-residual Scatterplot of lwbc model")
+plot.zresid(Zresid.LeukSurv.wbc,
+            fitted.values=fit_LeukSurv_wbc$linear.predictors,
+            xlab="Linear Predictor",
+            main.title = "Z-residual Scatterplot of wbc model")
+plot.zresid(Zresid.LeukSurv.logwbc,
+            fitted.values=fit_LeukSurv_logwbc$linear.predictors,
+            xlab="Linear Predictor",
+            main.title = "Z-residual Scatterplot of lwbc model")
 
 boxplot.zresid(Zresid.LeukSurv.wbc,fitted.values=fit_LeukSurv_wbc$linear.predictors,
                main.title = "Z-residual Boxplot of wbc model",xlab="Linear Predictor")
@@ -212,14 +193,12 @@ survival time.
 
 ``` r
 par(mfrow = c(2,2),mar=c(4,4,1.5,2))
-plot.zresid.fitted.value(Zresid.LeukSurv.wbc,
-                         fitted.values=LeukSurv$wbc,
-                         xlab="wbc",main.title = "Z-residual Scatterplot of wbc model",
-                         cenered=LeukSurv$cens)
-plot.zresid.fitted.value(Zresid.LeukSurv.logwbc,
-                         fitted.values=LeukSurv$logwbc,
-                         xlab="log(wbc)",main.title = "Z-residual Scatterplot of lwbc model",
-                         cenered=LeukSurv$cens)
+plot.zresid(Zresid.LeukSurv.wbc,
+            fitted.values=LeukSurv$wbc,
+            xlab="wbc",main.title = "Z-residual Scatterplot of wbc model")
+plot.zresid(Zresid.LeukSurv.logwbc,
+            fitted.values=LeukSurv$logwbc,
+            xlab="log(wbc)",main.title = "Z-residual Scatterplot of lwbc model")
 boxplot.zresid(Zresid.LeukSurv.wbc,fitted.values=LeukSurv$wbc,main.title = "Z-residual Boxplot of wbc model",xlab="wbc")
 boxplot.zresid(Zresid.LeukSurv.logwbc,fitted.values=LeukSurv$logwbc,main.title = "Z-residual Boxplot of wbc model", xlab="log(wbc)")
 ```
@@ -250,17 +229,13 @@ the normality of censored Z-residuals.
 
 ``` r
 sw.test.zresid(Zresid.LeukSurv.wbc)
-#> [1] 0.1629132
+#> [1] 0.3137372
 sw.test.zresid(Zresid.LeukSurv.logwbc)
-#> [1] 0.4495265
+#> [1] 0.6498562
 sf.test.zresid(Zresid.LeukSurv.wbc)
-#> [1] 0.1855772
+#> [1] 0.4569965
 sf.test.zresid(Zresid.LeukSurv.logwbc)
-#> [1] 0.6877729
-gof.censore.zresid(censored.Zresidual=censored.Zresid.LeukSurv.wbc,censored=LeukSurv$cens)
-#> [1] 0.5702324
-gof.censore.zresid(censored.Zresidual=censored.Zresid.LeukSurv.logwbc,censored=LeukSurv$cens)
-#> [1] 0.07535993
+#> [1] 0.8233833
 ```
 
 The Z-residuals can be divided into $k$ groups by cutting the covariates
@@ -272,24 +247,24 @@ to examine the equality of variances.
 
 ``` r
 anov.test.zresid(Zresid.LeukSurv.wbc,fitted.values=fit_LeukSurv_wbc$linear.predictors, k.anova=10)
-#> [1] 0.900054
+#> [1] 0.7404806
 anov.test.zresid(Zresid.LeukSurv.logwbc,fitted.values=fit_LeukSurv_logwbc$linear.predictors, k.anova=10)
-#> [1] 0.9473825
+#> [1] 0.8532235
 
 bartlett.test.zresid(Zresid.LeukSurv.wbc,fitted.values=fit_LeukSurv_wbc$linear.predictors, k.bl=10)
-#> [1] 0.7676993
+#> [1] 0.3240303
 bartlett.test.zresid(Zresid.LeukSurv.logwbc,fitted.values=fit_LeukSurv_logwbc$linear.predictors, k.bl=10)
-#> [1] 0.608667
+#> [1] 0.6288796
 
 anov.test.zresid(Zresid.LeukSurv.wbc,fitted.values=LeukSurv$wbc, k.anova=10)
-#> [1] 0.5097228
+#> [1] 0.5785806
 anov.test.zresid(Zresid.LeukSurv.logwbc,fitted.values=LeukSurv$logwbc, k.anova=10)
-#> [1] 2.653113e-05
+#> [1] 0.0001618945
 
 bartlett.test.zresid(Zresid.LeukSurv.wbc,fitted.values=LeukSurv$wbc, k.bl=10)
-#> [1] 0.9861155
+#> [1] 0.7956238
 bartlett.test.zresid(Zresid.LeukSurv.logwbc,fitted.values=LeukSurv$logwbc, k.bl=10)
-#> [1] 0.531069
+#> [1] 0.179489
 ```
 
 The Z-residual test p-values quoted above contain randomness because of
@@ -313,8 +288,7 @@ anov.LeukSurv.lp.lwbc<- rep(0,n_sims)
 anov.LeukSurv.lwbc<- rep(0,n_sims)
 
 for(j in 1:n_sims ){
-  allresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,data= LeukSurv)
-  Zresid.LeukSurv.wbc<-allresid.LeukSurv.wbc$Zresid
+  Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,data= LeukSurv)
 
   sw.LeukSurv.wbc[j]<-sw.test.zresid(Zresid.LeukSurv.wbc)
   sf.LeukSurv.wbc[j]<-sf.test.zresid(Zresid.LeukSurv.wbc)
@@ -326,36 +300,35 @@ for(j in 1:n_sims ){
                                          fitted.values=LeukSurv$wbc,
                                          k.anova=10)
   
-  allresid.LeukSurv.lwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,data= LeukSurv)
-  Zresid.LeukSurv.lwbc<-allresid.LeukSurv.lwbc$Zresid
+  Zresid.LeukSurv.lwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,data= LeukSurv)
 
   sw.LeukSurv.lwbc[j]<-sw.test.zresid(Zresid.LeukSurv.lwbc)
   sf.LeukSurv.lwbc[j]<-sf.test.zresid(Zresid.LeukSurv.lwbc)
 
   anov.LeukSurv.lp.lwbc[j]<-anov.test.zresid(Zresid.LeukSurv.lwbc,
-                                   fitted.values=fit_LeukSurv_logwbc$linear.predictors,
-                                   k.anova=10)
+                                             fitted.values=fit_LeukSurv_logwbc$linear.predictors,
+                                             k.anova=10)
   anov.LeukSurv.lwbc[j]<-anov.test.zresid(Zresid.LeukSurv.lwbc,
-                                         fitted.values=LeukSurv$logwbc,
-                                         k.anova=10)
+                                          fitted.values=LeukSurv$logwbc,
+                                          k.anova=10)
 }
 pmin.sw.LeukSurv.wbc<-bounds_pvalues(pv=sw.LeukSurv.wbc);pmin.sw.LeukSurv.wbc
-#> [1] 0.4868665
+#> [1] 0.2860939
 pmin.sf.LeukSurv.wbc<-bounds_pvalues(pv=sf.LeukSurv.wbc);pmin.sf.LeukSurv.wbc
-#> [1] 0.6896968
+#> [1] 0.2551249
 pmin.aov.lp.LeukSurv.wbc<-bounds_pvalues(pv=anov.LeukSurv.lp.wbc);pmin.aov.lp.LeukSurv.wbc
-#> [1] 0.9884546
+#> [1] 0.9906874
 pmin.aov.wbc.LeukSurv<-bounds_pvalues(pv=anov.LeukSurv.wbc);pmin.aov.wbc.LeukSurv
-#> [1] 0.7785412
+#> [1] 0.7802501
 
 pmin.sw.LeukSurv.lwbc<-bounds_pvalues(pv=sw.LeukSurv.lwbc);pmin.sw.LeukSurv.lwbc
-#> [1] 0.5853159
+#> [1] 0.5809713
 pmin.sf.LeukSurv.lwbc<-bounds_pvalues(pv=sf.LeukSurv.lwbc);pmin.sf.LeukSurv.lwbc
-#> [1] 0.7838551
+#> [1] 0.7724444
 pmin.aov.lp.LeukSurv.lwbc<-bounds_pvalues(pv=anov.LeukSurv.lp.lwbc);pmin.aov.lp.LeukSurv.lwbc
-#> [1] 0.9796103
+#> [1] 0.9783983
 pmin.aov.lwbc.LeukSurv<-bounds_pvalues(pv=anov.LeukSurv.lwbc);pmin.aov.lwbc.LeukSurv
-#> [1] 2.203423e-05
+#> [1] 2.937714e-05
 ```
 
 The histograms of 1000 replicated Z-residual test p-values for the wbc
@@ -402,6 +375,17 @@ abline(v=pmin.aov.lwbc.LeukSurv,col="red")
 
 <img src="man/figures/README-unnamed-chunk-11-1.png" width="100%" />
 
+``` r
+censored.Zresid.LeukSurv.wbc<-residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type="censored Z-residual")
+
+censored.Zresid.LeukSurv.logwbc<-residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type="censored Z-residual")
+
+gof.censore.zresid(censored.Zresidual=censored.Zresid.LeukSurv.wbc)
+#> [1] 0.5702324
+gof.censore.zresid(censored.Zresidual=censored.Zresid.LeukSurv.logwbc)
+#> [1] 0.07535993
+```
+
 The overall GOF tests and graphical checking with CS residuals show that
 both the wbc and lwbc models provide adequate fits to the dataset. The
 estimated CHFs of the CS residuals of both of the wbc and lwbc models
@@ -409,14 +393,17 @@ align closely along the $45^{\circ}$ diagonal line.
 
 ``` r
 ##unmodified CS residuals
+
+ucs.LeukSurv.wbc<-residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type = "Cox-Snell" )
+ucs.LeukSurv.logwbc<-residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "Cox-Snell" )
+
 par(mfrow = c(1,2))
 km.ln.LeukSurv.wbc <- survfit(Surv(ucs.LeukSurv.wbc, LeukSurv$cens)~1,type='fleming')
 id.ln.LeukSurv.wbc<-order(ucs.LeukSurv.wbc)
 
 plot(km.ln.LeukSurv.wbc, fun="cumhaz", xlab=("Cox-Snell Residuals"),
      ylab=("Cumulative Hazard Function"),
-     main="CS Residuals of wbc model",
-     ylim= c(0,4),xlim=c(0,4))
+     main="CS Residuals of wbc model")
 abline(0, 1, col="red", lty=2)
 points(km.ln.LeukSurv.wbc$time, -log(km.ln.LeukSurv.wbc$surv),
        col=c("blue","darkolivegreen4")[LeukSurv$cens[id.ln.LeukSurv.wbc]+1],
@@ -430,8 +417,7 @@ id.ln.LeukSurv.lwbc<-order(ucs.LeukSurv.logwbc)
 
 plot(km.ln.LeukSurv.lwbc, fun="cumhaz", xlab=("Cox-Snell Residuals"),
      ylab=("Cumulative Hazard Function"),
-     main="CS Residuals of lwbc model",
-     ylim= c(0,4),xlim=c(0,4))
+     main="CS Residuals of lwbc model")
 abline(0, 1, col="red", lty=2)
 points(km.ln.LeukSurv.lwbc$time, -log(km.ln.LeukSurv.lwbc$surv),
        col=c("blue","darkolivegreen4")[LeukSurv$cens[id.ln.LeukSurv.lwbc]+1],
@@ -441,7 +427,7 @@ legend(x = "topleft",
        pch=c(2,3),cex=1,xpd = TRUE,bty="L")
 ```
 
-<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
 
 The martingale residuals are mostly within the interval (-3, 1) for
 those two models. In the scatterplots of martingale residuals under the
@@ -451,6 +437,9 @@ Both of these lines demonstrate noticeable non-horizontal trends.
 
 ``` r
 #Martingale residuals
+martg.LeukSurv.wbc<-residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type = "martingale" )
+martg.LeukSurv.logwbc<-residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "martingale" )
+
 par(mfrow = c(1,2))
 plot(LeukSurv$wbc,martg.LeukSurv.wbc,ylab="Martingale",
      xlab="wbc",
@@ -479,7 +468,7 @@ legend(x = "bottomright",
        pch=c(2,3),cex=0.4,xpd = TRUE,bty="l",horiz=TRUE)
 ```
 
-<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
 
 The deviance residuals are more symmetrically distributed than
 martingale residuals and they are mostly within the interval (-3, 3). In
@@ -488,6 +477,9 @@ non-horizontal trends in their LOWESS curves.
 
 ``` r
 #Deviance residuals
+dev.LeukSurv.wbc<-residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type = "deviance" )
+dev.LeukSurv.logwbc<-residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "deviance" )
+
 par(mfrow = c(1,2))
 plot(LeukSurv$wbc,dev.LeukSurv.wbc,ylab="Deviance",
      xlab="wbc",
@@ -516,4 +508,4 @@ legend(x = "bottomright",
        pch=c(2,3),cex=.4,xpd = TRUE,bty="l")
 ```
 
-<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-15-1.png" width="100%" />
