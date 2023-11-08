@@ -1,15 +1,24 @@
 #input: coxfit_fit is a coxph object
 Zresidual.coxph<-function (fit_coxph, newdata)
 {
+  if(is.null(newdata)){
+    mf_new<-model.frame.coxph(fit_coxph)
+    mf_nc_new<- ncol (mf_new)
+    mm_new<-model.matrix.coxph(fit_coxph)
+    fix_var_new<-mm_new
+  }
+
+  if(!is.null(newdata)){
+    mf_new<-model.frame(fit_coxph$formula,newdata)
+    mf_nc_new<- ncol (mf_new)
+    mm_new<-model.matrix(fit_coxph$formula,newdata)
+    fix_var_new<-mm_new[,-1,drop=FALSE]
+  }
+
   basecumhaz<-basehaz(fit_coxph,centered = F)
   t<-basecumhaz$time
   H_0<-basecumhaz$hazard
   f <- stepfun(t[-1], H_0)
-
-  mf_new<-model.frame(fit_coxph$formula,newdata)
-  mf_nc_new<- ncol (mf_new)
-  mm_new<-model.matrix(fit_coxph$formula,newdata)
-  fix_var_new<-mm_new[,-1,drop=FALSE]
 
   explp_new<-exp(fix_var_new %*% fit_coxph$coefficients)
   Y_new <- mf_new[[1]]
@@ -19,6 +28,7 @@ Zresidual.coxph<-function (fit_coxph, newdata)
     Y_new <- Surv(rep(0, nrow(Y_new)), Y_new[,1], Y_new[,2])
   }
   H0_new<-f(Y_new[,2])
+
   #Survival Function
   SP<- exp(-as.vector(explp_new)*H0_new)
   censored <- which(Y_new[,3]==0)

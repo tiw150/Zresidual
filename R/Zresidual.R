@@ -1,4 +1,4 @@
-Zresidual<- function(fit.object, data, fit.object2=NULL)
+Zresidual<- function(fit.object, data=NULL, fit.object2=NULL)
 {
   # Required packages:
   if (!requireNamespace("pacman")) {install.packages("pacman")}

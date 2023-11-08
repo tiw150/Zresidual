@@ -10,29 +10,58 @@ Zresidual.coxph.frailty <- function (fit_coxph, traindata, newdata)
   )
   form<-(fit_coxph$formula)[[3]]
   group_id_name<-gsub(".*[(]([^.]+)[,].*", "\\1", form)[3]
-  if(!is.factor(traindata[[group_id_name]])) stop("The group ID must be factor!")
-  if(!is.factor(newdata[[group_id_name]])) stop("The group ID must be factor!")
-  gpnumber<-length(levels(traindata[[group_id_name]]))
 
-  mf <- model.frame(fit_coxph$formula, traindata)
-  mf_nc<-ncol (mf)
-  mm <- model.matrix(fit_coxph$formula, traindata)
-  mm_nc <- ncol (mm)
-  if(gpnumber>5){
-    fix_var<-mm[,-c(1,mm_nc),drop=FALSE]
-    explp<-exp(fix_var %*% fit_coxph$coefficients+fit_coxph$frail[mf[,mf_nc]])
-    z_hat<-exp(fit_coxph$frail[mf[,mf_nc]])
+  if(is.null(traindata)){
+    mf<-model.frame.coxph(fit_coxph)
+    mf_nc<-ncol (mf)
+    groupid<-as.factor(mf[,ncol(mf)])
+    if(!is.factor(groupid)) stop("The group ID must be factor!")
+    gpnumber<-length(levels(groupid))
+    mm <- model.matrix.coxph(fit_coxph)
+    mm_nc <- ncol (mm)
+
+    if(gpnumber>5){
+      fix_var<-mm[,-mm_nc,drop=FALSE]
+      explp<-exp(fix_var %*% fit_coxph$coefficients+
+                   fit_coxph$frail[as.vector(mm[,mm_nc])])
+      z_hat<-exp(fit_coxph$frail[as.vector(mm[,mm_nc])])
+    }
+    if(gpnumber<=5){
+      fix_var<-mm[,-c((mm_nc-gpnumber+1):mm_nc),drop=FALSE]
+      coef_number<- ncol(fix_var)
+      frailty<-fit_coxph$coefficients[coef_number+1:gpnumber]
+      explp<-exp(fix_var %*% fit_coxph$coefficients[1:coef_number]+
+                   frailty[mf[,mf_nc]])
+      z_hat<-exp(frailty[mf[,mf_nc]])
+    }
+    Y <- mf[[1]]
+
   }
-  if(gpnumber<=5){
-    fix_var<-mm[,-c(1,mf_nc:mm_nc),drop=FALSE]
-    coef_number<- ncol(fix_var)
-    frailty<-fit_coxph$coefficients[coef_number+1:gpnumber]
-    explp<-exp(fix_var %*% fit_coxph$coefficients[1:coef_number]+
-                 frailty[mf[,mf_nc]])
-    z_hat<-exp(frailty[mf[,mf_nc]])
+  if(!is.null(traindata)){
+    if(!is.factor(traindata[[group_id_name]])) stop("The group ID must be factor!")
+
+    gpnumber<-length(levels(traindata[[group_id_name]]))
+    mf <- model.frame(fit_coxph$formula, traindata)
+    mf_nc<-ncol (mf)
+    mm <- model.matrix(fit_coxph$formula, traindata)
+    mm_nc <- ncol (mm)
+
+    if(gpnumber>5){
+      fix_var<-mm[,-c(1,mm_nc),drop=FALSE]
+      explp<-exp(fix_var %*% fit_coxph$coefficients+fit_coxph$frail[mf[,mf_nc]])
+      z_hat<-exp(fit_coxph$frail[mf[,mf_nc]])
+    }
+    if(gpnumber<=5){
+      fix_var<-mm[,-c(1,mf_nc:mm_nc),drop=FALSE]
+      coef_number<- ncol(fix_var)
+      frailty<-fit_coxph$coefficients[coef_number+1:gpnumber]
+      explp<-exp(fix_var %*% fit_coxph$coefficients[1:coef_number]+
+                   frailty[mf[,mf_nc]])
+      z_hat<-exp(frailty[mf[,mf_nc]])
+    }
+    Y <- mf[[1]]
   }
 
-  Y <- mf[[1]]
   if(!inherits(Y, "Surv")) stop("left hand side not a survival object")
   if(ncol(Y) != 3) {
     # making it all in (tstart, tstop) format
@@ -70,28 +99,55 @@ Zresidual.coxph.frailty <- function (fit_coxph, traindata, newdata)
   H_0<-df$cumhaz
   f <- stepfun(t[-1], H_0)
 
-  full_data<-rbind(newdata,traindata)
-  mf_new<-model.frame(fit_coxph$formula,full_data)[c(1:nrow(newdata)),]
-  mf_nc_new<- ncol (mf_new)
-  mm_new <-model.matrix(fit_coxph$formula,full_data)[c(1:nrow(newdata)),,drop=FALSE]
-  mm_nc_new <- ncol (mm_new)
-
-  if(gpnumber>5){
-    fix_var_new<-mm_new[,-c(1,mm_nc_new),drop=FALSE]
-    z_hat_new<-exp(fit_coxph$frail[mf_new[,mf_nc_new]])
-    lp_new<-fix_var_new %*% fit_coxph$coefficients+fit_coxph$frail[mf_new[,mf_nc_new]]
-    explp_new<-exp(fix_var_new %*% fit_coxph$coefficients)
+  if(is.null(newdata)){
+    mf_new<-model.frame.coxph(fit_coxph)
+    mf_nc_new<-ncol (mf_new)
+    groupid_new<-as.factor(mf_new[,ncol(mf_new)])
+    if(!is.factor(groupid_new)) stop("The group ID must be factor!")
+    gpnumber_new<-length(levels(groupid_new))
+    mm_new <- model.matrix.coxph(fit_coxph)
+    mm_nc_new <- ncol (mm_new)
+    if(gpnumber_new>5){
+      fix_var_new<-mm_new[,-mm_nc_new,drop=FALSE]
+      lp_new<-fix_var_new %*% fit_coxph$coefficients+fit_coxph$frail[mf_new[,mf_nc_new]]
+      explp_new<-exp(fix_var_new %*% fit_coxph$coefficients)
+      z_hat_new<-exp(fit_coxph$frail[as.vector(mf_new[,mf_nc_new])])
+    }
+    if(gpnumber_new<=5){
+      fix_var_new<-mm_new[,-c((mm_nc_new-gpnumber_new+1):mm_nc_new),drop=FALSE]
+      coef_number_new<- ncol(fix_var_new)
+      frailty_new<-fit_coxph$coefficients[coef_number_new+1:gpnumber_new]
+      explp_new<-exp(fix_var_new %*% fit_coxph$coefficients[1:coef_number_new])
+      z_hat_new<-as.numeric(exp(frailty_new[mf[,mf_nc]]))
+    }
+    Y_new<- mf_new[[1]]
   }
-  if(gpnumber<=5){
-    fix_var_new<-mm_new[,-c(1,mf_nc_new:mm_nc_new),drop=FALSE]
-    coef_number_new<- ncol(fix_var_new)
-    frailty_new<-fit_coxph$coefficients[coef_number_new+1:gpnumber]
-    lp_new<-fix_var_new %*% fit_coxph$coefficients[1:coef_number_new]+frailty_new[mf_new[,mf_nc_new]]
-    explp_new<-exp(fix_var_new %*% fit_coxph$coefficients[1:coef_number_new])
-    z_hat_new<-as.numeric(exp(frailty_new[mf_new[,mf_nc_new]]))
+
+  if(!is.null(newdata)){
+    if(!is.factor(newdata[[group_id_name]])) stop("The group ID must be factor!")
+    full_data<-rbind(newdata,traindata)
+    mf_new<-model.frame(fit_coxph$formula,full_data)[c(1:nrow(newdata)),]
+    mf_nc_new<- ncol (mf_new)
+    mm_new <-model.matrix(fit_coxph$formula,full_data)[c(1:nrow(newdata)),,drop=FALSE]
+    mm_nc_new <- ncol (mm_new)
+
+    if(gpnumber>5){
+      fix_var_new<-mm_new[,-c(1,mm_nc_new),drop=FALSE]
+      z_hat_new<-exp(fit_coxph$frail[mf_new[,mf_nc_new]])
+      lp_new<-fix_var_new %*% fit_coxph$coefficients+fit_coxph$frail[mf_new[,mf_nc_new]]
+      explp_new<-exp(fix_var_new %*% fit_coxph$coefficients)
+    }
+    if(gpnumber<=5){
+      fix_var_new<-mm_new[,-c(1,mf_nc_new:mm_nc_new),drop=FALSE]
+      coef_number_new<- ncol(fix_var_new)
+      frailty_new<-fit_coxph$coefficients[coef_number_new+1:gpnumber]
+      lp_new<-fix_var_new %*% fit_coxph$coefficients[1:coef_number_new]+frailty_new[mf_new[,mf_nc_new]]
+      explp_new<-exp(fix_var_new %*% fit_coxph$coefficients[1:coef_number_new])
+      z_hat_new<-as.numeric(exp(frailty_new[mf_new[,mf_nc_new]]))
+    }
+    Y_new <- mf_new[[1]]
   }
 
-  Y_new <- mf_new[[1]]
   if(!inherits(Y_new, "Surv")) stop("left hand side not a survival object")
   if(ncol(Y_new) != 3) {
     # making it all in (tstart, tstop) format
