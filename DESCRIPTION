@@ -20,4 +20,5 @@ LazyData: true
 Packaged: 2023-09-12
 Author: Tingxuan Wu [aut, cre],Longhai Li [aut, cre], Cindy Feng [aut]
 Maintainer: Tingxuan Wu <tiw150@mail.usask.ca> Longhai Li <longhai@math.usask.ca>
-
+RoxygenNote: 7.2.3
+Encoding: UTF-8

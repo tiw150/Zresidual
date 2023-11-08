@@ -1,4 +1,9 @@
-#input: survreg_fit is a survreg object
+#' Zresidual for survival
+#'
+#' @param survreg_fit a survreg object
+#'
+#' @importFrom survival psurvreg dsurvreg
+#'
 Zresidual.survreg<-function(survreg_fit,newdata)
 {
   distr<-survreg_fit$dist
