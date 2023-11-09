@@ -106,11 +106,11 @@ The scatterplots of Z-residuals against the linear predictor don't exhibit visib
 ```{r}
 par(mfrow = c(2,2),mar=c(4,4,1.5,2))
 plot.zresid(Zresid.LeukSurv.wbc,
-            fitted.values=fit_LeukSurv_wbc$linear.predictors,
+            X=fit_LeukSurv_wbc$linear.predictors,
             xlab="Linear Predictor",
             main.title = "Z-residual Scatterplot of wbc model")
 plot.zresid(Zresid.LeukSurv.logwbc,
-            fitted.values=fit_LeukSurv_logwbc$linear.predictors,
+            X=fit_LeukSurv_logwbc$linear.predictors,
             xlab="Linear Predictor",
             main.title = "Z-residual Scatterplot of lwbc model")
 
@@ -129,10 +129,10 @@ The above diagnostics results reveal no serious misspecification in  these two m
 ```{r}
 par(mfrow = c(2,2),mar=c(4,4,1.5,2))
 plot.zresid(Zresid.LeukSurv.wbc,
-            fitted.values=LeukSurv$wbc,
+            X=LeukSurv$wbc,
             xlab="wbc",main.title = "Z-residual Scatterplot of wbc model")
 plot.zresid(Zresid.LeukSurv.logwbc,
-            fitted.values=LeukSurv$logwbc,
+            X=LeukSurv$logwbc,
             xlab="log(wbc)",main.title = "Z-residual Scatterplot of lwbc model")
 boxplot.zresid(Zresid.LeukSurv.wbc,fitted.values=LeukSurv$wbc,main.title = "Z-residual Boxplot of wbc model",xlab="wbc")
 boxplot.zresid(Zresid.LeukSurv.logwbc,fitted.values=LeukSurv$logwbc,main.title = "Z-residual Boxplot of wbc model", xlab="log(wbc)")
