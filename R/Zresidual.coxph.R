@@ -58,7 +58,7 @@ Zresidual.coxph<-function (fit_coxph, newdata)
 
 
 #input: coxfit_fit is a coxph object
-# Zresidual.coxph1<-function(coxfit_fit)
+# Zresidual.coxph<-function(coxfit_fit)
 # {
 #   y<- coxfit_fit$y
 #   m <- nrow (y)

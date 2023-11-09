@@ -66,7 +66,7 @@ Zresidual.survreg<-function(survreg_fit,newdata)
 }
 
 
-# Zresidual.survreg1<-function(survreg_fit)
+# Zresidual.survreg<-function(survreg_fit)
 # {
 #   distr<-survreg_fit$dist
 #   y<- survreg_fit$y
