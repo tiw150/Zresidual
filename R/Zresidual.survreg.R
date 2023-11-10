@@ -6,14 +6,22 @@
 #'
 Zresidual.survreg<-function(survreg_fit,newdata)
 {
+  if(is.null(newdata)){
+    mf<-model.frame.survreg(survreg_fit)
+    mf_nc<- ncol(mf)
+    fix_var<-model.matrix.survreg(survreg_fit)
+  }
+
+  if(!is.null(newdata)){
+    mf <- model.frame(survreg_fit$terms, newdata)
+    mf_nc<-ncol (mf)
+    fix_var<-model.matrix(survreg_fit$terms, newdata,drop=FALSE)
+  }
+
+  y<-  mf[[1]]
   distr<-survreg_fit$dist
   parms<- as.numeric(survreg_fit[["parms"]])
   alpha_hat<-1/survreg_fit$scale
-
-  mf <- model.frame(survreg_fit$terms, newdata)
-  mf_nc<-ncol (mf)
-  y<-  mf[[1]]
-  fix_var<-model.matrix(survreg_fit$terms, newdata,drop=FALSE)
 
   if (distr %in% c("weibull","exponential","logistic","lognormal",
                    "loglogistic","gaussian", "loggaussian","rayleigh"))
@@ -63,7 +71,7 @@ Zresidual.survreg<-function(survreg_fit,newdata)
 }
 
 
-# Zresidual.survreg1<-function(survreg_fit)
+# Zresidual.survreg<-function(survreg_fit)
 # {
 #   distr<-survreg_fit$dist
 #   y<- survreg_fit$y

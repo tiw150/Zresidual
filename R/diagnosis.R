@@ -160,7 +160,7 @@ boxplot.zresid <- function(Zresidual,fitted.values, num.bin=10,
 }
 
 #' @export
-plot.zresid<- function(Zresidual,fitted.values=NULL,
+plot.zresid<- function(Zresidual,X=NULL,
                        main.title="Z-residual Scatterplot",xlab=NULL,
                        outlier.return=TRUE,...)
 {
@@ -176,7 +176,7 @@ plot.zresid<- function(Zresidual,fitted.values=NULL,
   is.outlier <- (abs(Zresidual) >3)
   censored<-attr(Zresidual, "censored.status")
 
-  if(is.null(fitted.values)){
+  if(is.null(X)){
     plot.default (Zresidual, ylab = "Z-Residual",
                   ylim = c(-ylim0,ylim0+1),
                   col=c("blue","darkolivegreen4")[censored+1],
@@ -205,15 +205,15 @@ plot.zresid<- function(Zresidual,fitted.values=NULL,
 
   }
 }
-  if(!is.null(fitted.values)){
-    plot(fitted.values, Zresidual, ylab = "Z-Residual",
+  if(!is.null(X)){
+    plot(X, Zresidual, ylab = "Z-Residual",
          ylim = c(-ylim0,ylim0+1),
          col=c("blue","darkolivegreen4")[censored+1],
          #col = ifelse(is.outlier, "darkgoldenrod2", ifelse(censored,"darkolivegreen4","blue")),
          pch=c(3,2)[censored+1],
          main =main.title,xlab=xlab
     )
-    lines(lowess(Zresidual ~ fitted.values),col = "red",lwd = 3)
+    lines(lowess(Zresidual ~ X),col = "red",lwd = 3)
     legend(x = "topleft",
            legend = c("Uncensored", "Censored"), col=c("darkolivegreen4","blue"),
            pch=c(2,3),cex=0.5,xpd = TRUE,bty="L",horiz=TRUE)
@@ -222,12 +222,12 @@ plot.zresid<- function(Zresidual,fitted.values=NULL,
       if(identical(which(is.outlier), integer(0))){
         return(invisible(NULL))
       } else {
-        symbols(fitted.values[which(is.outlier)],
+        symbols(X[which(is.outlier)],
                 Zresidual[which(is.outlier)],
                 circles=rep(5,length(which(is.outlier))),
                 fg=rep('red',length(which(is.outlier))),
                 add=T, inches=F)
-        text(fitted.values[which(is.outlier)],
+        text(X[which(is.outlier)],
              Zresidual[which(is.outlier)],
              pos=1,label = which(is.outlier),
              cex = 0.8,col="red")
