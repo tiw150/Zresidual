@@ -1,5 +1,4 @@
-
-print.Zresidual <- function(x){
-  UseMethod("print")
+#' @export
+print.Zresid <- function(x, ...){
   print(as.vector(x))
 }

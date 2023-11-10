@@ -18,6 +18,7 @@ as.character.na <- function(x)
 #     x[!id.inf]
 # }
 
+#' @export
 sf.test.zresid <- function (Zresidual)
 {
   id.negtv.inf <- which(is.infinite(Zresidual) & Zresidual < 0)
@@ -27,6 +28,7 @@ sf.test.zresid <- function (Zresidual)
   sf.test(Zresidual)$p.value
 }
 
+#' @export
 sw.test.zresid <- function (Zresidual)
 {
   id.negtv.inf <- which(is.infinite(Zresidual) & Zresidual < 0)
@@ -36,6 +38,7 @@ sw.test.zresid <- function (Zresidual)
   shapiro.test(Zresidual)$p.value
 }
 
+#' @export
 qqnorm.zresid <- function (Zresidual,main.title = "Normal Q-Q Plot",
                            xlab = "Theoretical Quantiles", ylab = "Sample Quantiles",
                            outlier.return=FALSE,...)
@@ -73,7 +76,7 @@ qqnorm.zresid <- function (Zresidual,main.title = "Normal Q-Q Plot",
     }
 }
 
-
+#' @export
 gof.censore.zresid <- function (censored.Zresidual)
 {
   id.negtv.inf <- which(is.infinite(censored.Zresidual) & censored.Zresidual < 0)
@@ -87,7 +90,7 @@ gof.censore.zresid <- function (censored.Zresidual)
                   distribution = "norm")$p.value
 }
 
-
+#' @export
 anov.test.zresid <- function (Zresidual,fitted.values, k.anova=10)
 {
   id.negtv.inf <- which(is.infinite(Zresidual) & Zresidual < 0)
@@ -97,6 +100,7 @@ anov.test.zresid <- function (Zresidual,fitted.values, k.anova=10)
   test.nl.aov(Zresidual, fitted.values, k.anova)
 }
 
+#' @export
 bartlett.test.zresid <- function (Zresidual,fitted.values, k.bl=10)
 {
   id.negtv.inf <- which(is.infinite(Zresidual) & Zresidual < 0)
@@ -106,7 +110,7 @@ bartlett.test.zresid <- function (Zresidual,fitted.values, k.bl=10)
   test.var.bartl(Zresidual, fitted.values, k.bl)
 }
 
-
+#' @export
 boxplot.zresid <- function(Zresidual,fitted.values, num.bin=10,
                            main.title="Z-residual Boxplot",
                            xlab=NULL,
@@ -155,7 +159,7 @@ boxplot.zresid <- function(Zresidual,fitted.values, num.bin=10,
   }
 }
 
-
+#' @export
 plot.zresid<- function(Zresidual,X=NULL,
                        main.title="Z-residual Scatterplot",xlab=NULL,
                        outlier.return=TRUE,...)

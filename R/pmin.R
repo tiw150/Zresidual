@@ -1,3 +1,4 @@
+#' @export
 bounds_pvalues <- function (pv)
 {
   pv <- pv[is.finite(pv)]

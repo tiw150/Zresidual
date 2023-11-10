@@ -1,3 +1,0 @@
-"0","par(mfrow = c(4,2),mar=c(4,4,2,2))"
-"0","hist(sw.LeukSurv.wbc,main=""Replicated Z-SW P-values for wbc Model"",breaks=20,"
-"0","     xlab=""Z-SW P-values for wbc Model"")"
