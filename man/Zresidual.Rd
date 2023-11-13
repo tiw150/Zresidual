@@ -4,7 +4,7 @@
 \alias{Zresidual}
 \title{A title}
 \usage{
-Zresidual(fit.object, data, fit.object2 = NULL)
+Zresidual(fit.object, data = NULL, fit.object2 = NULL)
 }
 \arguments{
 \item{fit.object}{The fit object are one of 'coxph', 'survreg' and 'glmmTMB'.}
