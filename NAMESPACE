@@ -1,5 +1,5 @@
 #main functions
-S3method(print,Zresidual)
+S3method(print,Zresid)
 S3method(print,residuals)
 
 export(Zresidual)
