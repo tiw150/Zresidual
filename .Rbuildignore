@@ -1,2 +1,11 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^docs$
+^pkgdown$
+^\.travis\.yml$
+^README\.Rmd$
+^index\.md$
+^.vscode$
+^data-raw$
+^LICENSE$
+^.github$

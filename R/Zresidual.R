@@ -1,52 +1,76 @@
-Zresidual<- function(fit.object, data=NULL, fit.object2=NULL)
+#' A title
+#'
+#' Some descriptions
+#'
+#' @param fit.object The fit object are one of 'coxph', 'survreg' and 'glmmTMB'.
+#'
+#' @param data Data that used for fitting the survival model.
+#'
+#' @export
+#'
+#' @return \itemize{
+#'  \item{Zresid}{Z-residual}
+#'  \item{censored.Zresid}{censored Z-residual}
+#'  \item{SP}{Survival Probabilities}
+#'  \item{ucs}{unmodified CS residuals}
+#'  \item{mcs}{modified CS residuals}
+#'  \item{martg}{Martingale residuals}
+#'  \item{dev}{Deviance residuals}
+#' }
+#'
+Zresidual <- function(fit.object, data = NULL, fit.object2 = NULL)
 {
   # Required packages:
-  if (!requireNamespace("pacman")) {install.packages("pacman")}
-  pacman::p_load("survival", "stringr", "glmmTMB","actuar")
+  # if (!requireNamespace("pacman")) {
+  #   install.packages("pacman")
+  # }
+  # pacman::p_load("survival", "stringr", "glmmTMB", "actuar")
 
-  form<- fit.object$call
+  form <- fit.object$call
 
- # if (is.na(form)) stop("a fit.object is required")
+  # if (is.na(form)) stop("a fit.object is required")
 
-  get_object_name<-gsub(".*[(]([^.]+)[,].*", "\\1", form)[1]
+  get_object_name <- gsub(".*[(]([^.]+)[,].*", "\\1", form)[1]
 
   # the coxph function in the survival package
-  if( get_object_name=="coxph") {
+  if (get_object_name == "coxph") {
+    frailty_terms <- attr(fit.object$terms, "specials")$frailty
 
-    frailty_terms<- attr(fit.object$terms, "specials")$frailty
-
-    if (!is.null(frailty_terms)){
-
-      Zresid_fun <-Zresidual.coxph.frailty(fit_coxph=fit.object,traindata=data,newdata=data)
-
-      } else Zresid_fun <- Zresidual.coxph(fit_coxph=fit.object, newdata=data)
-    }
+    if (!is.null(frailty_terms)) {
+      Zresid_fun <- Zresidual.coxph.frailty(
+        fit_coxph = fit.object,
+        traindata = data,
+        newdata = data
+      )
+    } else
+      Zresid_fun <- Zresidual.coxph(fit_coxph = fit.object, newdata = data)
+  }
 
   # the survreg function in the survival package
-  if (get_object_name=="survreg") {
-
-    Zresid_fun <- Zresidual.survreg(survreg_fit=fit.object,newdata=data)
+  if (get_object_name == "survreg") {
+    Zresid_fun <- Zresidual.survreg(survreg_fit = fit.object, newdata = data)
   }
 
   # the glmmTMB function in the glmmTMB package
-  if (get_object_name=="glmmTMB") {
+  if (get_object_name == "glmmTMB") {
+    distr <- family(fit.object)$family
 
-     distr<-family(fit.object)$family
+    if (distr[1] %in% c("gaussian", "poisson", "nbinom2")) {
+      Zresid_fun <- Zresidual.ZI(fit_ZI = fit.object)
 
-     if(distr[1] %in% c("gaussian", "poisson","nbinom2")){
-
-       Zresid_fun <- Zresidual.ZI(fit_ZI = fit.object)
-
-     }else if  (distr %in% c("truncated_poisson", "truncated_nbinom2")) {
-
-      if (is.null(fit.object2)) stop("a fit.object2 is required for modelling the probability of zero in zero-modified model.")
-       Zresid_fun <- Zresidual.hurdle(model_count=fit.object, model_zero=fit.object2, data=data)
-
-     }else stop ("The distribution is not supported")
-   }
+    } else if (distr %in% c("truncated_poisson", "truncated_nbinom2")) {
+      if (is.null(fit.object2))
+        stop(
+          "a fit.object2 is required for modelling the probability of zero in zero-modified model."
+        )
+      Zresid_fun <- Zresidual.hurdle(
+        model_count = fit.object,
+        model_zero = fit.object2,
+        data = data
+      )
+    } else
+      stop ("The distribution is not supported")
+  }
 
   Zresid_fun
 }
-
-
-
