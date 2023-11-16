@@ -3,13 +3,13 @@ residual.coxph.frailty <- function (fit_coxph, traindata, newdata,
                                     residual.type=c("censored Z-residual", "Cox-Snell",
                                                     "martingale", "deviance"))
 {
-  if (!requireNamespace("pacman")) {
-    install.packages("pacman")
-  }
-  pacman::p_load(
-    "stringr"
-    # "data.table"
-  )
+  # if (!requireNamespace("pacman")) {
+  #   install.packages("pacman")
+  # }
+  # pacman::p_load(
+  #   "stringr"
+  #   # "data.table"
+  # )
   form<-(fit_coxph$formula)[[3]]
   group_id_name<-gsub(".*[(]([^.]+)[,].*", "\\1", form)[3]
   if(!is.factor(traindata[[group_id_name]])) stop("The group ID must be factor!")

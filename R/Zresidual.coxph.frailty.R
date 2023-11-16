@@ -1,13 +1,13 @@
 ######Z-residual ################################
 Zresidual.coxph.frailty <- function (fit_coxph, traindata, newdata)
 {
-  if (!requireNamespace("pacman")) {
-    install.packages("pacman")
-  }
-  pacman::p_load(
-    "stringr"
-    # "data.table"
-  )
+  # if (!requireNamespace("pacman")) {
+  #   install.packages("pacman")
+  # }
+  # pacman::p_load(
+  #   "stringr"
+  #   # "data.table"
+  # )
   if(is.null(traindata) & is.null(newdata)){
     mf<-model.frame.coxph(fit_coxph)
     mf_nc<-ncol (mf)
@@ -85,7 +85,7 @@ Zresidual.coxph.frailty <- function (fit_coxph, traindata, newdata)
     Zresid.value<-as.matrix(Zresid)
     colnames(Zresid.value)[1] <- "Z-residual"
 
-    class(Zresid.value) <- c("Zresid", class(Zresid.value))
+    #class(Zresid.value) <- c("Zresid", class(Zresid.value))
 
     attributes(Zresid.value) <- c(attributes(Zresid.value), list(
       Survival.Prob= SP,
@@ -207,7 +207,7 @@ Zresidual.coxph.frailty <- function (fit_coxph, traindata, newdata)
   Zresid.value<-as.matrix(Zresid)
   colnames(Zresid.value)[1] <- "Z-residual"
 
-  class(Zresid.value) <- c("Zresid", class(Zresid.value))
+  #class(Zresid.value) <- c("Zresid", class(Zresid.value))
 
   attributes(Zresid.value) <- c(attributes(Zresid.value), list(
     Survival.Prob= SP,
