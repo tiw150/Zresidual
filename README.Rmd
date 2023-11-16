@@ -79,9 +79,9 @@ if (any(is.na(fit_LeukSurv_wbc)) || any(is.na(fit_LeukSurv_logwbc))) stop("An er
 Once the model is fitted, we can calculate Z-residual, censored Z-residual and other residuals for two models.
 
 ```{r}
-Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,data= LeukSurv)
+Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc)
 
-Zresid.LeukSurv.logwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,data= LeukSurv)
+Zresid.LeukSurv.logwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc)
 
 
 
