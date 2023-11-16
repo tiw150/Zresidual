@@ -1,4 +1,4 @@
 #' @export
-print.Zresid <- function(x, ...){
+print.zresid <- function(x, ...){
   print(as.vector(x))
 }

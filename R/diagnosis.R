@@ -18,6 +18,7 @@ as.character.na <- function(x)
 #     x[!id.inf]
 # }
 
+#' @importFrom nortest sf.test
 #' @export
 sf.test.zresid <- function (Zresidual)
 {
@@ -39,10 +40,11 @@ sw.test.zresid <- function (Zresidual)
 }
 
 #' @export
-qqnorm.zresid <- function (Zresidual,main.title = "Normal Q-Q Plot",
+qqnorm.zresid <- function (Zresid,main.title = "Normal Q-Q Plot",
                            xlab = "Theoretical Quantiles", ylab = "Sample Quantiles",
                            outlier.return=FALSE,...)
 {
+    Zresidual <- as.vector(Zresid)
     id.negtv.inf <- which(is.infinite(Zresidual) & Zresidual < 0)
     id.pos.inf <- which(is.infinite(Zresidual) & Zresidual > 0)
     Zresidual[id.negtv.inf]<- -1e10

@@ -131,8 +131,8 @@ normality of Z-residuals is tested with the SW test.
 
 ``` r
 par(mfrow = c(1,2),mar=c(4,4,2,2))
-qqnorm.zresid (Zresid.LeukSurv.wbc,main.title = "Z-residual QQ plot of wbc model")
-qqnorm.zresid (Zresid.LeukSurv.logwbc,main.title = "Z-residual QQ plot of lwbc model")
+qqnorm(Zresid.LeukSurv.wbc,main.title = "Z-residual QQ plot of wbc model")
+qqnorm(Zresid.LeukSurv.logwbc,main.title = "Z-residual QQ plot of lwbc model")
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" width="100%" />
@@ -157,19 +157,20 @@ formed with the linear predictor.
 
 ``` r
 par(mfrow = c(2,2),mar=c(4,4,1.5,2))
-plot.zresid(Zresid.LeukSurv.wbc,
-            fitted.values=fit_LeukSurv_wbc$linear.predictors,
+plot(Zresid.LeukSurv.wbc,
+            X=fit_LeukSurv_wbc$linear.predictors,
             xlab="Linear Predictor",
             main.title = "Z-residual Scatterplot of wbc model")
-#> Outlier Indices: 375
-plot.zresid(Zresid.LeukSurv.logwbc,
-            fitted.values=fit_LeukSurv_logwbc$linear.predictors,
+#> Outlier Indices: 407
+plot(Zresid.LeukSurv.logwbc,
+            X=fit_LeukSurv_logwbc$linear.predictors,
             xlab="Linear Predictor",
             main.title = "Z-residual Scatterplot of lwbc model")
+#> Outlier Indices: 364
 
-boxplot.zresid(Zresid.LeukSurv.wbc,fitted.values=fit_LeukSurv_wbc$linear.predictors,
+boxplot(Zresid.LeukSurv.wbc,fitted.values=fit_LeukSurv_wbc$linear.predictors,
                main.title = "Z-residual Boxplot of wbc model",xlab="Linear Predictor")
-boxplot.zresid(Zresid.LeukSurv.logwbc,fitted.values=fit_LeukSurv_logwbc$linear.predictors,
+boxplot(Zresid.LeukSurv.logwbc,fitted.values=fit_LeukSurv_logwbc$linear.predictors,
                main.title = "Z-residual Boxplot of lwbc model",xlab="Linear Predictor")
 ```
 
@@ -194,15 +195,16 @@ survival time.
 
 ``` r
 par(mfrow = c(2,2),mar=c(4,4,1.5,2))
-plot.zresid(Zresid.LeukSurv.wbc,
-            fitted.values=LeukSurv$wbc,
+plot(Zresid.LeukSurv.wbc,
+            X=LeukSurv$wbc,
             xlab="wbc",main.title = "Z-residual Scatterplot of wbc model")
-#> Outlier Indices: 375
-plot.zresid(Zresid.LeukSurv.logwbc,
-            fitted.values=LeukSurv$logwbc,
+#> Outlier Indices: 407
+plot(Zresid.LeukSurv.logwbc,
+            X=LeukSurv$logwbc,
             xlab="log(wbc)",main.title = "Z-residual Scatterplot of lwbc model")
-boxplot.zresid(Zresid.LeukSurv.wbc,fitted.values=LeukSurv$wbc,main.title = "Z-residual Boxplot of wbc model",xlab="wbc")
-boxplot.zresid(Zresid.LeukSurv.logwbc,fitted.values=LeukSurv$logwbc,main.title = "Z-residual Boxplot of wbc model", xlab="log(wbc)")
+#> Outlier Indices: 364
+boxplot(Zresid.LeukSurv.wbc,fitted.values=LeukSurv$wbc,main.title = "Z-residual Boxplot of wbc model",xlab="wbc")
+boxplot(Zresid.LeukSurv.logwbc,fitted.values=LeukSurv$logwbc,main.title = "Z-residual Boxplot of wbc model", xlab="log(wbc)")
 ```
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
@@ -214,8 +216,8 @@ groups. The p-values of Z-AOV and Z-BL are greater than 0.05.
 ``` r
 par(mfrow = c(1,2))
 
-boxplot.zresid(Zresid.LeukSurv.wbc,fitted.values=LeukSurv$sex,xlab="sex",main.title = "Z-residual Boxplot of wbc model")
-boxplot.zresid(Zresid.LeukSurv.logwbc,fitted.values=LeukSurv$sex,xlab="sex",main.title = "Z-residual Boxplot of lwbc model")
+boxplot(Zresid.LeukSurv.wbc,fitted.values=LeukSurv$sex,xlab="sex",main.title = "Z-residual Boxplot of wbc model")
+boxplot(Zresid.LeukSurv.logwbc,fitted.values=LeukSurv$sex,xlab="sex",main.title = "Z-residual Boxplot of lwbc model")
 ```
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />
@@ -231,13 +233,13 @@ the normality of censored Z-residuals.
 
 ``` r
 sw.test.zresid(Zresid.LeukSurv.wbc)
-#> [1] 0.4695733
+#> [1] 0.2383382
 sw.test.zresid(Zresid.LeukSurv.logwbc)
-#> [1] 0.5895072
+#> [1] 0.6750511
 sf.test.zresid(Zresid.LeukSurv.wbc)
-#> [1] 0.5796773
+#> [1] 0.2161675
 sf.test.zresid(Zresid.LeukSurv.logwbc)
-#> [1] 0.7405083
+#> [1] 0.7628117
 ```
 
 The Z-residuals can be divided into $k$ groups by cutting the covariates
@@ -249,24 +251,24 @@ to examine the equality of variances.
 
 ``` r
 anov.test.zresid(Zresid.LeukSurv.wbc,fitted.values=fit_LeukSurv_wbc$linear.predictors, k.anova=10)
-#> [1] 0.8839658
+#> [1] 0.8623168
 anov.test.zresid(Zresid.LeukSurv.logwbc,fitted.values=fit_LeukSurv_logwbc$linear.predictors, k.anova=10)
-#> [1] 0.4987955
+#> [1] 0.7244503
 
-bartlett.test.zresid(Zresid.LeukSurv.wbc,fitted.values=fit_LeukSurv_wbc$linear.predictors, k.bl=10)
-#> [1] 0.411713
-bartlett.test.zresid(Zresid.LeukSurv.logwbc,fitted.values=fit_LeukSurv_logwbc$linear.predictors, k.bl=10)
-#> [1] 0.2622253
+bartlett.test(Zresid.LeukSurv.wbc,fitted.values=fit_LeukSurv_wbc$linear.predictors, k.bl=10)
+#> [1] 0.2654078
+bartlett.test(Zresid.LeukSurv.logwbc,fitted.values=fit_LeukSurv_logwbc$linear.predictors, k.bl=10)
+#> [1] 0.239635
 
 anov.test.zresid(Zresid.LeukSurv.wbc,fitted.values=LeukSurv$wbc, k.anova=10)
-#> [1] 0.5309539
+#> [1] 0.635346
 anov.test.zresid(Zresid.LeukSurv.logwbc,fitted.values=LeukSurv$logwbc, k.anova=10)
-#> [1] 0.0005263307
+#> [1] 2.908493e-06
 
-bartlett.test.zresid(Zresid.LeukSurv.wbc,fitted.values=LeukSurv$wbc, k.bl=10)
-#> [1] 0.9481796
-bartlett.test.zresid(Zresid.LeukSurv.logwbc,fitted.values=LeukSurv$logwbc, k.bl=10)
-#> [1] 0.3726377
+bartlett.test(Zresid.LeukSurv.wbc,fitted.values=LeukSurv$wbc, k.bl=10)
+#> [1] 0.951957
+bartlett.test(Zresid.LeukSurv.logwbc,fitted.values=LeukSurv$logwbc, k.bl=10)
+#> [1] 0.2229889
 ```
 
 The Z-residual test p-values quoted above contain randomness because of
@@ -315,22 +317,22 @@ for(j in 1:n_sims ){
                                           k.anova=10)
 }
 pmin.sw.LeukSurv.wbc<-bounds_pvalues(pv=sw.LeukSurv.wbc);pmin.sw.LeukSurv.wbc
-#> [1] 0.4830557
+#> [1] 0.4802859
 pmin.sf.LeukSurv.wbc<-bounds_pvalues(pv=sf.LeukSurv.wbc);pmin.sf.LeukSurv.wbc
-#> [1] 0.6927441
+#> [1] 0.6803299
 pmin.aov.lp.LeukSurv.wbc<-bounds_pvalues(pv=anov.LeukSurv.lp.wbc);pmin.aov.lp.LeukSurv.wbc
-#> [1] 0.9877457
+#> [1] 0.9918903
 pmin.aov.wbc.LeukSurv<-bounds_pvalues(pv=anov.LeukSurv.wbc);pmin.aov.wbc.LeukSurv
-#> [1] 0.7861319
+#> [1] 0.7841056
 
 pmin.sw.LeukSurv.lwbc<-bounds_pvalues(pv=sw.LeukSurv.lwbc);pmin.sw.LeukSurv.lwbc
-#> [1] 0.5801661
+#> [1] 0.5661198
 pmin.sf.LeukSurv.lwbc<-bounds_pvalues(pv=sf.LeukSurv.lwbc);pmin.sf.LeukSurv.lwbc
-#> [1] 0.7734118
+#> [1] 0.7611368
 pmin.aov.lp.LeukSurv.lwbc<-bounds_pvalues(pv=anov.LeukSurv.lp.lwbc);pmin.aov.lp.LeukSurv.lwbc
-#> [1] 0.9808257
+#> [1] 0.9849655
 pmin.aov.lwbc.LeukSurv<-bounds_pvalues(pv=anov.LeukSurv.lwbc);pmin.aov.lwbc.LeukSurv
-#> [1] 2.050978e-07
+#> [1] 1.222356e-05
 ```
 
 The histograms of 1000 replicated Z-residual test p-values for the wbc
