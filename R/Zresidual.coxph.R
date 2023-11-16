@@ -44,7 +44,7 @@ Zresidual.coxph<-function (fit_coxph, newdata)
   Zresid.value<-as.matrix(Zresid)
   colnames(Zresid.value)[1] <- "Z-residual"
 
-  class(Zresid.value) <- c("Zresid", class(Zresid.value))
+  #class(Zresid.value) <- c("Zresid", class(Zresid.value))
 
   attributes(Zresid.value) <- c(attributes(Zresid.value), list(
       Survival.Prob= SP,

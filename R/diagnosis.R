@@ -39,7 +39,7 @@ sw.test.zresid <- function (Zresidual)
   shapiro.test(Zresidual)$p.value
 }
 
-#' @export
+#' @export qqnorm.zresid
 qqnorm.zresid <- function (Zresidual,main.title = "Normal Q-Q Plot",
                            xlab = "Theoretical Quantiles", ylab = "Sample Quantiles",
                            outlier.return=FALSE,...)
@@ -101,7 +101,7 @@ anov.test.zresid <- function (Zresidual,fitted.values, k.anova=10)
   test.nl.aov(Zresidual, fitted.values, k.anova)
 }
 
-#' @export
+#' @export bartlett.test.zresid
 bartlett.test.zresid <- function (Zresidual,fitted.values, k.bl=10)
 {
   id.negtv.inf <- which(is.infinite(Zresidual) & Zresidual < 0)
@@ -111,7 +111,7 @@ bartlett.test.zresid <- function (Zresidual,fitted.values, k.bl=10)
   test.var.bartl(Zresidual, fitted.values, k.bl)
 }
 
-#' @export
+#' @export boxplot.zresid
 boxplot.zresid <- function(Zresidual,fitted.values, num.bin=10,
                            main.title="Z-residual Boxplot",
                            xlab=NULL,
@@ -160,7 +160,7 @@ boxplot.zresid <- function(Zresidual,fitted.values, num.bin=10,
   }
 }
 
-#' @export
+#' @export plot.zresid
 plot.zresid<- function(Zresidual,X=NULL,
                        main.title="Z-residual Scatterplot",xlab=NULL,
                        outlier.return=TRUE,...)
