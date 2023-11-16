@@ -79,12 +79,8 @@ if (any(is.na(fit_LeukSurv_wbc)) || any(is.na(fit_LeukSurv_logwbc))) stop("An er
 Once the model is fitted, we can calculate Z-residual, censored Z-residual and other residuals for two models.
 
 ```{r}
-Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,data= LeukSurv)
-
-Zresid.LeukSurv.logwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,data= LeukSurv)
-
-
-
+Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc)
+Zresid.LeukSurv.logwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc)
 ```
 
 Diagnosis of the overall (GOF) and the Functional Form of Covariates using Z-residuals
@@ -95,8 +91,8 @@ We can see that the QQ plots of Z-residuals of these two models align well with 
 
 ```{r}
 par(mfrow = c(1,2),mar=c(4,4,2,2))
-qqnorm(Zresid.LeukSurv.wbc,main.title = "Z-residual QQ plot of wbc model")
-qqnorm(Zresid.LeukSurv.logwbc,main.title = "Z-residual QQ plot of lwbc model")
+qqnorm.zresid(Zresid.LeukSurv.wbc,main.title = "Z-residual QQ plot of wbc model")
+qqnorm.zresid(Zresid.LeukSurv.logwbc,main.title = "Z-residual QQ plot of lwbc model")
 ```
 
 The Z-residuals can be divided into $k$ groups by cutting the linear predictors or covariates into equally-spaced intervals. Then we can check whether the Z-residuals of the $k$ groups are homogeneously distributed. A quantitative method to assess the homogeneity of such grouped Z-residuals is to test the equality of group means or variances of the Z-residuals. We employ the F-test in ANOVA to assess the equality of means and Bartlett's test to examine the equality of variances.
