@@ -134,8 +134,6 @@ residual.coxph.frailty <- function (fit_coxph, traindata, newdata,
   resid.value<-as.matrix(resid)
   colnames(resid.value)[1] <- residual.type
 
-  class(resid.value) <- c("resid", class(resid.value))
-
   attributes(resid.value) <- c(attributes(resid.value), list(
     Survival.Prob= SP,
     linear.pred = lp_new,

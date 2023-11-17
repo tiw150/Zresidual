@@ -41,5 +41,7 @@ residuals <- function(fit.object,
       residual.type = residual.type
     )
   }
+
+  class(resid_fun) <- c("zresid", class(resid_fun))
   resid_fun
 }
