@@ -62,6 +62,7 @@ Zresidual.survreg<-function(survreg_fit,newdata)
   attributes(Zresid.value) <- c(attributes(Zresid.value), list(
     Survival.Prob= SP,
     linear.pred = lp,
+    covarates = fix_var,
     censored.status= censored.status,
     object.model.frame=mf
 

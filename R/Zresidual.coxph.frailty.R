@@ -90,6 +90,7 @@ Zresidual.coxph.frailty <- function (fit_coxph, traindata, newdata)
     attributes(Zresid.value) <- c(attributes(Zresid.value), list(
       Survival.Prob= SP,
       linear.pred = lp,
+      covarates = fix_var,
       censored.status= censored.status,
       object.model.frame=mf
     ))
@@ -212,6 +213,7 @@ Zresidual.coxph.frailty <- function (fit_coxph, traindata, newdata)
   attributes(Zresid.value) <- c(attributes(Zresid.value), list(
     Survival.Prob= SP,
     linear.pred = lp_new,
+    covarates = fix_var_new,
     censored.status= censored.status,
     object.model.frame=mf_new
 
