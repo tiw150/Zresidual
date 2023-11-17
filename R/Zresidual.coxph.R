@@ -49,7 +49,7 @@ Zresidual.coxph<-function (fit_coxph, newdata)
   attributes(Zresid.value) <- c(attributes(Zresid.value), list(
       Survival.Prob= SP,
       linear.pred = lp.new,
-      covarates = fix_var_new,
+      covariates = fix_var_new,
       censored.status= censored.status,
       object.model.frame=mf_new
 
