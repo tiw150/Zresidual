@@ -72,5 +72,6 @@ Zresidual <- function(fit.object, data = NULL, fit.object2 = NULL)
       stop ("The distribution is not supported")
   }
 
+  class(Zresid_fun) <- c("zresid", class(Zresid_fun))
   Zresid_fun
 }
