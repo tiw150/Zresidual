@@ -44,22 +44,76 @@ qqnorm.zresid <- function (Zresidual,main.title = "Normal Q-Q Plot",
                            xlab = "Theoretical Quantiles", ylab = "Sample Quantiles",
                            outlier.return=FALSE,...)
 {
-    id.negtv.inf <- which(is.infinite(Zresidual) & Zresidual < 0)
-    id.pos.inf <- which(is.infinite(Zresidual) & Zresidual > 0)
-    Zresidual[id.negtv.inf]<- -1e10
-    Zresidual[id.pos.inf]<- 1e10
-    is.outlier <- (abs(Zresidual) >3)
-    sw.pv<-shapiro.test(Zresidual)$p.value
+  id.negtv.inf <- which(is.infinite(Zresidual) & Zresidual < 0)
+  id.pos.inf <- which(is.infinite(Zresidual) & Zresidual > 0)
+  Zresidual[id.negtv.inf]<- -1e10
+  Zresidual[id.pos.inf]<- 1e10
+  is.outlier <- (abs(Zresidual) >3)
+  sw.pv<-shapiro.test(Zresidual)$p.value
+
+  if(max(abs(Zresidual))<6){
     qqnorm(Zresidual,main=main.title,xlab=xlab, ylab=ylab)
     qqline(Zresidual,col=1)
     abline(a=0,b=1,col=3)
     legend(x = "topleft",
            legend = paste0("Z-SW p-value = ",sprintf("%3.2f",sw.pv)))
-    if(isTRUE(outlier.return)){
+  }
+  if(max(abs(Zresidual))>=6){
+    max.values<-which(Zresidual>=6)
+    min.values<-which(Zresidual< -6)
+    if(identical(min.values, integer(0))){
+      gap=c(6,max(abs(Zresidual)))
+      gapsize <- gap[2] - gap[1]
+      ylim0<-c(min(Zresidual[-max.values]),7)
+      xlim0<-c(min(qqnorm(Zresidual,plot.it = FALSE)[["x"]]),
+               max(qqnorm(Zresidual,plot.it = FALSE)[["x"]]))
+      plot(qqnorm(Zresidual,plot.it = FALSE)[["x"]][-max.values],
+           qqnorm(Zresidual,plot.it = FALSE)[["y"]][-max.values],
+           xlim=xlim0,ylim=ylim0,main=main.title,xlab=xlab, ylab=ylab)
+      axis(2, at=7 ,labels=round(max(Zresidual),1))
+      qqline(Zresidual,col=1)
+      abline(a=0,b=1,col=3)
+      axis.break(2,6,style="gap")
+      axis.break(2, 6, breakcol="snow", style="gap")
+      axis.break(2, 6,breakcol="black", style="slash")
+      axis.break(4, 6,breakcol="black", style="slash")
+      points(qqnorm(Zresidual,plot.it = FALSE)[["x"]][max.values],
+             pmax(qqnorm(Zresidual,plot.it = FALSE)[["y"]][max.values]-gapsize+1,6.5),col="red")
+      legend(x = "bottomright",
+             legend = paste0("Z-SW p-value = ",sprintf("%3.2f",sw.pv)))
+    }
 
-      if(identical(which(is.outlier), integer(0))){
-        return(invisible(NULL))
-      } else {
+    if(identical(max.values, integer(0))){
+      gap=c(6,max(abs(Zresidual)))
+      gapsize <- gap[2] - gap[1]
+      ylim0<-c(-7 ,max(Zresidual[-min.values]))
+      xlim0<-c(min(qqnorm(Zresidual,plot.it = FALSE)[["x"]]),
+               max(qqnorm(Zresidual,plot.it = FALSE)[["x"]]))
+      plot(qqnorm(Zresidual,plot.it = FALSE)[["x"]][-min.values],
+           qqnorm(Zresidual,plot.it = FALSE)[["y"]][-min.values],
+           xlim=xlim0,ylim=ylim0,main=main.title,xlab=xlab, ylab=ylab)
+      axis(2, at=-7 ,labels=round(min(Zresidual),1))
+      qqline(Zresidual,col=1)
+      abline(a=0,b=1,col=3)
+      axis.break(2,-6,style="gap")
+      axis.break(2, -6, breakcol="snow", style="gap")
+      axis.break(2, -6,breakcol="black", style="slash")
+      axis.break(4, -6, breakcol="black", style="slash")
+      points(qqnorm(Zresidual,plot.it = FALSE)[["x"]][min.values],
+             pmin(qqnorm(Zresidual,plot.it = FALSE)[["y"]][min.values]+gapsize-1,-6.5),col="red")
+
+      legend(x = "bottomright",
+             legend = paste0("Z-SW p-value = ",sprintf("%3.2f",sw.pv)))
+
+    }
+
+  }
+
+  if(isTRUE(outlier.return)){
+
+    if(identical(which(is.outlier), integer(0))){
+      return(invisible(NULL))
+    } else {
       symbols((qqnorm(Zresidual,plot.it=FALSE)$x)[which(is.outlier)],
               (qqnorm(Zresidual,plot.it=FALSE)$y)[which(is.outlier)],
               circles=rep(0.1,length(which(is.outlier))),
@@ -69,13 +123,14 @@ qqnorm.zresid <- function (Zresidual,main.title = "Normal Q-Q Plot",
            (qqnorm(Zresidual,plot.it=FALSE)$y)[which(is.outlier)],
            pos=1,label = which(is.outlier),
            cex = 0.8,col="red")
-      }
     }
-    if(outlier.return){
-      cat("Outlier Indices:", which(is.outlier), "\n")
-      invisible(list(outliers=which(is.outlier)))
-    }
+  }
+  if(outlier.return){
+    cat("Outlier Indices:", which(is.outlier), "\n")
+    invisible(list(outliers=which(is.outlier)))
+  }
 }
+
 
 #' @export
 gof.censore.zresid <- function (censored.Zresidual)
