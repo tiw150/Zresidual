@@ -48,7 +48,7 @@ qqnorm.zresid <- function (Zresidual,main.title = "Normal Q-Q Plot",
   id.pos.inf <- which(is.infinite(Zresidual) & Zresidual > 0)
   Zresidual[id.negtv.inf]<- -1e10
   Zresidual[id.pos.inf]<- 1e10
-  is.outlier <- (abs(Zresidual) >3)
+  is.outlier <- (abs(Zresidual) >3.5)
   sw.pv<-shapiro.test(Zresidual)$p.value
 
   if(max(abs(Zresidual))<6){
@@ -84,27 +84,59 @@ qqnorm.zresid <- function (Zresidual,main.title = "Normal Q-Q Plot",
     }
 
     if(identical(max.values, integer(0))){
-      gap=c(6,max(abs(Zresidual)))
-      gapsize <- gap[2] - gap[1]
+      gap=c(min(Zresidual),6)
+      gapsize2 <- gap[2] + gap[1]
       ylim0<-c(-7 ,max(Zresidual[-min.values]))
       xlim0<-c(min(qqnorm(Zresidual,plot.it = FALSE)[["x"]]),
                max(qqnorm(Zresidual,plot.it = FALSE)[["x"]]))
       plot(qqnorm(Zresidual,plot.it = FALSE)[["x"]][-min.values],
            qqnorm(Zresidual,plot.it = FALSE)[["y"]][-min.values],
            xlim=xlim0,ylim=ylim0,main=main.title,xlab=xlab, ylab=ylab)
-      axis(2, at=-7 ,labels=round(min(Zresidual),1))
       qqline(Zresidual,col=1)
       abline(a=0,b=1,col=3)
-      axis.break(2,-6,style="gap")
-      axis.break(2, -6, breakcol="snow", style="gap")
-      axis.break(2, -6,breakcol="black", style="slash")
-      axis.break(4, -6, breakcol="black", style="slash")
+      axis(2, at= -7 ,labels=round(min(Zresidual),1))
+      axis.break(2,-6.1,style="gap")
+      axis.break(2, -6.1, breakcol="snow", style="gap")
+      axis.break(2, -6.1,breakcol="black", style="slash")
+      axis.break(4, -6.1, breakcol="black", style="slash")
       points(qqnorm(Zresidual,plot.it = FALSE)[["x"]][min.values],
-             pmin(qqnorm(Zresidual,plot.it = FALSE)[["y"]][min.values]+gapsize-1,-6.5),col="red")
+             pmin(qqnorm(Zresidual,plot.it = FALSE)[["y"]][min.values]-gapsize-1,-6.5),col="red")
 
       legend(x = "bottomright",
              legend = paste0("Z-SW p-value = ",sprintf("%3.2f",sw.pv)))
 
+    }
+
+    if(!identical(max.values, integer(0)) && !identical(min.values, integer(0))){
+      gap1=c(6,max(Zresidual))
+      gapsize1 <- gap1[2] - gap1[1]
+      gap2=c(min(Zresidual),6)
+      gapsize2 <- gap2[2] + gap2[1]
+      ylim0<-c(-7,7)
+      xlim0<-c(min(qqnorm(Zresidual,plot.it = FALSE)[["x"]]),
+               max(qqnorm(Zresidual,plot.it = FALSE)[["x"]]))
+      plot(qqnorm(Zresidual,plot.it = FALSE)[["x"]][-c(max.values,min.values)],
+           qqnorm(Zresidual,plot.it = FALSE)[["y"]][-c(max.values,min.values)],
+           xlim=xlim0,ylim=ylim0,main=main.title,xlab=xlab, ylab=ylab)
+      qqline(Zresidual,col=1)
+      abline(a=0,b=1,col=3)
+      axis(2, at=7 ,labels=round(max(Zresidual),1))
+      axis.break(2,6,style="gap")
+      axis.break(2, 6, breakcol="snow", style="gap")
+      axis.break(2, 6,breakcol="black", style="slash")
+      axis.break(4, 6,breakcol="black", style="slash")
+      points(qqnorm(Zresidual,plot.it = FALSE)[["x"]][max.values],
+             pmax(qqnorm(Zresidual,plot.it = FALSE)[["y"]][max.values]-gapsize1+1,6.5),col="red")
+
+      axis(2, at= -7 ,labels=round(min(Zresidual),1))
+      axis.break(2,-6.1,style="gap")
+      axis.break(2, -6.1, breakcol="snow", style="gap")
+      axis.break(2, -6.1,breakcol="black", style="slash")
+      axis.break(4, -6.1, breakcol="black", style="slash")
+      points(qqnorm(Zresidual,plot.it = FALSE)[["x"]][min.values],
+             pmin(qqnorm(Zresidual,plot.it = FALSE)[["y"]][min.values]-gapsize2-1,-6.5),col="red")
+      legend(x = "bottomright",
+             legend = paste0("Z-SW p-value = ",sprintf("%3.2f",sw.pv)))
     }
 
   }
@@ -130,6 +162,7 @@ qqnorm.zresid <- function (Zresidual,main.title = "Normal Q-Q Plot",
     invisible(list(outliers=which(is.outlier)))
   }
 }
+
 
 
 #' @export
