@@ -200,146 +200,325 @@ bartlett.test.zresid <- function (Zresidual,fitted.values, k.bl=10)
 }
 
 #' @export boxplot.zresid
-boxplot.zresid <- function(Zresidual,fitted.values, num.bin=10,
+boxplot.zresid <- function(Zresidual,
+                           X = c("lp", "covariate"),
+                           num.bin = 10,
                            main.title="Z-residual Boxplot",
-                           xlab=NULL,
-                           outlier.return=FALSE,...)
+                           outlier.return = FALSE,
+                           ...)
 {
+  if (missing(X))
+    X = "lp"
+
   id.infinity <- which (!is.finite(Zresidual))
-  if(length(id.infinity)>0L){
+  if (length(id.infinity) > 0L) {
     value.notfinite <- as.character.na(Zresidual[id.infinity])
     max.non.infinity <- max(abs(Zresidual[-id.infinity]))
     Zresidual[id.infinity] <-
-      sign.na(Zresidual[id.infinity])* (max.non.infinity + 0.1)
+      sign.na(Zresidual[id.infinity]) * (max.non.infinity + 0.1)
     message("Non-finite Zresiduals exist! The model or the fitting process has a problem!")
   }
-  ylim0 <- max( qnorm(c(0.9999)), max(abs(Zresidual)))
-  is.outlier <- (abs(Zresidual) >3)
+  ylim0 <- max(qnorm(c(0.9999)), max(abs(Zresidual)))
+  is.outlier <- (abs(Zresidual) > 3.5)
 
-  if(is.factor(fitted.values)){
-    bin<-fitted.values
-  }else{
-    bin<-cut(fitted.values,num.bin)
+
+  if (X == "lp") {
+    fitted.value <- attr(Zresidual, "linear.pred")
+    if (is.factor(fitted.values)) {
+      bin <- fitted.values
+    } else{
+      bin <- cut(fitted.values, num.bin)
+    }
+    plot(
+      bin,
+      Zresidual,
+      ylab = "Z-Residual",
+      ylim = c(-ylim0, ylim0 + 1),
+      main = main.title,
+      xlab = "Linear Predictor"
+    )
+    legend(
+      x = "topleft",
+      legend = c(
+        paste0("Z-AOV p-value = ",
+               sprintf(
+                 "%3.2f",
+                 anov.test.zresid(Zresidual, fitted.values, k.anova = num.bin)
+               )),
+        paste0("Z-BL p-value = ",
+               sprintf(
+                 "%3.2f",
+                 bartlett.test.zresid(Zresidual, fitted.values, k.bl = num.bin)
+               ))
+      ),
+      cex = 0.6,
+      horiz = TRUE
+    )
   }
-  plot(bin, Zresidual, ylab = "Z-Residual",
-       ylim = c(-ylim0,ylim0+1),
-       main=main.title,xlab=xlab
-  )
-  legend(x = "topleft",
-         legend = c(paste0("Z-AOV p-value = ",
-                         sprintf("%3.2f",anov.test.zresid(Zresidual,fitted.values, k.anova=num.bin))),
-                    paste0("Z-BL p-value = ",
-                           sprintf("%3.2f",bartlett.test.zresid(Zresidual,fitted.values, k.bl=num.bin)))),
-         cex=0.6,horiz=TRUE)
+
+  if (X != "lp") {
+    fitted.value <- attr(Zresidual, "covariates")
+    if(X == "covariate"){
+      i<-1
+      cat("To plot against other covariates, set X to be the covariate name. Please copy one of the covariate name:",
+          variable.names(fitted.value))
+
+    } else if(X %in% variable.names(fitted.value)){
+      cov.name<-variable.names(fitted.value)
+      i<- which(cov.name==X)
+    } else{stop("X must be the one of covariate name.") }
+
+    if (is.factor(fitted.value[,i])) {
+      bin <- fitted.value[,i]
+    } else{
+      bin <- cut(fitted.value[,i], num.bin)
+    }
+    plot(
+      bin,
+      Zresidual,
+      ylab = "Z-Residual",
+      ylim = c(-ylim0, ylim0 + 1),
+      main = main.title,
+      xlab = colnames(fitted.value)[i]
+    )
+    legend(
+      x = "topleft",
+      legend = c(
+        paste0("Z-AOV p-value = ",
+               sprintf(
+                 "%3.2f",
+                 anov.test.zresid(Zresidual, fitted.values, k.anova = num.bin)
+               )),
+        paste0("Z-BL p-value = ",
+               sprintf(
+                 "%3.2f",
+                 bartlett.test.zresid(Zresidual, fitted.values, k.bl = num.bin)
+               ))
+      ),
+      cex = 0.6,
+      horiz = TRUE
+    )
+  }
 
 
-  if(length(id.infinity)>0L){
-    text(id.infinity+5, Zresidual[id.infinity],
+  if (length(id.infinity) > 0L) {
+    text(id.infinity + 5,
+         Zresidual[id.infinity],
          labels = value.notfinite,
          #adj = c(0,0),
-         col=2)
+         col = 2)
   }
-  hlines <- c(1.96,3); hlines2 <- -hlines
-  abline(h= c(hlines,hlines2), lty=3, col="grey")
-  if(outlier.return)
+  hlines <- c(1.96, 3)
+  hlines2 <- -hlines
+  abline(h = c(hlines, hlines2),
+         lty = 3,
+         col = "grey")
+  if (outlier.return)
   {
     cat("Outlier Indices:", which(is.outlier), "\n")
-    invisible(list(outliers=which(is.outlier)))
+    invisible(list(outliers = which(is.outlier)))
   }
 }
 
+
 #' @export plot.zresid
-plot.zresid<- function(Zresidual,X=NULL,
-                       main.title="Z-residual Scatterplot",xlab=NULL,
-                       outlier.return=TRUE,...)
+plot.zresid <- function(Zresidual,
+                        X = c("index", "lp", "covariate"),
+                        main.title = "Z-residual Scatterplot",
+                        outlier.return = FALSE,
+                        ...)
 {
+  if (missing(X))
+    X = "lp"
+
   id.infinity <- which (!is.finite(Zresidual))
-  if(length(id.infinity)>0L){
+  if (length(id.infinity) > 0L) {
     value.notfinite <- as.character.na(Zresidual[id.infinity])
     max.non.infinity <- max(abs(Zresidual[-id.infinity]))
     Zresidual[id.infinity] <-
-      sign.na(Zresidual[id.infinity])* (max.non.infinity + 0.1)
+      sign.na(Zresidual[id.infinity]) * (max.non.infinity + 0.1)
     message("Non-finite Zresiduals exist! The model or the fitting process has a problem!")
   }
-  ylim0 <- max( qnorm(c(0.9999)), max(abs(Zresidual)))
-  is.outlier <- (abs(Zresidual) >3)
-  censored<-attr(Zresidual, "censored.status")
+  ylim0 <- max(qnorm(c(0.9999)), max(abs(Zresidual)))
+  is.outlier <- (abs(Zresidual) > 3.5)
+  censored <- attr(Zresidual, "censored.status")
 
-  if(is.null(X)){
-    plot.default (Zresidual, ylab = "Z-Residual",
-                  ylim = c(-ylim0,ylim0+1),
-                  col=c("blue","darkolivegreen4")[censored+1],
-                  #col = ifelse(is.outlier, "darkgoldenrod2", ifelse(censored,"darkolivegreen4","blue")),
-                  pch=c(3,2)[censored+1],
-                  main =main.title)
-    legend(x = "topleft",
-           legend = c("Uncensored", "Censored"), col=c("darkolivegreen4","blue"),
-           pch=c(2,3),cex=0.5,xpd = TRUE,bty="L",horiz=TRUE)
-
-    if(isTRUE(outlier.return)){
-
-      if(identical(which(is.outlier), integer(0))){
-        return(invisible(NULL))
-      } else {
-      symbols(which(is.outlier),
-              Zresidual[which(is.outlier)],
-              circles=rep(5,length(which(is.outlier))),
-              fg=rep('red',length(which(is.outlier))),
-              add=T, inches=F)
-      text(which(is.outlier),
-           Zresidual[which(is.outlier)],
-           pos=1,label = which(is.outlier),
-           cex = 0.8,col="red")
-    }
-
-  }
-}
-  if(!is.null(X)){
-    plot(X, Zresidual, ylab = "Z-Residual",
-         ylim = c(-ylim0,ylim0+1),
-         col=c("blue","darkolivegreen4")[censored+1],
-         #col = ifelse(is.outlier, "darkgoldenrod2", ifelse(censored,"darkolivegreen4","blue")),
-         pch=c(3,2)[censored+1],
-         main =main.title,xlab=xlab
+  if (X == "index") {
+    plot.default (
+      Zresidual,
+      ylab = "Z-Residual",
+      ylim = c(-ylim0, ylim0 + 1),
+      col = c("blue", "darkolivegreen4")[censored + 1],
+      #col = ifelse(is.outlier, "darkgoldenrod2", ifelse(censored,"darkolivegreen4","blue")),
+      pch = c(3, 2)[censored + 1],
+      xlab = "Index",
+      main = main.title
     )
-    lines(lowess(Zresidual ~ X),col = "red",lwd = 3)
-    legend(x = "topleft",
-           legend = c("Uncensored", "Censored"), col=c("darkolivegreen4","blue"),
-           pch=c(2,3),cex=0.5,xpd = TRUE,bty="L",horiz=TRUE)
+    legend(
+      x = "topleft",
+      legend = c("Uncensored", "Censored"),
+      col = c("darkolivegreen4", "blue"),
+      pch = c(2, 3),
+      cex = 0.5,
+      xpd = TRUE,
+      bty = "L",
+      horiz = TRUE
+    )
 
-    if(isTRUE(outlier.return)){
-      if(identical(which(is.outlier), integer(0))){
+    if (isTRUE(outlier.return)) {
+      if (identical(which(is.outlier), integer(0))) {
         return(invisible(NULL))
       } else {
-        symbols(X[which(is.outlier)],
-                Zresidual[which(is.outlier)],
-                circles=rep(5,length(which(is.outlier))),
-                fg=rep('red',length(which(is.outlier))),
-                add=T, inches=F)
-        text(X[which(is.outlier)],
-             Zresidual[which(is.outlier)],
-             pos=1,label = which(is.outlier),
-             cex = 0.8,col="red")
-
+        symbols(
+          which(is.outlier),
+          Zresidual[which(is.outlier)],
+          circles = rep(5, length(which(is.outlier))),
+          fg = rep('red', length(which(is.outlier))),
+          add = T,
+          inches = F
+        )
+        text(
+          which(is.outlier),
+          Zresidual[which(is.outlier)],
+          pos = 1,
+          label = which(is.outlier),
+          cex = 0.8,
+          col = "red"
+        )
       }
 
     }
+  }
+  if (X == "lp") {
+    fitted.value <- attr(Zresidual, "linear.pred")
+    plot(
+      fitted.value,
+      Zresidual,
+      ylab = "Z-Residual",
+      ylim = c(-ylim0, ylim0 + 1),
+      col = c("blue", "darkolivegreen4")[censored + 1],
+      #col = ifelse(is.outlier, "darkgoldenrod2", ifelse(censored,"darkolivegreen4","blue")),
+      pch = c(3, 2)[censored + 1],
+      main = main.title,
+      xlab = "Linear Predictor"
+    )
+    lines(lowess(Zresidual ~ fitted.value),
+          col = "red",
+          lwd = 3)
+    legend(
+      x = "topleft",
+      legend = c("Uncensored", "Censored"),
+      col = c("darkolivegreen4", "blue"),
+      pch = c(2, 3),
+      cex = 0.5,
+      xpd = TRUE,
+      bty = "L",
+      horiz = TRUE
+    )
 
+    if (isTRUE(outlier.return)) {
+      if (identical(which(is.outlier), integer(0))) {
+        return(invisible(NULL))
+      } else {
+        symbols(
+          fitted.value[which(is.outlier)],
+          Zresidual[which(is.outlier)],
+          circles = rep(5, length(which(is.outlier))),
+          fg = rep('red', length(which(is.outlier))),
+          add = T,
+          inches = F
+        )
+        text(
+          fitted.value[which(is.outlier)],
+          Zresidual[which(is.outlier)],
+          pos = 1,
+          label = which(is.outlier),
+          cex = 0.8,
+          col = "red"
+        )
+      }
+    }
   }
 
+  if (X != "index" && X != "lp") {
 
-  if(length(id.infinity)>0L){
-    text(id.infinity+5, Zresidual[id.infinity],
+    fitted.value <- attr(Zresidual, "covariates")
+
+    if(X == "covariate"){
+      i<-1
+      cat("To plot against other covariates, set X to be the covariate name. Please copy one of the covariate name:",
+          variable.names(fitted.value))
+
+    } else if(X %in% variable.names(fitted.value)){
+      cov.name<-variable.names(fitted.value)
+      i<- which(cov.name==X)
+    } else{stop("X must be the one of covariate name.") }
+
+
+    plot(
+      fitted.value[,i],
+      Zresidual,
+      ylab = "Z-Residual",
+      ylim = c(-ylim0, ylim0 + 1),
+      col = c("blue", "darkolivegreen4")[censored + 1],
+      #col = ifelse(is.outlier, "darkgoldenrod2", ifelse(censored,"darkolivegreen4","blue")),
+      pch = c(3, 2)[censored + 1],
+      xlab = colnames(fitted.value)[i],
+      main = main.title
+    )
+    lines(lowess(Zresidual ~ fitted.value[, i]),
+          col = "red",
+          lwd = 3)
+    legend(
+      x = "topleft",
+      legend = c("Uncensored", "Censored"),
+      col = c("darkolivegreen4", "blue"),
+      pch = c(2, 3),
+      cex = 0.5,
+      xpd = TRUE,
+      bty = "L",
+      horiz = TRUE
+    )
+
+    if (isTRUE(outlier.return)) {
+      if (identical(which(is.outlier), integer(0))) {
+        return(invisible(NULL))
+      } else {
+        symbols(
+          fitted.value[, i][which(is.outlier)],
+          Zresidual[which(is.outlier)],
+          circles = rep(5, length(which(is.outlier))),
+          fg = rep('red', length(which(is.outlier))),
+          add = T,
+          inches = F
+        )
+        text(
+          fitted.value[,i][which(is.outlier)],
+          Zresidual[which(is.outlier)],
+          pos = 1,
+          label = which(is.outlier),
+          cex = 0.8,
+          col = "red"
+        )
+      }
+    }
+  }
+
+  if (length(id.infinity) > 0L) {
+    text(id.infinity + 5,
+         Zresidual[id.infinity],
          labels = value.notfinite,
          #adj = c(0,0),
-         col=2)
+         col = 2)
   }
-  hlines <- c(1.96,3); hlines2 <- -hlines
-  abline(h= c(hlines,hlines2), lty=3, col="grey")
-  if(outlier.return){
+  hlines <- c(1.96, 3)
+  hlines2 <- -hlines
+  abline(h = c(hlines, hlines2),
+         lty = 3,
+         col = "grey")
+  if (outlier.return) {
     cat("Outlier Indices:", which(is.outlier), "\n")
-    invisible(list(outliers=which(is.outlier)))
+    invisible(list(outliers = which(is.outlier)))
   }
 
 }
-
