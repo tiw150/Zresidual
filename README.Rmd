@@ -60,19 +60,10 @@ LeukSurv$logwbc<- log(LeukSurv$wbc+0.001)
 We fitted two shared frailty models, one with covariates wbc, age, sex and tpi, which is labelled as the wbc model, and the other with log(wbc) replacing wbc, which is labelled as the lwbc model.
 
 ```{r}
-fit_LeukSurv_wbc <- tryCatch(
-  coxph(Surv(time, cens) ~ age  +sex+ wbc +tpi  +
-          frailty(district, distribution="gamma"), data= LeukSurv),
-  error = function(e) NA,
-  warning = function(w) NA
-)
-fit_LeukSurv_logwbc  <- tryCatch(
-  coxph(Surv(time, cens) ~ age +sex + logwbc + tpi +
-          frailty(district, distribution="gamma"), data= LeukSurv),
-  error = function(e) NA,
-  warning = function(w) NA
-)
-if (any(is.na(fit_LeukSurv_wbc)) || any(is.na(fit_LeukSurv_logwbc))) stop("An error or warning has occurred during the model fitting process.")
+fit_LeukSurv_wbc <- coxph(Surv(time, cens) ~ age  +sex+ wbc +tpi  +
+          frailty(district, distribution="gamma"), data= LeukSurv)
+fit_LeukSurv_logwbc  <- coxph(Surv(time, cens) ~ age +sex + logwbc + tpi +
+          frailty(district, distribution="gamma"), data= LeukSurv)
 
 ```
 

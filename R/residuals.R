@@ -1,4 +1,13 @@
 #' @export
+#'
+#'
+#' @return \itemize{
+#'  \item{Zresid}{Z-residual}
+#'  \item{censored.Zresid}{censored Z-residual}
+#'  \item{ucs}{unmodified CS residuals}
+#'  \item{martg}{Martingale residuals}
+#'  \item{dev}{Deviance residuals}
+#' }
 residuals <- function(fit.object,
                       data,
                       residual.type = c("censored Z-residual", "Cox-Snell",

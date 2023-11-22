@@ -10,15 +10,11 @@
 #'
 #' @return \itemize{
 #'  \item{Zresid}{Z-residual}
-#'  \item{censored.Zresid}{censored Z-residual}
 #'  \item{SP}{Survival Probabilities}
-#'  \item{ucs}{unmodified CS residuals}
-#'  \item{mcs}{modified CS residuals}
-#'  \item{martg}{Martingale residuals}
-#'  \item{dev}{Deviance residuals}
+
 #' }
 #'
-Zresidual <- function(fit.object, data = NULL, fit.object2 = NULL)
+Zresidual <- function(fit.object, nrep=1, data = NULL, fit.object2 = NULL)
 {
   # Required packages:
   # if (!requireNamespace("pacman")) {
@@ -40,15 +36,16 @@ Zresidual <- function(fit.object, data = NULL, fit.object2 = NULL)
       Zresid_fun <- Zresidual.coxph.frailty(
         fit_coxph = fit.object,
         traindata = data,
-        newdata = data
+        newdata = data,
+        n.rep=nrep
       )
     } else
-      Zresid_fun <- Zresidual.coxph(fit_coxph = fit.object, newdata = data)
+      Zresid_fun <- Zresidual.coxph(fit_coxph = fit.object, newdata = data,n.rep=nrep)
   }
 
   # the survreg function in the survival package
   if (get_object_name == "survreg") {
-    Zresid_fun <- Zresidual.survreg(survreg_fit = fit.object, newdata = data)
+    Zresid_fun <- Zresidual.survreg(survreg_fit = fit.object, newdata = data,n.rep=nrep)
   }
 
   # the glmmTMB function in the glmmTMB package

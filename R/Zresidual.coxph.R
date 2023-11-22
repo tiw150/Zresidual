@@ -1,5 +1,5 @@
 #input: coxfit_fit is a coxph object
-Zresidual.coxph<-function (fit_coxph, newdata)
+Zresidual.coxph<-function (fit_coxph, newdata,n.rep=nrep))
 {
   if(is.null(newdata)){
     mf_new<-model.frame.coxph(fit_coxph)
@@ -34,17 +34,23 @@ Zresidual.coxph<-function (fit_coxph, newdata)
   censored <- which(Y_new[,3]==0)
   n.censored <- length(censored)
   #Z-residual
-  RSP <- SP
-  RSP[censored] <- RSP[censored]*runif(n.censored)
-  Zresid <- -qnorm(RSP)
+  Zresid<-matrix(0,length(SP),n.rep)
+  col_name<-rep(0,n.rep)
+  for(i in 1:n.rep){
+    RSP <- SP
+    RSP[censored] <- RSP[censored]*runif(n.censored)
+    Zresid[,i] <- -qnorm(RSP)
+    col_name[i]<-paste("Z-residual ",i,sep = "")
+  }
+  colnames(Zresid)<- col_name
+
   #####
   censored.status<- (as.matrix(Y_new)[,-1])[,2]
   lp.new<-fix_var_new %*% fit_coxph$coefficients
 
   Zresid.value<-as.matrix(Zresid)
-  colnames(Zresid.value)[1] <- "Z-residual"
 
-  class(Zresid.value) <- c("zresid", class(Zresid.value))
+#  class(Zresid.value) <- c("zresid", class(Zresid.value))
 
   attributes(Zresid.value) <- c(attributes(Zresid.value), list(
       Survival.Prob= SP,

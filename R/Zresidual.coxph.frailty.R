@@ -1,5 +1,5 @@
 ######Z-residual ################################
-Zresidual.coxph.frailty <- function (fit_coxph, traindata, newdata)
+Zresidual.coxph.frailty <- function (fit_coxph, traindata, newdata,n.rep=nrep)
 {
   # if (!requireNamespace("pacman")) {
   #   install.packages("pacman")
@@ -74,16 +74,21 @@ Zresidual.coxph.frailty <- function (fit_coxph, traindata, newdata)
     SP<- exp(-z_hat*as.vector(exp(lp))*H0)
     censored <- which(Y[,3]==0)
     n.censored <- length(censored)
-
     #Z-residual
-    RSP <- SP
-    RSP[censored] <- RSP[censored]*runif(n.censored)
-    Zresid <- -qnorm(RSP)
+    Zresid<-matrix(0,length(SP),n.rep)
+    col_name<-rep(0,n.rep)
+    for(i in 1:n.rep){
+      RSP <- SP
+      RSP[censored] <- RSP[censored]*runif(n.censored)
+      Zresid[,i] <- -qnorm(RSP)
+      col_name[i]<-paste("Z-residual ",i,sep = "")
+    }
+    colnames(Zresid)<- col_name
     #####
     censored.status<- (as.matrix(Y)[,-1])[,2]
 
     Zresid.value<-as.matrix(Zresid)
-    colnames(Zresid.value)[1] <- "Z-residual"
+
 
     attributes(Zresid.value) <- c(attributes(Zresid.value), list(
       Survival.Prob= SP,
@@ -93,8 +98,6 @@ Zresidual.coxph.frailty <- function (fit_coxph, traindata, newdata)
       object.model.frame=mf
     ))
   }
-
-
 
   ##########serve for cv function.
   if(!is.null(traindata) & !is.null(newdata)){
@@ -197,14 +200,19 @@ Zresidual.coxph.frailty <- function (fit_coxph, traindata, newdata)
   n.censored <- length(censored)
 
   #Z-residual
-  RSP <- SP
-  RSP[censored] <- RSP[censored]*runif(n.censored)
-  Zresid <- -qnorm(RSP)
+  Zresid<-matrix(0,length(SP),n.rep)
+  col_name<-rep(0,n.rep)
+  for(i in 1:n.rep){
+    RSP <- SP
+    RSP[censored] <- RSP[censored]*runif(n.censored)
+    Zresid[,i] <- -qnorm(RSP)
+    col_name[i]<-paste("Z-residual ",i,sep = "")
+  }
+  colnames(Zresid)<- col_name
   #####
   censored.status<- (as.matrix(Y_new)[,-1])[,2]
 
   Zresid.value<-as.matrix(Zresid)
-  colnames(Zresid.value)[1] <- "Z-residual"
 
   attributes(Zresid.value) <- c(attributes(Zresid.value), list(
     Survival.Prob= SP,
