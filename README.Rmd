@@ -70,8 +70,8 @@ fit_LeukSurv_logwbc  <- coxph(Surv(time, cens) ~ age +sex + logwbc + tpi +
 Once the model is fitted, we can calculate Z-residual, censored Z-residual and other residuals for two models.
 
 ```{r}
-Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc)
-Zresid.LeukSurv.logwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc)
+Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,nrep=10)
+Zresid.LeukSurv.logwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,nrep=10)
 ```
 
 Diagnosis of the overall (GOF) and the Functional Form of Covariates using Z-residuals
