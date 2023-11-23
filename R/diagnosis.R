@@ -318,12 +318,12 @@ boxplot.zresid <- function(Zresidual,index=1,
         paste0("Z-AOV p-value = ",
                sprintf(
                  "%3.2f",
-                 anov.test.zresid(Zresidual[,j], fitted.value, k.anova = num.bin)
+                 anov.test.zresid(Zresidual, X=X, k.anova = num.bin)[j]
                )),
         paste0("Z-BL p-value = ",
                sprintf(
                  "%3.2f",
-                 bartlett.test.zresid(Zresidual[,j], fitted.value, k.bl = num.bin)
+                 bartlett.test.zresid(Zresidual, X=X, k.bl = num.bin)[j]
                ))
       ),
       cex = 0.6,
@@ -362,12 +362,12 @@ boxplot.zresid <- function(Zresidual,index=1,
         paste0("Z-AOV p-value = ",
                sprintf(
                  "%3.2f",
-                 anov.test.zresid(Zresidual[,j], fitted.value[,i], k.anova = num.bin)
+                 anov.test.zresid(Zresidual, X= X, k.anova = num.bin)[j]
                )),
         paste0("Z-BL p-value = ",
                sprintf(
                  "%3.2f",
-                 bartlett.test.zresid(Zresidual[,j], fitted.value[,i], k.bl = num.bin)
+                 bartlett.test.zresid(Zresidual, X=X, k.bl = num.bin)[j]
                ))
       ),
       cex = 0.6,
