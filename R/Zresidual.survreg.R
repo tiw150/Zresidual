@@ -4,7 +4,7 @@
 #'
 #' @importFrom survival psurvreg dsurvreg
 #'
-Zresidual.survreg<-function(survreg_fit,newdata,n.rep=nrep))
+Zresidual.survreg<-function(survreg_fit,newdata,n.rep=nrep)
 {
   if(is.null(newdata)){
     mf<-model.frame.survreg(survreg_fit)
