@@ -26,7 +26,11 @@ sf.test.zresid <- function (Zresidual)
   id.pos.inf <- which(is.infinite(Zresidual) & Zresidual > 0)
   Zresidual[id.negtv.inf]<- -1e10
   Zresidual[id.pos.inf]<- 1e10
-  sf.test(Zresidual)$p.value
+  sf.pv<-rep(0,ncol(Zresidual))
+  for(i in 1:ncol(Zresidual)){
+    sf.pv[i]<-sf.test(Zresidual[,i])$p.value
+  }
+  sf.pv
 }
 
 #' @export
@@ -36,7 +40,11 @@ sw.test.zresid <- function (Zresidual)
   id.pos.inf <- which(is.infinite(Zresidual) & Zresidual > 0)
   Zresidual[id.negtv.inf]<- -1e10
   Zresidual[id.pos.inf]<- 1e10
-  shapiro.test(Zresidual)$p.value
+  sw.pv<-rep(0,ncol(Zresidual))
+  for(i in 1:ncol(Zresidual)){
+    sw.pv[i]<-shapiro.test(Zresidual[,i])$p.value
+  }
+  sw.pv
 }
 
 #' @export qqnorm.zresid
@@ -57,7 +65,7 @@ qqnorm.zresid <- function (Zresidual, index=1,
     qqnorm(Zresidual[,i],main=main.title,xlab=xlab, ylab=ylab)
     qqline(Zresidual[,i],col=1)
     abline(a=0,b=1,col=3)
-    legend(x = "topleft",
+    legend(x = "topleft",cex = 0.6,
            legend = paste0("Z-SW p-value = ",sprintf("%3.2f",sw.pv)))
   }
   if(max(abs(Zresidual[,i]))>=6){
@@ -81,7 +89,7 @@ qqnorm.zresid <- function (Zresidual, index=1,
       axis.break(4, 6,breakcol="black", style="slash")
       points(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]][max.values],
              pmax(qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]][max.values]-gapsize+1,6.5),col="red")
-      legend(x = "bottomright",
+      legend(x = "topleft",cex = 0.6,
              legend = paste0("Z-SW p-value = ",sprintf("%3.2f",sw.pv)))
     }
 
@@ -102,9 +110,9 @@ qqnorm.zresid <- function (Zresidual, index=1,
       axis.break(2, -6.1,breakcol="black", style="slash")
       axis.break(4, -6.1, breakcol="black", style="slash")
       points(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]][min.values],
-             pmin(qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]][min.values]-gapsize-1,-6.5),col="red")
+             pmin(qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]][min.values]-gapsize2-1,-6.5),col="red")
 
-      legend(x = "bottomright",
+      legend(x = "topleft",cex = 0.6,
              legend = paste0("Z-SW p-value = ",sprintf("%3.2f",sw.pv)))
 
     }
@@ -137,7 +145,7 @@ qqnorm.zresid <- function (Zresidual, index=1,
       axis.break(4, -6.1, breakcol="black", style="slash")
       points(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]][min.values],
              pmin(qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]][min.values]-gapsize2-1,-6.5),col="red")
-      legend(x = "bottomright",
+      legend(x = "topleft",cex = 0.6,
              legend = paste0("Z-SW p-value = ",sprintf("%3.2f",sw.pv)))
     }
 
@@ -182,58 +190,123 @@ gof.censore.zresid <- function (censored.Zresidual)
 }
 
 #' @export
-anov.test.zresid <- function (Zresidual,fitted.values, k.anova=10)
+anov.test.zresid <- function (Zresidual,X = c("lp", "covariate"), k.anova=10)
 {
-  id.negtv.inf <- which(is.infinite(Zresidual) & Zresidual < 0)
-  id.pos.inf <- which(is.infinite(Zresidual) & Zresidual > 0)
-  Zresidual[id.negtv.inf]<- -1e10
-  Zresidual[id.pos.inf]<- 1e10
-  test.nl.aov(Zresidual, fitted.values, k.anova)
+  if (missing(X))
+    X = "lp"
+  if (X == "lp") {
+    fitted.value <- attr(Zresidual, "linear.pred")
+    id.negtv.inf <- which(is.infinite(Zresidual) & Zresidual < 0)
+    id.pos.inf <- which(is.infinite(Zresidual) & Zresidual > 0)
+    Zresidual[id.negtv.inf]<- -1e10
+    Zresidual[id.pos.inf]<- 1e10
+    aov.pv<-rep(0,ncol(Zresidual))
+    for(j in 1:ncol(Zresidual)){
+      aov.pv[j]<- test.nl.aov(Zresidual[,j], fitted.value, k.anova)
+    }
+    aov.pv
+    }
+  if (X != "lp") {
+    fitted.value <- attr(Zresidual, "covariates")
+    if(X == "covariate"){
+      i<-1
+      cat("To plot against other covariates, set X to be the covariate name. Please copy one of the covariate name:",
+          variable.names(fitted.value))
+
+    } else if(X %in% variable.names(fitted.value)){
+      cov.name<-variable.names(fitted.value)
+      i<- which(cov.name==X)
+    } else{stop(paste0("X must be the one of covariate name: ", variable.names(fitted.value),". "))}
+
+    id.negtv.inf <- which(is.infinite(Zresidual) & Zresidual < 0)
+    id.pos.inf <- which(is.infinite(Zresidual) & Zresidual > 0)
+    Zresidual[id.negtv.inf]<- -1e10
+    Zresidual[id.pos.inf]<- 1e10
+    aov.pv<-rep(0,ncol(Zresidual))
+    for(j in 1:ncol(Zresidual)){
+      aov.pv[j]<- test.nl.aov(Zresidual[,j], fitted.value[,i], k.anova)
+    }
+    aov.pv
+
+  }
 }
 
 #' @export bartlett.test.zresid
-bartlett.test.zresid <- function (Zresidual,fitted.values, k.bl=10)
+bartlett.test.zresid <- function (Zresidual, X = c("lp", "covariate"), k.bl=10)
 {
+  if (missing(X))
+    X = "lp"
+
   id.negtv.inf <- which(is.infinite(Zresidual) & Zresidual < 0)
   id.pos.inf <- which(is.infinite(Zresidual) & Zresidual > 0)
   Zresidual[id.negtv.inf]<- -1e10
   Zresidual[id.pos.inf]<- 1e10
-  test.var.bartl(Zresidual, fitted.values, k.bl)
+
+  if (X == "lp") {
+    fitted.value <- attr(Zresidual, "linear.pred")
+    bl.pv<-rep(0,ncol(Zresidual))
+    for(j in 1:ncol(Zresidual)){
+      bl.pv[j]<-test.var.bartl(Zresidual[,j], fitted.value, k.bl)
+    }
+    bl.pv
+  }
+  if (X != "lp") {
+    fitted.value <- attr(Zresidual, "covariates")
+    if(X == "covariate"){
+      i<-1
+      cat("To plot against other covariates, set X to be the covariate name. Please copy one of the covariate name:",
+          variable.names(fitted.value))
+
+    } else if(X %in% variable.names(fitted.value)){
+      cov.name<-variable.names(fitted.value)
+      i<- which(cov.name==X)
+    } else{stop(paste0("X must be the one of covariate name: ", variable.names(fitted.value),". ")) }
+
+    bl.pv<-rep(0,ncol(Zresidual))
+    for(j in 1:ncol(Zresidual)){
+      bl.pv[j]<-test.var.bartl(Zresidual[,j], fitted.value[,i], k.bl)
+    }
+    bl.pv
+  }
+
 }
 
 #' @export boxplot.zresid
-boxplot.zresid <- function(Zresidual,
+boxplot.zresid <- function(Zresidual,index=1,
                            X = c("lp", "covariate"),
                            num.bin = 10,
                            main.title="Z-residual Boxplot",
                            outlier.return = FALSE,
                            ...)
 {
+  j<-index
+
   if (missing(X))
     X = "lp"
 
-  id.infinity <- which (!is.finite(Zresidual))
+  id.infinity <- which (!is.finite(Zresidual[,j]))
   if (length(id.infinity) > 0L) {
-    value.notfinite <- as.character.na(Zresidual[id.infinity])
-    max.non.infinity <- max(abs(Zresidual[-id.infinity]))
-    Zresidual[id.infinity] <-
-      sign.na(Zresidual[id.infinity]) * (max.non.infinity + 0.1)
+    value.notfinite <- as.character.na(Zresidual[,j][id.infinity])
+    max.non.infinity <- max(abs(Zresidual[,j][-id.infinity]))
+    Zresidual[,j][id.infinity] <-
+      sign.na(Zresidual[,j][id.infinity]) * (max.non.infinity + 0.1)
     message("Non-finite Zresiduals exist! The model or the fitting process has a problem!")
   }
-  ylim0 <- max(qnorm(c(0.9999)), max(abs(Zresidual)))
-  is.outlier <- (abs(Zresidual) > 3.5)
+  ylim0 <- max(qnorm(c(0.9999)), max(abs(Zresidual[,j])))
+  is.outlier <- (abs(Zresidual[,j]) > 3.5)
 
 
   if (X == "lp") {
     fitted.value <- attr(Zresidual, "linear.pred")
-    if (is.factor(fitted.values)) {
-      bin <- fitted.values
+
+    if (is.factor(fitted.value)) {
+      bin <- fitted.value
     } else{
-      bin <- cut(fitted.values, num.bin)
+      bin <- cut(fitted.value, num.bin)
     }
     plot(
       bin,
-      Zresidual,
+      Zresidual[,j],
       ylab = "Z-Residual",
       ylim = c(-ylim0, ylim0 + 1),
       main = main.title,
@@ -245,12 +318,12 @@ boxplot.zresid <- function(Zresidual,
         paste0("Z-AOV p-value = ",
                sprintf(
                  "%3.2f",
-                 anov.test.zresid(Zresidual, fitted.values, k.anova = num.bin)
+                 anov.test.zresid(Zresidual[,j], fitted.value, k.anova = num.bin)
                )),
         paste0("Z-BL p-value = ",
                sprintf(
                  "%3.2f",
-                 bartlett.test.zresid(Zresidual, fitted.values, k.bl = num.bin)
+                 bartlett.test.zresid(Zresidual[,j], fitted.value, k.bl = num.bin)
                ))
       ),
       cex = 0.6,
@@ -268,7 +341,7 @@ boxplot.zresid <- function(Zresidual,
     } else if(X %in% variable.names(fitted.value)){
       cov.name<-variable.names(fitted.value)
       i<- which(cov.name==X)
-    } else{stop("X must be the one of covariate name.") }
+    } else{stop( paste0("X must be the one of covariate name: ", variable.names(fitted.value),". "))}
 
     if (is.factor(fitted.value[,i])) {
       bin <- fitted.value[,i]
@@ -277,7 +350,7 @@ boxplot.zresid <- function(Zresidual,
     }
     plot(
       bin,
-      Zresidual,
+      Zresidual[,j],
       ylab = "Z-Residual",
       ylim = c(-ylim0, ylim0 + 1),
       main = main.title,
@@ -289,12 +362,12 @@ boxplot.zresid <- function(Zresidual,
         paste0("Z-AOV p-value = ",
                sprintf(
                  "%3.2f",
-                 anov.test.zresid(Zresidual, fitted.values, k.anova = num.bin)
+                 anov.test.zresid(Zresidual[,j], fitted.value[,i], k.anova = num.bin)
                )),
         paste0("Z-BL p-value = ",
                sprintf(
                  "%3.2f",
-                 bartlett.test.zresid(Zresidual, fitted.values, k.bl = num.bin)
+                 bartlett.test.zresid(Zresidual[,j], fitted.value[,i], k.bl = num.bin)
                ))
       ),
       cex = 0.6,
@@ -302,19 +375,6 @@ boxplot.zresid <- function(Zresidual,
     )
   }
 
-
-  if (length(id.infinity) > 0L) {
-    text(id.infinity + 5,
-         Zresidual[id.infinity],
-         labels = value.notfinite,
-         #adj = c(0,0),
-         col = 2)
-  }
-  hlines <- c(1.96, 3)
-  hlines2 <- -hlines
-  abline(h = c(hlines, hlines2),
-         lty = 3,
-         col = "grey")
   if (outlier.return)
   {
     cat("Outlier Indices:", which(is.outlier), "\n")
@@ -324,30 +384,31 @@ boxplot.zresid <- function(Zresidual,
 
 
 #' @export plot.zresid
-plot.zresid <- function(Zresidual,
+plot.zresid <- function(Zresidual,index=1,
                         X = c("index", "lp", "covariate"),
                         main.title = "Z-residual Scatterplot",
                         outlier.return = FALSE,
                         ...)
 {
+  j<-index
+
   if (missing(X))
     X = "lp"
-
-  id.infinity <- which (!is.finite(Zresidual))
+  id.infinity <- which (!is.finite(Zresidual[,j]))
   if (length(id.infinity) > 0L) {
-    value.notfinite <- as.character.na(Zresidual[id.infinity])
-    max.non.infinity <- max(abs(Zresidual[-id.infinity]))
-    Zresidual[id.infinity] <-
-      sign.na(Zresidual[id.infinity]) * (max.non.infinity + 0.1)
+    value.notfinite <- as.character.na(Zresidual[,j][id.infinity])
+    max.non.infinity <- max(abs(Zresidual[,j][-id.infinity]))
+    Zresidual[,j][id.infinity] <-
+      sign.na(Zresidual[,j][id.infinity]) * (max.non.infinity + 0.1)
     message("Non-finite Zresiduals exist! The model or the fitting process has a problem!")
   }
-  ylim0 <- max(qnorm(c(0.9999)), max(abs(Zresidual)))
-  is.outlier <- (abs(Zresidual) > 3.5)
+  ylim0 <- max(qnorm(c(0.9999)), max(abs(Zresidual[,j])))
+  is.outlier <- (abs(Zresidual[,j]) > 3.5)
   censored <- attr(Zresidual, "censored.status")
 
   if (X == "index") {
     plot.default (
-      Zresidual,
+      Zresidual[,j],
       ylab = "Z-Residual",
       ylim = c(-ylim0, ylim0 + 1),
       col = c("blue", "darkolivegreen4")[censored + 1],
@@ -373,7 +434,7 @@ plot.zresid <- function(Zresidual,
       } else {
         symbols(
           which(is.outlier),
-          Zresidual[which(is.outlier)],
+          Zresidual[,j][which(is.outlier)],
           circles = rep(5, length(which(is.outlier))),
           fg = rep('red', length(which(is.outlier))),
           add = T,
@@ -381,7 +442,7 @@ plot.zresid <- function(Zresidual,
         )
         text(
           which(is.outlier),
-          Zresidual[which(is.outlier)],
+          Zresidual[,j][which(is.outlier)],
           pos = 1,
           label = which(is.outlier),
           cex = 0.8,
@@ -395,7 +456,7 @@ plot.zresid <- function(Zresidual,
     fitted.value <- attr(Zresidual, "linear.pred")
     plot(
       fitted.value,
-      Zresidual,
+      Zresidual[,j],
       ylab = "Z-Residual",
       ylim = c(-ylim0, ylim0 + 1),
       col = c("blue", "darkolivegreen4")[censored + 1],
@@ -404,7 +465,7 @@ plot.zresid <- function(Zresidual,
       main = main.title,
       xlab = "Linear Predictor"
     )
-    lines(lowess(Zresidual ~ fitted.value),
+    lines(lowess(Zresidual[,j] ~ fitted.value),
           col = "red",
           lwd = 3)
     legend(
@@ -424,15 +485,15 @@ plot.zresid <- function(Zresidual,
       } else {
         symbols(
           fitted.value[which(is.outlier)],
-          Zresidual[which(is.outlier)],
-          circles = rep(5, length(which(is.outlier))),
+          Zresidual[,j][which(is.outlier)],
+          circles = rep(0.03, length(which(is.outlier))),
           fg = rep('red', length(which(is.outlier))),
           add = T,
           inches = F
         )
         text(
           fitted.value[which(is.outlier)],
-          Zresidual[which(is.outlier)],
+          Zresidual[,j][which(is.outlier)],
           pos = 1,
           label = which(is.outlier),
           cex = 0.8,
@@ -459,7 +520,7 @@ plot.zresid <- function(Zresidual,
 
     plot(
       fitted.value[,i],
-      Zresidual,
+      Zresidual[,j],
       ylab = "Z-Residual",
       ylim = c(-ylim0, ylim0 + 1),
       col = c("blue", "darkolivegreen4")[censored + 1],
@@ -468,7 +529,7 @@ plot.zresid <- function(Zresidual,
       xlab = colnames(fitted.value)[i],
       main = main.title
     )
-    lines(lowess(Zresidual ~ fitted.value[, i]),
+    lines(lowess(Zresidual[,j] ~ fitted.value[, i]),
           col = "red",
           lwd = 3)
     legend(
@@ -488,7 +549,7 @@ plot.zresid <- function(Zresidual,
       } else {
         symbols(
           fitted.value[, i][which(is.outlier)],
-          Zresidual[which(is.outlier)],
+          Zresidual[,j][which(is.outlier)],
           circles = rep(5, length(which(is.outlier))),
           fg = rep('red', length(which(is.outlier))),
           add = T,
@@ -496,7 +557,7 @@ plot.zresid <- function(Zresidual,
         )
         text(
           fitted.value[,i][which(is.outlier)],
-          Zresidual[which(is.outlier)],
+          Zresidual[,j][which(is.outlier)],
           pos = 1,
           label = which(is.outlier),
           cex = 0.8,
@@ -508,7 +569,7 @@ plot.zresid <- function(Zresidual,
 
   if (length(id.infinity) > 0L) {
     text(id.infinity + 5,
-         Zresidual[id.infinity],
+         Zresidual[,j][id.infinity],
          labels = value.notfinite,
          #adj = c(0,0),
          col = 2)

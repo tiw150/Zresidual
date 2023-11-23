@@ -1,13 +1,13 @@
-test.nl.aov <- function(Zresidual, fitted.values, k.anova=10)
+test.nl.aov <- function(Zresidual, fitted.value, k.anova=10)
 {
-  if(is.factor(fitted.values)){
-    fitted.values<-as.numeric(fitted.values)-1
-    lpred.bin <- fitted.values
+  if(is.factor(fitted.value)){
+    fitted.value<-as.numeric(fitted.value)-1
+    lpred.bin <- fitted.value
     anova(lm(Zresidual ~ lpred.bin))$`Pr(>F)`[1]
   }
 
- if(!is.factor(fitted.values)){
-   lpred.bin <- cut(fitted.values, k.anova)
+ if(!is.factor(fitted.value)){
+   lpred.bin <- cut(fitted.value, k.anova)
    less2_factor<-which(tapply(lpred.bin,lpred.bin,length)<= 2)
    if(rlang::is_empty(names(less2_factor))){
      anova(lm(Zresidual ~ lpred.bin))$`Pr(>F)`[1]

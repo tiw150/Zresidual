@@ -93,17 +93,15 @@ The scatterplots of Z-residuals against the linear predictor don't exhibit visib
 ```{r}
 par(mfrow = c(2,2),mar=c(4,4,1.5,2))
 plot.zresid(Zresid.LeukSurv.wbc,
-            X=fit_LeukSurv_wbc$linear.predictors,
             xlab="Linear Predictor",
             main.title = "Z-residual Scatterplot of wbc model")
 plot.zresid(Zresid.LeukSurv.logwbc,
-            X=fit_LeukSurv_logwbc$linear.predictors,
             xlab="Linear Predictor",
             main.title = "Z-residual Scatterplot of lwbc model")
 
-boxplot.zresid(Zresid.LeukSurv.wbc,fitted.values=fit_LeukSurv_wbc$linear.predictors,
+boxplot.zresid(Zresid.LeukSurv.wbc,
                main.title = "Z-residual Boxplot of wbc model",xlab="Linear Predictor")
-boxplot.zresid(Zresid.LeukSurv.logwbc,fitted.values=fit_LeukSurv_logwbc$linear.predictors,
+boxplot.zresid(Zresid.LeukSurv.logwbc,
                main.title = "Z-residual Boxplot of lwbc model",xlab="Linear Predictor")
 
 
@@ -115,14 +113,12 @@ The above diagnostics results reveal no serious misspecification in  these two m
 
 ```{r}
 par(mfrow = c(2,2),mar=c(4,4,1.5,2))
-plot.zresid(Zresid.LeukSurv.wbc,
-            X=LeukSurv$wbc,
+plot.zresid(Zresid.LeukSurv.wbc,X="wbc",
             xlab="wbc",main.title = "Z-residual Scatterplot of wbc model")
-plot.zresid(Zresid.LeukSurv.logwbc,
-            X=LeukSurv$logwbc,
+plot.zresid(Zresid.LeukSurv.logwbc,X="logwbc",
             xlab="log(wbc)",main.title = "Z-residual Scatterplot of lwbc model")
-boxplot.zresid(Zresid.LeukSurv.wbc,fitted.values=LeukSurv$wbc,main.title = "Z-residual Boxplot of wbc model",xlab="wbc")
-boxplot.zresid(Zresid.LeukSurv.logwbc,fitted.values=LeukSurv$logwbc,main.title = "Z-residual Boxplot of wbc model", xlab="log(wbc)")
+boxplot.zresid(Zresid.LeukSurv.wbc,X="wbc",main.title = "Z-residual Boxplot of wbc model",xlab="wbc")
+boxplot.zresid(Zresid.LeukSurv.logwbc,X="logwbc",main.title = "Z-residual Boxplot of wbc model", xlab="log(wbc)")
 
 ```
 
@@ -132,8 +128,8 @@ The boxplots of the Z-residuals against categorical covariate sex shows the grou
 ```{r}
 par(mfrow = c(1,2))
 
-boxplot.zresid(Zresid.LeukSurv.wbc,fitted.values=LeukSurv$sex,xlab="sex",main.title = "Z-residual Boxplot of wbc model")
-boxplot.zresid(Zresid.LeukSurv.logwbc,fitted.values=LeukSurv$sex,xlab="sex",main.title = "Z-residual Boxplot of lwbc model")
+boxplot.zresid(Zresid.LeukSurv.wbc, X ="sex1", xlab="sex",main.title = "Z-residual Boxplot of wbc model")
+boxplot.zresid(Zresid.LeukSurv.logwbc,X ="sex1", xlab="sex",main.title = "Z-residual Boxplot of lwbc model")
 
 ```
 
