@@ -1,5 +1,5 @@
 #input: coxfit_fit is a coxph object
-Zresidual.coxph<-function (fit_coxph, newdata,n.rep=nrep))
+Zresidual.coxph<-function (fit_coxph, newdata,n.rep=nrep)
 {
   if(is.null(newdata)){
     mf_new<-model.frame.coxph(fit_coxph)
