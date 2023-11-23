@@ -145,17 +145,17 @@ sf.test.zresid(Zresid.LeukSurv.logwbc)
 The Z-residuals can be divided into $k$ groups by cutting the covariates or linear predictors into equally-spaced intervals. To quantitatively evaluate the homogeneity of grouped Z-residuals, we propose testing the equality of group means and group variances. For this purpose, we employ the F-test in ANOVA to assess the equality of means and Bartlett's test to examine the equality of variances.
 
 ```{r}
-anov.test.zresid(Zresid.LeukSurv.wbc,fitted.values=fit_LeukSurv_wbc$linear.predictors, k.anova=10)
-anov.test.zresid(Zresid.LeukSurv.logwbc,fitted.values=fit_LeukSurv_logwbc$linear.predictors, k.anova=10)
+anov.test.zresid(Zresid.LeukSurv.wbc, k.anova=10)
+anov.test.zresid(Zresid.LeukSurv.logwbc, k.anova=10)
 
-bartlett.test.zresid(Zresid.LeukSurv.wbc,fitted.values=fit_LeukSurv_wbc$linear.predictors, k.bl=10)
-bartlett.test.zresid(Zresid.LeukSurv.logwbc,fitted.values=fit_LeukSurv_logwbc$linear.predictors, k.bl=10)
+bartlett.test.zresid(Zresid.LeukSurv.wbc, k.bl=10)
+bartlett.test.zresid(Zresid.LeukSurv.logwbc, k.bl=10)
 
-anov.test.zresid(Zresid.LeukSurv.wbc,fitted.values=LeukSurv$wbc, k.anova=10)
-anov.test.zresid(Zresid.LeukSurv.logwbc,fitted.values=LeukSurv$logwbc, k.anova=10)
+anov.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.anova=10)
+anov.test.zresid(Zresid.LeukSurv.logwbc,X="wbc", k.anova=10)
 
-bartlett.test.zresid(Zresid.LeukSurv.wbc,fitted.values=LeukSurv$wbc, k.bl=10)
-bartlett.test.zresid(Zresid.LeukSurv.logwbc,fitted.values=LeukSurv$logwbc, k.bl=10)
+bartlett.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.bl=10)
+bartlett.test.zresid(Zresid.LeukSurv.logwbc,X="wbc", k.bl=10)
 
 
 
