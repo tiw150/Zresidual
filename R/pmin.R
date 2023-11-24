@@ -1,5 +1,5 @@
 #' @export
-bounds_pvalues <- function (pv)
+pvlaue.min <- function (pv)
 {
   pv <- pv[is.finite(pv)]
   n <- length (pv)

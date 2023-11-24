@@ -192,8 +192,7 @@ gof.censore.zresid <- function (censored.Zresidual)
 #' @export
 anov.test.zresid <- function (Zresidual,X = c("lp", "covariate"), k.anova=10)
 {
-  if (missing(X))
-    X = "lp"
+  if (missing(X)) X = "lp"
   if (X == "lp") {
     fitted.value <- attr(Zresidual, "linear.pred")
     id.negtv.inf <- which(is.infinite(Zresidual) & Zresidual < 0)
@@ -227,8 +226,8 @@ anov.test.zresid <- function (Zresidual,X = c("lp", "covariate"), k.anova=10)
       aov.pv[j]<- test.nl.aov(Zresidual[,j], fitted.value[,i], k.anova)
     }
     aov.pv
-
   }
+  aov.pv
 }
 
 #' @export bartlett.test.zresid
@@ -268,7 +267,7 @@ bartlett.test.zresid <- function (Zresidual, X = c("lp", "covariate"), k.bl=10)
     }
     bl.pv
   }
-
+  bl.pv
 }
 
 #' @export boxplot.zresid

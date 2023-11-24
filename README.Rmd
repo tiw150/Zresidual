@@ -164,52 +164,30 @@ bartlett.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.bl=10)
 The Z-residual test p-values quoted above contain randomness because of the randomization in generating Z-residuals. To ensure the robustness of the model diagnostics results, we generated 1000 replicated test p-values with 1000 sets of regenerated Z-residuals for each test method. We also provide the $p_{min}$ values for diagnosing the two models with Z-residual-based tests.
 
 ```{r}
-n_sims<-1000
-cur_time = proc.time()
-sw.LeukSurv.wbc<- rep(0,n_sims)
-sf.LeukSurv.wbc<- rep(0,n_sims)
-anov.LeukSurv.lp.wbc<- rep(0,n_sims)
-anov.LeukSurv.wbc<- rep(0,n_sims)
+Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,nrep=1000)
+Zresid.LeukSurv.logwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,nrep=1000)
 
-sw.LeukSurv.lwbc<- rep(0,n_sims)
-sf.LeukSurv.lwbc<- rep(0,n_sims)
-anov.LeukSurv.lp.lwbc<- rep(0,n_sims)
-anov.LeukSurv.lwbc<- rep(0,n_sims)
+sw.LeukSurv.wbc<-sw.test.zresid(Zresid.LeukSurv.wbc)
+sw.LeukSurv.lwbc<-sw.test.zresid(Zresid.LeukSurv.logwbc)
+sf.LeukSurv.wbc<-sf.test.zresid(Zresid.LeukSurv.wbc)
+sf.LeukSurv.lwbc<-sf.test.zresid(Zresid.LeukSurv.logwbc)
 
-for(j in 1:n_sims ){
-  Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,data= LeukSurv)
+anov.LeukSurv.lp.wbc<-anov.test.zresid(Zresid.LeukSurv.wbc, k.anova=10)
+anov.LeukSurv.lp.lwbc<-anov.test.zresid(Zresid.LeukSurv.logwbc, k.anova=10)
 
-  sw.LeukSurv.wbc[j]<-sw.test.zresid(Zresid.LeukSurv.wbc)
-  sf.LeukSurv.wbc[j]<-sf.test.zresid(Zresid.LeukSurv.wbc)
+anov.LeukSurv.wbc<-anov.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.anova=10)
+anov.LeukSurv.lwbc<-anov.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.anova=10)
 
-  anov.LeukSurv.lp.wbc[j]<-anov.test.zresid(Zresid.LeukSurv.wbc,
-                                            fitted.values=fit_LeukSurv_wbc$linear.predictors,
-                                            k.anova=10)
-  anov.LeukSurv.wbc[j]<-anov.test.zresid(Zresid.LeukSurv.wbc,
-                                         fitted.values=LeukSurv$wbc,
-                                         k.anova=10)
-  
-  Zresid.LeukSurv.lwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,data= LeukSurv)
 
-  sw.LeukSurv.lwbc[j]<-sw.test.zresid(Zresid.LeukSurv.lwbc)
-  sf.LeukSurv.lwbc[j]<-sf.test.zresid(Zresid.LeukSurv.lwbc)
+pmin.sw.LeukSurv.wbc<-p.min(pv=sw.LeukSurv.wbc);pmin.sw.LeukSurv.wbc
+pmin.sf.LeukSurv.wbc<-p.min(pv=sf.LeukSurv.wbc);pmin.sf.LeukSurv.wbc
+pmin.aov.lp.LeukSurv.wbc<-p.min(pv=anov.LeukSurv.lp.wbc);pmin.aov.lp.LeukSurv.wbc
+pmin.aov.wbc.LeukSurv<-p.min(pv=anov.LeukSurv.wbc);pmin.aov.wbc.LeukSurv
 
-  anov.LeukSurv.lp.lwbc[j]<-anov.test.zresid(Zresid.LeukSurv.lwbc,
-                                             fitted.values=fit_LeukSurv_logwbc$linear.predictors,
-                                             k.anova=10)
-  anov.LeukSurv.lwbc[j]<-anov.test.zresid(Zresid.LeukSurv.lwbc,
-                                          fitted.values=LeukSurv$logwbc,
-                                          k.anova=10)
-}
-pmin.sw.LeukSurv.wbc<-bounds_pvalues(pv=sw.LeukSurv.wbc);pmin.sw.LeukSurv.wbc
-pmin.sf.LeukSurv.wbc<-bounds_pvalues(pv=sf.LeukSurv.wbc);pmin.sf.LeukSurv.wbc
-pmin.aov.lp.LeukSurv.wbc<-bounds_pvalues(pv=anov.LeukSurv.lp.wbc);pmin.aov.lp.LeukSurv.wbc
-pmin.aov.wbc.LeukSurv<-bounds_pvalues(pv=anov.LeukSurv.wbc);pmin.aov.wbc.LeukSurv
-
-pmin.sw.LeukSurv.lwbc<-bounds_pvalues(pv=sw.LeukSurv.lwbc);pmin.sw.LeukSurv.lwbc
-pmin.sf.LeukSurv.lwbc<-bounds_pvalues(pv=sf.LeukSurv.lwbc);pmin.sf.LeukSurv.lwbc
-pmin.aov.lp.LeukSurv.lwbc<-bounds_pvalues(pv=anov.LeukSurv.lp.lwbc);pmin.aov.lp.LeukSurv.lwbc
-pmin.aov.lwbc.LeukSurv<-bounds_pvalues(pv=anov.LeukSurv.lwbc);pmin.aov.lwbc.LeukSurv
+pmin.sw.LeukSurv.lwbc<-p.min(pv=sw.LeukSurv.lwbc);pmin.sw.LeukSurv.lwbc
+pmin.sf.LeukSurv.lwbc<-p.min(pv=sf.LeukSurv.lwbc);pmin.sf.LeukSurv.lwbc
+pmin.aov.lp.LeukSurv.lwbc<-p.min(pv=anov.LeukSurv.lp.lwbc);pmin.aov.lp.LeukSurv.lwbc
+pmin.aov.lwbc.LeukSurv<-p.min(pv=anov.LeukSurv.lwbc);pmin.aov.lwbc.LeukSurv
 
 ```
 The histograms of 1000 replicated Z-residual test p-values for the wbc and lwbc models. The red vertical lines in these histograms show the upper bound summaries of these replicated p-values, $p_{min}$. These histograms show that the Z-SW, Z-SF, and Z-AOV with LP tests for both models give a large proportion of p-values greater than 0.05, and the large p-values result in large $p_{min}$ values.  In contrast, the replicated Z-AOV with log(wbc) p-values for the lwbc model are almost all smaller than 0.001. The consistently small Z-AOV with log(wbc) p-values further confirm that the log transformation of wbc is inappropriate for modelling the survival time. 
