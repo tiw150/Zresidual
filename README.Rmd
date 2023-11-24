@@ -152,10 +152,10 @@ bartlett.test.zresid(Zresid.LeukSurv.wbc, k.bl=10)
 bartlett.test.zresid(Zresid.LeukSurv.logwbc, k.bl=10)
 
 anov.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.anova=10)
-anov.test.zresid(Zresid.LeukSurv.logwbc,X="wbc", k.anova=10)
+anov.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.anova=10)
 
 bartlett.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.bl=10)
-bartlett.test.zresid(Zresid.LeukSurv.logwbc,X="wbc", k.bl=10)
+bartlett.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.bl=10)
 
 
 
