@@ -246,34 +246,8 @@ ucs.LeukSurv.wbc<-residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residua
 ucs.LeukSurv.logwbc<-residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "Cox-Snell" )
 
 par(mfrow = c(1,2))
-km.ln.LeukSurv.wbc <- survfit(Surv(ucs.LeukSurv.wbc, LeukSurv$cens)~1,type='fleming')
-id.ln.LeukSurv.wbc<-order(ucs.LeukSurv.wbc)
-
-plot(km.ln.LeukSurv.wbc, fun="cumhaz", xlab=("Cox-Snell Residuals"),
-     ylab=("Cumulative Hazard Function"),
-     main="CS Residuals of wbc model")
-abline(0, 1, col="red", lty=2)
-points(km.ln.LeukSurv.wbc$time, -log(km.ln.LeukSurv.wbc$surv),
-       col=c("blue","darkolivegreen4")[LeukSurv$cens[id.ln.LeukSurv.wbc]+1],
-       pch=c(3,2)[LeukSurv$cens[id.ln.LeukSurv.wbc]+1] )
-legend(x = "topleft",
-       legend = c("Uncensored", "Censored"), col=c("darkolivegreen4","blue"),
-       pch=c(2,3),cex=1,xpd = TRUE,bty="L")
-
-km.ln.LeukSurv.lwbc <- survfit(Surv(ucs.LeukSurv.logwbc, LeukSurv$cens)~1,type='fleming')
-id.ln.LeukSurv.lwbc<-order(ucs.LeukSurv.logwbc)
-
-plot(km.ln.LeukSurv.lwbc, fun="cumhaz", xlab=("Cox-Snell Residuals"),
-     ylab=("Cumulative Hazard Function"),
-     main="CS Residuals of lwbc model")
-abline(0, 1, col="red", lty=2)
-points(km.ln.LeukSurv.lwbc$time, -log(km.ln.LeukSurv.lwbc$surv),
-       col=c("blue","darkolivegreen4")[LeukSurv$cens[id.ln.LeukSurv.lwbc]+1],
-       pch=c(3,2)[LeukSurv$cens[id.ln.LeukSurv.lwbc]+1] )
-legend(x = "topleft",
-       legend = c("Uncensored", "Censored"), col=c("darkolivegreen4","blue"),
-       pch=c(2,3),cex=1,xpd = TRUE,bty="L")
-
+plot.cs.residual(cs.residual=ucs.LeukSurv.wbc,main.title = "CS Residuals of wbc model")
+plot.cs.residual(cs.residual=ucs.LeukSurv.logwbc,main.title = "CS Residuals of lwbc model")
 
 ```
 
@@ -281,35 +255,14 @@ The martingale residuals are mostly within the interval (-3, 1) for those two mo
 
 ```{r}
 #Martingale residuals
-martg.LeukSurv.wbc<-residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type = "martingale" )
+martg.LeukSurv.wbc<-residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type = "martingale")
 martg.LeukSurv.logwbc<-residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "martingale" )
 
 par(mfrow = c(1,2))
-plot(LeukSurv$wbc,martg.LeukSurv.wbc,ylab="Martingale",
-     xlab="wbc",
-     main= title(main="Martingale Residual Plot of wbc Model",cex.main=0.8),
-     col=c("blue","darkolivegreen4")[LeukSurv$cens+1],
-     pch=c(3,2)[LeukSurv$cens+1])
-#abline(h=c(3,-3),col="grey")
-lines(lowess(martg.LeukSurv.wbc~ LeukSurv$wbc),
-      col = "red",lwd = 3)
-legend(x = "bottomright",
-       legend = c("Uncensored", "Censored"),
-       col=c("darkolivegreen4","blue"),
-       pch=c(2,3),cex=0.4,xpd = TRUE,bty="l",horiz=TRUE)
+plot.zresid(martg.LeukSurv.wbc,X="wbc",main.title = "Martingale Residual Plot of wbc Model",ylab="Martingale")
+plot.zresid(martg.LeukSurv.logwbc,X="logwbc",main.title = "Martingale Residual Plot of lwbc Model",ylab="Martingale")
+ 
 
-plot(LeukSurv$logwbc,martg.LeukSurv.logwbc,ylab="Martingale",
-     xlab="log(wbc)",
-     main=title(main="Martingale Residual Plot of lwbc Model",cex.main=0.8),
-     col=c("blue","darkolivegreen4")[LeukSurv$cens+1],
-     pch=c(3,2)[LeukSurv$cens+1])
-#abline(h=c(3,-3),col="grey")
-lines(lowess(martg.LeukSurv.logwbc~ LeukSurv$logwbc),
-      col = "red",lwd = 3)
-legend(x = "bottomright",
-       legend = c("Uncensored", "Censored"),
-       col=c("darkolivegreen4","blue"),
-       pch=c(2,3),cex=0.4,xpd = TRUE,bty="l",horiz=TRUE)
 
 ```
 
@@ -321,31 +274,8 @@ dev.LeukSurv.wbc<-residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residua
 dev.LeukSurv.logwbc<-residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "deviance" )
 
 par(mfrow = c(1,2))
-plot(LeukSurv$wbc,dev.LeukSurv.wbc,ylab="Deviance",
-     xlab="wbc",
-     main=title(main="Deviance Residual Plot of wbc Model",cex.main=0.8),
-     col=c("blue","darkolivegreen4")[LeukSurv$cens+1],
-     pch=c(3,2)[LeukSurv$cens+1])
-#abline(h=c(3,-3),col="grey")
-lines(lowess(dev.LeukSurv.wbc~ LeukSurv$wbc),
-      col = "red",lwd = 3)
-legend(x = "bottomright",
-       legend = c("Uncensored", "Censored"),
-       col=c("darkolivegreen4","blue"),
-       pch=c(2,3),cex=0.4,xpd = TRUE,bty="l")
-
-plot(LeukSurv$logwbc,dev.LeukSurv.logwbc,ylab="Deviance",
-     xlab="log(wbc)",
-     main=title(main="Deviance Residual Plot of lwbc Model",cex.main=0.8),
-     col=c("blue","darkolivegreen4")[LeukSurv$cens+1],
-     pch=c(3,2)[LeukSurv$cens+1])
-#abline(h=c(3,-3),col="grey")
-lines(lowess(dev.LeukSurv.logwbc~ LeukSurv$logwbc),
-      col = "red",lwd = 3)
-legend(x = "bottomright",
-       legend = c("Uncensored", "Censored"),
-       col=c("darkolivegreen4","blue"),
-       pch=c(2,3),cex=.4,xpd = TRUE,bty="l")
+plot.zresid(dev.LeukSurv.wbc,X="wbc",main.title = "Deviance Residual Plot of wbc Model",ylab="Deviance")
+plot.zresid(dev.LeukSurv.logwbc,X="logwbc",main.title = "Deviance Residual Plot of lwbc Model",ylab="Deviance")
 
 ```
 
