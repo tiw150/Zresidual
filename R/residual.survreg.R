@@ -68,6 +68,7 @@ residual.survreg<-function(survreg_fit,newdata,
   attributes(resid.value) <- c(attributes(resid.value), list(
     Survival.Prob= SP,
     linear.pred = lp,
+    covariates = fix_var,
     censored.status= censored.status,
     object.model.frame=mf
 

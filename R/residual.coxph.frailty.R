@@ -137,6 +137,7 @@ residual.coxph.frailty <- function (fit_coxph, traindata, newdata,
   attributes(resid.value) <- c(attributes(resid.value), list(
     Survival.Prob= SP,
     linear.pred = lp_new,
+    covariates = fix_var_new,
     censored.status= censored.status,
     object.model.frame=mf_new
 

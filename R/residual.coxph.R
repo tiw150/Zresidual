@@ -60,6 +60,7 @@ residual.coxph<-function (fit_coxph, newdata,
   attributes(resid.value) <- c(attributes(resid.value), list(
     Survival.Prob= SP,
     linear.pred = lp.new,
+    covariates = fix_var_new,
     censored.status= censored.status,
     object.model.frame=mf_new
 

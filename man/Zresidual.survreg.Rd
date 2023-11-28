@@ -4,7 +4,7 @@
 \alias{Zresidual.survreg}
 \title{Zresidual for survival}
 \usage{
-Zresidual.survreg(survreg_fit, newdata)
+Zresidual.survreg(survreg_fit, newdata, n.rep = nrep)
 }
 \arguments{
 \item{survreg_fit}{a survreg object}

@@ -4,7 +4,7 @@
 \alias{Zresidual}
 \title{A title}
 \usage{
-Zresidual(fit.object, data = NULL, fit.object2 = NULL)
+Zresidual(fit.object, nrep = 1, data = NULL, fit.object2 = NULL)
 }
 \arguments{
 \item{fit.object}{The fit object are one of 'coxph', 'survreg' and 'glmmTMB'.}
@@ -14,12 +14,7 @@ Zresidual(fit.object, data = NULL, fit.object2 = NULL)
 \value{
 \itemize{
  \item{Zresid}{Z-residual}
- \item{censored.Zresid}{censored Z-residual}
  \item{SP}{Survival Probabilities}
- \item{ucs}{unmodified CS residuals}
- \item{mcs}{modified CS residuals}
- \item{martg}{Martingale residuals}
- \item{dev}{Deviance residuals}
 }
 }
 \description{
