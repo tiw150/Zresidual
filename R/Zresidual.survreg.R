@@ -56,7 +56,7 @@ Zresidual.survreg<-function(survreg_fit,newdata,n.rep=nrep)
   }
   colnames(Zresid)<- col_name
   #####
-  censored.status<- (as.matrix(y)[,-1])[,2]
+  censored.status<- (as.matrix(y)[,-1])
   lp<-fix_var %*%survreg_fit$coefficients
 
   Zresid.value<-as.matrix(Zresid)

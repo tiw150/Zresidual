@@ -10,8 +10,7 @@ fit_AFTlognormal_BreastCancer<- survreg(Surv(BreastCancer$time,BreastCancer$stat
                                         data=BreastCancer[,-c(1:3)],dist="lognormal")
 
 #############Calculate residuals###############################
-allresid.BreastCancer<-Zresidual(fit.object = fit_AFTlognormal_BreastCancer,
-                                 data=BreastCancer)
+Zresid.BreastCancer<-Zresidual(fit.object = fit_AFTlognormal_BreastCancer)
 
 #Z-residual
 Zresid.BreastCancer<-allresid.BreastCancer$Zresid
