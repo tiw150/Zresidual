@@ -649,7 +649,7 @@ plot.cs.residual <- function(cs.residual,ylab = "Cumulative Hazard Function",
 }
 
 #' @export plot.Martg.resid
-plot.Martg.resid <- function(Martingale.residual,ylab = "Martingale Residual",
+plot.martg.resid <- function(Martingale.residual,ylab = "Martingale Residual",
                         X = c("index", "lp", "covariate"),
                         main.title = "Martingale Residual Plot",
                         outlier.return = FALSE,
@@ -839,7 +839,7 @@ plot.Martg.resid <- function(Martingale.residual,ylab = "Martingale Residual",
 
 
 #' @export plot.Dev.resid
-plot.Dev.resid <- function(Deviance.residual,ylab = "Deviance Residual",
+plot.dev.resid <- function(Deviance.residual,ylab = "Deviance Residual",
                              X = c("index", "lp", "covariate"),
                              main.title = "Deviance Residual Plot",
                              outlier.return = FALSE,

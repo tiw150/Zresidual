@@ -258,8 +258,8 @@ martg.LeukSurv.wbc<-residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,resid
 martg.LeukSurv.logwbc<-residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "martingale" )
 
 par(mfrow = c(1,2))
-plot.Martg.resid(martg.LeukSurv.wbc,X="wbc",main.title = "Martingale Residual of wbc Model")
-plot.Martg.resid(martg.LeukSurv.logwbc,X="logwbc",main.title = "Martingale Residual of lwbc Model")
+plot.martg.resid(martg.LeukSurv.wbc,X="wbc",main.title = "Martingale Residual of wbc Model")
+plot.martg.resid(martg.LeukSurv.logwbc,X="logwbc",main.title = "Martingale Residual of lwbc Model")
  
 
 
@@ -273,8 +273,8 @@ dev.LeukSurv.wbc<-residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residua
 dev.LeukSurv.logwbc<-residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "deviance" )
 
 par(mfrow = c(1,2))
-plot.zresid(dev.LeukSurv.wbc,X="wbc",main.title = "Deviance Residual Plot of wbc Model",ylab="Deviance")
-plot.zresid(dev.LeukSurv.logwbc,X="logwbc",main.title = "Deviance Residual Plot of lwbc Model",ylab="Deviance")
+plot.dev.resid(dev.LeukSurv.wbc,X="wbc",main.title = "Deviance Residual Plot of wbc Model")
+plot.Dev.resid(dev.LeukSurv.logwbc,X="logwbc",main.title = "Deviance Residual Plot of lwbc Model")
 
 ```
 
