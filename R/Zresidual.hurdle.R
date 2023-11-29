@@ -2,13 +2,17 @@ Zresidual.hurdle<-function(model_count, model_zero, data)
 {
   name.y <- names(model_count$frame)[[1]]
   y <- data[,name.y]
-  m<-model_zero$modelInfo$nobs
+
   family<-family(model_count)$family
   mu<- rep(0, dim(data)[1])
   mu2<-predict(model_count,newdata=data[data[,name.y]>0,],type="conditional")
   mu[which(data[,name.y]>0)] <- mu2
+
   size<-sigma(model_count)
   prob_nb<-size/(size+mu)
+
+  m<-model_zero$modelInfo$nobs
+
   pi<- 1-predict(model_zero,newdata = data, type="zprob")
 
   if(family[1]=="truncated_poisson")
@@ -20,8 +24,35 @@ Zresidual.hurdle<-function(model_count, model_zero, data)
     pvalue=pzmnbinom(y-1,size,prob_nb,pi)+dzmnbinom(y,size,prob_nb,pi)*runif(m)
   }
   pvalue<-pmin(pmax(pvalue,10^{-10}),1-10^{-10})
-  Zresid=qnorm(pvalue)
+  Zresid1=qnorm(pvalue)
   list(pvalue=pvalue,Zresid=Zresid)
 }
+
+# Zresidual.hurdle<-function(fit_hd)
+# {
+#   y <- fit_hd$frame[,1]
+#   family<-family(fit_hd)$family
+#   mu1<- rep(0,length(y))
+#   mu2<-predict(fit_hd,type="conditional")[y!=0]
+#   mu1[which(y>0)] <- mu2
+#   size<-sigma(fit_hd)
+#   prob_nb<-size/(size+mu1)
+#   m<-fit_hd$modelInfo$nobs
+#   pi<- predict(fit_hd, type="zprob")
+#
+#   if(family[1]=="truncated_poisson"){
+#
+#     pvalue=pzmpois(y-1,mu,pi) + dzmpois(y,mu,pi)* runif(m)
+#
+#   }else if(family[1]=="truncated_nbinom2"){
+#
+#     pvalue=pzmnbinom(y-1,size,prob_nb,pi)+dzmnbinom(y,size,prob_nb,pi)*runif(m)
+#   }
+#
+#   pvalue<-pmin(pmax(pvalue,10^{-10}),1-10^{-10})
+#   Zresid=qnorm(pvalue)
+#   list(pvalue=pvalue,Zresid=Zresid)
+# }
+#
 
 
