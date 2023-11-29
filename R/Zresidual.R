@@ -63,7 +63,7 @@ Zresidual <-
       distr <- family(fit.object)$family
 
       if (distr[1] %in% c("gaussian", "poisson", "nbinom2")) {
-        Zresid_fun <- Zresidual.ZI(fit_ZI = fit.object)
+        Zresid_fun <- Zresidual.ZI(fit_ZI = fit.object,n.rep = nrep)
 
       } else if (distr %in% c("truncated_poisson", "truncated_nbinom2")) {
         if (is.null(fit.object2))
