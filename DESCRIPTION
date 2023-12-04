@@ -5,7 +5,7 @@ Version: 0.1.0
 Authors@R: c(person(given = "Tingxuan", family = "Wu", role = c("aut","cre"), 
                     email = "tiw150@mail.usask.ca"),
              person(given = "Longhai", family = "Li", role = c("aut","cre"), 
-                    email = "longhai@math.usask.ca")
+                    email = "longhai@math.usask.ca"),
              person(given = "Cindy", family = "Feng", role = c("ctb"), 
                     email = "cindy.feng@dal.ca"),
              person(given = "Xinyu", family = "Liu", role = c("ctb"), 
