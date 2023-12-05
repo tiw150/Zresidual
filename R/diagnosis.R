@@ -176,7 +176,7 @@ qqnorm.zresid <- function (Zresidual, index=1,
 
 
 #' @export
-gof.censore.zresid <- function (censored.Zresidual)
+gof.censored.zresidual <- function (censored.Zresidual)
 {
   id.negtv.inf <- which(is.infinite(censored.Zresidual) & censored.Zresidual < 0)
   id.pos.inf <- which(is.infinite(censored.Zresidual) & censored.Zresidual > 0)
@@ -190,7 +190,7 @@ gof.censore.zresid <- function (censored.Zresidual)
 }
 
 #' @export
-anov.test.zresid <- function (Zresidual,X = c("lp", "covariate"), k.anova=10)
+aov.test.zresid <- function (Zresidual,X = c("lp", "covariate"), k.anova=10)
 {
   if (missing(X)) X = "lp"
   if (X == "lp") {
@@ -317,7 +317,7 @@ boxplot.zresid <- function(Zresidual,index=1,
         paste0("Z-AOV p-value = ",
                sprintf(
                  "%3.2f",
-                 anov.test.zresid(Zresidual, X=X, k.anova = num.bin)[j]
+                 aov.test.zresid(Zresidual, X=X, k.anova = num.bin)[j]
                )),
         paste0("Z-BL p-value = ",
                sprintf(
@@ -361,7 +361,7 @@ boxplot.zresid <- function(Zresidual,index=1,
         paste0("Z-AOV p-value = ",
                sprintf(
                  "%3.2f",
-                 anov.test.zresid(Zresidual, X= X, k.anova = num.bin)[j]
+                 aov.test.zresid(Zresidual, X= X, k.anova = num.bin)[j]
                )),
         paste0("Z-BL p-value = ",
                sprintf(

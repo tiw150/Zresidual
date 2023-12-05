@@ -141,14 +141,14 @@ sf.test.zresid(Zresid.LeukSurv.logwbc)
 The Z-residuals can be divided into $k$ groups by cutting the covariates or linear predictors into equally-spaced intervals. To quantitatively evaluate the homogeneity of grouped Z-residuals, we propose testing the equality of group means and group variances. For this purpose, we employ the F-test in ANOVA to assess the equality of means and Bartlett's test to examine the equality of variances.
 
 ```{r}
-anov.test.zresid(Zresid.LeukSurv.wbc, k.anova=10)
-anov.test.zresid(Zresid.LeukSurv.logwbc, k.anova=10)
+aov.test.zresid(Zresid.LeukSurv.wbc, k.anova=10)
+aov.test.zresid(Zresid.LeukSurv.logwbc, k.anova=10)
 
 bartlett.test.zresid(Zresid.LeukSurv.wbc, k.bl=10)
 bartlett.test.zresid(Zresid.LeukSurv.logwbc, k.bl=10)
 
-anov.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.anova=10)
-anov.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.anova=10)
+aov.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.anova=10)
+aov.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.anova=10)
 
 bartlett.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.bl=10)
 bartlett.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.bl=10)
@@ -168,22 +168,22 @@ sw.LeukSurv.lwbc<-sw.test.zresid(Zresid.LeukSurv.logwbc)
 sf.LeukSurv.wbc<-sf.test.zresid(Zresid.LeukSurv.wbc)
 sf.LeukSurv.lwbc<-sf.test.zresid(Zresid.LeukSurv.logwbc)
 
-anov.LeukSurv.lp.wbc<-anov.test.zresid(Zresid.LeukSurv.wbc, k.anova=10)
-anov.LeukSurv.lp.lwbc<-anov.test.zresid(Zresid.LeukSurv.logwbc, k.anova=10)
+aov.LeukSurv.lp.wbc<-aov.test.zresid(Zresid.LeukSurv.wbc, k.anova=10)
+aov.LeukSurv.lp.lwbc<-aov.test.zresid(Zresid.LeukSurv.logwbc, k.anova=10)
 
-anov.LeukSurv.wbc<-anov.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.anova=10)
-anov.LeukSurv.lwbc<-anov.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.anova=10)
+aov.LeukSurv.wbc<-aov.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.anova=10)
+aov.LeukSurv.lwbc<-aov.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.anova=10)
 
 
 pmin.sw.LeukSurv.wbc<-pvalue.min(pv=sw.LeukSurv.wbc);pmin.sw.LeukSurv.wbc
 pmin.sf.LeukSurv.wbc<-pvalue.min(pv=sf.LeukSurv.wbc);pmin.sf.LeukSurv.wbc
-pmin.aov.lp.LeukSurv.wbc<-pvalue.min(pv=anov.LeukSurv.lp.wbc);pmin.aov.lp.LeukSurv.wbc
-pmin.aov.wbc.LeukSurv<-pvalue.min(pv=anov.LeukSurv.wbc);pmin.aov.wbc.LeukSurv
+pmin.aov.lp.LeukSurv.wbc<-pvalue.min(pv=aov.LeukSurv.lp.wbc);pmin.aov.lp.LeukSurv.wbc
+pmin.aov.wbc.LeukSurv<-pvalue.min(pv=aov.LeukSurv.wbc);pmin.aov.wbc.LeukSurv
 
 pmin.sw.LeukSurv.lwbc<-pvalue.min(pv=sw.LeukSurv.lwbc);pmin.sw.LeukSurv.lwbc
 pmin.sf.LeukSurv.lwbc<-pvalue.min(pv=sf.LeukSurv.lwbc);pmin.sf.LeukSurv.lwbc
-pmin.aov.lp.LeukSurv.lwbc<-pvalue.min(pv=anov.LeukSurv.lp.lwbc);pmin.aov.lp.LeukSurv.lwbc
-pmin.aov.lwbc.LeukSurv<-pvalue.min(pv=anov.LeukSurv.lwbc);pmin.aov.lwbc.LeukSurv
+pmin.aov.lp.LeukSurv.lwbc<-pvalue.min(pv=aov.LeukSurv.lp.lwbc);pmin.aov.lp.LeukSurv.lwbc
+pmin.aov.lwbc.LeukSurv<-pvalue.min(pv=aov.LeukSurv.lwbc);pmin.aov.lwbc.LeukSurv
 
 ```
 The histograms of 1000 replicated Z-residual test p-values for the wbc and lwbc models. The red vertical lines in these histograms show the upper bound summaries of these replicated p-values, $p_{min}$. These histograms show that the Z-SW, Z-SF, and Z-AOV with LP tests for both models give a large proportion of p-values greater than 0.05, and the large p-values result in large $p_{min}$ values.  In contrast, the replicated Z-AOV with log(wbc) p-values for the lwbc model are almost all smaller than 0.001. The consistently small Z-AOV with log(wbc) p-values further confirm that the log transformation of wbc is inappropriate for modelling the survival time. 
@@ -227,8 +227,8 @@ censored.Zresid.LeukSurv.wbc<-residuals(fit.object = fit_LeukSurv_wbc,data= Leuk
 
 censored.Zresid.LeukSurv.logwbc<-residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type="censored Z-residual")
 
-gof.censore.zresid(censored.Zresidual=censored.Zresid.LeukSurv.wbc)
-gof.censore.zresid(censored.Zresidual=censored.Zresid.LeukSurv.logwbc)
+gof.censored.zresidual(censored.Zresidual=censored.Zresid.LeukSurv.wbc)
+gof.censored.zresidual(censored.Zresidual=censored.Zresid.LeukSurv.logwbc)
 
 
 ```

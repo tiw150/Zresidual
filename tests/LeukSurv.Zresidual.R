@@ -94,44 +94,14 @@ legend(x = "bottomright",
 ########################### Statistical test Diagnosis##################
 sw.test.zresid(Zresid.LeukSurv)
 sf.test.zresid(Zresid.LeukSurv)
-gof.censore.zresid(censored.Zresidual=censored.Zresid.LeukSurv,censored=LeukSurv$cens)
+gof.censored.zresidual(censored.Zresidual=censored.Zresid.LeukSurv,censored=LeukSurv$cens)
 
-anov.test.zresid(Zresid.LeukSurv,fitted.values=fit_LeukSurv$linear.predictors, k.anova=10)
+aov.test.zresid(Zresid.LeukSurv,fitted.values=fit_LeukSurv$linear.predictors, k.anova=10)
 bartlett.test.zresid(Zresid.LeukSurv,fitted.values=fit_LeukSurv$linear.predictors, k.bl=10)
 
-anov.test.zresid(Zresid.LeukSurv,fitted.values=LeukSurv$wbc, k.anova=10)
+aov.test.zresid(Zresid.LeukSurv,fitted.values=LeukSurv$wbc, k.anova=10)
 bartlett.test.zresid(Zresid.LeukSurv,fitted.values=LeukSurv$wbc, k.bl=10)
 
-anov.test.zresid(Zresid.LeukSurv,fitted.values=LeukSurv$sex, k.anova=10)
+aov.test.zresid(Zresid.LeukSurv,fitted.values=LeukSurv$sex, k.anova=10)
 bartlett.test.zresid(Zresid.LeukSurv,fitted.values=LeukSurv$sex, k.bl=10)
-
-################pmin value############################
-
-n_sims<-1000
-cur_time = proc.time()
-sw.LeukSurv<- rep(0,n_sims)
-sf.LeukSurv<- rep(0,n_sims)
-anov.LeukSurv.lp<- rep(0,n_sims)
-
-for(j in 1:n_sims ){
-  cat(paste('Simulation ',j,' out of ',n_sims,'\n'))
-  if(j ==2){
-    elapsed=as.numeric(proc.time()-cur_time)[3]
-    cat(paste("Time for 1 simulation: ",elapsed/3600," hours \n"))
-    cat(paste("Estimated time remaining: ",elapsed/3600*(n_sims-1)," hours \n"))
-  }
-  allresid.LeukSurv<-Zresidual(fit.object = fit_LeukSurv,data= LeukSurv)
-  Zresid.LeukSurv<-allresid.LeukSurv$Zresid
-
-  sw.LeukSurv[j]<-sw.test.zresid(Zresid.LeukSurv)
-  sf.LeukSurv[j]<-sf.test.zresid(Zresid.LeukSurv)
-
-  anov.LeukSurv.lp[j]<-anov.test.zresid(Zresid.LeukSurv,
-                                   fitted.values=fit_LeukSurv$linear.predictors,
-                                   k.anova=10)
-}
-pmin.sw.LeukSurv<-bounds_pvalues(pv=sw.LeukSurv);pmin.sw.LeukSurv
-pmin.sf.LeukSurv<-bounds_pvalues(pv=sf.LeukSurv);pmin.sf.LeukSurv
-pmin.aov.lp.LeukSurv<-bounds_pvalues(pv=anov.LeukSurv.lp);pmin.aov.lp.LeukSurv
-
 

@@ -103,32 +103,3 @@ bartlett.test.zresid(Zresid.drs,fitted.values=drs$age_at_onset, k.bl=10)
 anov.test.zresid(Zresid.drs,fitted.values=drs$treated, k.anova=10)
 bartlett.test.zresid(Zresid.drs,fitted.values=drs$treated, k.bl=10)
 
-################pmin value############################
-
-n_sims<-1000
-cur_time = proc.time()
-sw.drs<- rep(0,n_sims)
-sf.drs<- rep(0,n_sims)
-anov.drs.lp<- rep(0,n_sims)
-
-for(j in 1:n_sims ){
-  cat(paste('Simulation ',j,' out of ',n_sims,'\n'))
-  if(j ==2){
-    elapsed=as.numeric(proc.time()-cur_time)[3]
-    cat(paste("Time for 1 simulation: ",elapsed/3600," hours \n"))
-    cat(paste("Estimated time remaining: ",elapsed/3600*(n_sims-1)," hours \n"))
-  }
-  allresid.drs<-Zresidual(fit.object = fit_drs,data= drs)
-  Zresid.drs<-allresid.drs$Zresid
-
-  sw.drs[j]<-sw.test.zresid(Zresid.drs)
-  sf.drs[j]<-sf.test.zresid(Zresid.drs)
-
-  anov.drs.lp[j]<-anov.test.zresid(Zresid.drs,
-                                      fitted.values=fit_drs$linear.predictors,
-                                      k.anova=10)
-}
-pmin.sw.drs<-bounds_pvalues(pv=sw.drs);pmin.sw.drs
-pmin.sf.drs<-bounds_pvalues(pv=sf.drs);pmin.sf.drs
-pmin.aov.lp.drs<-bounds_pvalues(pv=anov.drs.lp);pmin.aov.lp.drs
-

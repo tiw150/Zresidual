@@ -92,43 +92,15 @@ legend(x = "bottomright",
 ########################### Statistical test Diagnosis##################
 sw.test.zresid(Zresid.BreastCancer)
 sf.test.zresid(Zresid.BreastCancer)
-gof.censore.zresid(censored.Zresidual=censored.Zresid.BreastCancer,censored=BreastCancer$status)
+gof.censored.zresidual(censored.Zresidual=censored.Zresid.BreastCancer,censored=BreastCancer$status)
 
-anov.test.zresid(Zresid.BreastCancer,fitted.values=fit_AFTlognormal_BreastCancer$linear.predictors, k.anova=10)
+aov.test.zresid(Zresid.BreastCancer,fitted.values=fit_AFTlognormal_BreastCancer$linear.predictors, k.anova=10)
 bartlett.test.zresid(Zresid.BreastCancer,fitted.values=fit_AFTlognormal_BreastCancer$linear.predictors, k.bl=10)
 
-anov.test.zresid(Zresid.BreastCancer,fitted.values=BreastCancer$age, k.anova=10)
+aov.test.zresid(Zresid.BreastCancer,fitted.values=BreastCancer$age, k.anova=10)
 bartlett.test.zresid(Zresid.BreastCancer,fitted.values=BreastCancer$age, k.bl=10)
 
-anov.test.zresid(Zresid.BreastCancer,fitted.values=BreastCancer$grade, k.anova=10)
+aov.test.zresid(Zresid.BreastCancer,fitted.values=BreastCancer$grade, k.anova=10)
 bartlett.test.zresid(Zresid.BreastCancer,fitted.values=BreastCancer$grade, k.bl=10)
 
-################pmin value############################
-
-n_sims<-1000
-cur_time = proc.time()
-sw.BreastCancer<- rep(0,n_sims)
-sf.BreastCancer<- rep(0,n_sims)
-anov.BreastCancer.lp<- rep(0,n_sims)
-
-for(j in 1:n_sims ){
-  cat(paste('Simulation ',j,' out of ',n_sims,'\n'))
-  if(j ==2){
-    elapsed=as.numeric(proc.time()-cur_time)[3]
-    cat(paste("Time for 1 simulation: ",elapsed/3600," hours \n"))
-    cat(paste("Estimated time remaining: ",elapsed/3600*(n_sims-1)," hours \n"))
-  }
-  allresid.BreastCancer<-Zresidual(fit.object = fit_AFTlognormal_BreastCancer,data= BreastCancer)
-  Zresid.BreastCancer<-allresid.BreastCancer$Zresid
-
-  sw.BreastCancer[j]<-sw.test.zresid(Zresid.BreastCancer)
-  sf.BreastCancer[j]<-sf.test.zresid(Zresid.BreastCancer)
-
-  anov.BreastCancer.lp[j]<-anov.test.zresid(Zresid.BreastCancer,
-                                      fitted.values=fit_AFTlognormal_BreastCancer$linear.predictors,
-                                      k.anova=10)
-}
-pmin.sw.BreastCancer<-bounds_pvalues(pv=sw.BreastCancer);pmin.sw.BreastCancer
-pmin.sf.BreastCancer<-bounds_pvalues(pv=sf.BreastCancer);pmin.sf.BreastCancer
-pmin.aov.lp.BreastCancer<-bounds_pvalues(pv=anov.BreastCancer.lp);pmin.aov.lp.BreastCancer
-
+\
