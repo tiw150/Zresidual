@@ -20,12 +20,6 @@ Zresidual <-
            data = NULL,
            fit.object2 = NULL)
   {
-    # Required packages:
-    # if (!requireNamespace("pacman")) {
-    #   install.packages("pacman")
-    # }
-    # pacman::p_load("survival", "stringr", "glmmTMB", "actuar")
-
     form <- fit.object$call
 
     # if (is.na(form)) stop("a fit.object is required")
