@@ -48,14 +48,16 @@ library(survival)
 library(EnvStats)
 ## basic example code
 data("LeukSurv")
-head(LeukSurv)
 LeukSurv<-LeukSurv[LeukSurv$age<60,]
-#is.factor(LeukSurv$district)
-#is.factor(LeukSurv$sex)
 LeukSurv$district<-as.factor(LeukSurv$district)
 LeukSurv$sex<-as.factor(LeukSurv$sex)
 LeukSurv$logwbc<- log(LeukSurv$wbc+0.001)
 ```
+
+```{r echo = FALSE}
+DT::datatable(LeukSurv,options = list(scrollX = TRUE, paging=TRUE), caption = "Table 1: A real dataset of acute myeloid leukemia patients.")
+```
+
 
 We fitted two shared frailty models, one with covariates wbc, age, sex and tpi, which is labelled as the wbc model, and the other with log(wbc) replacing wbc, which is labelled as the lwbc model.
 
@@ -70,8 +72,8 @@ fit_LeukSurv_logwbc  <- coxph(Surv(time, cens) ~ age +sex + logwbc + tpi +
 Once the model is fitted, we can calculate Z-residual, censored Z-residual and other residuals for two models.
 
 ```{r}
-Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,nrep=10)
-Zresid.LeukSurv.logwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,nrep=10)
+Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,nrep=1000)
+Zresid.LeukSurv.logwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,nrep=1000)
 ```
 
 Diagnosis of the overall (GOF) and the Functional Form of Covariates using Z-residuals
@@ -80,7 +82,7 @@ A QQ plot based on Z-residuals can be used to graphically assess the model's ove
 
 We can see that the QQ plots of Z-residuals of these two models align well with the 45 $^\circ$ diagonal line. The Z-SW tests also give large p-values for two models, where Z-SW is the test method that the normality of Z-residuals is tested with the SW test.
 
-```{r}
+```{r fig.cap="Figure 1: QQ plots of Z-residuals for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients",fig.align='center',fig.width=9, fig.height=4.5}
 par(mfrow = c(1,2),mar=c(4,4,2,2))
 qqnorm.zresid(Zresid.LeukSurv.wbc,main.title = "Z-residual QQ plot of wbc model")
 qqnorm.zresid(Zresid.LeukSurv.logwbc,main.title = "Z-residual QQ plot of lwbc model")
@@ -90,7 +92,7 @@ The Z-residuals can be divided into $k$ groups by cutting the linear predictors 
 
 The scatterplots of Z-residuals against the linear predictor don't exhibit visible trends; their LOWESS lines are very close to the horizontal line at 0; the boxplots of Z-residuals grouped by cutting  linear predictors into equal-spaced intervals appear to have equal means and variance across groups. The Z-AOV and Z-BL for linear predictors tests also gives large p-values for the wbc and lwbc models, where Z-AOV and Z-BL are the methods of applying ANOVA and Bartlett to test the equality of the means and variances of Z-residuals against the groups formed with the linear predictor.
 
-```{r}
+```{r fig.cap="Figure 2: Scatter plots and box plots of Z-residuals against LP for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients",fig.align='center', fig.width=9, fig.height=9}
 par(mfrow = c(2,2),mar=c(4,4,1.5,2))
 plot.zresid(Zresid.LeukSurv.wbc,
             main.title = "Z-residual Scatterplot of wbc model")
@@ -109,7 +111,7 @@ boxplot.zresid(Zresid.LeukSurv.logwbc,
 The above diagnostics results reveal no serious misspecification in  these two models.  However, the inspection of the Z-residuals against the covariate wbc/log(wbc) reveals that the functional form of the lwbc model  is likely misspecified. The scatterplots and comparative boxplots of the Z-residuals against wbc/log(wbc)  are shown below. The LOWESS curve of the wbc model appears to align well with the horizontal line at 0 and the grouped Z-residuals of the wbc model appear to have equal means and variances across groups. However, the diagnosis results  for the lwbc model are very different. It appears that there is a non-linear trend in the LOWESS curve of the lwbc model and the grouped Z-residuals appear to have different means across groups. The Z-AOV and Z-BL for covariate wbc and log(wbc) also gives p-values for the wbc and lwbc models as shown in the boxplots. The very small p-value of the Z-AOV for covariate log(wbc) test for the lwbc models  strongly suggests that the log transformation of wbc is likely inappropriate for modelling the survival time. 
 
 
-```{r}
+```{r fig.cap="Figure 3: Scatter plots and box plots of Z-residuals against covariate (wbc) for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients",fig.align='center', fig.width=9, fig.height=9}
 par(mfrow = c(2,2),mar=c(4,4,1.5,2))
 plot.zresid(Zresid.LeukSurv.wbc,X="wbc",main.title = "Z-residual Scatterplot of wbc model")
 plot.zresid(Zresid.LeukSurv.logwbc,X="logwbc",main.title = "Z-residual Scatterplot of lwbc model")
@@ -121,7 +123,7 @@ boxplot.zresid(Zresid.LeukSurv.logwbc,X="logwbc",main.title = "Z-residual Boxplo
 
 The boxplots of the Z-residuals against categorical covariate sex shows the grouped Z-residuals appear to have equal means and variances across groups. The p-values of Z-AOV and Z-BL are greater than 0.05.
 
-```{r}
+```{r fig.cap="Figure 4: Scatter plots and box plots of Z-residuals against covariate (sex) for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients",fig.width=9, fig.height=4.5,fig.align='center'}
 par(mfrow = c(1,2))
 
 boxplot.zresid(Zresid.LeukSurv.wbc, X ="sex1",main.title = "Z-residual Boxplot of wbc model")
@@ -131,94 +133,95 @@ boxplot.zresid(Zresid.LeukSurv.logwbc,X ="sex1",main.title = "Z-residual Boxplot
 
 The Shapiro-Wilk (SW) or Shapiro-Francia (SF) normality tests applied to Z-residuals can be used to numerically test the overall GOF of the model. Moreover, the Shapiro-Franciard (SF) test can be employed to assess the normality of censored data. The diagnosis of the GOF of survival probabilities can be converted into a diagnosis of the normality of the censored Z-residuals. Thus, by utilizing the gofTestCensored function from the R package EnvStats, one can examine the normality of censored Z-residuals. 
 
-```{r}
-sw.test.zresid(Zresid.LeukSurv.wbc)
-sw.test.zresid(Zresid.LeukSurv.logwbc)
-sf.test.zresid(Zresid.LeukSurv.wbc)
-sf.test.zresid(Zresid.LeukSurv.logwbc)
+```{r }
+
+sw.wbc<-sw.test.zresid(Zresid.LeukSurv.wbc)
+sw.lwbc<-sw.test.zresid(Zresid.LeukSurv.logwbc)
+sf.wbc<-sf.test.zresid(Zresid.LeukSurv.wbc)
+sf.lwbc<-sf.test.zresid(Zresid.LeukSurv.logwbc)
+gof_tests<-data.frame(sw.wbc,sw.lwbc,sf.wbc,sf.lwbc)
+```
+
+```{r echo = FALSE}
+DT::datatable(round(gof_tests,3),options = list(scrollX = TRUE, paging=TRUE),caption = "Table 2: 1000 replicated Z-SW and Z-SF p-values for the wbc model (left panels) and the lwbc    model (right panels) fitted with the survival times of acute myeloid leukemia patients.")
+
 ```
 
 The Z-residuals can be divided into $k$ groups by cutting the covariates or linear predictors into equally-spaced intervals. To quantitatively evaluate the homogeneity of grouped Z-residuals, we propose testing the equality of group means and group variances. For this purpose, we employ the F-test in ANOVA to assess the equality of means and Bartlett's test to examine the equality of variances.
 
-```{r}
-aov.test.zresid(Zresid.LeukSurv.wbc, k.anova=10)
-aov.test.zresid(Zresid.LeukSurv.logwbc, k.anova=10)
+```{r }
+aov.wbc.lp<-aov.test.zresid(Zresid.LeukSurv.wbc, k.anova=10)
+aov.lwbc.lp<-aov.test.zresid(Zresid.LeukSurv.logwbc, k.anova=10)
 
-bartlett.test.zresid(Zresid.LeukSurv.wbc, k.bl=10)
-bartlett.test.zresid(Zresid.LeukSurv.logwbc, k.bl=10)
+bl.wbc.lp<-bartlett.test.zresid(Zresid.LeukSurv.wbc, k.bl=10)
+bl.lwbc.lp<-bartlett.test.zresid(Zresid.LeukSurv.logwbc, k.bl=10)
 
-aov.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.anova=10)
-aov.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.anova=10)
+aov.wbc<-aov.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.anova=10)
+aov.lwbc<-aov.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.anova=10)
 
-bartlett.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.bl=10)
-bartlett.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.bl=10)
+bl.wbc<-bartlett.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.bl=10)
+bl.lwbc<-bartlett.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.bl=10)
 
+homogeneity_tests<-data.frame(aov.wbc.lp,aov.lwbc.lp,bl.wbc.lp,bl.lwbc.lp,aov.wbc,aov.lwbc,bl.wbc,bl.lwbc)
 
 
 ```
+
+
+```{r echo = FALSE}
+
+ DT::datatable(round(homogeneity_tests,3),options = list(scrollX = TRUE, paging=TRUE),caption = "Table 3: 1000 replicated Z-AOV-LP, Z-AOV-log(wbc), Z-BL-LP and Z-BL-log(wbc) p-values for the wbc model (left panels) and the lwbc    model (right panels) fitted with the survival times of acute myeloid leukemia patients.")
+```
+
 
 The Z-residual test p-values quoted above contain randomness because of the randomization in generating Z-residuals. To ensure the robustness of the model diagnostics results, we generated 1000 replicated test p-values with 1000 sets of regenerated Z-residuals for each test method. We also provide the $p_{min}$ values for diagnosing the two models with Z-residual-based tests.
 
-```{r}
-Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,nrep=1000)
-Zresid.LeukSurv.logwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,nrep=1000)
+```{r echo=FALSE}
+pmin.sw.LeukSurv.wbc<-pvalue.min(pv=sw.wbc)
+pmin.sf.LeukSurv.wbc<-pvalue.min(pv=sf.wbc)
+pmin.aov.lp.LeukSurv.wbc<-pvalue.min(pv=aov.wbc.lp)
+pmin.aov.wbc.LeukSurv<-pvalue.min(pv=aov.wbc)
 
-sw.LeukSurv.wbc<-sw.test.zresid(Zresid.LeukSurv.wbc)
-sw.LeukSurv.lwbc<-sw.test.zresid(Zresid.LeukSurv.logwbc)
-sf.LeukSurv.wbc<-sf.test.zresid(Zresid.LeukSurv.wbc)
-sf.LeukSurv.lwbc<-sf.test.zresid(Zresid.LeukSurv.logwbc)
-
-aov.LeukSurv.lp.wbc<-aov.test.zresid(Zresid.LeukSurv.wbc, k.anova=10)
-aov.LeukSurv.lp.lwbc<-aov.test.zresid(Zresid.LeukSurv.logwbc, k.anova=10)
-
-aov.LeukSurv.wbc<-aov.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.anova=10)
-aov.LeukSurv.lwbc<-aov.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.anova=10)
-
-
-pmin.sw.LeukSurv.wbc<-pvalue.min(pv=sw.LeukSurv.wbc);pmin.sw.LeukSurv.wbc
-pmin.sf.LeukSurv.wbc<-pvalue.min(pv=sf.LeukSurv.wbc);pmin.sf.LeukSurv.wbc
-pmin.aov.lp.LeukSurv.wbc<-pvalue.min(pv=aov.LeukSurv.lp.wbc);pmin.aov.lp.LeukSurv.wbc
-pmin.aov.wbc.LeukSurv<-pvalue.min(pv=aov.LeukSurv.wbc);pmin.aov.wbc.LeukSurv
-
-pmin.sw.LeukSurv.lwbc<-pvalue.min(pv=sw.LeukSurv.lwbc);pmin.sw.LeukSurv.lwbc
-pmin.sf.LeukSurv.lwbc<-pvalue.min(pv=sf.LeukSurv.lwbc);pmin.sf.LeukSurv.lwbc
-pmin.aov.lp.LeukSurv.lwbc<-pvalue.min(pv=aov.LeukSurv.lp.lwbc);pmin.aov.lp.LeukSurv.lwbc
-pmin.aov.lwbc.LeukSurv<-pvalue.min(pv=aov.LeukSurv.lwbc);pmin.aov.lwbc.LeukSurv
-
+pmin.sw.LeukSurv.lwbc<-pvalue.min(pv=sw.lwbc)
+pmin.sf.LeukSurv.lwbc<-pvalue.min(pv=sf.lwbc)
+pmin.aov.lp.LeukSurv.lwbc<-pvalue.min(pv=aov.lwbc.lp)
+pmin.aov.lwbc.LeukSurv<-pvalue.min(pv=aov.lwbc)
 ```
+
 The histograms of 1000 replicated Z-residual test p-values for the wbc and lwbc models. The red vertical lines in these histograms show the upper bound summaries of these replicated p-values, $p_{min}$. These histograms show that the Z-SW, Z-SF, and Z-AOV with LP tests for both models give a large proportion of p-values greater than 0.05, and the large p-values result in large $p_{min}$ values.  In contrast, the replicated Z-AOV with log(wbc) p-values for the lwbc model are almost all smaller than 0.001. The consistently small Z-AOV with log(wbc) p-values further confirm that the log transformation of wbc is inappropriate for modelling the survival time. 
 
 
-```{r,fig.height = 8}
+```{r fig.height = 9,fig.width=9,fig.align='center', fig.cap="Figure 5: The histograms of 1000 replicated Z-SW, Z-SF, Z-AOV-LP and Z-AOV-log(wbc) p-values for the wbc model (left panels) and the lwbc model (right panels) fitted with the survival times of acute myeloid leukemia patients. The vertical red lines indicate $p_{min}$ for 1000 replicated p-values. Note that the upper limit  of the x-axis for Z-AOV-log(wbc) p-values for the lwbc model is 0.005, not 1 for others."}
+
 par(mfrow = c(4,2),mar=c(4,4,2,2))
-hist(sw.LeukSurv.wbc,main="Replicated Z-SW P-values for wbc Model",breaks=20,
+hist(sw.wbc,main="Replicated Z-SW P-values for wbc Model",breaks=20,
      xlab="Z-SW P-values for wbc Model")
 abline(v=pmin.sw.LeukSurv.wbc,col="red")
-hist(sw.LeukSurv.lwbc,main="Replicated Z-SW P-values for lwbc Model",breaks=20,
+hist(sw.lwbc,main="Replicated Z-SW P-values for lwbc Model",breaks=20,
      xlab="Z-SW P-values for lwbc Model")
 abline(v=pmin.sw.LeukSurv.lwbc,col="red")
 
-hist(sf.LeukSurv.wbc,main="Replicated Z-SF P-values for wbc Model",breaks=20,
+hist(sf.wbc,main="Replicated Z-SF P-values for wbc Model",breaks=20,
      xlab="Z-SF P-values for wbc Model")
 abline(v=pmin.sf.LeukSurv.wbc,col="red")
-hist(sf.LeukSurv.lwbc,main="Replicated Z-SF P-values for lwbc Model",breaks=20,
+hist(sf.lwbc,main="Replicated Z-SF P-values for lwbc Model",breaks=20,
      xlab="Z-SF P-values for lwbc Model")
 abline(v=pmin.sf.LeukSurv.lwbc,col="red")
 
-hist(aov.LeukSurv.lp.wbc,main="Replicated Z-AOV with LP P-values for wbc Model",breaks=20,
+hist(aov.wbc.lp,main="Replicated Z-AOV with LP P-values for wbc Model",breaks=20,
      xlab="Z-AOV with LP P-values for wbc Model")
 abline(v=pmin.aov.lp.LeukSurv.wbc,col="red")
-hist(aov.LeukSurv.lp.lwbc,main="Replicated Z-AOV with LP P-values for lwbc Model",breaks=20,
+hist(aov.lwbc.lp,main="Replicated Z-AOV with LP P-values for lwbc Model",breaks=20,
      xlab="Z-AOV with LP P-values for lwbc Model")
 abline(v=pmin.aov.lp.LeukSurv.lwbc,col="red")
 
-hist(aov.LeukSurv.wbc,main="Replicated Z-AOV with wbc P-values for wbc Model",breaks=20,
+hist(aov.wbc,main="Replicated Z-AOV with wbc P-values for wbc Model",breaks=20,
      xlab="Z-AOV with wbc P-values for wbc Model")
 abline(v=pmin.aov.wbc.LeukSurv,col="red")
-hist(aov.LeukSurv.lwbc,main="Replicated Z-AOV with wbc P-values for lwbc Model",breaks=20,
+hist(aov.lwbc,main="Replicated Z-AOV with wbc P-values for lwbc Model",breaks=20,
      xlab="Z-AOV with lwbc P-values for lwbc Model")
 abline(v=pmin.aov.lwbc.LeukSurv,col="red")
-
+  
 ```
 
 
@@ -235,7 +238,7 @@ gof.censored.zresidual(censored.Zresidual=censored.Zresid.LeukSurv.logwbc)
 
 The overall GOF tests and graphical checking with CS residuals show that both the wbc and lwbc models provide adequate fits to the dataset. The estimated CHFs of the  CS residuals of both of the wbc and lwbc models align closely along the $45^{\circ}$ diagonal line. 
 
-```{r}
+```{r fig.width= 9,fig.height=4.5, fig.align='center',fig.cap="Figure 6: The estimated CHFs of the CS residuals for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients"}
 ##unmodified CS residuals
 ucs.LeukSurv.wbc<-residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type = "Cox-Snell" )
 ucs.LeukSurv.logwbc<-residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "Cox-Snell" )
@@ -243,35 +246,33 @@ ucs.LeukSurv.logwbc<-residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,r
 par(mfrow = c(1,2))
 plot.cs.residual(cs.residual=ucs.LeukSurv.wbc,main.title = "CS Residuals of wbc model")
 plot.cs.residual(cs.residual=ucs.LeukSurv.logwbc,main.title = "CS Residuals of lwbc model")
-
 ```
 
 The martingale residuals are mostly within the interval (-3, 1) for those two models. In the scatterplots of martingale residuals under the wbc model, the LOWESS curves have a slight upward slope on the left, while under the lwbc model, they display a pronounced downward curve. Both of these lines demonstrate noticeable non-horizontal trends.
 
-```{r}
-#Martingale residuals
+```{r fig.width= 9,fig.height=4.5, fig.align='center', fig.cap="Figure 7: Scatter plot of the martingale residuals for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients"}
 martg.LeukSurv.wbc<-residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type = "martingale")
 martg.LeukSurv.logwbc<-residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "martingale" )
 
 par(mfrow = c(1,2))
-plot.martg.resid(martg.LeukSurv.wbc,X="wbc",main.title = "Martingale Residual of wbc Model")
-plot.martg.resid(martg.LeukSurv.logwbc,X="logwbc",main.title = "Martingale Residual of lwbc Model")
- 
-
-
+plot.martg.resid(martg.LeukSurv.wbc,X="wbc",main.title = "Martingale Residuals of wbc Model")
+plot.martg.resid(martg.LeukSurv.logwbc,X="logwbc",main.title = "Martingale Residuals of lwbc Model")
 ```
 
 The deviance residuals are more symmetrically distributed than martingale residuals and they are mostly within the interval (-3, 3). In both models, the scatterplots of deviance residuals exhibit strikingly non-horizontal trends in their LOWESS curves.
 
-```{r}
+```{r fig.width= 9,fig.height=4.5,fig.align='center',fig.cap="Figure 8: Scatter plot of the deviance residuals for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients"}
 #Deviance residuals
 dev.LeukSurv.wbc<-residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type = "deviance" )
 dev.LeukSurv.logwbc<-residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "deviance" )
 
 par(mfrow = c(1,2))
-plot.dev.resid(dev.LeukSurv.wbc,X="wbc",main.title = "Deviance Residual Plot of wbc Model")
-plot.dev.resid(dev.LeukSurv.logwbc,X="logwbc",main.title = "Deviance Residual Plot of lwbc Model")
+plot.dev.resid(dev.LeukSurv.wbc,X="wbc",main.title = "Deviance Residuals of wbc Model")
+plot.dev.resid(dev.LeukSurv.logwbc,X="logwbc",main.title = "Deviance Residuals of lwbc Model")
+
 
 ```
+
+
 
 
