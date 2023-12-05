@@ -205,17 +205,17 @@ hist(sf.LeukSurv.lwbc,main="Replicated Z-SF P-values for lwbc Model",breaks=20,
      xlab="Z-SF P-values for lwbc Model")
 abline(v=pmin.sf.LeukSurv.lwbc,col="red")
 
-hist(anov.LeukSurv.lp.wbc,main="Replicated Z-AOV with LP P-values for wbc Model",breaks=20,
+hist(aov.LeukSurv.lp.wbc,main="Replicated Z-AOV with LP P-values for wbc Model",breaks=20,
      xlab="Z-AOV with LP P-values for wbc Model")
 abline(v=pmin.aov.lp.LeukSurv.wbc,col="red")
-hist(anov.LeukSurv.lp.lwbc,main="Replicated Z-AOV with LP P-values for lwbc Model",breaks=20,
+hist(aov.LeukSurv.lp.lwbc,main="Replicated Z-AOV with LP P-values for lwbc Model",breaks=20,
      xlab="Z-AOV with LP P-values for lwbc Model")
 abline(v=pmin.aov.lp.LeukSurv.lwbc,col="red")
 
-hist(anov.LeukSurv.wbc,main="Replicated Z-AOV with wbc P-values for wbc Model",breaks=20,
+hist(aov.LeukSurv.wbc,main="Replicated Z-AOV with wbc P-values for wbc Model",breaks=20,
      xlab="Z-AOV with wbc P-values for wbc Model")
 abline(v=pmin.aov.wbc.LeukSurv,col="red")
-hist(anov.LeukSurv.lwbc,main="Replicated Z-AOV with wbc P-values for lwbc Model",breaks=20,
+hist(aov.LeukSurv.lwbc,main="Replicated Z-AOV with wbc P-values for lwbc Model",breaks=20,
      xlab="Z-AOV with lwbc P-values for lwbc Model")
 abline(v=pmin.aov.lwbc.LeukSurv,col="red")
 
