@@ -51,7 +51,7 @@ Zresidual.ZI <- function(fit_ZI,n.rep=nrep)
       }
     }
     pvalue <- pmin(pmax(pvalue, 10 ^ {-10 }), 1 - 10 ^ { -10})
-    Zresid[,i] = qnorm(pvalue)
+    Zresid[,i] = -qnorm(pvalue)
     col_name[i]<-paste("Z-residual ",i,sep = "")
   }
   colnames(Zresid)<- col_name
@@ -63,8 +63,8 @@ Zresidual.ZI <- function(fit_ZI,n.rep=nrep)
 
   attributes(Zresid.value) <- c(attributes(Zresid.value), list(
     zero.indicator= zero.ind,
-    fitted_values = mu,
-    covariates = m1$frame[,-1]
+    linear.pred = log(mu),
+    covariates = fit_ZI$frame[,-1]
   ))
   return(Zresid.value)
 }

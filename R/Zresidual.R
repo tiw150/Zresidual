@@ -17,8 +17,7 @@
 Zresidual <-
   function(fit.object,
            nrep = 1,
-           data = NULL,
-           fit.object2 = NULL)
+           data = NULL)
   {
     form <- fit.object$call
 
@@ -60,13 +59,8 @@ Zresidual <-
         Zresid_fun <- Zresidual.ZI(fit_ZI = fit.object,n.rep = nrep)
 
       } else if (distr %in% c("truncated_poisson", "truncated_nbinom2")) {
-        if (is.null(fit.object2))
-          stop(
-            "a fit.object2 is required for modelling the probability of zero in zero-modified model."
-          )
-        Zresid_fun <- Zresidual.hurdle(model_count = fit.object,
-                                       model_zero = fit.object2,
-                                       data = data)
+
+        Zresid_fun <- Zresidual.hurdle(fit_hd=fit.object,n.rep = nrep)
       } else
         stop ("The distribution is not supported")
     }
