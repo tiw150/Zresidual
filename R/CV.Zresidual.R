@@ -1,4 +1,21 @@
-cv.Zresidual<- function(fit.object, data, nfolds=NULL,foldlist=NULL)
+#' A title
+#'
+#' Some descriptions
+#'
+#' @param fit.object The fit object are one of 'coxph' and 'survreg'.
+#'
+#' @param data Data that used for fitting the survival model.
+#'
+#' @export
+#'
+#' @return \itemize{
+#'  \item{Zresid}{CV Z-residual}
+#'  \item{SP}{Survival Probabilities}
+
+#' }
+#'
+
+CV.Zresidual<- function(fit.object, data, nfolds=NULL,foldlist=NULL)
 {
   # Required packages:
   if (!requireNamespace("pacman")) {install.packages("pacman")}
