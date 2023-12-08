@@ -1,7 +1,6 @@
 #' CV Zresidual for shared fraitly model using coxph function
 #'
 #' @importFrom parallel detectCores
-#' @importFrom foreach registerDoParallel
 #' @importFrom doParallel registerDoParallel
 
 CV.Zresidual.survreg<- function( fit.survreg,  data, nfolds,foldlist,n.rep)
