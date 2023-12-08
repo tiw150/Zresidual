@@ -11,8 +11,8 @@ Zresidual.coxph<-function (fit_coxph, newdata,n.rep=nrep)
   if(!is.null(newdata)){
     mf_new<-model.frame(fit_coxph$formula,newdata)
     mf_nc_new<- ncol (mf_new)
-    mm_new<-model.matrix(fit_coxph$formula,newdata)
-    fix_var_new<-mm_new[,-1,drop=FALSE]
+    mm_new<- model.matrix.coxph(fit_coxph,newdata)
+    fix_var_new<-mm_new[, ,drop=FALSE]
   }
 
   basecumhaz<-basehaz(fit_coxph,centered = F)
@@ -45,7 +45,7 @@ Zresidual.coxph<-function (fit_coxph, newdata,n.rep=nrep)
   colnames(Zresid)<- col_name
 
   #####
-  censored.status<- (as.matrix(Y_new)[,-1])[,2]
+  censored.status<- Y_new[,3]
   lp.new<-fix_var_new %*% fit_coxph$coefficients
 
   Zresid.value<-as.matrix(Zresid)
@@ -55,7 +55,7 @@ Zresidual.coxph<-function (fit_coxph, newdata,n.rep=nrep)
   attributes(Zresid.value) <- c(attributes(Zresid.value), list(
       Survival.Prob= SP,
       linear.pred = lp.new,
-      covariates = fix_var_new,
+      covariates = mf_new[,-1],
       censored.status= censored.status,
       object.model.frame=mf_new
 

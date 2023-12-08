@@ -6,8 +6,9 @@ head(BreastCancer)
 BreastCancer$grade <- as.factor(BreastCancer$grade)
 
 #############fit the coxph model with frailty#################
-fit_AFTlognormal_BreastCancer<- survreg(Surv(BreastCancer$time,BreastCancer$status)~.,
-                                        data=BreastCancer[,-c(1:3)],dist="lognormal")
+fit_AFTlognormal_BreastCancer<- survreg(Surv(time,status)~treat+age+men+
+                                          size+grade+nodes+prog+oest,
+                                        data=BreastCancer,dist="lognormal")
 
 #############Calculate residuals###############################
 Zresid.BreastCancer<-Zresidual(fit.object = fit_AFTlognormal_BreastCancer)
