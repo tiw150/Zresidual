@@ -15,7 +15,7 @@
 #' }
 #'
 
-CV.Zresidual<- function(fit.object, foldlist=NULL, data=NULL, nfolds=NULL,nrep=1)
+CV.Zresidual<- function(fit.object, nfolds, foldlist=NULL, data=NULL,nrep=1)
 {
   # Required packages:
   if (!requireNamespace("pacman")) {install.packages("pacman")}
@@ -27,22 +27,22 @@ CV.Zresidual<- function(fit.object, foldlist=NULL, data=NULL, nfolds=NULL,nrep=1
     frailty_terms<- attr(fit.object$terms, "specials")$frailty
 
     if (!is.null(frailty_terms)){
-      cv.Zresid.fun <-CV.Zresidual.coxph.frailty(fit.coxph=fit.object, data=data,
+      CV.Zresid.fun <-CV.Zresidual.coxph.frailty(fit.coxph=fit.object, data=data,
                                                  nfolds=nfolds,foldlist=foldlist,
                                                  n.rep=nrep)
 
-    } else cv.Zresid.fun <- CV.Zresidual.coxph(fit.coxph=fit.object, data=data,
+    } else CV.Zresid.fun <- CV.Zresidual.coxph(fit.coxph=fit.object, data=data,
                                                nfolds=nfolds,foldlist=foldlist,
                                                n.rep=nrep)
   }
 
   if (get_object_name=="survreg") {
-    cv.Zresid.fun<-CV.Zresidual.survreg(fit.survreg=fit.object,data=data,
+    CV.Zresid.fun<-CV.Zresidual.survreg(fit.survreg=fit.object,data=data,
                                         nfolds=nfolds,foldlist=foldlist,
                                         n.rep=nrep)
     }
-
-  cv.Zresid.fun
+  class(CV.Zresid.fun) <- c("cvzresid", class(CV.Zresid.fun))
+  CV.Zresid.fun
 }
 
 

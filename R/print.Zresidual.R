@@ -4,6 +4,6 @@ print.zresid <- function(x, ...){
 }
 
 #' @export
-print.CV.Zresid <- function(x, ...){
+print.cvzresid <- function(x, ...){
   print(as.vector(x))
 }

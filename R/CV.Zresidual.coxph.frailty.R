@@ -1,6 +1,6 @@
 #' CV Zresidual for shared fraitly model using coxph function
 #'
-#' @importFrom parallel detectCores
+#' @importFrom parallel detectCores makeForkCluster
 #' @importFrom doParallel registerDoParallel
 
 CV.Zresidual.coxph.frailty<- function( fit.coxph, data, nfolds,foldlist,n.rep)

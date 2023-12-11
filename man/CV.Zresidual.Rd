@@ -4,7 +4,7 @@
 \alias{CV.Zresidual}
 \title{A title}
 \usage{
-CV.Zresidual(fit.object, foldlist = NULL, data = NULL, nfolds = NULL, nrep = 1)
+CV.Zresidual(fit.object, nfolds, foldlist = NULL, data = NULL, nrep = 1)
 }
 \arguments{
 \item{fit.object}{The fit object are one of 'coxph' and 'survreg'.}
