@@ -11,7 +11,7 @@
 #' @return \itemize{
 #'  \item{Zresid}{CV Z-residual}
 #'  \item{SP}{Survival Probabilities}
-
+#'  \item{linear.pred}{linear predictor}
 #' }
 #'
 
