@@ -1,6 +1,6 @@
 #' A function to calculate ANOVA
 #'
-#' @param Zresidual A z-residual.
+#' @param Zresidual A Z-residual.
 #' @param fitted.value Fitted values
 #' @param k.anova Number of bins if applicable
 
