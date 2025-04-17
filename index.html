@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Z-residual for Regression Modelling • Zresidual</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -19,7 +19,7 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -47,7 +47,7 @@
 <li>
   <a href="https://github.com/tiw150/Zresidual/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul>
@@ -58,7 +58,7 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="contents col-md-9">
@@ -140,13 +140,13 @@
 <span><span class="va">Zresid.LeukSurv.logwbc</span><span class="op">&lt;-</span><span class="fu"><a href="reference/Zresidual.html">Zresidual</a></span><span class="op">(</span>fit.object <span class="op">=</span> <span class="va">fit_LeukSurv_logwbc</span>,data<span class="op">=</span> <span class="va">LeukSurv</span><span class="op">)</span></span></code></pre></div>
 <p>Diagnosis of the overall (GOF) and the Functional Form of Covariates using Z-residuals</p>
 <p>A QQ plot based on Z-residuals can be used to graphically assess the model’s overall GOF, and Shapiro-Wilk (SW) or Shapiro-Francia (SF) normality tests applied to Z-residuals can be used to numerically test the overall GOF of the model.</p>
-<p>We can see that the QQ plots of Z-residuals of these two models align well with the 45 <span class="math inline"><sup>∘</sup></span> diagonal line. The Z-SW tests also give large p-values for two models, where Z-SW is the test method that the normality of Z-residuals is tested with the SW test.</p>
+<p>We can see that the QQ plots of Z-residuals of these two models align well with the 45 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi></mi><mo>∘</mo></msup><annotation encoding="application/x-tex">^\circ</annotation></semantics></math> diagonal line. The Z-SW tests also give large p-values for two models, where Z-SW is the test method that the normality of Z-residuals is tested with the SW test.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span>,mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">4</span>,<span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.wbc</span>,main.title <span class="op">=</span> <span class="st">"Z-residual QQ plot of wbc model"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.logwbc</span>,main.title <span class="op">=</span> <span class="st">"Z-residual QQ plot of lwbc model"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-4-1.png" width="100%"></p>
-<p>The Z-residuals can be divided into <span class="math inline"><em>k</em></span> groups by cutting the linear predictors or covariates into equally-spaced intervals. Then we can check whether the Z-residuals of the <span class="math inline"><em>k</em></span> groups are homogeneously distributed. A quantitative method to assess the homogeneity of such grouped Z-residuals is to test the equality of group means or variances of the Z-residuals. We employ the F-test in ANOVA to assess the equality of means and Bartlett’s test to examine the equality of variances.</p>
+<p>The Z-residuals can be divided into <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math> groups by cutting the linear predictors or covariates into equally-spaced intervals. Then we can check whether the Z-residuals of the <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math> groups are homogeneously distributed. A quantitative method to assess the homogeneity of such grouped Z-residuals is to test the equality of group means or variances of the Z-residuals. We employ the F-test in ANOVA to assess the equality of means and Bartlett’s test to examine the equality of variances.</p>
 <p>The scatterplots of Z-residuals against the linear predictor don’t exhibit visible trends; their LOWESS lines are very close to the horizontal line at 0; the boxplots of Z-residuals grouped by cutting linear predictors into equal-spaced intervals appear to have equal means and variance across groups. The Z-AOV and Z-BL for linear predictors tests also gives large p-values for the wbc and lwbc models, where Z-AOV and Z-BL are the methods of applying ANOVA and Bartlett to test the equality of the means and variances of Z-residuals against the groups formed with the linear predictor.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span>,mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">4</span>,<span class="fl">1.5</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
@@ -197,7 +197,7 @@
 <span><span class="co">#&gt; [1] 0.2161675</span></span>
 <span><span class="fu">sf.test.zresid</span><span class="op">(</span><span class="va">Zresid.LeukSurv.logwbc</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.7628117</span></span></code></pre></div>
-<p>The Z-residuals can be divided into <span class="math inline"><em>k</em></span> groups by cutting the covariates or linear predictors into equally-spaced intervals. To quantitatively evaluate the homogeneity of grouped Z-residuals, we propose testing the equality of group means and group variances. For this purpose, we employ the F-test in ANOVA to assess the equality of means and Bartlett’s test to examine the equality of variances.</p>
+<p>The Z-residuals can be divided into <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math> groups by cutting the covariates or linear predictors into equally-spaced intervals. To quantitatively evaluate the homogeneity of grouped Z-residuals, we propose testing the equality of group means and group variances. For this purpose, we employ the F-test in ANOVA to assess the equality of means and Bartlett’s test to examine the equality of variances.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">anov.test.zresid</span><span class="op">(</span><span class="va">Zresid.LeukSurv.wbc</span>,fitted.values<span class="op">=</span><span class="va">fit_LeukSurv_wbc</span><span class="op">$</span><span class="va">linear.predictors</span>, k.anova<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.8623168</span></span>
@@ -218,7 +218,7 @@
 <span><span class="co">#&gt; [1] 0.951957</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/bartlett.test.html" class="external-link">bartlett.test</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.logwbc</span>,fitted.values<span class="op">=</span><span class="va">LeukSurv</span><span class="op">$</span><span class="va">logwbc</span>, k.bl<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.2229889</span></span></code></pre></div>
-<p>The Z-residual test p-values quoted above contain randomness because of the randomization in generating Z-residuals. To ensure the robustness of the model diagnostics results, we generated 1000 replicated test p-values with 1000 sets of regenerated Z-residuals for each test method. We also provide the <span class="math inline"><em>p</em><sub><em>m</em><em>i</em><em>n</em></sub></span> values for diagnosing the two models with Z-residual-based tests.</p>
+<p>The Z-residual test p-values quoted above contain randomness because of the randomization in generating Z-residuals. To ensure the robustness of the model diagnostics results, we generated 1000 replicated test p-values with 1000 sets of regenerated Z-residuals for each test method. We also provide the <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mrow><mi>m</mi><mi>i</mi><mi>n</mi></mrow></msub><annotation encoding="application/x-tex">p_{min}</annotation></semantics></math> values for diagnosing the two models with Z-residual-based tests.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n_sims</span><span class="op">&lt;-</span><span class="fl">1000</span></span>
 <span><span class="va">cur_time</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/proc.time.html" class="external-link">proc.time</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -274,7 +274,7 @@
 <span><span class="co">#&gt; [1] 0.9849655</span></span>
 <span><span class="va">pmin.aov.lwbc.LeukSurv</span><span class="op">&lt;-</span><span class="fu">bounds_pvalues</span><span class="op">(</span>pv<span class="op">=</span><span class="va">anov.LeukSurv.lwbc</span><span class="op">)</span>;<span class="va">pmin.aov.lwbc.LeukSurv</span></span>
 <span><span class="co">#&gt; [1] 1.222356e-05</span></span></code></pre></div>
-<p>The histograms of 1000 replicated Z-residual test p-values for the wbc and lwbc models. The red vertical lines in these histograms show the upper bound summaries of these replicated p-values, <span class="math inline"><em>p</em><sub><em>m</em><em>i</em><em>n</em></sub></span>. These histograms show that the Z-SW, Z-SF, and Z-AOV with LP tests for both models give a large proportion of p-values greater than 0.05, and the large p-values result in large <span class="math inline"><em>p</em><sub><em>m</em><em>i</em><em>n</em></sub></span> values. In contrast, the replicated Z-AOV with log(wbc) p-values for the lwbc model are almost all smaller than 0.001. The consistently small Z-AOV with log(wbc) p-values further confirm that the log transformation of wbc is inappropriate for modelling the survival time.</p>
+<p>The histograms of 1000 replicated Z-residual test p-values for the wbc and lwbc models. The red vertical lines in these histograms show the upper bound summaries of these replicated p-values, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mrow><mi>m</mi><mi>i</mi><mi>n</mi></mrow></msub><annotation encoding="application/x-tex">p_{min}</annotation></semantics></math>. These histograms show that the Z-SW, Z-SF, and Z-AOV with LP tests for both models give a large proportion of p-values greater than 0.05, and the large p-values result in large <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mrow><mi>m</mi><mi>i</mi><mi>n</mi></mrow></msub><annotation encoding="application/x-tex">p_{min}</annotation></semantics></math> values. In contrast, the replicated Z-AOV with log(wbc) p-values for the lwbc model are almost all smaller than 0.001. The consistently small Z-AOV with log(wbc) p-values further confirm that the log transformation of wbc is inappropriate for modelling the survival time.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">2</span><span class="op">)</span>,mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">4</span>,<span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">sw.LeukSurv.wbc</span>,main<span class="op">=</span><span class="st">"Replicated Z-SW P-values for wbc Model"</span>,breaks<span class="op">=</span><span class="fl">20</span>,</span>
@@ -314,7 +314,7 @@
 <span><span class="co">#&gt; [1] 0.5702324</span></span>
 <span><span class="fu">gof.censore.zresid</span><span class="op">(</span>censored.Zresidual<span class="op">=</span><span class="va">censored.Zresid.LeukSurv.logwbc</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.07535993</span></span></code></pre></div>
-<p>The overall GOF tests and graphical checking with CS residuals show that both the wbc and lwbc models provide adequate fits to the dataset. The estimated CHFs of the CS residuals of both of the wbc and lwbc models align closely along the <span class="math inline">45<sup>∘</sup></span> diagonal line.</p>
+<p>The overall GOF tests and graphical checking with CS residuals show that both the wbc and lwbc models provide adequate fits to the dataset. The estimated CHFs of the CS residuals of both of the wbc and lwbc models align closely along the <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>45</mn><mo>∘</mo></msup><annotation encoding="application/x-tex">45^{\circ}</annotation></semantics></math> diagonal line.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">##unmodified CS residuals</span></span>
 <span></span>
@@ -431,9 +431,8 @@
 
 <div class="license">
 <h2 data-toc-skip>License</h2>
-<ul class="list-unstyled">
-<li>NA</li>
-</ul>
+<ul class="list-unstyled"><li>
+</li></ul>
 </div>
 
 
@@ -466,16 +465,16 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer>
 </div>
 
-  
 
 
-  
+
+
 
   </body>
 </html>
