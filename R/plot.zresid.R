@@ -11,8 +11,10 @@
 plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual",
                         normality.test = c("SW", "AOV", "BL"), k.test = 10,
                         X = c("index", "covariate", "lp"),
-                        main.title = paste("Z-residual Scatterplot -",
-                                           attr(Zresidual, "type")),
+                        main.title = ifelse(is.null(attr(Zresidual, "type")),
+                                            "Z-residual Scatterplot",
+                                            paste("Z-residual Scatterplot -",
+                                                  attr(Zresidual, "type"))),
                         outlier.return = FALSE, outlier.value = 3.5,
                         category = NULL, outlier.set = list(), xlab = NULL,
                         ...) {
@@ -48,11 +50,16 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
     } else {
       pch <- if (length(unique.cats) == 1) 1 else c(1:25)[1:length(unique.cats)]
     }
+  } else if (is.null(type)){
+    unique.cats <- c("Uncensored", "Censored")
+    censored <- attr(Zresidual, "censored.status")
+    col<- c("blue","red")[censored+1]
+    pch<- c(3,2)[censored+1]
   } else {
     if (type == "hurdle") {
-      unique.cats <- c("zero", "count")
-      col <- c("red", "blue")[seq_along(Zresidual) %in% attr(Zresidual, "zero_id") + 1]
-      pch <- c(1, 3)[seq_along(Zresidual) %in% attr(Zresidual, "zero_id") + 1]
+      unique.cats <- c("count","zero")
+      col <- c("blue", "red")[seq_along(Zresidual) %in% attr(Zresidual, "zero_id") + 1]
+      pch <- c(3,2)[seq_along(Zresidual) %in% attr(Zresidual, "zero_id") + 1]
     } else if (type %in% c("count")) {
       unique.cats <- type
       col <- "blue"
@@ -60,10 +67,10 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
     } else if (type %in% c("zero")) {
       unique.cats <- type
       col <- "red"
-      pch <- 1
+      pch <- 2
     } else {
       col <- "red"
-      pch <- 1
+      pch <- 2
     }
     if (!is.null(args[["col"]])) {
       col <- args[["col"]]
@@ -78,6 +85,7 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
   }
 
   for (j in irep) {
+    plot.new()
     par(mar = c(5, 4, 4, 6) + 0.1)
     id.nan <- which(is.nan(Zresidual[, j]))
     id.infinity <- which(is.infinite(Zresidual[, j]))
@@ -92,6 +100,7 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
     }
     if (length(id.nan) > 0L) message("NaNs exist! The model or the fitting process has a problem!")
     ylim0 <- max(qnorm(c(0.9999)), max(abs(Zresidual[, j]), na.rm = TRUE))
+    test.legend <- NULL
     if (X != "index") {
       test.list <- c("SW" = "sw", "AOV" = "aov", "BL" = "bartlett")
       current_test_pv <- NULL # Initialize for each iteration
@@ -111,10 +120,10 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
     legend.args <- modifyList(default.legend, args[!names(args) %in% c("col", "pch")])
     legend.args <- legend.args[names(legend.args) %in% formalArgs(legend)]
     default.outlier <- list(pos = 4, labels = id.outlier, cex = 0.8,
-                            col = "blue", add = TRUE, inches = FALSE,
-                            circles = rep((par("usr")[2] - par("usr")[1]) * 0.05,
+                            col = "darkolivegreen4", add = TRUE, inches = FALSE,
+                            circles = rep((par("usr")[2] - par("usr")[1]) * 0.03,
                                           length(id.outlier)),
-                            fg = "blue")
+                            fg = "darkolivegreen4", font = 2)
     outlier.args <- modifyList(default.outlier, outlier.set)
     text.args <- outlier.args[names(outlier.args) %in% formalArgs(text.default)]
     symbols.args <- outlier.args[names(outlier.args) %in% formalArgs(symbols)]
@@ -160,8 +169,23 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
       if (!is.null(test.legend)) do.call(legend, c(list(x = plot_limits[2] - (par("usr")[2] - par("usr")[1]) * 0.05, y = plot_limits[4] * 0.7), test.legend))
       if (isTRUE(outlier.return)) {
         if (!identical(id.outlier, integer(0))) {
-          do.call(symbols, c(list(id.outlier, Zresidual[, j][id.outlier]), symbols.args))
-          do.call(text, c(list(id.outlier, Zresidual[, j][id.outlier]), text.args))
+          # Recalculate circles based on current par("usr")
+          outlier.circles <- rep((par("usr")[2] - par("usr")[1]) * 0.03, length(id.outlier))
+          # Update symbols.args with the recalculated circles
+          symbols.args$circles <- outlier.circles
+          symbols.args$add <- NULL
+          effective_symbols_args <- c(list(x = id.outlier, y = Zresidual[, j][id.outlier], add = TRUE), symbols.args)
+          do.call(symbols, effective_symbols_args)
+          # Adjust text position for the last outlier
+          text_x <- id.outlier
+          text_y <- Zresidual[, j][id.outlier]
+          text_pos <- outlier.args$pos # Default position
+          if (any(id.outlier == nrow(Zresidual))) {
+            text_pos[id.outlier == nrow(Zresidual)] <- 1 # Position below
+          }
+          text.args_no_pos <- text.args[names(text.args) != "pos"]
+          do.call(text, c(list(x = text_x, y = text_y, pos = text_pos), text.args_no_pos))
+          #do.call(text, c(list(id.outlier, Zresidual[, j][id.outlier]), text.args))
         }
       }
     }
@@ -173,7 +197,14 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
       if (!is.null(test.legend)) do.call(legend, c(list(x = plot_limits[2] - (par("usr")[2] - par("usr")[1]) * 0.05, y = plot_limits[4] * 0.7), test.legend))
       if (isTRUE(outlier.return)) {
         if (!identical(id.outlier, integer(0))) {
-          do.call(symbols, c(list(fitted.value[id.outlier], Zresidual[, j][id.outlier]), symbols.args))
+          # Recalculate circles based on current par("usr")
+          outlier.circles <- rep((par("usr")[2] - par("usr")[1]) * 0.03, length(id.outlier))
+          # Update symbols.args with the recalculated circles
+          symbols.args$circles <- outlier.circles
+          symbols.args$add <- NULL
+          effective_symbols_args <- c(list(x = fitted.value[id.outlier], y = Zresidual[, j][id.outlier], add = TRUE), symbols.args)
+          do.call(symbols, effective_symbols_args)
+          #do.call(symbols, c(list(fitted.value[id.outlier], Zresidual[, j][id.outlier]), symbols.args))
           do.call(text, c(list(fitted.value[id.outlier], Zresidual[, j][id.outlier]), text.args))
         }
       }
@@ -189,7 +220,14 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
         if (!is.null(test.legend)) do.call(legend, c(list(x = plot_limits[2] - (par("usr")[2] - par("usr")[1]) * 0.05, y = plot_limits[4] * 0.7), test.legend))
         if (isTRUE(outlier.return)) {
           if (!identical(id.outlier, integer(0))) {
-            do.call(symbols, c(list(fitted.value[, i][id.outlier], Zresidual[, j][id.outlier]), symbols.args))
+            # Recalculate circles based on current par("usr")
+            outlier.circles <- rep((par("usr")[2] - par("usr")[1]) * 0.03, length(id.outlier))
+            # Update symbols.args with the recalculated circles
+            symbols.args$circles <- outlier.circles
+            symbols.args$add <- NULL
+            effective_symbols_args <- c(list(x = fitted.value[, i][id.outlier], y = Zresidual[, j][id.outlier], add = TRUE), symbols.args)
+            do.call(symbols, effective_symbols_args)
+            #do.call(symbols, c(list(fitted.value[, i][id.outlier], Zresidual[, j][id.outlier]), symbols.args))
             do.call(text, c(list(fitted.value[, i][id.outlier], Zresidual[, j][id.outlier]), text.args))
           }
         }

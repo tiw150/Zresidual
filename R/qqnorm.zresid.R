@@ -11,7 +11,9 @@
 #' @export qqnorm.zresid
 #'
 qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = c("SW", "ANOVA"), X.anova = c("lp", "covariate"),
-                           k.anova=10, main.title = paste("Normal Q-Q Plot -", attr(Zresidual, "type")),
+                           k.anova=10, main.title = ifelse(is.null(attr(Zresidual, "type")),
+                                                           "Normal Q-Q Plot",
+                                                           paste("Normal Q-Q Plot -", attr(Zresidual, "type"))),
                            xlab = "Theoretical Quantiles", ylab = "Sample Quantiles",
                            outlier.return=FALSE, outlier.value = 3.5, outlier.set = list(),legend.settings = list(), ...)
 {
@@ -25,6 +27,14 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = c("SW", "ANOVA"),
 
   for (i in irep) {
     par(mar = c(5, 4, 4, 6) + 0.1)
+    # Get the range of the QQ plot data to set the plot window
+    qq_x <- qqnorm(Zresidual[,i], plot.it = FALSE)$x
+    qq_y <- qqnorm(Zresidual[,i], plot.it = FALSE)$y
+    xlim0_qq <- c(min(qq_x, na.rm = TRUE) - 0.5, max(qq_x, na.rm = TRUE) + 0.6)
+    ylim0_qq <- range(qq_y, na.rm = TRUE) # Use the actual range of QQ values
+
+    plot.window(xlim = xlim0_qq, ylim = ylim0_qq) # Explicitly set the plot window
+
    # type <- attr(Zresidual, "type")
     id.negtv.inf <- which(is.infinite(Zresidual[,i]) & Zresidual[,i] < 0)
     id.pos.inf <- which(is.infinite(Zresidual[,i]) & Zresidual[,i] > 0)
@@ -231,4 +241,6 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = c("SW", "ANOVA"),
     }
 
   }
+
 }
+

@@ -2,7 +2,7 @@
 #' This function is to be used when the user needs to calculate the z-residuals of TNB/HNB
 #'
 #' @param fit A `brm` fit.
-#' @param type The component which the z-residuals should be calculated.
+#' @param type The component which the Z-residuals should be calculated.
 #' @export
 #'
 zresidual_hurdle_negbinomial <- function(fit,  type , method = "iscv", nrep = 1){

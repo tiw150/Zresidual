@@ -2,7 +2,7 @@
 #'
 #' Some descriptions
 #'
-#' @param fit.object The fit object are one of 'coxph', 'survreg' and 'glmmTMB'.
+#' @param fit.object The fit object are one of 'coxph', 'survreg' and 'brms'.
 #'
 #' @param data Data that used for fitting the survival model.
 #'

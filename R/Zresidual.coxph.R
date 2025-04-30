@@ -53,6 +53,7 @@ Zresidual.coxph<-function (fit_coxph, newdata,n.rep=nrep)
 #  class(Zresid.value) <- c("zresid", class(Zresid.value))
 
   attributes(Zresid.value) <- c(attributes(Zresid.value), list(
+ #     type = "coxph",
       Survival.Prob= SP,
       linear.pred = lp.new,
       covariates = mf_new[,-1],

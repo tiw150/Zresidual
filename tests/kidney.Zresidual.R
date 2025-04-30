@@ -4,12 +4,11 @@ data("kidney")
 head(kidney)
 kidney$sex <- ifelse(kidney$sex == 1, "male", "female")
 kidney$sex<-as.factor(kidney$sex)
-kidney$id<-as.factor(kidney$id)
+#kidney$id <- as.factor(kidney$id)
 
 #############fit the coxph model with frailty#################
 fit_kidney <- tryCatch(
-  coxph(Surv(time, status) ~ age + sex + disease+
-          frailty(id, distribution="gamma"), data= kidney),
+  coxph(Surv(time, censored) ~ age + sex + disease, data= kidney),
   error = function(e) NA,
   warning = function(w) NA
 )
