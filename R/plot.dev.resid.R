@@ -1,4 +1,6 @@
 #' @export plot.dev.resid
+#' @param Deviance.residual
+#'
 plot.dev.resid <- function(Deviance.residual,ylab = "Deviance Residual",
                            X = c("index", "lp", "covariate"),
                            main.title = "Deviance Residual Plot",
@@ -11,7 +13,7 @@ plot.dev.resid <- function(Deviance.residual,ylab = "Deviance Residual",
     sign.x[is.na(x)] <- 1
     sign.x
   }
-  
+
   as.character.na <- function(x)
   {
     label.x <- as.character(x)
@@ -19,7 +21,7 @@ plot.dev.resid <- function(Deviance.residual,ylab = "Deviance Residual",
     label.x
   }
   if (missing(X)) X = "lp"
-  
+
   id.infinity <- which (!is.finite(Deviance.residual))
   if (length(id.infinity) > 0L) {
     value.notfinite <- as.character.na(Deviance.residual[id.infinity])
@@ -29,7 +31,7 @@ plot.dev.resid <- function(Deviance.residual,ylab = "Deviance Residual",
     message("Non-finite deviance residual exist! The model or the fitting process has a problem!")
   }
   censored <- attr(Deviance.residual, "censored.status")
-  
+
   if (X == "index") {
     plot.default (
       Deviance.residual,
@@ -51,7 +53,7 @@ plot.dev.resid <- function(Deviance.residual,ylab = "Deviance Residual",
       bty = "L",
       horiz = TRUE
     )
-    
+
     if (isTRUE(outlier.return)) {
       if (identical(which(is.outlier), integer(0))) {
         return(invisible(NULL))
@@ -73,7 +75,7 @@ plot.dev.resid <- function(Deviance.residual,ylab = "Deviance Residual",
           col = "red"
         )
       }
-      
+
     }
   }
   if (X == "lp") {
@@ -102,7 +104,7 @@ plot.dev.resid <- function(Deviance.residual,ylab = "Deviance Residual",
       bty = "L",
       horiz = TRUE
     )
-    
+
     if (isTRUE(outlier.return)) {
       if (identical(which(is.outlier), integer(0))) {
         return(invisible(NULL))
@@ -126,22 +128,22 @@ plot.dev.resid <- function(Deviance.residual,ylab = "Deviance Residual",
       }
     }
   }
-  
+
   if (X != "index" && X != "lp") {
-    
+
     fitted.value <- attr(Deviance.residual, "covariates")
-    
+
     if(X == "covariate"){
       i<-1
       cat("To plot against other covariates, set X to be the covariate name. Please copy one of the covariate name:",
           variable.names(fitted.value))
-      
+
     } else if(X %in% variable.names(fitted.value)){
       cov.name<-variable.names(fitted.value)
       i<- which(cov.name==X)
     } else{stop("X must be the one of covariate name.") }
-    
-    
+
+
     plot(
       fitted.value[,i],
       Deviance.residual,
@@ -166,7 +168,7 @@ plot.dev.resid <- function(Deviance.residual,ylab = "Deviance Residual",
       bty = "L",
       horiz = TRUE
     )
-    
+
     if (isTRUE(outlier.return)) {
       if (identical(which(is.outlier), integer(0))) {
         return(invisible(NULL))
@@ -190,11 +192,11 @@ plot.dev.resid <- function(Deviance.residual,ylab = "Deviance Residual",
       }
     }
   }
-  
-  
+
+
   if (outlier.return) {
     cat("Outlier Indices:", which(is.outlier), "\n")
     invisible(list(outliers = which(is.outlier)))
   }
-  
+
 }

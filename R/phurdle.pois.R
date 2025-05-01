@@ -3,7 +3,7 @@
 #' @param y y values.
 #' @param lambda lambda parameter.
 #' @param pi hu parameter.
-#' @export
+#'
 
 phurdle.pois <- function(y, lambda, pi, lower.tail = FALSE, log.p = FALSE)
 {

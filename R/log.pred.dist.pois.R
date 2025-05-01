@@ -1,7 +1,7 @@
 #' A function to calculate predictive log poisson pmf and cdf of 'brm' fit.
 #'
 #' @param fit A `brm` fit.
-#' @export log.pred.dist.pois
+
 
 log.pred.dist.pois <- function(fit){
 

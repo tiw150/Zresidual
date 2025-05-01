@@ -2,7 +2,7 @@
 #'
 #' @param y y values.
 #' @param lambda lambda parameter of TP distribution.
-#' @export
+#'
 
 pdf.tp <- function(y, lambda, log.p = FALSE)
 {

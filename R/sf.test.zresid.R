@@ -1,5 +1,7 @@
 #' @importFrom nortest sf.test
+#' @param Zresidual A Z-residual.
 #' @export sf.test.zresid
+#'
 sf.test.zresid <- function (Zresidual)
 {
   id.negtv.inf <- which(is.infinite(Zresidual) & Zresidual < 0)

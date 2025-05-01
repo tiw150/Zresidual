@@ -3,6 +3,8 @@
 #' @param Zresidual A Z-residual.
 #' @param fitted.value Fitted values
 #' @param k.anova Number of bins if applicable
+#'
+#'
 
 test.nl.aov <- function(Zresidual, fitted.value, k.anova=10)
 {

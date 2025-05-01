@@ -1,7 +1,7 @@
 #' A function to calculate predictive log negative binomial pmf and cdf of 'brm' fit.
 #'
 #' @param fit A `brm` fit.
-#' @export log.pred.dist.NB
+#'
 
 log.pred.dist.NB <- function(fit){
 

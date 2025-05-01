@@ -1,7 +1,7 @@
 #' A function to calculate predictive log hurdle negative binomial pmf and cdf of a 'brm' fit
 #'
 #' @param fit A `brm` fit.
-#' @export log.pred.dist.HNB
+#'
 
 log.pred.dist.HNB <- function(fit){
 

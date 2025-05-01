@@ -1,9 +1,6 @@
 #' A function to calculate z-residuals of a 'brm' fit.
 #' This function is to be used when the user needs to calculate the z-residuals of TNB/HNB
 #'
-#' @param fit A `brm` fit.
-#' @param type The component which the z-residuals should be calculated.
-#' @export
 #'
 zresidual_poisson <- function(fit,  type = "pois" , method = "iscv", nrep = 1){
 

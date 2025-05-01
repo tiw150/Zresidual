@@ -1,6 +1,5 @@
 #' A function to calculate Bartlett test of Zresidual
 #'
-#' @param Zresidual A Z-residual.
 #' @export
 #'
 #' @param Zresidual A Z-residual.

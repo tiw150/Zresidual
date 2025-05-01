@@ -1,7 +1,6 @@
 #' A function to calculate log predictive distribution (pmf and cdf) of logistic component of a 'brm' fit
 #'
 #' @param fit A `brm` fit.
-#' @export log.pred.dist.zero
 #' @import Rlab
 
 log.pred.dist.zero <- function(fit){

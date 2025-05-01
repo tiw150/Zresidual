@@ -1,4 +1,7 @@
 #' @export plot.martg.resid
+#' @param Martingale.residual
+#'
+#'
 plot.martg.resid <- function(Martingale.residual,ylab = "Martingale Residual",
                              X = c("index", "lp", "covariate"),
                              main.title = "Martingale Residual Plot",
@@ -11,7 +14,7 @@ plot.martg.resid <- function(Martingale.residual,ylab = "Martingale Residual",
     sign.x[is.na(x)] <- 1
     sign.x
   }
-  
+
   as.character.na <- function(x)
   {
     label.x <- as.character(x)
@@ -19,7 +22,7 @@ plot.martg.resid <- function(Martingale.residual,ylab = "Martingale Residual",
     label.x
   }
   if (missing(X)) X = "lp"
-  
+
   id.infinity <- which (!is.finite(Martingale.residual))
   if (length(id.infinity) > 0L) {
     value.notfinite <- as.character.na(Martingale.residual[id.infinity])
@@ -30,7 +33,7 @@ plot.martg.resid <- function(Martingale.residual,ylab = "Martingale Residual",
   }
   ylim0<- max(Martingale.residual)
   censored <- attr(Martingale.residual, "censored.status")
-  
+
   if (X == "index") {
     plot.default (
       Martingale.residual,
@@ -52,7 +55,7 @@ plot.martg.resid <- function(Martingale.residual,ylab = "Martingale Residual",
       bty = "L",
       horiz = TRUE
     )
-    
+
     if (isTRUE(outlier.return)) {
       if (identical(which(is.outlier), integer(0))) {
         return(invisible(NULL))
@@ -74,7 +77,7 @@ plot.martg.resid <- function(Martingale.residual,ylab = "Martingale Residual",
           col = "red"
         )
       }
-      
+
     }
   }
   if (X == "lp") {
@@ -103,7 +106,7 @@ plot.martg.resid <- function(Martingale.residual,ylab = "Martingale Residual",
       bty = "L",
       horiz = TRUE
     )
-    
+
     if (isTRUE(outlier.return)) {
       if (identical(which(is.outlier), integer(0))) {
         return(invisible(NULL))
@@ -127,22 +130,22 @@ plot.martg.resid <- function(Martingale.residual,ylab = "Martingale Residual",
       }
     }
   }
-  
+
   if (X != "index" && X != "lp") {
-    
+
     fitted.value <- attr(Martingale.residual, "covariates")
-    
+
     if(X == "covariate"){
       i<-1
       cat("To plot against other covariates, set X to be the covariate name. Please copy one of the covariate name:",
           variable.names(fitted.value))
-      
+
     } else if(X %in% variable.names(fitted.value)){
       cov.name<-variable.names(fitted.value)
       i<- which(cov.name==X)
     } else{stop("X must be the one of covariate name.") }
-    
-    
+
+
     plot(
       fitted.value[,i],
       Martingale.residual,
@@ -167,7 +170,7 @@ plot.martg.resid <- function(Martingale.residual,ylab = "Martingale Residual",
       bty = "L",
       horiz = TRUE
     )
-    
+
     if (isTRUE(outlier.return)) {
       if (identical(which(is.outlier), integer(0))) {
         return(invisible(NULL))
@@ -191,11 +194,11 @@ plot.martg.resid <- function(Martingale.residual,ylab = "Martingale Residual",
       }
     }
   }
-  
-  
+
+
   if (outlier.return) {
     cat("Outlier Indices:", which(is.outlier), "\n")
     invisible(list(outliers = which(is.outlier)))
   }
-  
+
 }

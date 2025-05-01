@@ -3,7 +3,7 @@
 #' @param y y values.
 #' @param mu mu parameter of TNB distribution.
 #' @param size size parameter of TNB distribution.
-#' @export
+#'
 
 pdf.tnb <- function(y, mu, size, log.p = FALSE)
 {

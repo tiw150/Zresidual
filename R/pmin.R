@@ -1,4 +1,6 @@
 #' @export
+#' @param pv
+#'
 pvalue.min <- function (pv)
 {
   pv <- pv[is.finite(pv)]

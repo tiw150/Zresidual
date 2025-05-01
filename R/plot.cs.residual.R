@@ -1,4 +1,6 @@
 #' @export plot.cs.residual
+#' @param cs.residual
+#'
 plot.cs.residual <- function(cs.residual,ylab = "Cumulative Hazard Function",
                              main.title = "Cox-Snell Residuals Scatterplot",
                              outlier.return = FALSE,

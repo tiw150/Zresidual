@@ -2,7 +2,7 @@
 #'
 #' @param fit A `brm` fit.
 #' @param dpar parameter.
-#' @export
+#'
 
 posterior.pred <- function(fit, dpar, count.only = TRUE){
 

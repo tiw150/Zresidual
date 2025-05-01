@@ -4,7 +4,7 @@
 #' @param mu mu parameter.
 #' @param size parameter.
 #' @param pi hu parameter.
-#' @export
+#'
 
 phurdle.nb <- function(y, mu, size, pi, lower.tail = FALSE, log.p = FALSE)
 {
