@@ -1,3 +1,4 @@
+#' A function to calculate the min p-value
 #' @export
 #' @param pv
 #'

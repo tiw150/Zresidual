@@ -1,3 +1,4 @@
+#' A function to draw scatter plot of a Martingale Residual
 #' @export plot.martg.resid
 #' @param Martingale.residual
 #'

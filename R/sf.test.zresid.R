@@ -1,3 +1,4 @@
+#' A function to calculate Shapiro-Francia test of Zresidual
 #' @importFrom nortest sf.test
 #' @param Zresidual A Z-residual.
 #' @export sf.test.zresid

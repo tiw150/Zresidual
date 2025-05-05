@@ -1,5 +1,7 @@
+#' A function to draw scatter plot of a Cox-snell Residual
+#'
+#' @param cs.residual A numeric vector of Cox-Snell residuals.
 #' @export plot.cs.residual
-#' @param cs.residual
 #'
 plot.cs.residual <- function(cs.residual,ylab = "Cumulative Hazard Function",
                              main.title = "Cox-Snell Residuals Scatterplot",

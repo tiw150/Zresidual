@@ -1,4 +1,4 @@
-#' A function to draw scatter plot of a z-residual
+#' A function to draw scatter plot of a Z-residual
 #'
 #' @param Zresidual A Z-residual.
 #' @param outlier.set A list of parameters available in symbols() and text().

@@ -1,3 +1,4 @@
+#' A function to draw scatter plot of a Deviance Residual
 #' @export plot.dev.resid
 #' @param Deviance.residual
 #'

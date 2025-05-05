@@ -1,4 +1,4 @@
-Package: Zresidual
+Package: Z-residuals
 Type: Package
 Title: Z-residual for Regression Modelling
 Version: 0.1.0
@@ -20,5 +20,5 @@ Suggests: betareg, data.table (>= 1.10.0), digest, gridExtra, HSAUR3,
         knitr (>= 1.15.1), MASS, mgcv (>= 1.8-13), rmarkdown, testthat (>= 1.0.2)
 VignetteBuilder: knitr
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Encoding: UTF-8

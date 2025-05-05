@@ -1,8 +1,7 @@
+#' A function to calculate other type of residual
 #' @export
 #'
-#'
 #' @return \itemize{
-#'  \item{Zresid}{Z-residual}
 #'  \item{censored.Zresid}{censored Z-residual}
 #'  \item{ucs}{unmodified CS residuals}
 #'  \item{martg}{Martingale residuals}
