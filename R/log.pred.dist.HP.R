@@ -2,7 +2,7 @@
 #'
 #' @import brms
 #' @param fit A `brm` fit.
-#'
+#' @export log.pred.dist.HP
 
 log.pred.dist.HP <- function(fit){
 
@@ -25,12 +25,12 @@ log.pred.dist.HP <- function(fit){
   lpmf_hat <- matrix(0, mc_used, n)
   lcdf_hat <- matrix(0, mc_used, n)
 
-  hu <- posterior.pred.ds(fit, dpar = "zero")
-  lambda <- posterior.pred.ds(fit, dpar = "mu")
+  hu <- posterior.pred(fit, dpar = "zero")
+  lambda <- posterior.pred(fit, dpar = "mu")
 
   for (i in 1:n){
-    lpmf_hat[,i] <- dhurdle_poisson(sim.y[i], lambda = lambda[,i], hu = hu[,i], log = TRUE)
-    lcdf_hat[,i] <- phurdle.pois.li(sim.y[i], lambda = lambda[,i], pi = hu[,i], lower.tail=FALSE, log.p = TRUE)
+    lpmf_hat[,i] <- dhurdle.poisson(sim.y[i], lambda = lambda[,i], hu = hu[,i], log = TRUE)
+    lcdf_hat[,i] <- phurdle.pois(sim.y[i], lambda = lambda[,i], pi = hu[,i], lower.tail=FALSE, log.p = TRUE)
   }
 
   pred_dist <- list(lpmf_hat = lpmf_hat, lcdf_hat = lcdf_hat, zero_id = zero_id, count_id = count_id)

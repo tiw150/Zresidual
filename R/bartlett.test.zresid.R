@@ -1,10 +1,10 @@
-#' #' A function to calculate Bartlett of Zresidual
+#' A function to calculate Bartlett of Zresidual
 #'
 #' @param Zresidual A z-residual.
 #' @param X Linear predictor or covariate
 #' @param k.bl Number of bins if applicable
 #' @export
-#'
+
 bartlett.test.zresid <- function (Zresidual, X = c("lp", "covariate"), k.bl=10)
 {
   if (missing(X))
@@ -37,10 +37,13 @@ bartlett.test.zresid <- function (Zresidual, X = c("lp", "covariate"), k.bl=10)
 
     bl.pv<-rep(0,ncol(Zresidual))
     for(j in 1:ncol(Zresidual)){
-      bl.pv[j]<-test.var.bartl(Zresidual[,j], fitted.value[,i], k.bl)
+      id.na <- which(is.na(Zresidual[,j]))
+      count.id <- which(!is.na(Zresidual[,j]))
+      new.Zresidual <- Zresidual[count.id, j]
+      #if(length(id.na) > 0) message("NAs omitted.")
+      bl.pv[j]<-test.var.bartl(new.Zresidual, fitted.value[,i][count.id], k.bl)
     }
     bl.pv
   }
   bl.pv
 }
-

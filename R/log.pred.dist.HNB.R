@@ -1,7 +1,7 @@
 #' A function to calculate predictive log hurdle negative binomial pmf and cdf of a 'brm' fit
 #'
 #' @param fit A `brm` fit.
-#'
+#' @export log.pred.dist.HNB
 
 log.pred.dist.HNB <- function(fit){
 
@@ -29,8 +29,9 @@ log.pred.dist.HNB <- function(fit){
   shape <- posterior.pred.ds(fit, dpar = "shape")
 
   for (i in 1:n){
-    lpmf_hat[,i] <- dhurdle_negbinomial(sim.y[i], mu[,i], shape[,i], hu[,i], log = TRUE)
-    lcdf_hat[,i] <- phurdle.nb.li(sim.y[i], mu[,i], shape[,i], hu[,i], lower.tail=FALSE, log.p = TRUE)
+    #lpmf_hat[,i] <- dhurdle_negbinomial(sim.y[i], mu[,i], shape[,i], hu[,i], log = TRUE)
+    lpmf_hat[,i] <- dhurdle.nb(y=sim.y[i], mu=mu[,i], size=shape[,i], pi=hu[,i], log = TRUE)
+    lcdf_hat[,i] <- phurdle.nb(sim.y[i], mu[,i], shape[,i], hu[,i], lower.tail=FALSE, log.p = TRUE)
   }
 
   pred_dist <- list(lpmf_hat = lpmf_hat, lcdf_hat = lcdf_hat, zero_id = zero_id, count_id = count_id)
