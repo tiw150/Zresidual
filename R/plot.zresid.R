@@ -108,10 +108,9 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
         test <- get(paste0(test.list[a], ".test.zresid"))(Zresidual, X, k.test)
         current_test_pv <- c(current_test_pv, paste(a, "-", sprintf("%3.2f", test[j])))
       }
-      if (length(irep) == 1) { # Only create test.legend if plotting one column
-        test.legend <- list(legend = c(expression(bold("P-value:")), current_test_pv),
+
+      test.legend <- list(legend = c(expression(bold("P-value:")), current_test_pv),
                             cex = 0.6, bty = "n", xpd = TRUE, adj = c(0, 0.5))
-      }
     }
     default.legend <- list(legend = unique.cats, col = unique(col),
                            pch = unique(pch), cex = 0.6, xpd = TRUE, bty = "n",
@@ -180,8 +179,20 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
           text_x <- id.outlier
           text_y <- Zresidual[, j][id.outlier]
           text_pos <- outlier.args$pos # Default position
-          if (any(id.outlier == nrow(Zresidual))) {
-            text_pos[id.outlier == nrow(Zresidual)] <- 1 # Position below
+          # if (any(id.outlier == nrow(Zresidual))) {
+          #   text_pos[id.outlier == nrow(Zresidual)] <- 1 # Position below
+          # }
+
+          y_median <- median(Zresidual[, j], na.rm = TRUE)
+
+          for (i in seq_along(id.outlier)) {
+            if (!is.na(text_y[i])) {
+              if (text_y[i] < y_median) {
+                text_pos[i] <- 3 # Position above for lower outliers
+              } else {
+                text_pos[i] <- 1 # Position below for upper outliers
+              }
+            }
           }
           text.args_no_pos <- text.args[names(text.args) != "pos"]
           do.call(text, c(list(x = text_x, y = text_y, pos = text_pos), text.args_no_pos))
