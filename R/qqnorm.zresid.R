@@ -15,7 +15,7 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = c("SW", "ANOVA"),
                                                            "Normal Q-Q Plot",
                                                            paste("Normal Q-Q Plot -", attr(Zresidual, "type"))),
                            xlab = "Theoretical Quantiles", ylab = "Sample Quantiles",
-                           outlier.return=FALSE, outlier.value = 3.5, outlier.set = list(),legend.settings = list(), ...)
+                           outlier.return=TRUE, outlier.value = 3.5, outlier.set = list(),legend.settings = list(), ...)
 {
   #i<-index
 
@@ -90,7 +90,7 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = c("SW", "ANOVA"),
       col = "red",
       add = T,
       inches = F,
-      circles = rep((par("usr")[2]-par("usr")[1])*0.03, length(id.outlier)),
+      circles = rep((par("usr")[2]-par("usr")[1])*0.027, length(id.outlier)),
       fg = "red"
     )
 
@@ -110,16 +110,30 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = c("SW", "ANOVA"),
       qqnorm(Zresidual[,i],main=main.title,xlab=xlab, ylab=ylab,xlim=xlim0)
       qqline(Zresidual[,i],col=1)
       abline(a=0,b=1,col=3)
-      points(x_values[outlier_points], y_values[outlier_points], pch = 16)
       do.call(legend, legend.args1)
       do.call(legend, legend.args2)
+
+      if(isTRUE(outlier.return)){
+        if(identical(id.outlier, integer(0))){
+          #return(invisible(NULL))
+          next
+        } else {
+          points(x_values[outlier_points], y_values[outlier_points], pch = 16)
+          x.outlier<-(qqnorm(Zresidual[,i],plot.it=FALSE)$x)[id.outlier]
+          y.outlier<-(qqnorm(Zresidual[,i],plot.it=FALSE)$y)[id.outlier]
+
+          do.call(symbols, c(list(x=x.outlier,y=y.outlier), symbols.args))
+          do.call(text, c(list(x=x.outlier,y=y.outlier), text.args))
+        }
+        }
     }
+
     if(max(abs(Zresidual[,i]), na.rm = T)>=6){
       max.values<-which(Zresidual[,i]>=6)
       min.values<-which(Zresidual[,i] < -6)
       if(identical(min.values, integer(0))){
         gap=c(6,max(abs(Zresidual[,i]), na.rm = T))
-        gapsize <- gap[2] - gap[1]
+        gapsize1 <- gap[2] - gap[1]
         ylim0<-c(min(Zresidual[,i][-max.values], na.rm = T),7)
         xlim0<-c(min(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]], na.rm = T)-0.5,
                  max(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]], na.rm = T)+0.6)
@@ -132,16 +146,38 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = c("SW", "ANOVA"),
         axis(2, at=7 ,labels=round(max(Zresidual[,i], na.rm = T),1))
         qqline(Zresidual[,i],col=1)
         abline(a=0,b=1,col=3)
-        points(x_values[outlier_points], y_values[outlier_points], pch = 16)
+        points(x_values[outlier_points], y_values[outlier_points])
         axis.break(2,6,style="gap")
         axis.break(2, 6, breakcol="snow", style="gap")
         axis.break(2, 6,breakcol="black", style="slash")
         axis.break(4, 6,breakcol="black", style="slash")
         points(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]][max.values],
-               pmax(qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]][max.values]-gapsize+1,6.5),
-               col="black",pch=16)
+               pmax(qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]][max.values]-gapsize1+1,6.5))
         do.call(legend, legend.args1)
         do.call(legend, legend.args2)
+
+        if(isTRUE(outlier.return)){
+          if(identical(id.outlier, integer(0))){
+            #return(invisible(NULL))
+            next
+          } else {
+            points(x_values[outlier_points], y_values[outlier_points], pch = 16)
+            points(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]][max.values],
+                   pmax(qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]][max.values]-gapsize1+1,6.5),
+                   col="black",pch=16)
+            x.outlier<-(qqnorm(Zresidual[,i],plot.it=FALSE)$x)[id.outlier]
+            y.outlier<-(qqnorm(Zresidual[,i],plot.it=FALSE)$y)[id.outlier]
+
+            if(any(y.outlier > 6)) {
+              idx_max <- which(y.outlier > 6)
+              y.outlier[idx_max] <- pmax(y.outlier[idx_max] - gapsize1 + 1, 6.5)
+            }
+
+            do.call(symbols, c(list(x=x.outlier,y=y.outlier), symbols.args))
+            do.call(text, c(list(x=x.outlier,y=y.outlier), text.args))
+          }
+        }
+
       }
 
       if(identical(max.values, integer(0))){
@@ -158,25 +194,47 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = c("SW", "ANOVA"),
              xlim=xlim0,ylim=ylim0,main=main.title,xlab=xlab, ylab=ylab)
         qqline(Zresidual[,i],col=1)
         abline(a=0,b=1,col=3)
-        points(x_values[outlier_points], y_values[outlier_points], pch = 16)
+        points(x_values[outlier_points], y_values[outlier_points])
         axis(2, at= -7 ,labels=round(min(Zresidual[,i]),1))
         axis.break(2,-6.1,style="gap")
         axis.break(2, -6.1, breakcol="snow", style="gap")
         axis.break(2, -6.1,breakcol="black", style="slash")
         axis.break(4, -6.1, breakcol="black", style="slash")
         points(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]][min.values],
-               pmin(qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]][min.values]-gapsize2-1,-6.5),
-               col="black",pch=16)
-
+               pmin(qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]][min.values]-gapsize2-1,-6.5))
         do.call(legend, legend.args1)
         do.call(legend, legend.args2)
+
+        if(isTRUE(outlier.return)){
+          if(identical(id.outlier, integer(0))){
+            #return(invisible(NULL))
+            next
+          } else {
+            points(x_values[outlier_points], y_values[outlier_points], pch = 16)
+            points(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]][min.values],
+                   pmin(qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]][min.values]-gapsize2-1,-6.5),
+                   col="black",pch=16)
+
+            x.outlier<-(qqnorm(Zresidual[,i],plot.it=FALSE)$x)[id.outlier]
+            y.outlier<-(qqnorm(Zresidual[,i],plot.it=FALSE)$y)[id.outlier]
+
+            if (any(y.outlier < -6)) {
+              idx_min <- which(y.outlier< -6)
+              y.outlier[idx_min] <- pmin(y.outlier[idx_min] - gapsize2 - 1, -6.5)
+            }
+
+            do.call(symbols, c(list(x=x.outlier,y=y.outlier), symbols.args))
+            do.call(text, c(list(x=x.outlier,y=y.outlier), text.args))
+          }
+        }
+
       }
 
       if(!identical(max.values, integer(0)) && !identical(min.values, integer(0))){
         gap1=c(6,max(Zresidual[,i]))
-        gapsize1 <- gap1[2] - gap1[1]
+        gapsize3 <- gap1[2] - gap1[1]
         gap2=c(min(Zresidual[,i]),6)
-        gapsize2 <- gap2[2] + gap2[1]
+        gapsize4 <- gap2[2] + gap2[1]
         x_values<-qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]]
         y_values<-qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]]
         ylim0<-c(-7,7)
@@ -186,7 +244,7 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = c("SW", "ANOVA"),
         plot(x_values[-c(max.values,min.values)],y_values[-c(max.values,min.values)],
              xlim=xlim0,ylim=ylim0,main=main.title,xlab=xlab, ylab=ylab,
              pch = 1)
-        points(x_values[outlier_points], y_values[outlier_points], pch = 16)
+        points(x_values[outlier_points], y_values[outlier_points])
         qqline(Zresidual[,i],col=1)
         abline(a=0,b=1,col=3)
         axis(2, at=7 ,labels=round(max(Zresidual[,i], na.rm = T),1))
@@ -195,8 +253,7 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = c("SW", "ANOVA"),
         axis.break(2, 6,breakcol="black", style="slash")
         axis.break(4, 6,breakcol="black", style="slash")
         points(x_values[max.values],
-               pmax(y_values[max.values]-gapsize1+1,6.5),
-               col="black",pch=16)
+               pmax(y_values[max.values]-gapsize3+1,6.5))
 
         axis(2, at= -7 ,labels=round(min(Zresidual[,i], na.rm = T),1))
         axis.break(2,-6.1,style="gap")
@@ -204,36 +261,46 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = c("SW", "ANOVA"),
         axis.break(2, -6.1,breakcol="black", style="slash")
         axis.break(4, -6.1, breakcol="black", style="slash")
         points(x_values[min.values],
-               pmin(y_values[min.values]-gapsize2-1,-6.5),
-               col="black",pch=16)
+               pmin(y_values[min.values]-gapsize4-1,-6.5))
         do.call(legend, legend.args1)
         do.call(legend, legend.args2)
+
+        if(isTRUE(outlier.return)){
+          if(identical(id.outlier, integer(0))){
+            #return(invisible(NULL))
+            next
+          } else {
+            points(x_values[outlier_points], y_values[outlier_points], pch = 16)
+            points(x_values[max.values],
+                   pmax(y_values[max.values]-gapsize3+1,6.5),
+                   col="black",pch=16)
+            points(x_values[min.values],
+                   pmin(y_values[min.values]-gapsize4-1,-6.5),
+                   col="black",pch=16)
+
+            x.outlier<-(qqnorm(Zresidual[,i],plot.it=FALSE)$x)[id.outlier]
+            y.outlier<-(qqnorm(Zresidual[,i],plot.it=FALSE)$y)[id.outlier]
+
+            if(any(y.outlier > 6)) {
+              idx_max <- which(y.outlier > 6)
+              y.outlier[idx_max] <- pmax(y.outlier[idx_max] - gapsize3 + 1, 6.5)
+            }
+
+            if (any(y.outlier < -6)) {
+              idx_min <- which(y.outlier< -6)
+              y.outlier[idx_min] <- pmin(y.outlier[idx_min] - gapsize4 - 1, -6.5)
+            }
+
+            do.call(symbols, c(list(x=x.outlier,y=y.outlier), symbols.args))
+            do.call(text, c(list(x=x.outlier,y=y.outlier), text.args))
+          }
+        }
+
+
       }
 
     }
 
-    if(isTRUE(outlier.return)){
-      if(identical(id.outlier, integer(0))){
-        #return(invisible(NULL))
-        next
-      } else {
-        x.outlier<-(qqnorm(Zresidual[,i],plot.it=FALSE)$x)[id.outlier]
-        y.outlier<-(qqnorm(Zresidual[,i],plot.it=FALSE)$y)[id.outlier]
-
-        if(any(y.outlier > 6)) {
-          idx_max <- which(y.outlier > 6)
-          y.outlier[idx_max] <- pmax(y.outlier[idx_max] - gapsize + 1, 6.5)
-        }
-
-        if (any(y.outlier < -6)) {
-          idx_min <- which(y.outlier< -6)
-          y.outlier[idx_min] <- pmin(y.outlier[idx_min] - gapsize2 - 1, -6.5)
-        }
-
-        do.call(symbols, c(list(x=x.outlier,y=y.outlier), symbols.args))
-        do.call(text, c(list(x=x.outlier,y=y.outlier), text.args))
-      }
-    }
 
     if(outlier.return){
       cat("Outlier Indices :", id.outlier, "\n")
