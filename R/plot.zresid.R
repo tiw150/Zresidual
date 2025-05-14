@@ -15,7 +15,7 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
                                             "Z-residual Scatterplot",
                                             paste("Z-residual Scatterplot -",
                                                   attr(Zresidual, "type"))),
-                        outlier.return = FALSE, outlier.value = 3.5,
+                        outlier.return = TRUE, outlier.value = 3.5,
                         category = NULL, outlier.set = list(), xlab = NULL,
                         ...) {
 
@@ -85,7 +85,7 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
   }
 
   for (j in irep) {
-    plot.new()
+ #   plot.new()
     par(mar = c(5, 4, 4, 6) + 0.1)
     id.nan <- which(is.nan(Zresidual[, j]))
     id.infinity <- which(is.infinite(Zresidual[, j]))
@@ -179,9 +179,6 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
           text_x <- id.outlier
           text_y <- Zresidual[, j][id.outlier]
           text_pos <- outlier.args$pos # Default position
-          # if (any(id.outlier == nrow(Zresidual))) {
-          #   text_pos[id.outlier == nrow(Zresidual)] <- 1 # Position below
-          # }
 
           y_median <- median(Zresidual[, j], na.rm = TRUE)
 
@@ -216,7 +213,23 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
           effective_symbols_args <- c(list(x = fitted.value[id.outlier], y = Zresidual[, j][id.outlier], add = TRUE), symbols.args)
           do.call(symbols, effective_symbols_args)
           #do.call(symbols, c(list(fitted.value[id.outlier], Zresidual[, j][id.outlier]), symbols.args))
-          do.call(text, c(list(fitted.value[id.outlier], Zresidual[, j][id.outlier]), text.args))
+
+          text_x <- fitted.value[id.outlier]
+          text_y <- Zresidual[, j][id.outlier]
+          text_pos <- outlier.args$pos # Default position
+          y_median <- median(Zresidual[, j], na.rm = TRUE)
+          for (i in seq_along(id.outlier)) {
+            if (!is.na(text_y[i])) {
+              if (text_y[i] < y_median) {
+                text_pos[i] <- 3 # Position above for lower outliers
+              } else {
+                text_pos[i] <- 1 # Position below for upper outliers
+              }
+            }
+          }
+          text.args_no_pos <- text.args[names(text.args) != "pos"]
+          do.call(text, c(list(x = text_x, y = text_y, pos = text_pos), text.args_no_pos))
+        #  do.call(text, c(list(fitted.value[id.outlier], Zresidual[, j][id.outlier]), text.args))
         }
       }
     }
@@ -239,7 +252,22 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
             effective_symbols_args <- c(list(x = fitted.value[, i][id.outlier], y = Zresidual[, j][id.outlier], add = TRUE), symbols.args)
             do.call(symbols, effective_symbols_args)
             #do.call(symbols, c(list(fitted.value[, i][id.outlier], Zresidual[, j][id.outlier]), symbols.args))
-            do.call(text, c(list(fitted.value[, i][id.outlier], Zresidual[, j][id.outlier]), text.args))
+            text_x <- fitted.value[, i][id.outlier]
+            text_y <- Zresidual[, j][id.outlier]
+            text_pos <- outlier.args$pos # Default position
+            y_median <- median(Zresidual[, j], na.rm = TRUE)
+            for (i in seq_along(id.outlier)) {
+              if (!is.na(text_y[i])) {
+                if (text_y[i] < y_median) {
+                  text_pos[i] <- 3 # Position above for lower outliers
+                } else {
+                  text_pos[i] <- 1 # Position below for upper outliers
+                }
+              }
+            }
+            text.args_no_pos <- text.args[names(text.args) != "pos"]
+            do.call(text, c(list(x = text_x, y = text_y, pos = text_pos), text.args_no_pos))
+           # do.call(text, c(list(fitted.value[, i][id.outlier], Zresidual[, j][id.outlier]), text.args))
           }
         }
       }
