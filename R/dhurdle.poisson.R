@@ -3,9 +3,8 @@
 #' @param y y values.
 #' @param mu mu parameter.
 #' @param pi hu parameter.
-#' @export
 #'
-dhurdle.poisson.ds <- function(y, mu, pi, log = FALSE) {
+dhurdle.poisson <- function(y, mu, pi, log = FALSE) {
   log1mexp <- function(x) {
     ifelse(x <= log(2),
            log(-expm1(-x)),

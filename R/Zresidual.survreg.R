@@ -1,13 +1,37 @@
-#' Zresidual for survival
+#' Calculate Z-residuals for a fitted survival regression model
+#' This function calculates Z-residuals based on a fitted `survreg` object from the `survival` package.
+#' Z-residuals are a type of randomized quantile residual that can be used to assess the goodness-of-fit of survival models.
 #'
-#' @importFrom survival psurvreg dsurvreg
+#' @importFrom survival psurvreg dsurvreg model.frame.survreg model.matrix.survreg
+#' @importFrom stats qnorm runif
 #'
-#' @param fit_survreg is the fit object are from the survreg function in the survival package.
+#' @param fit_survreg A fitted object from the `survreg` function in the `survival` package.
+#' @param newdata An optional data frame containing new observations for which to calculate the Z-residuals. If `NULL` (default), residuals are calculated for the data used to fit the model.
+#' @param n.rep An integer specifying the number of random draws to use for calculating the Z-residuals for censored observations. Defaults to `nrep` (which should be defined in your environment, a common choice is 100).
 #'
 #' @export
 #'
-#' @return \itemize{
-#'  \item{Zresid}{Z-residual}
+#' @return A matrix of Z-residuals. Each column represents a set of Z-residuals based on different random draws for censored observations. The matrix has the following attributes:
+#'   \item{Survival.Prob}{The estimated survival probabilities.}
+#'   \item{linear.pred}{The linear predictors from the survival regression model.}
+#'   \item{covariates}{The covariate values used in the model.}
+#'   \item{censored.status}{The censoring status (0 for censored, 1 for event).}
+#'   \item{object.model.frame}{The model frame used for the analysis.}
+#'
+#' @examples
+#' library(survival)
+#'
+#' # Fit a Weibull survival regression model
+#' fit_weibull <- survreg(Surv(time, status) ~ x, data = lung, dist = "weibull")
+#'
+#' # Calculate Z-residuals for the fitted model
+#' z_residuals <- Zresidual.survreg(fit_weibull)
+#' head(z_residuals)
+#'
+#' # Calculate Z-residuals for new data
+#' new_data <- data.frame(x = c(1, 2, 0.5))
+#' z_residuals_new <- Zresidual.survreg(fit_weibull, newdata = new_data)
+#' head(z_residuals_new)
 #'
 #'
 Zresidual.survreg<-function(fit_survreg,newdata,n.rep=nrep)

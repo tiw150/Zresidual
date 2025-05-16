@@ -14,7 +14,7 @@
     paste("Normal Q-Q Plot -", attr(Zresidual, "type"))),
   xlab = "Theoretical Quantiles",
   ylab = "Sample Quantiles",
-  outlier.return = FALSE,
+  outlier.return = TRUE,
   outlier.value = 3.5,
   outlier.set = list(),
   legend.settings = list(),

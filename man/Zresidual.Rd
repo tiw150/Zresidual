@@ -8,13 +8,11 @@ Zresidual(fit.object, nrep = 1, data = NULL, type = NULL, method = "iscv")
 }
 \arguments{
 \item{fit.object}{The fit object are one of 'coxph', 'survreg' and 'brms'.}
-
-\item{data}{Data that used for fitting the model.}
 }
 \value{
 \itemize{
  \item{Zresid}{Z-residual}
- \item{SP}{Survival Probabilities}
+
 }
 }
 \description{

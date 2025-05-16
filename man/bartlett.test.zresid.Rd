@@ -2,7 +2,7 @@
 % Please edit documentation in R/bartlett.test.zresid.R
 \name{bartlett.test.zresid}
 \alias{bartlett.test.zresid}
-\title{#' A function to calculate Bartlett of Zresidual}
+\title{A function to calculate Bartlett of Zresidual}
 \usage{
 \method{bartlett.test}{zresid}(Zresidual, X = c("lp", "covariate"), k.bl = 10)
 }
@@ -14,5 +14,5 @@
 \item{k.bl}{Number of bins if applicable}
 }
 \description{
-#' A function to calculate Bartlett of Zresidual
+A function to calculate Bartlett of Zresidual
 }

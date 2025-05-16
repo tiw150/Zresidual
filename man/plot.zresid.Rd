@@ -13,7 +13,7 @@
   X = c("index", "covariate", "lp"),
   main.title = ifelse(is.null(attr(Zresidual, "type")), "Z-residual Scatterplot",
     paste("Z-residual Scatterplot -", attr(Zresidual, "type"))),
-  outlier.return = FALSE,
+  outlier.return = TRUE,
   outlier.value = 3.5,
   category = NULL,
   outlier.set = list(),

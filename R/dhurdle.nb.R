@@ -4,9 +4,8 @@
 #' @param mu mu parameter.
 #' @param size parameter.
 #' @param pi hu parameter.
-#' @export
 #'
-dhurdle.nb.ds <- function(y, mu, size, pi, log = FALSE) {
+dhurdle.nb <- function(y, mu, size, pi, log = FALSE) {
   log1mexp <- function(x) {
     ifelse(x <= log(2),
            log(-expm1(-x)),
