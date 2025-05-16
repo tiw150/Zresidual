@@ -1,8 +1,8 @@
 #' Calculate Z-residuals for a fitted survival regression model
 #' This function calculates Z-residuals based on a fitted `survreg` object from the `survival` package.
-#' Z-residuals are a type of randomized quantile residual that can be used to assess the goodness-of-fit of survival models.
 #'
-#' @importFrom survival psurvreg dsurvreg model.frame.survreg model.matrix.survreg
+#'
+#' @importFrom survival psurvreg dsurvreg
 #' @importFrom stats qnorm runif
 #'
 #' @param fit_survreg A fitted object from the `survreg` function in the `survival` package.
