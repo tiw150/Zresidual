@@ -1,7 +1,14 @@
 #' A function to calculate z-residuals of a 'brm' fit.
-#' This function is to be used when the user needs to calculate the z-residuals of TNB/HNB
+#' This function is to be used when the user needs to calculate the Z-residuals of TNB/HNB
 #'
-zresidual_negbinomial <- function(fit,  type = "NB" , method = "iscv", nrep = 1){
+#' @param fit is the fit object are from 'brms' package.
+#'
+#' @export
+#'
+#' @return \itemize{
+#'  \item{Zresid}{Z-residual}
+#'
+Zresidual.poisson <- function(fit,  type = "pois" , method = "iscv", nrep = 1){
 
   data <- fit$data
   response <- fit$formula$resp
@@ -14,10 +21,10 @@ zresidual_negbinomial <- function(fit,  type = "NB" , method = "iscv", nrep = 1)
   zero_id <- which(sim.y == 0)
 
   # Argument should be one of the element in type_list
-  #type_list <- c("NB")
-  #names(type_list) <- c("nb")
+  type_list <- c("pois")
+  names(type_list) <- c("pois")
 
-  ldist <- log.pred.dist.NB(fit)
+  ldist <- log.pred.dist.pois(fit)
   lpmf <- ldist$lpmf_hat
   lcdf <- ldist$lcdf_hat
 

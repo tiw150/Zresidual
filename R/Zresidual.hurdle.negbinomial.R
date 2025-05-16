@@ -1,8 +1,13 @@
 #' A function to calculate z-residuals of a 'brm' fit.
-#' This function is to be used when the user needs to calculate the z-residuals of TP/HP
+#' This function is to be used when the user needs to calculate the Z-residuals of TNB/HNB
+#' @param fit is the fit object are from 'brms' package.
 #'
+#' @export
 #'
-zresidual_hurdle_poisson <- function(fit,  type , method = "iscv", nrep = 1){
+#' @return \itemize{
+#'  \item{Zresid}{Z-residual}
+
+Zresidual.hurdle.negbinomial <- function(fit,  type , method = "iscv", nrep = 1){
 
   data <- fit$data
   response <- fit$formula$resp
@@ -15,7 +20,7 @@ zresidual_hurdle_poisson <- function(fit,  type , method = "iscv", nrep = 1){
   zero_id <- which(sim.y == 0)
 
   # Argument should be one of the element in type_list
-  type_list <- c("zero", "TP", "HP")
+  type_list <- c("zero", "TNB", "HNB")
   names(type_list) <- c("zero", "count", "hurdle")
 
   ldist <- get(paste0("log.pred.dist.", type_list[type]))(fit)
@@ -44,8 +49,8 @@ zresidual_hurdle_poisson <- function(fit,  type , method = "iscv", nrep = 1){
     zero_id = zero_id,
     log_pmf = lpmf,
     log_cdf = lcdf,
-    covariates = subset(fit$data, select = -get(response)),
-    linear.pred = fitted(fit, type = "conditional")[,1]
+    covariates = fit$data %>% select(-all_of(response)),
+    linear.pred = predict(fit, type = "conditional")[,1]
   ))
 
   class(z_res) <- c("zresid", class(z_res))

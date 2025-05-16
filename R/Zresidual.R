@@ -4,13 +4,12 @@
 #'
 #' @param fit.object The fit object are one of 'coxph', 'survreg' and 'brms'.
 #'
-#' @param data Data that used for fitting the model.
 #'
 #' @export
 #'
 #' @return \itemize{
 #'  \item{Zresid}{Z-residual}
-#'  \item{SP}{Survival Probabilities}
+#'
 
 #' }
 #'
@@ -43,22 +42,22 @@ Zresidual <- function(fit.object, nrep = 1,data = NULL,type=NULL,method = "iscv"
 
     if (distr =="hurdle_negbinomial") {
 
-      Zresid_fun <- zresidual_hurdle_negbinomial(fit = fit.object, type=type,
+      Zresid_fun <- Zresidual_hurdle_negbinomial(fit = fit.object, type=type,
                                                  method = method,nrep = nrep)
 
     } else if (distr == "hurdle_poisson") {
 
-      Zresid_fun <- zresidual_hurdle_poisson(fit = fit.object,  type=type,
+      Zresid_fun <- Zresidual_hurdle_poisson(fit = fit.object,  type=type,
                                              method = method,nrep = nrep)
 
     } else if (distr == "negbinomial") {
 
-      Zresid_fun <- zresidual_negbinomial(fit = fit.object,  type = "NB",
+      Zresid_fun <- Zresidual_negbinomial(fit = fit.object,  type = "NB",
                                           method = method,nrep = nrep)
 
     } else if (distr == "poisson") {
 
-      Zresid_fun <- zresidual_poisson(fit = fit.object, type = "pois",
+      Zresid_fun <- Zresidual_poisson(fit = fit.object, type = "pois",
                                       method = method,n.rep = nrep)
 
     } else if (distr == "bernoulli") {

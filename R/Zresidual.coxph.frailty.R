@@ -1,3 +1,15 @@
+#' A title
+#'
+#' Some descriptions
+#'
+#' @param fit_coxph is the fit object are from the coxph function with frailty item in the survival package.
+#'
+#' @export
+#'
+#' @return \itemize{
+#'  \item{Zresid}{Z-residual}
+#'
+
 ######Z-residual ################################
 Zresidual.coxph.frailty <-
   function (fit_coxph, traindata, newdata, n.rep = nrep)

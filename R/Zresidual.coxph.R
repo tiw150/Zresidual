@@ -1,4 +1,15 @@
-#input: coxfit_fit is a coxph object
+#' A title
+#'
+#' Some descriptions
+#'
+#' @param fit_coxph is the fit object are from the coxph function in the survival package.
+#'
+#' @export
+#'
+#' @return \itemize{
+#'  \item{Zresid}{Z-residual}
+#'
+
 Zresidual.coxph<-function (fit_coxph, newdata,n.rep=nrep)
 {
   if(is.null(newdata)){

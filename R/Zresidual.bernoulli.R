@@ -1,8 +1,14 @@
 #' A function to calculate z-residuals of a 'brm' fit.
-#' This function is to be used when the user needs to calculate the z-residuals of TNB/HNB
+#' This function is to be used when the user needs to calculate the z-residuals of bernoulli
+#' @param fit is the fit object are from 'brms' package.
 #'
+#' @export
 #'
-zresidual_poisson <- function(fit,  type = "pois" , method = "iscv", nrep = 1){
+#' @return \itemize{
+#'  \item{Zresid}{Z-residual}
+#'
+
+Zresidual.bernoulli <- function(fit, method = "iscv", nrep = 1){
 
   data <- fit$data
   response <- fit$formula$resp
@@ -15,10 +21,11 @@ zresidual_poisson <- function(fit,  type = "pois" , method = "iscv", nrep = 1){
   zero_id <- which(sim.y == 0)
 
   # Argument should be one of the element in type_list
-  type_list <- c("pois")
-  names(type_list) <- c("pois")
+  # type <- "count"
+  # type_list <- c("bern")
+  # names(type_list) <- c("count")
 
-  ldist <- log.pred.dist.pois(fit)
+  ldist <- log.pred.dist.bern(fit)
   lpmf <- ldist$lpmf_hat
   lcdf <- ldist$lcdf_hat
 
@@ -45,7 +52,7 @@ zresidual_poisson <- function(fit,  type = "pois" , method = "iscv", nrep = 1){
     log_pmf = lpmf,
     log_cdf = lcdf,
     covariates = subset(fit$data, select = -get(response)),
-    linear.pred = predict(fit, type = "conditional")[,1]
+    linear.pred = fitted(fit)[,1]
   ))
 
   class(z_res) <- c("zresid", class(z_res))

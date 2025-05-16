@@ -163,7 +163,11 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
                                     font.lab = 2), args)
     if (X == "index") {
       do.call(plot.default, c(list(x = Zresidual[, j]), default.plot))
+
       plot_limits <- par("usr")
+      plot_lim_convert <- setNames(c(1:2, 3:4, 1:4), c("x", "x", "y", "y", "xy", "xy", "xy", "xy"))
+      if(!is.null(args[["log"]])) plot_limits[names(plot_lim_convert)==args[["log"]]] <- 10^(plot_limits[names(plot_lim_convert)==args[["log"]]])
+
       do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
       if (!is.null(test.legend)) do.call(legend, c(list(x = plot_limits[2] - (par("usr")[2] - par("usr")[1]) * 0.05, y = plot_limits[4] * 0.7), test.legend))
       if (isTRUE(outlier.return)) {
@@ -200,14 +204,16 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
     if (X == "lp") {
       fitted.value <- attr(Zresidual, "linear.pred")
       do.call(plot, c(list(x = fitted.value, y = Zresidual[, j]), default.plot))
+
       plot_limits <- par("usr")
+      plot_lim_convert <- setNames(c(1:2, 3:4, 1:4), c("x", "x", "y", "y", "xy", "xy", "xy", "xy"))
+      if(!is.null(args[["log"]])) plot_limits[names(plot_lim_convert)==args[["log"]]] <- 10^(plot_limits[names(plot_lim_convert)==args[["log"]]])
+
       do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
       if (!is.null(test.legend)) do.call(legend, c(list(x = plot_limits[2] - (par("usr")[2] - par("usr")[1]) * 0.05, y = plot_limits[4] * 0.7), test.legend))
       if (isTRUE(outlier.return)) {
         if (!identical(id.outlier, integer(0))) {
-          # Recalculate circles based on current par("usr")
           outlier.circles <- rep((par("usr")[2] - par("usr")[1]) * 0.03, length(id.outlier))
-          # Update symbols.args with the recalculated circles
           symbols.args$circles <- outlier.circles
           symbols.args$add <- NULL
           effective_symbols_args <- c(list(x = fitted.value[id.outlier], y = Zresidual[, j][id.outlier], add = TRUE), symbols.args)
@@ -239,7 +245,11 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
         cov.name <- variable.names(fitted.value)
         i <- if (X == "covariate") 1 else which(cov.name == X)
         do.call(plot, c(list(x = fitted.value[, i], y = Zresidual[, j]), default.plot))
+
         plot_limits <- par("usr")
+        plot_lim_convert <- setNames(c(1:2, 3:4, 1:4), c("x", "x", "y", "y", "xy", "xy", "xy", "xy"))
+        if(!is.null(args[["log"]])) plot_limits[names(plot_lim_convert)==args[["log"]]] <- 10^(plot_limits[names(plot_lim_convert)==args[["log"]]])
+
         do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
         if (!is.null(test.legend)) do.call(legend, c(list(x = plot_limits[2] - (par("usr")[2] - par("usr")[1]) * 0.05, y = plot_limits[4] * 0.7), test.legend))
         if (isTRUE(outlier.return)) {
@@ -254,7 +264,7 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
             #do.call(symbols, c(list(fitted.value[, i][id.outlier], Zresidual[, j][id.outlier]), symbols.args))
             text_x <- fitted.value[, i][id.outlier]
             text_y <- Zresidual[, j][id.outlier]
-            text_pos <- outlier.args$pos # Default position
+            text_pos <- outlier.args$pos
             y_median <- median(Zresidual[, j], na.rm = TRUE)
             for (i in seq_along(id.outlier)) {
               if (!is.na(text_y[i])) {

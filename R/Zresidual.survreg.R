@@ -1,45 +1,51 @@
 #' Zresidual for survival
 #'
-#' @param survreg_fit a survreg object
-#'
 #' @importFrom survival psurvreg dsurvreg
 #'
-Zresidual.survreg<-function(survreg_fit,newdata,n.rep=nrep)
+#' @param fit_survreg is the fit object are from the survreg function in the survival package.
+#'
+#' @export
+#'
+#' @return \itemize{
+#'  \item{Zresid}{Z-residual}
+#'
+#'
+Zresidual.survreg<-function(fit_survreg,newdata,n.rep=nrep)
 {
   if(is.null(newdata)){
-    mf<-model.frame.survreg(survreg_fit)
+    mf<-model.frame.survreg(fit_survreg)
     mf_nc<- ncol(mf)
-    fix_var<-model.matrix.survreg(survreg_fit)
+    fix_var<-model.matrix.survreg(fit_survreg)
   }
 
   if(!is.null(newdata)){
-    mf <- model.frame(survreg_fit$terms, newdata)
+    mf <- model.frame(fit_survreg$terms, newdata)
     mf_nc<-ncol (mf)
-    fix_var<-model.matrix(survreg_fit$terms, newdata,drop=FALSE)
+    fix_var<-model.matrix(fit_survreg$terms, newdata,drop=FALSE)
   }
 
   y<-  mf[[1]]
-  distr<-survreg_fit$dist
-  parms<- as.numeric(survreg_fit[["parms"]])
-  alpha_hat<-1/survreg_fit$scale
+  distr<-fit_survreg$dist
+  parms<- as.numeric(fit_survreg[["parms"]])
+  alpha_hat<-1/fit_survreg$scale
 
   if (distr %in% c("weibull","exponential","logistic","lognormal",
                    "loglogistic","gaussian", "loggaussian","rayleigh"))
   {
     SP<-1-(psurvreg(as.matrix(y)[,1],
-                    mean =as.vector(fix_var %*%survreg_fit$coefficients),
+                    mean =as.vector(fix_var %*%fit_survreg$coefficients),
                     scale=1/alpha_hat, distribution=distr))
     haz <- dsurvreg(as.matrix(y)[,1],
-                    mean =as.vector(fix_var %*%survreg_fit$coefficients),
+                    mean =as.vector(fix_var %*%fit_survreg$coefficients),
                     scale=1/alpha_hat, distribution=distr)/SP
   }else if  (distr %in% "t")
   {
     SP<-1-(psurvreg(as.matrix(y)[,1],
-                    mean =as.vector(fix_var %*%survreg_fit$coefficients),
+                    mean =as.vector(fix_var %*%fit_survreg$coefficients),
                     scale=1/alpha_hat, distribution=distr,
                     parms = parms))
     haz <- dsurvreg(as.matrix(y)[,1],
-                    mean =as.vector(fix_var %*%survreg_fit$coefficients),
+                    mean =as.vector(fix_var %*%fit_survreg$coefficients),
                     scale=1/alpha_hat, distribution=distr,
                     parms = parms)/SP
   }else stop ("The distribution is not supported")
@@ -57,7 +63,7 @@ Zresidual.survreg<-function(survreg_fit,newdata,n.rep=nrep)
   colnames(Zresid)<- col_name
   #####
   censored.status<- (as.matrix(y)[,-1])
-  lp<-fix_var %*%survreg_fit$coefficients
+  lp<-fix_var %*%fit_survreg$coefficients
 
   Zresid.value<-as.matrix(Zresid)
 
@@ -74,31 +80,31 @@ Zresidual.survreg<-function(survreg_fit,newdata,n.rep=nrep)
 }
 
 
-# Zresidual.survreg<-function(survreg_fit)
+# Zresidual.survreg<-function(fit_survreg)
 # {
-#   distr<-survreg_fit$dist
-#   y<- survreg_fit$y
+#   distr<-fit_survreg$dist
+#   y<- fit_survreg$y
 #   m <- nrow (y)
-#   parms<- as.numeric(survreg_fit[["parms"]])
-#   alpha_hat<-1/survreg_fit$scale
+#   parms<- as.numeric(fit_survreg[["parms"]])
+#   alpha_hat<-1/fit_survreg$scale
 #
 #   if (distr %in% c("weibull","exponential","logistic","lognormal",
 #                    "loglogistic","gaussian", "loggaussian","rayleigh"))
 #   {
 #     SP<-1-(psurvreg(as.data.frame(as.matrix(y))[,-2],
-#                     survreg_fit[["linear.predictors"]],
+#                     fit_survreg[["linear.predictors"]],
 #                     scale=1/alpha_hat, distribution=distr))
 #     haz <- dsurvreg(as.data.frame(as.matrix(y))[,-2],
-#                     survreg_fit[["linear.predictors"]],
+#                     fit_survreg[["linear.predictors"]],
 #                     scale=1/alpha_hat, distribution=distr)/SP
 #   }else if  (distr %in% "t")
 #   {
 #     SP<-1-(psurvreg(as.data.frame(as.matrix(y))[,-2],
-#                     survreg_fit[["linear.predictors"]],
+#                     fit_survreg[["linear.predictors"]],
 #                     scale=1/alpha_hat, distribution=distr,
 #                     parms = parms))
 #     haz <- dsurvreg(as.data.frame(as.matrix(y))[,-2],
-#                     survreg_fit[["linear.predictors"]],
+#                     fit_survreg[["linear.predictors"]],
 #                     scale=1/alpha_hat, distribution=distr,
 #                     parms = parms)/SP
 #   }else stop ("The distribution is not supported")
@@ -119,40 +125,40 @@ Zresidual.survreg<-function(survreg_fit,newdata,n.rep=nrep)
 #   MSP[censored] <- SP[censored]/exp(1)
 #   mcs <- -log(MSP)
 #   #Martingale Residual
-#   martg<- as.data.frame(as.matrix(survreg_fit$y))[,-1]- ucs
+#   martg<- as.data.frame(as.matrix(fit_survreg$y))[,-1]- ucs
 #   #Deviance Residual
-#   dev<- sign(martg)* sqrt((-2)*(martg+as.data.frame(as.matrix(survreg_fit$y))[,-1]*
-#                                   log(as.data.frame(as.matrix(survreg_fit$y))[,-1]-martg)))
+#   dev<- sign(martg)* sqrt((-2)*(martg+as.data.frame(as.matrix(fit_survreg$y))[,-1]*
+#                                   log(as.data.frame(as.matrix(fit_survreg$y))[,-1]-martg)))
 #
 #   list(Zresid=Zresid,censored.Zresid=censored.Zresid,SP=SP,
 #        ucs=ucs, mcs=mcs,martg=martg, dev=dev)
 # }
 #
-# Zresidual.survreg1<-function(survreg_fit)
+# Zresidual.survreg1<-function(fit_survreg)
 # {
-#   distr<-survreg_fit$dist
-#   y<- survreg_fit$y
+#   distr<-fit_survreg$dist
+#   y<- fit_survreg$y
 #   m <- nrow (y)
-#   parms<- as.numeric(survreg_fit[["parms"]])
-#   alpha_hat<-1/survreg_fit$scale
+#   parms<- as.numeric(fit_survreg[["parms"]])
+#   alpha_hat<-1/fit_survreg$scale
 #
 #   if (distr %in% c("weibull","exponential","logistic","lognormal",
 #                    "loglogistic","gaussian", "loggaussian","rayleigh"))
 #   {
 #     SP<-1-(psurvreg(as.data.frame(as.matrix(y))[,-2],
-#                     survreg_fit[["linear.predictors"]],
+#                     fit_survreg[["linear.predictors"]],
 #                     scale=1/alpha_hat, distribution=distr))
 #     haz <- dsurvreg(as.data.frame(as.matrix(y))[,-2],
-#                     survreg_fit[["linear.predictors"]],
+#                     fit_survreg[["linear.predictors"]],
 #                     scale=1/alpha_hat, distribution=distr)/SP
 #   }else if  (distr %in% "t")
 #   {
 #     SP<-1-(psurvreg(as.data.frame(as.matrix(y))[,-2],
-#                     survreg_fit[["linear.predictors"]],
+#                     fit_survreg[["linear.predictors"]],
 #                     scale=1/alpha_hat, distribution=distr,
 #                     parms = parms))
 #     haz <- dsurvreg(as.data.frame(as.matrix(y))[,-2],
-#                     survreg_fit[["linear.predictors"]],
+#                     fit_survreg[["linear.predictors"]],
 #                     scale=1/alpha_hat, distribution=distr,
 #                     parms = parms)/SP
 #   }else stop ("The distribution is not supported")
@@ -173,10 +179,10 @@ Zresidual.survreg<-function(survreg_fit,newdata,n.rep=nrep)
 #   MSP[censored] <- SP[censored]/exp(1)
 #   mcs <- -log(MSP)
 #   #Martingale Residual
-#   martg<- as.data.frame(as.matrix(survreg_fit$y))[,-1]- ucs
+#   martg<- as.data.frame(as.matrix(fit_survreg$y))[,-1]- ucs
 #   #Deviance Residual
-#   dev<- sign(martg)* sqrt((-2)*(martg+as.data.frame(as.matrix(survreg_fit$y))[,-1]*
-#                                   log(as.data.frame(as.matrix(survreg_fit$y))[,-1]-martg)))
+#   dev<- sign(martg)* sqrt((-2)*(martg+as.data.frame(as.matrix(fit_survreg$y))[,-1]*
+#                                   log(as.data.frame(as.matrix(fit_survreg$y))[,-1]-martg)))
 #
 #   list(Zresid=Zresid,censored.Zresid=censored.Zresid,SP=SP,
 #        ucs=ucs, mcs=mcs,martg=martg, dev=dev)
