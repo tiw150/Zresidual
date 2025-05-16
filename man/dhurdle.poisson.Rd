@@ -6,13 +6,6 @@
 \usage{
 dhurdle.poisson(y, mu, pi, log = FALSE)
 }
-\arguments{
-\item{y}{y values.}
-
-\item{mu}{mu parameter.}
-
-\item{pi}{hu parameter.}
-}
 \description{
 A function to calculate pdf of hurdle poisson.
 }

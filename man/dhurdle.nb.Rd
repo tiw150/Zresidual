@@ -6,15 +6,6 @@
 \usage{
 dhurdle.nb(y, mu, size, pi, log = FALSE)
 }
-\arguments{
-\item{y}{y values.}
-
-\item{mu}{mu parameter.}
-
-\item{size}{parameter.}
-
-\item{pi}{hu parameter.}
-}
 \description{
 A function to calculate pdf of hurdle negative binomial.
 }

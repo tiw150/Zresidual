@@ -1,9 +1,5 @@
 #' A function to calculate pdf of hurdle negative binomial.
 #'
-#' @param y y values.
-#' @param mu mu parameter.
-#' @param size parameter.
-#' @param pi hu parameter.
 #'
 dhurdle.nb <- function(y, mu, size, pi, log = FALSE) {
   log1mexp <- function(x) {
