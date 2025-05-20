@@ -2,9 +2,7 @@
 % Please edit documentation in R/Zresidual.survreg.R
 \name{Zresidual.survreg}
 \alias{Zresidual.survreg}
-\title{Calculate Z-residuals for a fitted survival regression model
-This function calculates Z-residuals based on a fitted `survreg` object from the `survival` package.
-Z-residuals are a type of randomized quantile residual that can be used to assess the goodness-of-fit of survival models.}
+\title{Calculate Z-residuals for a fitted survival regression model}
 \usage{
 Zresidual.survreg(fit_survreg, newdata, n.rep = nrep)
 }
@@ -24,9 +22,7 @@ A matrix of Z-residuals. Each column represents a set of Z-residuals based on di
   \item{object.model.frame}{The model frame used for the analysis.}
 }
 \description{
-Calculate Z-residuals for a fitted survival regression model
 This function calculates Z-residuals based on a fitted `survreg` object from the `survival` package.
-Z-residuals are a type of randomized quantile residual that can be used to assess the goodness-of-fit of survival models.
 }
 \examples{
 library(survival)

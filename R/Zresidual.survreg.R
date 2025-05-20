@@ -1,4 +1,5 @@
 #' Calculate Z-residuals for a fitted survival regression model
+#'
 #' This function calculates Z-residuals based on a fitted `survreg` object from the `survival` package.
 #'
 #'
@@ -30,7 +31,7 @@
 #'
 #' # Calculate Z-residuals for new data
 #' new_data <- data.frame(x = c(1, 2, 0.5))
-#' z_residuals_new <- Zresidual.survreg(fit_weibull, newdata = new_data)
+#' Z_residuals_new <- Zresidual.survreg(fit_weibull, newdata = new_data)
 #' head(z_residuals_new)
 #'
 #'
