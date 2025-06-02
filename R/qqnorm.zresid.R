@@ -10,20 +10,21 @@
 #' @param k.anova Number of bins if X.anova is 'covariates'.
 #' @export qqnorm.zresid
 #'
-qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = c("SW", "ANOVA"), X.anova = c("lp", "covariate"),
-                           k.anova=10, main.title = ifelse(is.null(attr(Zresidual, "type")),
-                                                           "Normal Q-Q Plot",
-                                                           paste("Normal Q-Q Plot -", attr(Zresidual, "type"))),
+qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = "SW",
+                           #X.anova = c("lp", "covariate"),k.anova=10,
+                           main.title = ifelse(is.null(attr(Zresidual, "type")),
+                                               "Normal Q-Q Plot",
+                                               paste("Normal Q-Q Plot -", attr(Zresidual, "type"))),
                            xlab = "Theoretical Quantiles", ylab = "Sample Quantiles",
                            outlier.return=TRUE, outlier.value = 3.5, outlier.set = list(),legend.settings = list(), ...)
 {
   #i<-index
 
   if(missing(diagnosis.test)) diagnosis.test <- "SW"
-  if(missing(X.anova) && diagnosis.test == "ANOVA") X.anova <- "lp"
+#  if(missing(X.anova) && diagnosis.test == "ANOVA") X.anova <- "lp"
   # test <- list("SW" = shapiro.test,
   #              "ANOVA" = aov.test.zresid)
-  if(diagnosis.test == "ANOVA") test <- aov.test.zresid(Zresidual, X.anova, k.anova) else test <- sw.test.zresid(Zresidual)
+#  if(diagnosis.test == "ANOVA") test <- aov.test.zresid(Zresidual, X.anova, k.anova) else test <- sw.test.zresid(Zresidual)
 
   for (i in irep) {
     par(mar = c(5, 4, 4, 6) + 0.1)
@@ -131,6 +132,7 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = c("SW", "ANOVA"),
     if(max(abs(Zresidual[,i]), na.rm = T)>=6){
       max.values<-which(Zresidual[,i]>=6)
       min.values<-which(Zresidual[,i] < -6)
+
       if(identical(min.values, integer(0))){
         gap=c(6,max(abs(Zresidual[,i]), na.rm = T))
         gapsize1 <- gap[2] - gap[1]
@@ -139,7 +141,7 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = c("SW", "ANOVA"),
                  max(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]], na.rm = T)+0.6)
         x_values<-qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]]
         y_values<-qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]]
-        outlier_points <- (y_values > 3.5) | (y_values < -3.5)
+        outlier_points <- (y_values > 3.5 & y_values < 6) | (y_values < -3.5 & y_values > -6 )
         plot(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]][-max.values],
              qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]][-max.values],
              xlim=xlim0,ylim=ylim0,main=main.title,xlab=xlab, ylab=ylab)
@@ -181,21 +183,21 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = c("SW", "ANOVA"),
       }
 
       if(identical(max.values, integer(0))){
-        gap=c(min(Zresidual[,i], na.rm = T),6)
+        gap=c(min(Zresidual[,i], na.rm = T),-6)
         gapsize2 <- gap[2] + gap[1]
         ylim0<-c(-7 ,max(Zresidual[,i][-min.values], na.rm = T))
         xlim0<-c(min(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]], na.rm = T)-0.5,
                  max(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]], na.rm = T)+0.6)
         x_values<-qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]]
         y_values<-qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]]
-        outlier_points <- (y_values > 3.5) | (y_values < -3.5)
+        outlier_points <- (y_values > 3.5 & y_values < 6) | (y_values < -3.5 & y_values > -6 )
         plot(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]][-min.values],
              qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]][-min.values],
              xlim=xlim0,ylim=ylim0,main=main.title,xlab=xlab, ylab=ylab)
         qqline(Zresidual[,i],col=1)
         abline(a=0,b=1,col=3)
         points(x_values[outlier_points], y_values[outlier_points])
-        axis(2, at= -7 ,labels=round(min(Zresidual[,i]),1))
+        axis(2, at= -7 ,labels=round(min(Zresidual[,i], na.rm = T),1))
         axis.break(2,-6.1,style="gap")
         axis.break(2, -6.1, breakcol="snow", style="gap")
         axis.break(2, -6.1,breakcol="black", style="slash")
@@ -231,16 +233,16 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = c("SW", "ANOVA"),
       }
 
       if(!identical(max.values, integer(0)) && !identical(min.values, integer(0))){
-        gap1=c(6,max(Zresidual[,i]))
+        gap1=c(6,max(Zresidual[,i],na.rm=T))
         gapsize3 <- gap1[2] - gap1[1]
-        gap2=c(min(Zresidual[,i]),6)
+        gap2=c(min(Zresidual[,i],na.rm=T),6)
         gapsize4 <- gap2[2] + gap2[1]
         x_values<-qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]]
         y_values<-qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]]
-        ylim0<-c(-7,7)
+        ylim0<-c(-7.5,7.5)
         xlim0<-c(min(x_values, na.rm = T)-0.5,
                  max(x_values, na.rm = T)+0.6)
-        outlier_points <- (y_values > 3.5) | (y_values < -3.5)
+        outlier_points <- (y_values > 3.5 & y_values < 6) | (y_values < -3.5 & y_values > -6 )
         plot(x_values[-c(max.values,min.values)],y_values[-c(max.values,min.values)],
              xlim=xlim0,ylim=ylim0,main=main.title,xlab=xlab, ylab=ylab,
              pch = 1)
@@ -262,6 +264,35 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = c("SW", "ANOVA"),
         axis.break(4, -6.1, breakcol="black", style="slash")
         points(x_values[min.values],
                pmin(y_values[min.values]-gapsize4-1,-6.5))
+
+        ### Legend
+        default.legend1 <- list(
+          x = grconvertX(1.02, "npc", "user"),
+          y = grconvertY(0.8, "npc", "user"),
+          legend = c("qqline", "Diagonal Line"),
+          col = c("black", "green"),
+          lty = c(1, 1),
+          lwd = 1.5,
+          cex = 0.6,
+          bty = "n",
+          xpd = NA,
+          seg.len = 1.5,
+          adj = 0
+        )
+
+        default.legend2 <- list(
+          x = grconvertX(0.99, "npc", "user"),
+          y = grconvertY(0.6, "npc", "user"),
+          legend = c(expression(bold("P-value:")),
+                     paste0("Z-", diagnosis.test, " = ", sprintf("%.2f", test.pv))),
+          cex = 0.6,
+          bty = "n",
+          xpd = NA,
+          adj = 0
+        )
+        legend.args1 <- modifyList(default.legend1, legend.settings)
+        legend.args2 <- modifyList(default.legend2, legend.settings)
+
         do.call(legend, legend.args1)
         do.call(legend, legend.args2)
 
@@ -295,7 +326,6 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = c("SW", "ANOVA"),
             do.call(text, c(list(x=x.outlier,y=y.outlier), text.args))
           }
         }
-
 
       }
 
