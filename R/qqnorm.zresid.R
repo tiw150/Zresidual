@@ -24,7 +24,7 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = "SW",
 #  if(missing(X.anova) && diagnosis.test == "ANOVA") X.anova <- "lp"
   # test <- list("SW" = shapiro.test,
   #              "ANOVA" = aov.test.zresid)
-#  if(diagnosis.test == "ANOVA") test <- aov.test.zresid(Zresidual, X.anova, k.anova) else test <- sw.test.zresid(Zresidual)
+  if(diagnosis.test == "SW") test <- sw.test.zresid(Zresidual)
 
   for (i in irep) {
     par(mar = c(5, 4, 4, 6) + 0.1)
