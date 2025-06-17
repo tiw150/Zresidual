@@ -29,7 +29,7 @@ log.pred.dist.HP <- function(fit){
   lambda <- posterior.pred(fit, dpar = "mu")
 
   for (i in 1:n){
-    lpmf_hat[,i] <- dhurdle.poisson(sim.y[i], lambda = lambda[,i], hu = hu[,i], log = TRUE)
+    lpmf_hat[,i] <- dhurdle.pois(sim.y[i], lambda = lambda[,i], hu = hu[,i], log = TRUE)
     lcdf_hat[,i] <- phurdle.pois(sim.y[i], lambda = lambda[,i], pi = hu[,i], lower.tail=FALSE, log.p = TRUE)
   }
 

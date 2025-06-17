@@ -1,7 +1,7 @@
 #' A function to calculate pdf of hurdle poisson.
 #'
 
-dhurdle.poisson <- function(y, mu, pi, log = FALSE) {
+dhurdle.pois <- function(y, mu, pi, log = FALSE) {
   log1mexp <- function(x) {
     ifelse(x <= log(2),
            log(-expm1(-x)),

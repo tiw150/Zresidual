@@ -1,4 +1,4 @@
-#' A function to calculate pdf of Truncated Poisson
+#' A function to calculate pmf of Truncated Poisson
 #'
 #' @param y y values.
 #' @param lambda lambda parameter of TP distribution.
