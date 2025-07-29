@@ -26,7 +26,7 @@ log.pred.dist.TP <- function(fit){
   #y_id <- sim.y[count_id]
   #y_id <- as.vector(sim.y)
 
-  lambda <- posterior.pred.ds(fit, dpar = "mu")
+  lambda <- posterior.pred(fit, dpar = "mu")
 
   #mu <- mu[,count_id]
   #shape <- shape[,count_id]

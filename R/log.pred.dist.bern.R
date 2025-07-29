@@ -15,7 +15,7 @@ log.pred.dist.bern <- function(fit){
   data <- fit$data
   data$hu <- 1
 
-  hu <- posterior.pred.ds(fit, dpar = "mu", count.only = F)
+  hu <- posterior.pred(fit, dpar = "mu", count.only = F)
 
   y <- as.matrix(model.frame(fit$formula, data=data)[,1])
   O_i <- ifelse(y==0, 0, 1)

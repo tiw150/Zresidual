@@ -25,8 +25,8 @@ log.pred.dist.TNB <- function(fit){
   #y_id <- sim.y[count_id]
   #y_id <- as.vector(sim.y)
 
-  mu <- posterior.pred.ds(fit, dpar = "mu")
-  shape <- posterior.pred.ds(fit, dpar = "shape")
+  mu <- posterior.pred(fit, dpar = "mu")
+  shape <- posterior.pred(fit, dpar = "shape")
 
   #mu <- mu[,count_id]
   #shape <- shape[,count_id]
@@ -42,8 +42,8 @@ log.pred.dist.TNB <- function(fit){
   lcdf_hat <- matrix(NA, mc_used, n)
 
   for (i in count.id){
-    lpmf_hat[,i] <- pdf.tnb.ds(sim.y[i], mu = mu[,i], size = shape[,i], log = TRUE)
-    lcdf_hat[,i] <- cdf.tnb.ds(sim.y[i], mu = mu[,i], size = shape[,i], lower.tail = FALSE, log.p = TRUE)
+    lpmf_hat[,i] <- pdf.tnb(sim.y[i], mu = mu[,i], size = shape[,i], log = TRUE)
+    lcdf_hat[,i] <- cdf.tnb(sim.y[i], mu = mu[,i], size = shape[,i], lower.tail = FALSE, log.p = TRUE)
   }
 
   pred_dist <- list(lpmf_hat = lpmf_hat, lcdf_hat = lcdf_hat, zero_id = zero_id)

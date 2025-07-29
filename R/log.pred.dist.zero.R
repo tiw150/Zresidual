@@ -14,7 +14,7 @@ log.pred.dist.zero <- function(fit){
   data <- fit$data
   data$hu <- 1
 
-  hu <- posterior.pred.ds(fit, dpar = "zero")
+  hu <- posterior.pred(fit, dpar = "zero")
 
   y <- as.matrix(model.frame(fit$formula, data=data)[,1])
   O_i <- ifelse(y==0, 1, 0)

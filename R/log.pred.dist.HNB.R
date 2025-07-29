@@ -24,9 +24,9 @@ log.pred.dist.HNB <- function(fit){
   lpmf_hat <- matrix(0, mc_used, n)
   lcdf_hat <- matrix(0, mc_used, n)
 
-  hu <- posterior.pred.ds(fit, dpar = "zero")
-  mu <- posterior.pred.ds(fit, dpar = "mu")
-  shape <- posterior.pred.ds(fit, dpar = "shape")
+  hu <- posterior.pred(fit, dpar = "zero")
+  mu <- posterior.pred(fit, dpar = "mu")
+  shape <- posterior.pred(fit, dpar = "shape")
 
   for (i in 1:n){
     #lpmf_hat[,i] <- dhurdle_negbinomial(sim.y[i], mu[,i], shape[,i], hu[,i], log = TRUE)

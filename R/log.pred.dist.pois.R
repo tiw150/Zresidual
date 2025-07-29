@@ -25,8 +25,8 @@ log.pred.dist.pois <- function(fit){
   #y_id <- sim.y[count_id]
   #y_id <- as.vector(sim.y)
 
-  lambda <- posterior.pred.ds(fit, dpar = "mu", count.only = F)
-  #shape <- posterior.pred.ds(fit, dpar = "shape", count.only = F)
+  lambda <- posterior.pred(fit, dpar = "mu", count.only = F)
+  #shape <- posterior.pred(fit, dpar = "shape", count.only = F)
 
   #mu <- mu[,count_id]
   #shape <- shape[,count_id]
