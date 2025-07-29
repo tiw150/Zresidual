@@ -12,14 +12,16 @@
 #'
 #' @export
 #'
-#' @return A matrix of Z-residuals. Each column represents a set of Z-residuals based on different random draws for censored observations. The matrix has the following attributes:
-#'   \item{Survival.Prob}{The estimated survival probabilities.}
-#'   \item{linear.pred}{The linear predictors from the survival regression model.}
-#'   \item{covariates}{The covariate values used in the model.}
-#'   \item{censored.status}{The censoring status (0 for censored, 1 for event).}
-#'   \item{object.model.frame}{The model frame used for the analysis.}
+#' @return  \itemize{ A matrix of Z-residuals. Each column represents a set of Z-residuals based on different random draws for censored observations. The matrix has the following attributes:
+#'   \item{Survival.Prob:} {The estimated survival probabilities.}
+#'   \item{linear.pred:} {The linear predictors from the survival regression model.}
+#'   \item{covariates:} {The covariate values used in the model.}
+#'   \item{censored.status:} {The censoring status (0 for censored, 1 for event).}
+#'   \item{object.model.frame:} {The model frame used for the analysis.}
+#'}
 #'
 #' @examples
+#'
 #' library(survival)
 #'
 #' # Fit a Weibull survival regression model

@@ -6,6 +6,7 @@
 #'
 #' @return \itemize{
 #'  \item{Zresid}{Z-residual}
+#'  }
 #'
 Zresidual.negbinomial <- function(fit,  type = "NB" , method = "iscv", nrep = 1){
 

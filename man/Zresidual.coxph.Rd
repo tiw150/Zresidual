@@ -10,7 +10,9 @@ Zresidual.coxph(fit_coxph, newdata, n.rep = nrep)
 \item{fit_coxph}{is the fit object are from the coxph function in the survival package.}
 }
 \value{
-
+\itemize{
+ \item{Zresid}{Z-residual}
+}
 }
 \description{
 Some descriptions

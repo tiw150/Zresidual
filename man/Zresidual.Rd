@@ -11,7 +11,7 @@ Zresidual(fit.object, nrep = 1, data = NULL, type = NULL, method = "iscv")
 }
 \value{
 \itemize{
- \item{Zresid}{Z-residual}
+ \item{Zresid} {Z-residual}
 
 }
 }

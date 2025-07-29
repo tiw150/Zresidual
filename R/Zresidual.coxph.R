@@ -8,6 +8,7 @@
 #'
 #' @return \itemize{
 #'  \item{Zresid}{Z-residual}
+#'}
 #'
 
 Zresidual.coxph<-function (fit_coxph, newdata,n.rep=nrep)

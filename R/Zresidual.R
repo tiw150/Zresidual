@@ -8,9 +8,8 @@
 #' @export
 #'
 #' @return \itemize{
-#'  \item{Zresid}{Z-residual}
+#'  \item{Zresid} {Z-residual}
 #'
-
 #' }
 #'
 Zresidual <- function(fit.object, nrep = 1,data = NULL,type=NULL,method = "iscv")

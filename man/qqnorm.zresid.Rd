@@ -7,9 +7,7 @@
 \method{qqnorm}{zresid}(
   Zresidual,
   irep = 1,
-  diagnosis.test = c("SW", "ANOVA"),
-  X.anova = c("lp", "covariate"),
-  k.anova = 10,
+  diagnosis.test = "SW",
   main.title = ifelse(is.null(attr(Zresidual, "type")), "Normal Q-Q Plot",
     paste("Normal Q-Q Plot -", attr(Zresidual, "type"))),
   xlab = "Theoretical Quantiles",
@@ -26,10 +24,6 @@
 
 \item{diagnosis.test}{diagnosis test}
 
-\item{X.anova}{X variable to run if ANOVA is selected in diagnosis.test. Possible c("lp", "covariate")}
-
-\item{k.anova}{Number of bins if X.anova is 'covariates'.}
-
 \item{legend.settings}{A list of parameters available in legend().}
 
 \item{point.clr}{A vector of colors of points.}
@@ -37,6 +31,10 @@
 \item{point.type}{A vector of type of points.}
 
 \item{outlier.settings}{A list of parameters available in symbols() and text().}
+
+\item{X.anova}{X variable to run if ANOVA is selected in diagnosis.test. Possible c("lp", "covariate")}
+
+\item{k.anova}{Number of bins if X.anova is 'covariates'.}
 }
 \description{
 A function to draw qq plot of a z-residual

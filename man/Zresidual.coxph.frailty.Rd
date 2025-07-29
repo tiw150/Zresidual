@@ -10,7 +10,9 @@ Zresidual.coxph.frailty(fit_coxph, traindata, newdata, n.rep = nrep)
 \item{fit_coxph}{is the fit object are from the coxph function with frailty item in the survival package.}
 }
 \value{
-
+\itemize{
+ \item{Zresid}{Z-residual}
+}
 }
 \description{
 Some descriptions

@@ -2,7 +2,7 @@
 % Please edit documentation in R/pdf.tp.R
 \name{pdf.tp}
 \alias{pdf.tp}
-\title{A function to calculate pdf of Truncated Poisson}
+\title{A function to calculate pmf of Truncated Poisson}
 \usage{
 pdf.tp(y, lambda, log.p = FALSE)
 }
@@ -12,5 +12,5 @@ pdf.tp(y, lambda, log.p = FALSE)
 \item{lambda}{lambda parameter of TP distribution.}
 }
 \description{
-A function to calculate pdf of Truncated Poisson
+A function to calculate pmf of Truncated Poisson
 }

@@ -5,8 +5,8 @@
 #' @export
 #'
 #' @return \itemize{
-#'  \item{Zresid}{Z-residual}
-#'
+#'  \item{Zresid} {Z-residual}
+#'}
 
 Zresidual.bernoulli <- function(fit, method = "iscv", nrep = 1){
 

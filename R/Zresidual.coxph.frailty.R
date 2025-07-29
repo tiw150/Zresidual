@@ -8,6 +8,7 @@
 #'
 #' @return \itemize{
 #'  \item{Zresid}{Z-residual}
+#'}
 #'
 
 ######Z-residual ################################

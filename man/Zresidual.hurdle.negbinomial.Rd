@@ -11,7 +11,9 @@ Zresidual.hurdle.negbinomial(fit, type, method = "iscv", nrep = 1)
 \item{fit}{is the fit object are from 'brms' package.}
 }
 \value{
-
+\itemize{
+ \item{Zresid}{Z-residual}
+}
 }
 \description{
 A function to calculate z-residuals of a 'brm' fit.

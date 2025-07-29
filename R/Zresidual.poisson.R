@@ -7,6 +7,7 @@
 #'
 #' @return \itemize{
 #'  \item{Zresid}{Z-residual}
+#'  }
 #'
 Zresidual.poisson <- function(fit,  type = "pois" , method = "iscv", nrep = 1){
 

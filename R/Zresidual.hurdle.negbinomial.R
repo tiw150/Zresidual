@@ -6,6 +6,8 @@
 #'
 #' @return \itemize{
 #'  \item{Zresid}{Z-residual}
+#'}
+#'
 
 Zresidual.hurdle.negbinomial <- function(fit,  type , method = "iscv", nrep = 1){
 
