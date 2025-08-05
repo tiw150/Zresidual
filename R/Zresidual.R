@@ -67,22 +67,7 @@ Zresidual <- function(fit.object, nrep = 1,data = NULL,type=NULL,method = "iscv"
       stop("The distribution '", distr, "' from the brmsfit object is not supported.")
     }
 
-  } else if (inherits(fit.object, "glmmTMB")) {
-
-    distr <- family(fit.object)$family
-
-    if (distr %in% c("gaussian", "poisson", "nbinom2")) {
-
-      Zresid_fun <- Zresidual.ZI(fit_ZI = fit.object,n.rep = nrep)
-
-    } else if (distr %in% c("truncated_poisson", "truncated_nbinom2")) {
-
-      Zresid_fun <- Zresidual.hurdle(fit_hd=fit.object,n.rep = nrep)
-
-    } else {
-      stop("The distribution '", distr, "' from the glmmTMB object is not supported.")
-    }
-  } else {
+  }  else {
     stop("Objects of class '", paste(class(fit.object), collapse = "', '"), "' are not supported by this function.")
   }
 
@@ -91,5 +76,20 @@ Zresidual <- function(fit.object, nrep = 1,data = NULL,type=NULL,method = "iscv"
 }
 
 
-
+# else if (inherits(fit.object, "glmmTMB")) {
+#
+#   distr <- family(fit.object)$family
+#
+#   if (distr %in% c("gaussian", "poisson", "nbinom2")) {
+#
+#     Zresid_fun <- Zresidual.ZI(fit_ZI = fit.object,n.rep = nrep)
+#
+#   } else if (distr %in% c("truncated_poisson", "truncated_nbinom2")) {
+#
+#     Zresid_fun <- Zresidual.hurdle(fit_hd=fit.object,n.rep = nrep)
+#
+#   } else {
+#     stop("The distribution '", distr, "' from the glmmTMB object is not supported.")
+#   }
+# }
 
