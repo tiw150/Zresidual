@@ -8,9 +8,18 @@ kidney$sex<-as.factor(kidney$sex)
 
 #############fit the coxph model with frailty#################
 fit_kidney <- tryCatch(
-  coxph(Surv(time, censored) ~ age + sex + disease, data= kidney),
-  error = function(e) NA,
-  warning = function(w) NA
+  expr = {
+    model <- coxph(Surv(time, status) ~ age + disease, data = kidney)
+    model
+  },
+  error = function(e) {
+    cat("** Error in coxph(): **\n", e$message, "\n")
+    return(NA)
+  },
+  warning = function(w) {
+    cat("** Warning in coxph(): **\n", w$message, "\n")
+    return(NA)
+  }
 )
 #############Calculate residuals###############################
 

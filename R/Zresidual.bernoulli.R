@@ -43,7 +43,7 @@ Zresidual.bernoulli <- function(fit, method = "iscv", n.rep = 1){
 
   #if(type == "count") z_res <- z_res[-zero_id,]
 
-  colnames(z_res) <- paste0("zresidual", 1:n.rep)
+  colnames(z_res) <- paste0("Z-residual ", 1:n.rep)
 
   attributes(z_res) <- c(attributes(z_res),list(
     type = type,
