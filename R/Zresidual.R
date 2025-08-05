@@ -42,17 +42,17 @@ Zresidual <- function(fit.object, nrep = 1,data = NULL,type=NULL,method = "iscv"
     if (distr =="hurdle_negbinomial") {
 
       Zresid_fun <- Zresidual.hurdle.negbinomial(fit = fit.object, type=type,
-                                                 method = method,nrep = nrep)
+                                                 method = method,n.rep = nrep)
 
     } else if (distr == "hurdle_poisson") {
 
       Zresid_fun <- Zresidual.hurdle.poisson(fit = fit.object,  type=type,
-                                             method = method,nrep = nrep)
+                                             method = method,n.rep = nrep)
 
     } else if (distr == "negbinomial") {
 
       Zresid_fun <- Zresidual.negbinomial(fit = fit.object,  type = "NB",
-                                          method = method,nrep = nrep)
+                                          method = method,n.rep = nrep)
 
     } else if (distr == "poisson") {
 
@@ -61,7 +61,7 @@ Zresidual <- function(fit.object, nrep = 1,data = NULL,type=NULL,method = "iscv"
 
     } else if (distr == "bernoulli") {
 
-      Zresid_fun <- Zresidual.bernoulli(fit=fit.object, method = method,nrep = nrep)
+      Zresid_fun <- Zresidual.bernoulli(fit=fit.object, method = method,n.rep = nrep)
 
     } else {
       stop("The distribution '", distr, "' from the brmsfit object is not supported.")

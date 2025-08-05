@@ -11,7 +11,7 @@
 #'}
 #'
 
-Zresidual.coxph<-function (fit_coxph, newdata,n.rep=nrep)
+Zresidual.coxph<-function (fit_coxph, newdata,n.rep=1)
 {
   if(is.null(newdata)){
     mf_new<-model.frame.coxph(fit_coxph)

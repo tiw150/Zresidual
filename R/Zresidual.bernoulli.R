@@ -8,7 +8,7 @@
 #'  \item{Zresid} {Z-residual}
 #'}
 
-Zresidual.bernoulli <- function(fit, method = "iscv", nrep = 1){
+Zresidual.bernoulli <- function(fit, method = "iscv", n.rep = 1){
 
   data <- fit$data
   response <- fit$formula$resp
@@ -33,17 +33,17 @@ Zresidual.bernoulli <- function(fit, method = "iscv", nrep = 1){
   rpp_list <- c(iscv = "iscv_logrpp", post = "post_logrpp")
   names(rpp_list) <- c("iscv", "post")
 
-  #if(count_only) z_res<- matrix(NA, ncol = nrep, nrow = dim(lpmf)[2])
-  z_res<- matrix(NA, ncol = nrep, nrow = n)
+  #if(count_only) z_res<- matrix(NA, ncol = n.rep, nrow = dim(lpmf)[2])
+  z_res<- matrix(NA, ncol = n.rep, nrow = n)
 
-  for (i in 1:nrep) {
+  for (i in 1:n.rep) {
     rpp <- get(rpp_list[[method]])(lcdf, lpmf)
     z_res[, i] <- -qnorm(rpp, log.p = T)
   }
 
   #if(type == "count") z_res <- z_res[-zero_id,]
 
-  colnames(z_res) <- paste0("zresidual", 1:nrep)
+  colnames(z_res) <- paste0("zresidual", 1:n.rep)
 
   attributes(z_res) <- c(attributes(z_res),list(
     type = type,

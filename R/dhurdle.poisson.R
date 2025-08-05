@@ -1,7 +1,7 @@
 #' A function to calculate pdf of hurdle poisson.
 #'
 
-dhurdle.pois <- function(y, mu, pi, log = FALSE) {
+dhurdle.pois <- function(y, lambda, pi, log = FALSE) {
   log1mexp <- function(x) {
     ifelse(x <= log(2),
            log(-expm1(-x)),
@@ -18,9 +18,9 @@ dhurdle.pois <- function(y, mu, pi, log = FALSE) {
     ifelse(la >= lb, la + log1mexp(la - lb), NaN)
   }
 
-  n <- max(length(y), length(mu), length(pi))
+  n <- max(length(y), length(lambda), length(pi))
   y <- rep(y, length.out = n)
-  mu <- rep(mu, length.out = n)
+  lambda <- rep(lambda, length.out = n)
   pi <- rep(pi, length.out = n)
 
   log_pi <- log(pi)
@@ -35,14 +35,13 @@ dhurdle.pois <- function(y, mu, pi, log = FALSE) {
   # y > 0
   i_pos <- which(y > 0)
   if (length(i_pos) > 0) {
-    log_pois <- dpois(y[i_pos], lambda = mu[i_pos], log = TRUE)
-    log_pnz <- ppois(q = 0, lambda = mu[i_pos], lower.tail = FALSE, log.p = TRUE)  # P(Y > 0)
+    log_pois <- dpois(y[i_pos], lambda = lambda[i_pos], log = TRUE)
+    log_pnz <- ppois(q = 0, lambda = lambda[i_pos], lower.tail = FALSE, log.p = TRUE)  # P(Y > 0)
     log1m_pi_vals <- log1m_pi(log_pi[i_pos])
 
     log_dens[i_pos] <- log1m_pi_vals + log_pois - log_pnz
   }
 
-  # Return result
   if (log) {
     return(log_dens)
   } else {

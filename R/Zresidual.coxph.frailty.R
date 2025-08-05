@@ -13,7 +13,7 @@
 
 ######Z-residual ################################
 Zresidual.coxph.frailty <-
-  function (fit_coxph, traindata, newdata, n.rep = nrep)
+  function (fit_coxph, traindata, newdata, n.rep = 1)
   {
     if (is.null(traindata) & is.null(newdata)) {
       mf <- model.frame.coxph(fit_coxph)

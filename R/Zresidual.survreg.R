@@ -37,7 +37,7 @@
 #' head(z_residuals_new)
 #'
 #'
-Zresidual.survreg<-function(fit_survreg,newdata,n.rep=nrep)
+Zresidual.survreg<-function(fit_survreg,newdata,n.rep=1)
 {
   if(is.null(newdata)){
     mf<-model.frame.survreg(fit_survreg)
