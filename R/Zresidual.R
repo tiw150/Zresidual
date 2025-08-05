@@ -32,7 +32,7 @@ Zresidual <- function(fit.object, nrep = 1,data = NULL,type=NULL,method = "iscv"
     }
   } else if (inherits(fit.object, "survreg")) {
 
-    Zresid_fun <-Zresidual.survreg(survreg_fit = fit.object,
+    Zresid_fun <-Zresidual.survreg(fit_survreg = fit.object,
                                    newdata = data,n.rep = nrep)
 
   } else if (inherits(fit.object, "brmsfit")) {
