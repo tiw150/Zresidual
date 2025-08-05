@@ -36,7 +36,7 @@ CV.Zresidual.survreg<- function( fit.survreg,  data, nfolds,foldlist,n.rep)
       }
 
       if(any(!is.na(fit_traindata))){
-        res_fold[[fid]]<-Zresidual.survreg(survreg_fit=fit_traindata,newdata = data.test,n.rep=n.rep)
+        res_fold[[fid]]<-Zresidual.survreg(fit_survreg=fit_traindata,newdata = data.test,n.rep=n.rep)
       }
     }
 
@@ -75,7 +75,7 @@ CV.Zresidual.survreg<- function( fit.survreg,  data, nfolds,foldlist,n.rep)
   }
 
   if(is.null(data)){
-    mf <- model.frame.survreg(survreg_fit)
+    mf <- model.frame.survreg(fit_survreg)
     nc <- ncol (mf)
     fix_var<-mf[,-1,drop=FALSE]
 
@@ -117,7 +117,7 @@ CV.Zresidual.survreg<- function( fit.survreg,  data, nfolds,foldlist,n.rep)
       }
 
       if(any(!is.na(fit_traindata))){
-        res_fold[[fid]]<-Zresidual.survreg(survreg_fit=fit_traindata,newdata = data.test,n.rep=n.rep)
+        res_fold[[fid]]<-Zresidual.survreg(fit_survreg=fit_traindata,newdata = data.test,n.rep=n.rep)
       }
     }
 
