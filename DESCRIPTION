@@ -4,13 +4,11 @@ Title: Z-residual for Regression Modelling
 Version: 0.1.0
 Authors@R: c(person(given = "Tingxuan", family = "Wu", role = c("aut","cre"), 
                     email = "tiw150@mail.usask.ca"),
-             person(given = "Longhai", family = "Li", role = c("aut"), 
+             person(given = "Hettiarachchige Alias Egodage", family = "Dananji", role = c("aut","cre"), 
+                    email = "ocf542@mail.usask.ca"),
+             person(given = "Longhai", family = "Li", role = c("aut","cre"), 
                     email = "longhai@math.usask.ca",
-                    comment = c(ORCID="0000-0002-3074-8584")),
-             person(given = "Cindy", family = "Feng", role = c("ctb"), 
-                    email = "cindy.feng@dal.ca"),
-             person(given = "Steven", family = "Liu", role = c("ctb"), 
-                    email = "xil865@usask.ca"))
+                    comment = c(ORCID="0000-0002-3074-8584")),)
 Description: This package provides functions for computing and analyzing Z-residuals and cross-validatory Z-residuals from fitting outputs of several R packages, including coxph, survreg, glmmTMB, brms, ...
 URL: https://github.com/tiw150/Zresidual
 BugReports: https://github.com/tiw150/Zresidual/issues
