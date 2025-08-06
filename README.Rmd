@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Z-residual
+# Z-residuals
 
 <!-- badges: start -->
 <!-- badges: end -->
