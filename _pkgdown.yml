@@ -31,6 +31,27 @@ reference:
   - '`bartlett.test.zresid`'
   - '`sw.test.zresid`'
   - '`sf.test.zresid`'
+  - '`Zresidual.bernoulli`'
+  - '`Zresidual.coxph`'
+  - '`Zresidual.coxph.frailty`'
+  - '`Zresidual.hurdle.negbinomial`'
+  - '`Zresidual.hurdle.poisson`'
+  - '`Zresidual.negbinomial`'
+  - '`Zresidual.poisson`'
+  - '`Zresidual.survreg`'
+  - '`aov.test.zresid`'
+  - '`iscv_logrpp`'
+  - '`test.nl.aov`'
+  - '`test.var.bartl`'
+  - '`gof.censored.zresidual`'
+
+- title: Cross-validation Functions
+  desc: Functions for cross-validation of Z-residual models.
+  contents:
+  - '`CV.Zresidual`'
+  - '`CV.Zresidual.coxph`'
+  - '`CV.Zresidual.coxph.frailty`'
+  - '`CV.Zresidual.survreg`'
 
 - title: Other Residual Plots
   desc: Functions to visualize Cox-Snell, Deviance, and Martingale residuals.
@@ -50,9 +71,13 @@ reference:
   - '`log.pred.dist.bern`'
   - '`log.pred.dist.pois`'
   - '`log.pred.dist.zero`'
+  - '`cdf.tnb`'
+  - '`cdf.tp`'
+  - '`dhurdle.nb`'
+  - '`dhurdle.pois`'
 
-
-
-
-
+- title: Utilities
+  desc: Utility functions for various tasks.
+  contents:
+  - '`log_diff_exp`'
 
