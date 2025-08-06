@@ -43,7 +43,7 @@ reference:
   - '`iscv_logrpp`'
   - '`test.nl.aov`'
   - '`test.var.bartl`'
-  - '`gof.censored.zresidual`'
+
 
 - title: Cross-validation Functions
   desc: Functions for cross-validation of Z-residual models.
