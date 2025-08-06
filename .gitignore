@@ -8,6 +8,5 @@ src/*.so
 src/*.dll
 .vscode/
 *.old
-docs/
 docs
 inst/doc
