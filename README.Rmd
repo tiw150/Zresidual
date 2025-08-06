@@ -94,14 +94,14 @@ The scatterplots of Z-residuals against the linear predictor don't exhibit visib
 
 ```{r fig.cap="Figure 2: Scatter plots and box plots of Z-residuals against LP for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients",fig.align='center', fig.width=9, fig.height=9}
 par(mfrow = c(2,2),mar=c(4,4,1.5,2))
-plot.zresid(Zresid.LeukSurv.wbc,
+plot.zresid(Zresid.LeukSurv.wbc,X="lp",
             main.title = "Z-residual Scatterplot of wbc model")
-plot.zresid(Zresid.LeukSurv.logwbc,
+plot.zresid(Zresid.LeukSurv.logwbc,"lp",
             main.title = "Z-residual Scatterplot of lwbc model")
 
-boxplot.zresid(Zresid.LeukSurv.wbc,X="fitted.value",
+boxplot.zresid(Zresid.LeukSurv.wbc,
                main.title = "Z-residual Boxplot of wbc model")
-boxplot.zresid(Zresid.LeukSurv.logwbc,X="fitted.value",
+boxplot.zresid(Zresid.LeukSurv.logwbc,
                main.title = "Z-residual Boxplot of lwbc model")
 
 
