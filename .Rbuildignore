@@ -10,3 +10,4 @@
 ^LICENSE$
 ^.github$
 ^\.github$
+^_pkgdown\.yml$

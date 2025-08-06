@@ -1,0 +1,20 @@
+url: https://tiw150.github.io/Zresidual/
+template:
+  bootstrap: 5
+  bootswatch: flatly
+
+articles:
+  - title: "How to use various features of the package."
+    contents:
+      - getting-started
+
+navbar:
+  title: "Z-residuals"
+  left:
+    - text: "Vignettes"
+      href: articles/index.html
+    - text: "Functions"
+      href: reference/index.html
+  right:
+    - icon: fa-github fa-lg
+      href: https://github.com/tiw150/Zresidual
