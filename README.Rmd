@@ -99,9 +99,9 @@ plot.zresid(Zresid.LeukSurv.wbc,
 plot.zresid(Zresid.LeukSurv.logwbc,
             main.title = "Z-residual Scatterplot of lwbc model")
 
-boxplot.zresid(Zresid.LeukSurv.wbc,
+boxplot.zresid(Zresid.LeukSurv.wbc,X="fitted.value",
                main.title = "Z-residual Boxplot of wbc model")
-boxplot.zresid(Zresid.LeukSurv.logwbc,
+boxplot.zresid(Zresid.LeukSurv.logwbc,X="fitted.value",
                main.title = "Z-residual Boxplot of lwbc model")
 
 

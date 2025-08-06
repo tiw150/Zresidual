@@ -4,7 +4,7 @@
 #' @export boxplot.zresid
 
 boxplot.zresid <- function(Zresidual,irep=1,
-                           X = c("fitted.value", "covariate"),
+                           X = c("lp", "covariate"),
                            num.bin = 10,
                            normality.test = c("SW", "AOV", "BL"), k.test = 10,
                            main.title=paste("Z-residual Boxplot -", attr(Zresidual, "type")),
@@ -47,7 +47,7 @@ boxplot.zresid <- function(Zresidual,irep=1,
   args <- list(...)
 
   if (missing(X))
-    X = "fitted.value"
+    X = "lp"
 
   for (j in irep) {
 
@@ -86,15 +86,15 @@ boxplot.zresid <- function(Zresidual,irep=1,
 
     par(mar = c(5, 4, 4, 6) + 0.1)
 
-    if (X == "fitted.value") {
-      fitted.value <- attr(Zresidual, "fitted.value")
+    if (X == "lp") {
+      fitted.value <- attr(Zresidual, "linear.pred")
 
       do.call(plot, c(modifyList(list(calc.bin(fitted.value,num.bin), Zresidual[, j], xlab = "Fitted Value"), default.plot)))
       plot_limits <- par("usr")
       do.call(legend, c(list(x = plot_limits[2] - (plot_limits[2] - plot_limits[1]) * 0.01, y = plot_limits[4]), test.legend))
     }
 
-    if (X != "fitted.value") {
+    if (X != "lp") {
       fitted.value <- attr(Zresidual, "covariates")
       if(X == "covariate"){
         i<-1
