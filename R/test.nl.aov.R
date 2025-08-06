@@ -13,15 +13,15 @@ test.nl.aov <- function(Zresidual, fitted.value, k.anova=10)
     lpred.bin <- fitted.value
     anova(lm(Zresidual ~ lpred.bin))$`Pr(>F)`[1]
   } else if(!is.factor(fitted.value)){
-    lpred.bin <- cut(fitted.value, k.anova)
-    less2_factor<-which(tapply(lpred.bin,lpred.bin,length)<= 2 | is.na(tapply(lpred.bin,lpred.bin,length)))
-    is.bins2 <- (k.anova - length(less2_factor))>2
+    lpred.bin <- droplevels(cut(fitted.value, k.anova))
+    less2_factor<-which(tapply(lpred.bin,lpred.bin,length)<= 2)
+    is.bins2 <- (nlevels(lpred.bin) - length(less2_factor))>2
 
     if(!is.bins2) {
       fitted.value <- log(fitted.value)
       message("Contrasts can be applied only to factors with 2 or more levels. Fitted values converted to log.")
-      lpred.bin <- cut(fitted.value, breaks = quantile(fitted.value, probs = seq(0, 1, length.out = k.anova+1)), include.lowest = TRUE)
-      less2_factor<-which(tapply(lpred.bin,lpred.bin,length)<= 2 | is.na(tapply(lpred.bin,lpred.bin,length)))
+      lpred.bin <- droplevels(cut(fitted.value, k.anova))
+      less2_factor<-which(tapply(lpred.bin,lpred.bin,length)<= 2)
     }
 
     if(rlang::is_empty(names(less2_factor))){
