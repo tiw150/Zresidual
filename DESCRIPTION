@@ -9,7 +9,7 @@ Authors@R: c(person(given = "Tingxuan", family = "Wu", role = c("aut","cre"),
              person(given = "Longhai", family = "Li", role = c("aut"), 
                     email = "longhai@math.usask.ca"))
 Description: This package provides functions for computing and analyzing Z-residuals and cross-validatory Z-residuals from fitting outputs of several R packages, including coxph, survreg, glmmTMB, brms, ...
-URL: https://github.com/tiw150/Zresidual
+URL: https://tiw150.github.io/Zresidual
 BugReports: https://github.com/tiw150/Zresidual/issues
 Depends: R (>= 3.5.0)
 Imports: survival (>= 3.3-1), actuar, glmmTMB, nortest, EnvStats, doParallel, brms, dplyr, Rlab, tidyr, VGAM
