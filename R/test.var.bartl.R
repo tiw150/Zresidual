@@ -1,6 +1,6 @@
 #' A function to calculate Bartlett test of Zresidual
 #'
-#' @export
+#'
 #'
 #' @param Zresidual A Z-residual.
 #' @param fitted.value Fitted values

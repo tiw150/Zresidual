@@ -5,7 +5,7 @@
 \title{A function to calculate z-residuals of a 'brm' fit.
 This function is to be used when the user needs to calculate the Z-residuals of TNB/HNB}
 \usage{
-Zresidual.poisson(fit, type = "pois", method = "iscv", nrep = 1)
+Zresidual.poisson(fit, type = "pois", method = "iscv", n.rep = 1)
 }
 \arguments{
 \item{fit}{is the fit object are from 'brms' package.}

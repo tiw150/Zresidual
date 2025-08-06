@@ -20,3 +20,39 @@ navbar:
       href: https://github.com/tiw150/Zresidual
       aria-label: "GitHub repository"
 
+reference:
+- title: Z-residual Diagnostics
+  desc: Functions for calculating, plotting, and testing Z-residuals.
+  contents:
+  - '`Zresidual`'
+  - '`qqnorm.zresid`'
+  - '`boxplot.zresid`'
+  - '`plot.zresid`'
+  - '`bartlett.test.zresid`'
+  - '`sw.test.zresid`'
+  - '`sf.test.zresid`'
+
+- title: Other Residual Plots
+  desc: Functions to visualize Cox-Snell, Deviance, and Martingale residuals.
+  contents:
+  - '`plot.cs.residual`'
+  - '`plot.dev.resid`'
+  - '`plot.martg.resid`'
+
+- title: Predictive Log-Distribution Functions
+  desc: Functions to calculate predictive log-distributions for various brms models.
+  contents:
+  - '`log.pred.dist.HNB`'
+  - '`log.pred.dist.HP`'
+  - '`log.pred.dist.NB`'
+  - '`log.pred.dist.TNB`'
+  - '`log.pred.dist.TP`'
+  - '`log.pred.dist.bern`'
+  - '`log.pred.dist.pois`'
+  - '`log.pred.dist.zero`'
+
+
+
+
+
+

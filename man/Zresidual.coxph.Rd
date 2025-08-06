@@ -4,7 +4,7 @@
 \alias{Zresidual.coxph}
 \title{A title}
 \usage{
-Zresidual.coxph(fit_coxph, newdata, n.rep = nrep)
+Zresidual.coxph(fit_coxph, newdata, n.rep = 1)
 }
 \arguments{
 \item{fit_coxph}{is the fit object are from the coxph function in the survival package.}

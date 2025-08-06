@@ -4,7 +4,7 @@
 \alias{dhurdle.pois}
 \title{A function to calculate pdf of hurdle poisson.}
 \usage{
-dhurdle.pois(y, mu, pi, log = FALSE)
+dhurdle.pois(y, lambda, pi, log = FALSE)
 }
 \description{
 A function to calculate pdf of hurdle poisson.

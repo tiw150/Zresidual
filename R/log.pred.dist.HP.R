@@ -2,7 +2,7 @@
 #'
 #' @import brms
 #' @param fit A `brm` fit.
-#' @export log.pred.dist.HP
+#'
 
 log.pred.dist.HP <- function(fit){
 

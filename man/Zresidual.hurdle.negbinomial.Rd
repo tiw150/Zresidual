@@ -3,9 +3,10 @@
 \name{Zresidual.hurdle.negbinomial}
 \alias{Zresidual.hurdle.negbinomial}
 \title{A function to calculate z-residuals of a 'brm' fit.
-This function is to be used when the user needs to calculate the Z-residuals of TNB/HNB}
+This function is to be used when the user needs to calculate the Z-residuals
+ of TNB/HNB}
 \usage{
-Zresidual.hurdle.negbinomial(fit, type, method = "iscv", nrep = 1)
+Zresidual.hurdle.negbinomial(fit, type, method = "iscv", n.rep = 1)
 }
 \arguments{
 \item{fit}{is the fit object are from 'brms' package.}
@@ -17,5 +18,6 @@ Zresidual.hurdle.negbinomial(fit, type, method = "iscv", nrep = 1)
 }
 \description{
 A function to calculate z-residuals of a 'brm' fit.
-This function is to be used when the user needs to calculate the Z-residuals of TNB/HNB
+This function is to be used when the user needs to calculate the Z-residuals
+ of TNB/HNB
 }

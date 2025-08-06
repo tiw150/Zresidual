@@ -4,7 +4,7 @@
 \alias{Zresidual.survreg}
 \title{Calculate Z-residuals for a fitted survival regression model}
 \usage{
-Zresidual.survreg(fit_survreg, newdata, n.rep = nrep)
+Zresidual.survreg(fit_survreg, newdata, n.rep = 1)
 }
 \arguments{
 \item{fit_survreg}{A fitted object from the `survreg` function in the `survival` package.}

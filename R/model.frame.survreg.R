@@ -1,27 +1,33 @@
+#' An internal S3 method for model.matrix.
+#' @keywords internal
+#'
+#'
 model.frame.survreg <- function (formula, ...) {
     dots <- list(...)
-    nargs <- dots[match(c("data", "na.action", "subset"), 
+    nargs <- dots[match(c("data", "na.action", "subset"),
             names(dots), 0)]
 
     if (length(nargs) || is.null(formula$model)) {
         fcall <- formula$call
-        indx <- match(c("formula", "data", "weights", "subset", 
+        indx <- match(c("formula", "data", "weights", "subset",
             "na.action"), names(fcall), nomatch = 0)
-        if (indx[1] == 0) 
+        if (indx[1] == 0)
             stop("The coxph call is missing a formula!")
         temp <- fcall[c(1, indx)]
         temp[[1L]] <- quote(stats::model.frame)
         temp$xlev <- formula$xlevels
-        if (length(nargs) > 0) 
+        if (length(nargs) > 0)
             temp[names(nargs)] <- nargs
-        if (is.null(environment(formula$terms))) 
+        if (is.null(environment(formula$terms)))
             eval(temp, parent.frame())
         else eval(temp, environment(formula$terms), parent.frame())
      }
     else formula$model
 }
 
-# 
+#' An internal S3 method for model.matrix.
+#' @keywords internal
+#'
 model.matrix.survreg <- function(object, data,  ...) {
     if (missing(data) && !is.null(object[["x"]]))
         object[["x"]]
@@ -34,11 +40,11 @@ model.matrix.survreg <- function(object, data,  ...) {
             tempc <- untangle.specials(Terms, 'cluster', 1:10)
             dropx <- tempc$terms
         }
-        
+
         if (length(strats)) {
             temp <- untangle.specials(Terms, 'strata', 1)
             dropx <- c(dropx, temp$terms)
-        }       
+        }
 
         if (length(dropx)) {
             newTerms <- Terms[-dropx]
@@ -47,7 +53,7 @@ model.matrix.survreg <- function(object, data,  ...) {
             # The predvars attribute, if present, is lost when we
             #  subscript.  The attribute is a Call, so has one more element
             #  than term wrt subscripting, i.e., the called function "list"
-            if (!is.null(attr(terms, "predvars"))) 
+            if (!is.null(attr(terms, "predvars")))
                 attr(newTerms, "predvars") <- attr(terms, "predvars")[-(dropx+1)]
         }
         else newTerms <- Terms
@@ -57,12 +63,12 @@ model.matrix.survreg <- function(object, data,  ...) {
         #  we allow the new data to be missing things we don't need: y,
         #  strata, and cluster.  For the original data we can assume they
         #  are present.
-        if (missing(data)) 
+        if (missing(data))
             mf <- stats::model.frame(object, ...)
         else {
             if (is.null(attr(data, "terms")))
                 mf <- stats::model.frame(newTerms, data, xlev=object$xlevels)
-            else mf <- data  #assume we were given a model frame     
+            else mf <- data  #assume we were given a model frame
         }
         model.matrix(newTerms, mf, contrasts.arg= object$contrasts)
     }

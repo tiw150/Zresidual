@@ -4,7 +4,7 @@
 \alias{Zresidual.coxph.frailty}
 \title{A title}
 \usage{
-Zresidual.coxph.frailty(fit_coxph, traindata, newdata, n.rep = nrep)
+Zresidual.coxph.frailty(fit_coxph, traindata, newdata, n.rep = 1)
 }
 \arguments{
 \item{fit_coxph}{is the fit object are from the coxph function with frailty item in the survival package.}

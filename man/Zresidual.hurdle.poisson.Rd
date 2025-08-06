@@ -5,7 +5,7 @@
 \title{A function to calculate z-residuals of a 'brm' fit.
 This function is to be used when the user needs to calculate the Z-residuals of TP/HP}
 \usage{
-Zresidual.hurdle.poisson(fit, type, method = "iscv", nrep = 1)
+Zresidual.hurdle.poisson(fit, type, method = "iscv", n.rep = 1)
 }
 \arguments{
 \item{fit}{is the fit object are from 'brms' package.}
