@@ -172,8 +172,8 @@ fit_LeukSurv_logwbc  <- coxph(Surv(time, cens) ~ age +sex + logwbc + tpi +
 Once the model is fitted, we can calculate Z-residuals for two models.
 
 ```{r, message=FALSE}
-Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,nrep=1000)
-Zresid.LeukSurv.logwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,nrep=1000)
+Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,nrep=100)
+Zresid.LeukSurv.logwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,nrep=100)
 ```
 
 
@@ -198,38 +198,13 @@ The Z-residuals can be divided into $k$ groups by cutting the linear predictors 
 The scatterplots of Z-residuals against the linear predictor don't exhibit visible trends; their LOWESS lines are very close to the horizontal line at 0; the boxplots of Z-residuals grouped by cutting  linear predictors into equal-spaced intervals appear to have equal means and variance across groups. The Z-AOV and Z-BL for linear predictors tests also gives large p-values for the wbc and lwbc models, where Z-AOV and Z-BL are the methods of applying ANOVA and Bartlett to test the equality of the means and variances of Z-residuals against the groups formed with the linear predictor.
 
 
-```{r fig.show="animate", animation.hook='gifski', interval=1, aniopts="controls,loop",cache= TRUE, fig.width=9, fig.height=9, echo=TRUE, results="hide",fig.align='center',fig.cap="Figure 2: Scatter plots and box plots of Z-residuals against LP for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients"}
-foreach (j = 1:nrep) %do%
-  {
-    par(mfrow = c(2, 2), mar = c(4, 4, 1.5, 2))
-    plot.zresid(Zresid.LeukSurv.wbc,X="index", main.title = "Z-residual Scatterplot of wbc model",index=j)
-    plot.zresid(Zresid.LeukSurv.logwbc,X="index", main.title = "Z-residual Scatterplot of lwbc model",index=j)
-    
-    boxplot.zresid(Zresid.LeukSurv.wbc, main.title = "Z-residual Boxplot of wbc model",index=j)
-    boxplot.zresid(Zresid.LeukSurv.logwbc, main.title = "Z-residual Boxplot of lwbc model",index=j)
-  }
 
-
-```
 
 Identifing specific model misspecifications  using Z-residuals as follows:
 
 The above diagnostics results reveal no serious misspecification in  these two models.  However, the inspection of the Z-residuals against the covariate wbc/log(wbc) reveals that the functional form of the lwbc model  is likely misspecified. The scatterplots and comparative boxplots of the Z-residuals against wbc/log(wbc)  are shown below. The LOWESS curve of the wbc model appears to align well with the horizontal line at 0 and the grouped Z-residuals of the wbc model appear to have equal means and variances across groups. However, the diagnosis results  for the lwbc model are very different. It appears that there is a non-linear trend in the LOWESS curve of the lwbc model and the grouped Z-residuals appear to have different means across groups. The Z-AOV and Z-BL for covariate wbc and log(wbc) also gives p-values for the wbc and lwbc models as shown in the boxplots. The very small p-value of the Z-AOV for covariate log(wbc) test for the lwbc models  strongly suggests that the log transformation of wbc is likely inappropriate for modelling the survival time. 
 
-```{r fig.show="animate", animation.hook='gifski', interval=1, aniopts="controls,loop",cache= TRUE, fig.width=9, fig.height=9, echo=TRUE, results="hide",fig.align='center', fig.cap="Figure 3: Scatter plots and box plots of Z-residuals against covariate (wbc) for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients"}
 
-foreach (j = 1:nrep) %do%
-  {
-    par(mfrow = c(2, 2), mar = c(4, 4, 1.5, 2))
-    plot.zresid(Zresid.LeukSurv.wbc, X = "wbc", main.title = "Z-residual Scatterplot of wbc model",index=j)
-    plot.zresid(Zresid.LeukSurv.logwbc,X = "logwbc",main.title = "Z-residual Scatterplot of lwbc model",index=j)
-    
-    boxplot.zresid(Zresid.LeukSurv.wbc, X = "wbc", main.title = "Z-residual Boxplot of wbc model",index=j)
-    boxplot.zresid(Zresid.LeukSurv.logwbc, X = "logwbc",main.title = "Z-residual Boxplot of lwbc model",index=j)
-    
-  }
-
-```
 
 
 ### Quantitative assess model
@@ -243,7 +218,7 @@ sw.wbc<-sw.test.zresid(Zresid.LeukSurv.wbc)
 sw.lwbc<-sw.test.zresid(Zresid.LeukSurv.logwbc)
 sf.wbc<-sf.test.zresid(Zresid.LeukSurv.wbc)
 sf.lwbc<-sf.test.zresid(Zresid.LeukSurv.logwbc)
-
+gof_tests<-data.frame(sw.wbc,sw.lwbc,sf.wbc,sf.lwbc)
 ```
 
 
@@ -258,16 +233,16 @@ The Z-residuals can be divided into $k$ groups by cutting the covariates or line
 aov.wbc.lp<-aov.test.zresid(Zresid.LeukSurv.wbc, k.anova=10)
 aov.lwbc.lp<-aov.test.zresid(Zresid.LeukSurv.logwbc, k.anova=10)
 
-bl.wbc.lp<-bartlett.test.zresid(Zresid.LeukSurv.wbc, k.bl=10)
-bl.lwbc.lp<-bartlett.test.zresid(Zresid.LeukSurv.logwbc, k.bl=10)
+#bl.wbc.lp<-bartlett.test.zresid(Zresid.LeukSurv.wbc, k.bl=10)
+#bl.lwbc.lp<-bartlett.test.zresid(Zresid.LeukSurv.logwbc, k.bl=10)
 
 aov.wbc<-aov.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.anova=10)
 aov.lwbc<-aov.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.anova=10)
 
-bl.wbc<-bartlett.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.bl=10)
-bl.lwbc<-bartlett.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.bl=10)
+#bl.wbc<-bartlett.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.bl=10)
+#bl.lwbc<-bartlett.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.bl=10)
 
-homogeneity_tests<-data.frame(aov.wbc.lp,aov.lwbc.lp,bl.wbc.lp,bl.lwbc.lp,aov.wbc,aov.lwbc,bl.wbc,bl.lwbc)
+homogeneity_tests<-data.frame(aov.wbc.lp,aov.lwbc.lp,aov.wbc,aov.lwbc)
 
 
 ```
