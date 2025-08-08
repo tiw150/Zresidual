@@ -10,7 +10,6 @@ Authors@R: c(person(given = "Tingxuan", family = "Wu", role = c("aut","cre"),
                     email = "longhai@math.usask.ca"),
              person(given = "Cindy", family = "Feng", role = c("ctb"), 
                     email = "longhai@math.usask.ca"))
-
 Description: This package provides functions for computing and analyzing Z-residuals and cross-validatory Z-residuals from fitting outputs of several R packages, including coxph, survreg, glmmTMB, brms, ...
 URL: https://tiw150.github.io/Zresidual
 BugReports: https://github.com/tiw150/Zresidual/issues
