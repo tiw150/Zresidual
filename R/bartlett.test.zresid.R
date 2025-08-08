@@ -1,6 +1,6 @@
 #' A function to calculate Bartlett of Zresidual
 #'
-#' @param Zresidual A z-residual.
+#' @param Zresidual A Z-residual.
 #' @param X Linear predictor or covariate
 #' @param k.bl Number of bins if applicable
 #' @export

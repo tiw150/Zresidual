@@ -1,7 +1,6 @@
 #' A function to perform a goodness-of-fit test on censored Z-residuals.
-#' @param censored.Zresidual
-#' @export gof.censored.zresidual
-#'
+#' @param censored.Zresidual The censored Z-residuals to be tested.
+#' @export
 gof.censored.zresidual <- function (censored.Zresidual)
 {
   id.negtv.inf <- which(is.infinite(censored.Zresidual) & censored.Zresidual < 0)
