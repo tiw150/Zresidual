@@ -6,6 +6,9 @@
 \usage{
 gof.censored.zresidual(censored.Zresidual)
 }
+\arguments{
+\item{censored.Zresidual}{The censored Z-residuals to be tested.}
+}
 \description{
 A function to perform a goodness-of-fit test on censored Z-residuals.
 }

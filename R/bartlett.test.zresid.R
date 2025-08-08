@@ -3,8 +3,8 @@
 #' @param Zresidual A Z-residual.
 #' @param X Linear predictor or covariate
 #' @param k.bl Number of bins if applicable
+#' @rdname bartlett.test.zresid # This is the key change
 #' @export
-#'
 
 bartlett.test.zresid <- function (Zresidual, X = c("lp", "covariate"), k.bl=10)
 {
