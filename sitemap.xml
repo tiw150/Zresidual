@@ -1,5 +1,6 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://tiw150.github.io/Zresidual/404.html</loc></url>
+<url><loc>https://tiw150.github.io/Zresidual/articles/Zresidual_demo.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/articles/getting-started.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/articles/index.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/authors.html</loc></url>
@@ -24,6 +25,7 @@
 <url><loc>https://tiw150.github.io/Zresidual/reference/cdf.tp.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/dhurdle.nb.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/dhurdle.pois.html</loc></url>
+<url><loc>https://tiw150.github.io/Zresidual/reference/gof.censored.zresidual.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/index.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/iscv_logrpp.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/log.pred.dist.HNB.html</loc></url>
