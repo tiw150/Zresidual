@@ -28,7 +28,11 @@ Suggests:
     testthat (>= 1.0.2),
     DT,
     pkgdown,
-    knitr
+    knitr,
+    gifski,
+    animation,
+    png,
+    magick
 VignetteBuilder: knitr
 LazyData: true
 RoxygenNote: 7.3.2
