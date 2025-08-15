@@ -70,7 +70,8 @@ Zresidual.coxph<-function (fit_coxph, newdata,n.rep=1)
       linear.pred = lp.new,
       covariates = mf_new[,-1],
       censored.status= censored.status,
-      object.model.frame=mf_new
+      object.model.frame=mf_new,
+      type = "survival"
 
   ))
   return(Zresid.value)

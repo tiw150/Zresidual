@@ -270,7 +270,8 @@ Zresidual.coxph.frailty <-
           linear.pred = lp_new,
           covariates = fix_var_new,
           censored.status = censored.status,
-          object.model.frame = mf_new
+          object.model.frame = mf_new,
+          type = "survival"
 
         )
       )

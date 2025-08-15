@@ -52,6 +52,7 @@ CV.Zresidual.survreg<- function( fit.survreg,  data, nfolds,foldlist,n.rep)
     }
     colnames(CV.Zresid) <- col_name
 
+    attr(CV.Zresid,"type")<- "survival"
     attr(CV.Zresid, "Survival.Prob") <- rep(0, nrow(data))
     attr(CV.Zresid, "linear.pred")<- rep(0, nrow(data))
     attr(CV.Zresid,"censored.status")<- rep(0, nrow(data))

@@ -99,7 +99,8 @@ Zresidual.survreg<-function(fit_survreg,newdata,n.rep=1)
     linear.pred = lp,
     covariates = mf[,-1],
     censored.status= censored.status,
-    object.model.frame=mf
+    object.model.frame=mf,
+    type = "survival"
 
   ))
   return(Zresid.value)

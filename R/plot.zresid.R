@@ -51,11 +51,15 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
       pch <- if (length(unique.cats) == 1) 1 else c(1:25)[1:length(unique.cats)]
     }
   } else if (is.null(type)){
+    unique.cats <- NULL
+    col<- "black"
+    pch<- 1
+  } else if (type == "survival"){
     unique.cats <- c("Uncensored", "Censored")
     censored <- attr(Zresidual, "censored.status")
     col<- c("blue","red")[censored+1]
     pch<- c(3,2)[censored+1]
-  } else {
+  }  else {
     if (type == "hurdle") {
       unique.cats <- c("count","zero")
       col <- c("blue", "red")[seq_along(Zresidual) %in% attr(Zresidual, "zero_id") + 1]
@@ -72,6 +76,7 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
       col <- "red"
       pch <- 2
     }
+
     if (!is.null(args[["col"]])) {
       col <- args[["col"]]
       unique.cats <- if (is.symbol(var.call["col"]))
@@ -168,7 +173,11 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
       plot_lim_convert <- setNames(c(1:2, 3:4, 1:4), c("x", "x", "y", "y", "xy", "xy", "xy", "xy"))
       if(!is.null(args[["log"]])) plot_limits[names(plot_lim_convert)==args[["log"]]] <- 10^(plot_limits[names(plot_lim_convert)==args[["log"]]])
 
-      do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
+      if (!is.null(unique.cats)) {
+        do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
+      }
+
+      #do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
       if (!is.null(test.legend)) do.call(legend, c(list(x = plot_limits[2] - (par("usr")[2] - par("usr")[1]) * 0.05, y = plot_limits[4] * 0.7), test.legend))
       if (isTRUE(outlier.return)) {
         if (!identical(id.outlier, integer(0))) {
