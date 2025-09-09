@@ -183,10 +183,11 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
 
       if (!is.null(unique.cats)) {
         do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
+
       }
 
       #do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
-      if (!is.null(test.legend)) do.call(legend, c(list(x = plot_limits[2] - (par("usr")[2] - par("usr")[1]) * 0.05, y = plot_limits[4] * 0.7), test.legend))
+      if (!is.null(test.legend)) do.call(legend, c(list(x = plot_limits[2]+0.5 - (par("usr")[2] - par("usr")[1]) * 0.05, y = plot_limits[4] * 0.7), test.legend))
       if (isTRUE(outlier.return)) {
         if (!identical(id.outlier, integer(0))) {
           # Recalculate circles based on current par("usr")
@@ -227,7 +228,8 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
       if(!is.null(args[["log"]])) plot_limits[names(plot_lim_convert)==args[["log"]]] <- 10^(plot_limits[names(plot_lim_convert)==args[["log"]]])
 
       do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
-      if (!is.null(test.legend)) do.call(legend, c(list(x = plot_limits[2] - (par("usr")[2] - par("usr")[1]) * 0.05, y = plot_limits[4] * 0.7), test.legend))
+
+      if (!is.null(test.legend)) do.call(legend, c(list(x = plot_limits[2]+0.5 - (par("usr")[2] - par("usr")[1]) * 0.05, y = plot_limits[4] * 0.7), test.legend))
       if (isTRUE(outlier.return)) {
         if (!identical(id.outlier, integer(0))) {
           outlier.circles <- rep((par("usr")[2] - par("usr")[1]) * 0.03, length(id.outlier))
@@ -268,7 +270,8 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
         if(!is.null(args[["log"]])) plot_limits[names(plot_lim_convert)==args[["log"]]] <- 10^(plot_limits[names(plot_lim_convert)==args[["log"]]])
 
         do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
-        if (!is.null(test.legend)) do.call(legend, c(list(x = plot_limits[2] - (par("usr")[2] - par("usr")[1]) * 0.05, y = plot_limits[4] * 0.7), test.legend))
+
+        if (!is.null(test.legend)) do.call(legend, c(list(x = plot_limits[2]+0.5 - (par("usr")[2] - par("usr")[1]) * 0.05, y = plot_limits[4] * 0.7), test.legend))
         if (isTRUE(outlier.return)) {
           if (!identical(id.outlier, integer(0))) {
             # Recalculate circles based on current par("usr")

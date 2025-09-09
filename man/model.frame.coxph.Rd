@@ -4,7 +4,7 @@
 \alias{model.frame.coxph}
 \title{An internal S3 method for model.matrix.}
 \usage{
-\method{model.frame}{coxph}(formula, ...)
+model.frame.coxph(formula, ...)
 }
 \description{
 An internal S3 method for model.matrix.

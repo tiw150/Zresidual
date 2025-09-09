@@ -58,7 +58,7 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = "SW",
     ### Legend
     default.legend1 <- list(
       x = grconvertX(1.02, "npc", "user"),
-      y = grconvertY(0.8, "npc", "user"),
+      y = grconvertY(0.6, "npc", "user"),
       legend = c("qqline", "Diagonal Line"),
       col = c("black", "green"),
       lty = c(1, 1),
@@ -72,7 +72,7 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = "SW",
 
     default.legend2 <- list(
       x = grconvertX(0.99, "npc", "user"),
-      y = grconvertY(0.6, "npc", "user"),
+      y = grconvertY(0.5, "npc", "user"),
       legend = c(expression(bold("P-value:")),
                  paste0("Z-", diagnosis.test, " = ", sprintf("%.2f", test.pv))),
       cex = 0.6,
@@ -268,7 +268,7 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = "SW",
         ### Legend
         default.legend1 <- list(
           x = grconvertX(1.02, "npc", "user"),
-          y = grconvertY(0.8, "npc", "user"),
+          y = grconvertY(0.6, "npc", "user"),
           legend = c("qqline", "Diagonal Line"),
           col = c("black", "green"),
           lty = c(1, 1),
@@ -282,7 +282,7 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = "SW",
 
         default.legend2 <- list(
           x = grconvertX(0.99, "npc", "user"),
-          y = grconvertY(0.6, "npc", "user"),
+          y = grconvertY(0.5, "npc", "user"),
           legend = c(expression(bold("P-value:")),
                      paste0("Z-", diagnosis.test, " = ", sprintf("%.2f", test.pv))),
           cex = 0.6,
