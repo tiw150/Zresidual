@@ -61,9 +61,16 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
     pch<- c(3,2)[censored+1]
   }  else {
     if (type == "hurdle") {
-      unique.cats <- c("count","zero")
-      col <- c("blue", "red")[seq_along(Zresidual) %in% attr(Zresidual, "zero_id") + 1]
-      pch <- c(3,2)[seq_along(Zresidual) %in% attr(Zresidual, "zero_id") + 1]
+      legend_labels <- c("count", "zero")
+      legend_colors <- c("blue", "red")
+      legend_pchs <- c(3, 2)
+      is_zero <- seq_along(Zresidual) %in% attr(Zresidual, "zero_id")
+      col <- c("blue", "red")[is_zero + 1]
+      pch <- c(3, 2)[is_zero + 1]
+      unique.cats <- legend_labels
+      #unique.cats <- c("count","zero")
+      #col <- c("blue", "red")[seq_along(Zresidual) %in% attr(Zresidual, "zero_id") + 1]
+      #pch <- c(3,2)[seq_along(Zresidual) %in% attr(Zresidual, "zero_id") + 1]
     } else if (type %in% c("count")) {
       unique.cats <- type
       col <- "blue"
@@ -117,8 +124,9 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
       test.legend <- list(legend = c(expression(bold("P-value:")), current_test_pv),
                             cex = 0.6, bty = "n", xpd = TRUE, adj = c(0, 0.5))
     }
-    default.legend <- list(legend = unique.cats, col = unique(col),
-                           pch = unique(pch), cex = 0.6, xpd = TRUE, bty = "n",
+    default.legend <- list(legend = unique.cats, col = legend_colors,pch = legend_pchs,
+                         #  col = unique(col),pch = unique(pch),
+                           cex = 0.6, xpd = TRUE, bty = "n",
                            title = if (!hasArg("title")) default.legend.title else title,
                            horiz = FALSE, y.intersp = 1)
     legend.args <- modifyList(default.legend, args[!names(args) %in% c("col", "pch")])
