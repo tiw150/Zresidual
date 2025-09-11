@@ -44,9 +44,18 @@ boxplot.zresid <- function(Zresidual, irep = 1,
   args <- list(...)
 
   if (missing(X)) X <- "lp"
-  n_obs <- NROW(Zresidual)
+
   choices <- c("lp", "covariate")
-  is_uservec <- (length(X) == n_obs) && !(is.character(X) && length(X) == 1 && X %in% choices)
+  n_obs   <- NROW(Zresidual)
+
+  is_uservec <- (length(X) == n_obs)                                   # user-supplied vector
+  is_keyword <- is.character(X) && length(X) == 1 && X %in% choices     # "lp" or "covariate"
+  is_covname <- is.character(X) && length(X) == 1 && !is_keyword        # e.g., "age"
+
+  if (!is_uservec && !is_keyword && !is_covname) {
+    stop("X must be: (1) a length-n vector, or (2) 'lp'/'covariate', or (3) a covariate name present in attr(Zresidual, 'covariates').")
+  }
+
   if (is_uservec) {
     user_xv <- X
     if (is.logical(user_xv)) user_xv <- as.integer(user_xv)
@@ -96,7 +105,6 @@ boxplot.zresid <- function(Zresidual, irep = 1,
     par(mar = c(5, 4, 4, 6) + 0.1)
 
     if (is_uservec) {
-      # x 轴标题
       xlab_user <- if (!is.null(args$xlab)) args$xlab else "X"
       do.call(plot, c(
         modifyList(list(

@@ -118,14 +118,16 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
     legend.args <- modifyList(default.legend, user_legend_overrides)
     legend.args <- legend.args[names(legend.args) %in% formalArgs(legend)]
   }
-
-  # ---- 标准化 X：要么是 index/covariate/lp 之一，要么是用户自带向量 ----
   choices <- c("index", "covariate", "lp")
   n_obs   <- NROW(Zresidual)
-  is_uservec <- (length(X) == n_obs) && !(is.character(X) && length(X) == 1 && X %in% choices)
-  if (!is_uservec) {
-    X <- match.arg(X, choices)  # 把 c("index","covariate","lp") 变成单个值
+  is_uservec <- (length(X) == n_obs)
+  is_keyword <- is.character(X) && length(X) == 1 && X %in% choices
+  is_covname <- is.character(X) && length(X) == 1 && !is_keyword
+
+  if (!is_uservec && !is_keyword && !is_covname) {
+    stop("X must be: (1) a length-n vector, or (2) one of 'index','lp','covariate', or (3) a covariate name present in attr(Zresidual,'covariates').")
   }
+
 
   for (j in irep) {
     #   plot.new()
@@ -163,7 +165,6 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
                             cex = 0.6, bty = "n", xpd = TRUE, adj = c(0, 0.5))
       }
 
-      # xlab（保留 tex(...) 支持）
       current_xlab <- if (!is.null(xlab)) {
         if (startsWith(as.character(xlab), "tex(")) {
           if (requireNamespace("latex2exp", quietly = TRUE)) {

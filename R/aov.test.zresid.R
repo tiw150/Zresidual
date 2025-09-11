@@ -10,18 +10,18 @@ aov.test.zresid <- function (Zresidual, X = c("lp", "covariate"), k.anova = 10) 
 
   n <- NROW(Zresidual)
   p <- NCOL(Zresidual)
-  choices <- c("lp", "covariate")
+  keywords <- c("lp", "covariate")
 
-  is_user_vector <-
-    (!missing(X)) &&
-    (length(X) == n) &&
-    (is.numeric(X) || is.factor(X) || is.logical(X) ||
-       (is.character(X) && length(X) == n))
+  # --- classify X: user vector / keyword / covariate name ---
+  is_user_vector <- (length(X) == n)  # any type; character of length n counts too
+  is_keyword     <- is.character(X) && length(X) == 1 && X %in% keywords
+  is_covname     <- is.character(X) && length(X) == 1 && !is_keyword
 
-  if (!is_user_vector) {
-    if (missing(X)) X <- "lp"
-    if (is.character(X) && length(X) > 1 && all(X %in% choices)) {
-      X <- match.arg(X, choices)
+  if (!is_user_vector && !is_keyword && !is_covname) {
+    if (missing(X)) {
+      X <- "lp"; is_keyword <- TRUE
+    } else {
+      stop("X must be: (1) a length-n vector, or (2) 'lp'/'covariate', or (3) a covariate name in attr(Zresidual, 'covariates').")
     }
   }
 
