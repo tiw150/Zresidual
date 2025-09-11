@@ -37,67 +37,91 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
   zero.id <- attr(Zresidual, "zero_id")
   test.pv <- NULL # Initialize test.pv outside the loop
 
+  ## --- choose colors/pchs & legend defaults (fixed) ---
+  legend_colors <- NULL
+  legend_pchs   <- NULL
+
   if (!is.null(category)) {
+    # map per-observation by category
     unique.cats <- unique(category)
     default.legend.title <- deparse(substitute(category))
-    if (!is.null(args[["col"]])) {
-      col <- args[["col"]]
-    } else {
-      col <- if (length(unique.cats) == 1) "red" else rainbow(100)[1:length(unique.cats)]
-    }
-    if (!is.null(args[["pch"]])) {
-      pch <- args[["pch"]]
-    } else {
-      pch <- if (length(unique.cats) == 1) 1 else c(1:25)[1:length(unique.cats)]
-    }
-  } else if (is.null(type)){
+
+    pal  <- if (!is.null(args[["col"]])) args[["col"]] else
+      if (length(unique.cats) == 1) "red" else rainbow(max(length(unique.cats), 2))[seq_along(unique.cats)]
+    pchs <- if (!is.null(args[["pch"]])) args[["pch"]] else
+      if (length(unique.cats) == 1) 1 else (1:25)[seq_along(unique.cats)]
+
+    col <- pal[match(category, unique.cats)]
+    pch <- pchs[match(category, unique.cats)]
+    legend_colors <- pal
+    legend_pchs   <- pchs
+
+  } else if (is.null(type)) {
     unique.cats <- NULL
-    col<- "black"
-    pch<- 1
-  } else if (type == "survival"){
+    col <- "black"
+    pch <- 1
+    legend_colors <- NULL
+    legend_pchs   <- NULL
+
+  } else if (type == "survival") {
     unique.cats <- c("Uncensored", "Censored")
     censored <- attr(Zresidual, "censored.status")
-    col<- c("blue","red")[censored+1]
-    pch<- c(3,2)[censored+1]
-  }  else {
+    col <- c("blue","red")[censored + 1]
+    pch <- c(3,2)[censored + 1]
+    legend_colors <- c("blue", "red")
+    legend_pchs   <- c(3, 2)
+
+  } else {
     if (type == "hurdle") {
       legend_labels <- c("count", "zero")
       legend_colors <- c("blue", "red")
-      legend_pchs <- c(3, 2)
-      is_zero <- seq_along(Zresidual) %in% attr(Zresidual, "zero_id")
+      legend_pchs   <- c(3, 2)
+      n <- NROW(Zresidual)
+      is_zero <- seq_len(n) %in% attr(Zresidual, "zero_id")
       col <- c("blue", "red")[is_zero + 1]
       pch <- c(3, 2)[is_zero + 1]
       unique.cats <- legend_labels
-      #unique.cats <- c("count","zero")
-      #col <- c("blue", "red")[seq_along(Zresidual) %in% attr(Zresidual, "zero_id") + 1]
-      #pch <- c(3,2)[seq_along(Zresidual) %in% attr(Zresidual, "zero_id") + 1]
+
     } else if (type %in% c("count")) {
       unique.cats <- type
-      col <- "blue"
-      pch <- 3
+      col <- "blue"; pch <- 3
+      legend_colors <- "blue"; legend_pchs <- 3
+
     } else if (type %in% c("zero")) {
       unique.cats <- type
-      col <- "red"
-      pch <- 2
+      col <- "red"; pch <- 2
+      legend_colors <- "red"; legend_pchs <- 2
+
     } else {
-      col <- "red"
-      pch <- 2
+      col <- "red"; pch <- 2
+      legend_colors <- "red"; legend_pchs <- 2
     }
 
-    if (!is.null(args[["col"]])) {
-      col <- args[["col"]]
-      unique.cats <- if (is.symbol(var.call["col"]))
-        deparse(var.call[["col"]]) else unique(args[["col"]])
-    }
-    if (!is.null(args[["pch"]])) {
-      pch <- args[["pch"]]
-      unique.cats <- if (is.symbol(var.call["pch"]))
-        deparse(var.call[["col"]]) else unique(args[["pch"]])
-    }
+    # If user passed col/pch in ..., honor them without altering legend labels
+    if (!is.null(args[["col"]])) col <- args[["col"]]
+    if (!is.null(args[["pch"]])) pch <- args[["pch"]]
   }
 
+  ## --- build legend args only when needed (fixed) ---
+  legend.args <- NULL
+  if (!is.null(unique.cats)) {
+    default.legend <- list(
+      legend = unique.cats,
+      col = legend_colors,
+      pch = legend_pchs,
+      cex = 0.6, xpd = TRUE, bty = "n",
+      title = if (!hasArg("title")) default.legend.title else title,
+      horiz = FALSE, y.intersp = 1
+    )
+    # Only allow args that legend() knows, but keep title if present
+    user_legend_overrides <- args[!names(args) %in% c("col", "pch")]
+    legend.args <- modifyList(default.legend, user_legend_overrides)
+    legend.args <- legend.args[names(legend.args) %in% formalArgs(legend)]
+  }
+
+
   for (j in irep) {
- #   plot.new()
+    #   plot.new()
     par(mar = c(5, 4, 4, 6) + 0.1)
     id.nan <- which(is.nan(Zresidual[, j]))
     id.infinity <- which(is.infinite(Zresidual[, j]))
@@ -122,10 +146,10 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
       }
 
       test.legend <- list(legend = c(expression(bold("P-value:")), current_test_pv),
-                            cex = 0.6, bty = "n", xpd = TRUE, adj = c(0, 0.5))
+                          cex = 0.6, bty = "n", xpd = TRUE, adj = c(0, 0.5))
     }
     default.legend <- list(legend = unique.cats, col = legend_colors,pch = legend_pchs,
-                         #  col = unique(col),pch = unique(pch),
+                           #  col = unique(col),pch = unique(pch),
                            cex = 0.6, xpd = TRUE, bty = "n",
                            title = if (!hasArg("title")) default.legend.title else title,
                            horiz = FALSE, y.intersp = 1)
@@ -172,8 +196,8 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
 
     default.plot <- modifyList(list(col = col, pch = pch, ylab = ylab,
                                     ylim = c(-ylim0, ylim0 + 1),
-                                    main = main.title, xlab = current_xlab,
-                                    font.lab = 2), args)
+                                    main = main.title,
+                                    xlab = current_xlab,font.lab = 2), args)
     if (X == "index") {
       do.call(plot.default, c(list(x = Zresidual[, j]), default.plot))
 
@@ -227,7 +251,9 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
       plot_lim_convert <- setNames(c(1:2, 3:4, 1:4), c("x", "x", "y", "y", "xy", "xy", "xy", "xy"))
       if(!is.null(args[["log"]])) plot_limits[names(plot_lim_convert)==args[["log"]]] <- 10^(plot_limits[names(plot_lim_convert)==args[["log"]]])
 
-      do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
+      if (!is.null(legend.args)) {
+        do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
+      }
 
       if (!is.null(test.legend)) do.call(legend, c(list(x = plot_limits[2]+0.5 - (par("usr")[2] - par("usr")[1]) * 0.05, y = plot_limits[4] * 0.7), test.legend))
       if (isTRUE(outlier.return)) {
@@ -254,7 +280,7 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
           }
           text.args_no_pos <- text.args[names(text.args) != "pos"]
           do.call(text, c(list(x = text_x, y = text_y, pos = text_pos), text.args_no_pos))
-        #  do.call(text, c(list(fitted.value[id.outlier], Zresidual[, j][id.outlier]), text.args))
+          #  do.call(text, c(list(fitted.value[id.outlier], Zresidual[, j][id.outlier]), text.args))
         }
       }
     }
@@ -269,8 +295,9 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
         plot_lim_convert <- setNames(c(1:2, 3:4, 1:4), c("x", "x", "y", "y", "xy", "xy", "xy", "xy"))
         if(!is.null(args[["log"]])) plot_limits[names(plot_lim_convert)==args[["log"]]] <- 10^(plot_limits[names(plot_lim_convert)==args[["log"]]])
 
-        do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
-
+        if (!is.null(legend.args)) {
+          do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
+        }
         if (!is.null(test.legend)) do.call(legend, c(list(x = plot_limits[2]+0.5 - (par("usr")[2] - par("usr")[1]) * 0.05, y = plot_limits[4] * 0.7), test.legend))
         if (isTRUE(outlier.return)) {
           if (!identical(id.outlier, integer(0))) {
@@ -297,7 +324,7 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
             }
             text.args_no_pos <- text.args[names(text.args) != "pos"]
             do.call(text, c(list(x = text_x, y = text_y, pos = text_pos), text.args_no_pos))
-           # do.call(text, c(list(fitted.value[, i][id.outlier], Zresidual[, j][id.outlier]), text.args))
+            # do.call(text, c(list(fitted.value[, i][id.outlier], Zresidual[, j][id.outlier]), text.args))
           }
         }
       }

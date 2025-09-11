@@ -45,7 +45,7 @@ Zresidual.negbinomial <- function(fit,  type = "NB" , method = "iscv", n.rep = 1
   colnames(z_res) <- paste0("Z-residual ", 1:n.rep)
 
   attributes(z_res) <- c(attributes(z_res),list(
-    type = type,
+    type = NULL,
     #count_only = count_only,
     zero_id = zero_id,
     log_pmf = lpmf,
