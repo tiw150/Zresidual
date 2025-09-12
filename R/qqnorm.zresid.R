@@ -16,7 +16,8 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = "SW",
                                                "Normal Q-Q Plot",
                                                paste("Normal Q-Q Plot -", attr(Zresidual, "type"))),
                            xlab = "Theoretical Quantiles", ylab = "Sample Quantiles",
-                           outlier.return=TRUE, outlier.value = 3.5, outlier.set = list(),legend.settings = list(), ...)
+                           outlier.return=TRUE, outlier.value = 3.5, outlier.set = list(),
+                           my.mar = c(5, 4, 4, 6) + 0.1,legend.settings = list(), ...)
 {
   #i<-index
 
@@ -27,7 +28,7 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = "SW",
   if(diagnosis.test == "SW") test <- sw.test.zresid(Zresidual)
 
   for (i in irep) {
-    par(mar = c(5, 4, 4, 6) + 0.1)
+    par(mar = my.mar)
     # Get the range of the QQ plot data to set the plot window
     qq_x <- qqnorm(Zresidual[,i], plot.it = FALSE)$x
     qq_y <- qqnorm(Zresidual[,i], plot.it = FALSE)$y
