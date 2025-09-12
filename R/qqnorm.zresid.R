@@ -108,7 +108,7 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = "SW",
       x_values<-qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]]
       y_values<-qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]]
       outlier_points <- (y_values > 3.5) | (y_values < -3.5)
-      qqnorm(Zresidual[,i],main=main.title,xlab=xlab, ylab=ylab,xlim=xlim0)
+      qqnorm(Zresidual[,i],main=main.title,xlab=xlab, ylab=ylab,xlim=xlim0, ...)
       qqline(Zresidual[,i],col=1)
       abline(a=0,b=1,col=3)
       do.call(legend, legend.args1)
@@ -144,7 +144,7 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = "SW",
         outlier_points <- (y_values > 3.5 & y_values < 6) | (y_values < -3.5 & y_values > -6 )
         plot(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]][-max.values],
              qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]][-max.values],
-             xlim=xlim0,ylim=ylim0,main=main.title,xlab=xlab, ylab=ylab)
+             xlim=xlim0,ylim=ylim0,main=main.title,xlab=xlab, ylab=ylab, ...)
         axis(2, at=7 ,labels=round(max(Zresidual[,i], na.rm = T),1))
         qqline(Zresidual[,i],col=1)
         abline(a=0,b=1,col=3)
@@ -193,7 +193,7 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = "SW",
         outlier_points <- (y_values > 3.5 & y_values < 6) | (y_values < -3.5 & y_values > -6 )
         plot(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]][-min.values],
              qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]][-min.values],
-             xlim=xlim0,ylim=ylim0,main=main.title,xlab=xlab, ylab=ylab)
+             xlim=xlim0,ylim=ylim0,main=main.title,xlab=xlab, ylab=ylab, ...)
         qqline(Zresidual[,i],col=1)
         abline(a=0,b=1,col=3)
         points(x_values[outlier_points], y_values[outlier_points])
@@ -245,7 +245,7 @@ qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = "SW",
         outlier_points <- (y_values > 3.5 & y_values < 6) | (y_values < -3.5 & y_values > -6 )
         plot(x_values[-c(max.values,min.values)],y_values[-c(max.values,min.values)],
              xlim=xlim0,ylim=ylim0,main=main.title,xlab=xlab, ylab=ylab,
-             pch = 1)
+             pch = 1, ...)
         points(x_values[outlier_points], y_values[outlier_points])
         qqline(Zresidual[,i],col=1)
         abline(a=0,b=1,col=3)
