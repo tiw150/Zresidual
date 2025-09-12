@@ -18,6 +18,7 @@
   category = NULL,
   outlier.set = list(),
   xlab = NULL,
+  my.mar = c(5, 4, 4, 4) + 0.1,
   ...
 )
 }

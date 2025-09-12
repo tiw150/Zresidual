@@ -17,7 +17,7 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
                                                   attr(Zresidual, "type"))),
                         outlier.return = TRUE, outlier.value = 3.5,
                         category = NULL, outlier.set = list(), xlab = NULL,
-                        my.mar=c(5,4,4,4)+0.1, ...) {
+                        my.mar=c(5,4,4,6)+0.1, ...) {
 
   sign.na <- function(x) {
     sign.x <- sign(x)
