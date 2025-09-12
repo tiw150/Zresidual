@@ -15,6 +15,7 @@
   outlier.return = TRUE,
   outlier.value = 3.5,
   outlier.set = list(),
+  my.mar = c(5, 4, 4, 6) + 0.1,
   legend.settings = list(),
   ...
 )

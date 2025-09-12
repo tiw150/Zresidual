@@ -17,7 +17,7 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
                                                   attr(Zresidual, "type"))),
                         outlier.return = TRUE, outlier.value = 3.5,
                         category = NULL, outlier.set = list(), xlab = NULL,
-                        ...) {
+                        my.mar=c(5,4,4,4)+0.1, ...) {
 
   sign.na <- function(x) {
     sign.x <- sign(x)
@@ -131,7 +131,7 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
 
   for (j in irep) {
     #   plot.new()
-    par(mar = c(5, 4, 4, 6) + 0.1)
+    par(mar = my.mar)
     id.nan <- which(is.nan(Zresidual[, j]))
     id.infinity <- which(is.infinite(Zresidual[, j]))
     id.outlier <- which(abs(Zresidual[, j]) > outlier.value |
