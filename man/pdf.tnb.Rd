@@ -4,7 +4,7 @@
 \alias{pdf.tnb}
 \title{A function to calculate pdf of Truncated Negative Binomial}
 \usage{
-pdf.tnb(y, mu, size, log.p = FALSE)
+\method{pdf}{tnb}(y, mu, size, log.p = FALSE)
 }
 \arguments{
 \item{y}{y values.}

@@ -109,7 +109,7 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
       legend = unique.cats,
       col = legend_colors,
       pch = legend_pchs,
-      cex = 0.6, xpd = TRUE, bty = "n",
+      cex = 1, xpd = TRUE, bty = "n",
       title = if (!hasArg("title")) default.legend.title else title,
       horiz = FALSE, y.intersp = 1
     )
@@ -147,11 +147,9 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
     ylim0 <- max(qnorm(c(0.9999)), max(abs(Zresidual[, j]), na.rm = TRUE))
     test.legend <- NULL
 
-    # ---------- 当 X 是用户自带向量时，直接用它做横轴 ----------
     if (is_uservec) {
       xvec <- X
 
-      # p-value 小窗（沿用 SW/AOV/BL 机制）
       {
         test.list <- c("SW" = "sw", "AOV" = "aov", "BL" = "bartlett")
         current_test_pv <- NULL
@@ -162,7 +160,7 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
           current_test_pv <- c(current_test_pv, paste(a, "-", pv_str))
         }
         test.legend <- list(legend = c(expression(bold("P-value:")), current_test_pv),
-                            cex = 0.6, bty = "n", xpd = TRUE, adj = c(0, 0.5))
+                            cex = 1, bty = "n", xpd = TRUE, adj = c(0, 0.5))
       }
 
       current_xlab <- if (!is.null(xlab)) {
@@ -197,7 +195,7 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
 
       if (isTRUE(outlier.return)) {
         if (!identical(id.outlier, integer(0))) {
-          # 与原逻辑一致的 outlier 样式
+
           default.outlier <- list(pos = 4, labels = id.outlier, cex = 0.8,
                                   col = "darkolivegreen4", add = TRUE, inches = FALSE,
                                   circles = rep((par("usr")[2] - par("usr")[1]) * 0.03,
@@ -239,9 +237,8 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
         invisible(list(outliers = id.outlier))
       }
 
-      next  # 关键：用户向量路径已完成，跳过后面的旧分支
+      next
     }
-    # ---------- 用户自带向量分支结束 ----------
 
     if (X != "index") {
       test.list <- c("SW" = "sw", "AOV" = "aov", "BL" = "bartlett")
@@ -252,11 +249,11 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
       }
 
       test.legend <- list(legend = c(expression(bold("P-value:")), current_test_pv),
-                          cex = 0.6, bty = "n", xpd = TRUE, adj = c(0, 0.5))
+                          cex = 1, bty = "n", xpd = TRUE, adj = c(0, 0.5))
     }
     default.legend <- list(legend = unique.cats, col = legend_colors,pch = legend_pchs,
                            #  col = unique(col),pch = unique(pch),
-                           cex = 0.6, xpd = TRUE, bty = "n",
+                           cex = 1, xpd = TRUE, bty = "n",
                            title = if (!hasArg("title")) default.legend.title else title,
                            horiz = FALSE, y.intersp = 1)
     legend.args <- modifyList(default.legend, args[!names(args) %in% c("col", "pch")])

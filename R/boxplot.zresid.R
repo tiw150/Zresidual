@@ -94,7 +94,7 @@ boxplot.zresid <- function(Zresidual, irep = 1,
     }
     test.legend <- modifyList(list(
       legend = c(expression(bold("P-value (s):")), current_test_pv),
-      cex = 0.8, bty = "n", xpd = TRUE, adj = c(0, 0.5)
+      cex = 1, bty = "n", xpd = TRUE, adj = c(0, 0.5)
     ), args)
     test.legend <- test.legend[names(test.legend) %in% formalArgs(legend)]
 
