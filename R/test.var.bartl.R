@@ -11,7 +11,15 @@ test.var.bartl <- function(Zresidual, fitted.value, k.bl=10)
   Zresidual <- Zresidual[which(!is.na(Zresidual))]
   fitted.value <- fitted.value[which(!is.na(Zresidual))]
 
-  if(is.factor(fitted.value)){
+  unique.vals <- unique(fitted.value)
+  n.unique <- length(unique.vals)
+
+  if (is.factor(fitted.value) || n.unique <= k.bl) {
+    # treat as categorical / discrete variable
+    if (!is.factor(fitted.value)) {
+      fitted.value <- factor(fitted.value)
+    }
+
     lpred.bin <- fitted.value
     Z_group<- split(Zresidual, lpred.bin)
     bl.test<-bartlett.test(Z_group)[["p.value"]]

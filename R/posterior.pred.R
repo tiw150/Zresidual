@@ -4,29 +4,30 @@
 #' @param dpar parameter.
 #'
 
-posterior.pred <- function(fit, dpar, count.only = TRUE){
+.LINK_FUNCTIONS <- list(
+  log = function(x) exp(x),  # If link is "log", apply exp()
+  identity = function(x) x,  # Identity link, no transformation
+  softplus = function(x) log(exp(x) + 1),  # Softplus
+  logit = function(x) exp(x) / (1 + exp(x)),  # Logit
+  inverse = function(x) 1 / x,  # Inverse
+  cloglog = function(x) 1 - exp(-exp(x)),  # Complementary log-log
+  sqrt = function(x) sqrt(x), # square-root
+  probit = function(x) qnorm(x), # probit
+  probit_approx = function(x) x / sqrt(1 + x^2),  # Probit approximation
+  cauchit = function(x) qcauchy(x), # quantile function of Cauchy distribution
+  inverse_squared = function(x) 1/(x^2),
+  tan_half = function(x) tan(x/2),
+  squareplus = function (x) (x + sqrt(x^2 + 1))/2
+)
 
-  # Define a list of link functions
-  link_functions <- list(
-    log = function(x) exp(x),  # If link is "log", apply exp()
-    identity = function(x) x,  # Identity link, no transformation
-    softplus = function(x) log(exp(x) + 1),  # Softplus
-    logit = function(x) exp(x) / (1 + exp(x)),  # Logit
-    inverse = function(x) 1 / x,  # Inverse
-    cloglog = function(x) 1 - exp(-exp(x)),  # Complementary log-log
-    sqrt = function(x) sqrt(x), # square-root
-    probit = function(x) qnorm(x), # probit
-    probit_approx = function(x) x / sqrt(1 + x^2),  # Probit approximation
-    cauchit = function(x) qcauchy(x), # quantile function of Cauchy distribution
-    inverse_squared = function(x) 1/(x^2),
-    tan_half = function(x) tan(x/2),
-    squareplus = function (x) (x + sqrt(x^2 + 1))/2
-  )
+posterior.pred <- function(fit, dpar, count.only = TRUE, mc_used){
+
+  link_functions <- .LINK_FUNCTIONS
 
   n <- dim(fit$data)[1]
-  chains <- summary(fit)$chains
-  iter <- summary(fit)$iter
-  warmup <- summary(fit)$warmup
+  chains <- fit$fit@sim$chains
+  iter <- fit$fit@sim$iter
+  warmup <- fit$fit@sim$warmup
   mc_used <- chains*(iter - warmup)
 
   data <- fit$data
@@ -39,12 +40,9 @@ posterior.pred <- function(fit, dpar, count.only = TRUE){
   sim.y <- as.matrix(model.data[, response])
 
   if(dpar != "zero" & count.only) id <- which(sim.y > 0) else id <- 1:n
-  #id <- 1:n
-  #zero.id <- which(sim.y == 0)
   n.id <- length(id)
   data.id <- data
   data.id[-id,] <- NA
-  #y.id <- sim.y[id]
 
   formula_list <- list(
     zero = fit$formula$pforms$hu,
@@ -67,20 +65,21 @@ posterior.pred <- function(fit, dpar, count.only = TRUE){
   if(!is.null(formula)){
     mm <- model.matrix(formula,data=data.id)
   } else{
-    mm <- as.matrix(rep(1, times = length(sim.y)), nrow = length(sim.y), ncol = 1)
+    mm <- matrix(1, nrow = length(sim.y), ncol = 1)
     mm[-id,] <- NA
   }
-  para_col <- paste0(para_prefix_list[[dpar]], gsub("\\[|\\]|\\(|\\)", "", colnames(mm)))
+
+  to_brmsnames_mm <- brms:::rename(colnames(mm))
+  para_col <- paste0(para_prefix_list[[dpar]], gsub("\\[|\\]|\\(|\\)", "", to_brmsnames_mm))
   para <- as.data.frame(fit, variable = para_col, regex = TRUE)
   if(ncol(mm) != ncol(para)) stop("Model matrix and estimate column names do not match.")
-  log_parameter <- (as.matrix(para)) %*% t(mm)
+  log_parameter <- tcrossprod(as.matrix(para), mm)
 
   link_name <- link_name_list[[dpar]]
   activation_func <- link_functions[[link_name]]
   if (!is.null(activation_func)) {parameter <- activation_func(log_parameter)
   }else{ stop(paste("Unknown link function:", link_name))}
 
-  #if(count.only) parameter[,zero_id] <- NA
 
   return(parameter)
 }
