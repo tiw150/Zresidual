@@ -4,7 +4,7 @@
 \alias{pdf.tp}
 \title{A function to calculate pmf of Truncated Poisson}
 \usage{
-\method{pdf}{tp}(y, lambda, log.p = FALSE)
+pdf.tp(y, lambda, log.p = FALSE)
 }
 \arguments{
 \item{y}{y values.}

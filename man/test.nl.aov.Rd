@@ -7,7 +7,7 @@
 test.nl.aov(Zresidual, fitted.value, k.anova = 10)
 }
 \arguments{
-\item{Zresidual}{A Z-residual.}
+\item{Zresidual}{A z-residual.}
 
 \item{fitted.value}{Fitted values}
 
