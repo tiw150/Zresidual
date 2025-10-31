@@ -1,26 +1,59 @@
-#' A function to calculate posterior parameter estimates
+#' Extract Posterior Predicted Parameters from a Hurdle or Count Model
 #'
-#' @param fit A `brm` fit.
-#' @param dpar parameter.
+#' Computes posterior predicted values for a specified distributional parameter
+#' (e.g., mean, shape, or hurdle probability) from a fitted Bayesian count or hurdle model.
+#' The function supports extracting parameters for positive counts only or for all observations.
 #'
-
-.LINK_FUNCTIONS <- list(
-  log = function(x) exp(x),  # If link is "log", apply exp()
-  identity = function(x) x,  # Identity link, no transformation
-  softplus = function(x) log(exp(x) + 1),  # Softplus
-  logit = function(x) exp(x) / (1 + exp(x)),  # Logit
-  inverse = function(x) 1 / x,  # Inverse
-  cloglog = function(x) 1 - exp(-exp(x)),  # Complementary log-log
-  sqrt = function(x) sqrt(x), # square-root
-  probit = function(x) qnorm(x), # probit
-  probit_approx = function(x) x / sqrt(1 + x^2),  # Probit approximation
-  cauchit = function(x) qcauchy(x), # quantile function of Cauchy distribution
-  inverse_squared = function(x) 1/(x^2),
-  tan_half = function(x) tan(x/2),
-  squareplus = function (x) (x + sqrt(x^2 + 1))/2
-)
-
+#' @param fit A fitted \pkg{brms} model object containing data, formula, and MCMC posterior draws.
+#' @param dpar Character string specifying the distributional parameter to extract:
+#'   \code{"mu"} (mean), \code{"shape"} (dispersion), or \code{"zero"} (hurdle probability).
+#' @param count.only Logical; if \code{TRUE} (default), computes predicted parameters
+#'   only for positive counts (\code{y > 0}); otherwise, includes all observations.
+#'
+#' @details
+#' The function performs the following steps:
+#' \enumerate{
+#'   \item Builds the model matrix for the chosen parameter and observation subset.
+#'   \item Extracts the corresponding posterior MCMC draws from the fitted model.
+#'   \item Computes the linear predictor via matrix multiplication of draws and model matrix.
+#'   \item Applies the link function associated with the parameter (e.g., logit, log) to obtain
+#'         the predicted parameter values on their natural scale.
+#' }
+#'
+#'
+#' @return A numeric matrix of predicted parameter values for each observation (columns)
+#'   and posterior draw (rows).
+#'
+#' @examples
+#' \dontrun{
+#' # Extract posterior predicted mean (mu) for all observations
+#' mu_pred <- posterior.pred(fit, dpar = "mu", count.only = TRUE)
+#'
+#' # Extract hurdle probabilities
+#' pi_pred <- posterior.pred(fit, dpar = "zero", count.only = FALSE)
+#' }
+#'
+#' @seealso
+#' \code{\link{log.pred.dist.HNB}}, \code{\link{log.pred.dist.NB}}, \code{\link{log.pred.dist.HP}},
+#' \code{\link{posterior_linpred}} (from brms) for comparison.
+#'
 posterior.pred <- function(fit, dpar, count.only = TRUE, mc_used){
+
+  .LINK_FUNCTIONS <- list(
+    log = function(x) exp(x),  # If link is "log", apply exp()
+    identity = function(x) x,  # Identity link, no transformation
+    softplus = function(x) log(exp(x) + 1),  # Softplus
+    logit = function(x) exp(x) / (1 + exp(x)),  # Logit
+    inverse = function(x) 1 / x,  # Inverse
+    cloglog = function(x) 1 - exp(-exp(x)),  # Complementary log-log
+    sqrt = function(x) sqrt(x), # square-root
+    probit = function(x) qnorm(x), # probit
+    probit_approx = function(x) x / sqrt(1 + x^2),  # Probit approximation
+    cauchit = function(x) qcauchy(x), # quantile function of Cauchy distribution
+    inverse_squared = function(x) 1/(x^2),
+    tan_half = function(x) tan(x/2),
+    squareplus = function (x) (x + sqrt(x^2 + 1))/2
+  )
 
   link_functions <- .LINK_FUNCTIONS
 

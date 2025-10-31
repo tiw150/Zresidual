@@ -2,13 +2,47 @@
 % Please edit documentation in R/log.pred.dist.TNB.R
 \name{log.pred.dist.TNB}
 \alias{log.pred.dist.TNB}
-\title{A function to calculate predictive log truncated negative binomial pmf and cdf of 'brm' fit.}
+\title{Compute Log Predictive Distributions for a Truncated Negative Binomial Model of a 'brms' Fit}
 \usage{
 \method{log}{pred.dist.TNB}(fit)
 }
 \arguments{
-\item{fit}{A `brm` fit.}
+\item{fit}{A fitted \pkg{brms} truncated negative binomial model object.
+The model must include the distributional parameters \code{mu} (mean parameter)
+and \code{shape} (dispersion parameter).}
+}
+\value{
+A list with the following components:
+\describe{
+  \item{\code{lpmf_hat}}{A matrix of log-PMF values (posterior samples × observations).}
+  \item{\code{lcdf_hat}}{A matrix of log-CDF values (posterior samples × observations).}
+}
 }
 \description{
-A function to calculate predictive log truncated negative binomial pmf and cdf of 'brm' fit.
+This function calculates the log predictive mass function (log-PMF) and the log
+cumulative distribution function (log-CDF) for each observation
+from a fitted truncated negative binomial model (fitted using \pkg{brms}).
+The function extracts posterior samples for the model’s distributional parameters
+and evaluates the predictive distributions across all posterior draws.
+}
+\details{
+For each posterior draw and observation, the function computes:
+\itemize{
+  \item \code{lpmf_hat}: Log predictive mass function values using \code{pdf.tnb()}.
+  \item \code{lcdf_hat}: Log cumulative distribution function values
+  using \code{cdf.tnb()} with \code{lower.tail = FALSE}.
+}
+}
+\examples{
+\dontrun{
+# Example usage:
+fit <- brm(bf(y | trunc(lb = 1) ~ x1 + x2), family = negbinomial(), data = mydata)
+pred_dist <- log.pred.dist.TNB(fit)
+str(pred_dist)
+}
+
+}
+\seealso{
+\code{\link{pdf.tnb}}, \code{\link{cdf.tnb}},
+and \code{\link[brms]{posterior_predict}} for related computations.
 }

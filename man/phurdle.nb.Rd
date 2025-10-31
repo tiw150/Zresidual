@@ -2,19 +2,59 @@
 % Please edit documentation in R/phurdle.nb.R
 \name{phurdle.nb}
 \alias{phurdle.nb}
-\title{A function to calculate predictive probability of hurdle negative binomial.}
+\title{Cumulative Distribution Function of the Hurdle Negative Binomial Distribution}
 \usage{
 phurdle.nb(y, mu, size, pi, lower.tail = FALSE, log.p = FALSE)
 }
 \arguments{
-\item{y}{y values.}
+\item{y}{Numeric vector of observed count values.}
 
-\item{mu}{mu parameter.}
+\item{mu}{Numeric vector of mean parameters of the negative binomial distribution.}
 
-\item{size}{parameter.}
+\item{size}{Numeric vector of shape (dispersion) parameters of the negative binomial distribution.}
 
-\item{pi}{hu parameter.}
+\item{pi}{Numeric vector of hurdle probabilities (probability of structural zeros).}
+
+\item{lower.tail}{Logical; if \code{TRUE} (default), probabilities are \eqn{P(Y \le y)};
+otherwise, they are \eqn{P(Y > y)}.}
+
+\item{log.p}{Logical; if \code{TRUE}, probabilities are returned on the log scale.}
+}
+\value{
+A numeric vector of cumulative probabilities (or log-probabilities if \code{log.p = TRUE}).
 }
 \description{
-A function to calculate predictive probability of hurdle negative binomial.
+Computes the cumulative distribution function (CDF) or its logarithm for the
+hurdle negative binomial (HNB) distribution. The hurdle model combines a point
+mass at zero with a truncated negative binomial distribution for positive counts.
+}
+\details{
+The hurdle negative binomial model assumes:
+\deqn{
+P(Y = 0) = \pi, \quad
+P(Y = y \mid Y > 0) = (1 - \pi) \frac{F_{NB}(y)-F_{NB}(0)}{1 - F_{NB}(0)}, \quad y > 0
+}
+where \eqn{F_{NB}(y)} is CDF of the standard
+negative binomial distribution.
+
+The function computes the upper or lower tail probabilities for both zeros and
+positive counts using the logarithmic form for numerical stability. Internal helper
+functions (\code{log_diff_exp}, \code{log_sum_exp}) are used to handle differences
+and sums of log-scale probabilities safely.
+}
+\examples{
+# Example: Hurdle Negative Binomial CDF
+y <- 0:5
+mu <- 2
+size <- 1.5
+pi <- 0.3
+phurdle.nb(y, mu, size, pi)
+
+# Upper tail probabilities on log scale
+phurdle.nb(y, mu, size, pi, lower.tail = FALSE, log.p = TRUE)
+
+}
+\seealso{
+\code{\link[stats]{pnbinom}}, \code{\link[stats]{dnbinom}},
+\code{\link{pdf.tnb}} for the zero-truncated negative binomial PMF.
 }

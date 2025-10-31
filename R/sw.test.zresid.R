@@ -1,6 +1,26 @@
-#' A function to calculate Shapiro Wilk test of Zresidual
+#' Shapiro-Wilk Normality Test for Z-Residuals
 #'
-#' @param Zresidual A Z-residual.
+#' Performs the Shapiro-Wilk test for normality on each column of a matrix of Z-residuals.
+#'
+#' @param Zresidual A numeric matrix of Z-residuals, where each column represents
+#'   a separate set of residuals (e.g., from different posterior predictive draws or variables).
+#' @param ... Additional arguments.
+#'
+#' @return A numeric vector of Shapiro-Wilk p-values, one for each column of \code{Zresidual}.
+#'
+#' @details
+#' Infinite or non-finite values are handled by replacing negative infinity with -1e10
+#' and positive infinity with 1e10. Any NaN or remaining infinite values are reported via messages.
+#'
+#' @examples
+#' \dontrun{
+#' Zres <- matrix(rnorm(100), ncol=5)
+#' sw.pvals <- sw.test.zresid(Zres)
+#' }
+#'
+#' @seealso
+#' \code{\link[stats]{shapiro.test}}, \code{\link{Zresidual}}
+#'
 #' @export sw.test.zresid
 
 sw.test.zresid <- function (Zresidual, ...)

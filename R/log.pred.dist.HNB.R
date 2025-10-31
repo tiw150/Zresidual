@@ -1,8 +1,44 @@
-#' A function to calculate predictive log hurdle negative binomial pmf and cdf of a 'brm' fit
+#' Compute Log Predictive Distributions for a Hurdle Negative Binomial Model  of a 'brms' Fit
 #'
-#' @param fit A `brm` fit.
+#' This function calculates the log probability mass function (log-PMF) and the log
+#' cumulative distribution function (log-CDF) for each observation
+#' from a fitted hurdle negative binomial model (fitted using \pkg{brms}).
+#' The function extracts posterior samples for the model parameters and evaluates
+#' the predictive distributions across all posterior draws.
 #'
-
+#' @param fit A fitted \pkg{brms} hurdle negative binomial model object.
+#'   The model must include the distributional parameters \code{mu}, \code{shape}, and
+#'   the hurdle probability \code{zero}.
+#'
+#' @details
+#' For each posterior draw and each observation, the function computes:
+#' \itemize{
+#'   \item \code{lpmf_hat}: Log predictive mass function values using \code{dhurdle.nb()}.
+#'   \item \code{lcdf_hat}: Log cumulative distribution function values
+#'   using \code{phurdle.nb()} with \code{lower.tail = FALSE}.
+#' }
+#'
+#'
+#' @return A list with the following components:
+#' \describe{
+#'   \item{\code{lpmf_hat}}{A matrix of log-PMF values (posterior samples × observations).}
+#'   \item{\code{lcdf_hat}}{A matrix of log-CCDF values (posterior samples × observations).}
+#'   \item{\code{zero_id}}{Indices of observations with zero counts.}
+#'   \item{\code{count_id}}{Indices of observations with positive counts.}
+#' }
+#'
+#' @examples
+#' \dontrun{
+#' # Example usage:
+#' fit <- brm(bf(y ~ x1 + x2, hu ~ x1), family = hurdle_negbinomial(), data = mydata)
+#' pred_dist <- log.pred.dist.HNB(fit)
+#' str(pred_dist)
+#' }
+#'
+#' @seealso
+#' \code{\link{dhurdle.nb}}, \code{\link{phurdle.nb}},
+#' and \code{\link[brms]{posterior_predict}} for related computations.
+#'
 log.pred.dist.HNB <- function(fit){
 
   chains <- summary(fit)$chains

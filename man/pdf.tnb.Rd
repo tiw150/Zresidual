@@ -2,17 +2,51 @@
 % Please edit documentation in R/pdf.tnb.R
 \name{pdf.tnb}
 \alias{pdf.tnb}
-\title{A function to calculate pdf of Truncated Negative Binomial}
+\title{Probability Mass Function of the Zero-Truncated Negative Binomial Distribution}
 \usage{
 pdf.tnb(y, mu, size, log.p = FALSE)
 }
 \arguments{
-\item{y}{y values.}
+\item{y}{Numeric vector of observed count values (\code{y > 0}).}
 
-\item{mu}{mu parameter of TNB distribution.}
+\item{mu}{Numeric vector of mean parameters for the negative binomial distribution.}
 
-\item{size}{size parameter of TNB distribution.}
+\item{size}{Numeric vector of shape (dispersion) parameters.}
+
+\item{log.p}{Logical; if \code{TRUE}, returns log probabilities instead of probabilities.}
+}
+\value{
+A numeric vector of probabilities (or log-probabilities if \code{log.p = TRUE}).
 }
 \description{
-A function to calculate pdf of Truncated Negative Binomial
+Computes the probability mass function (PMF) or log-PMF for the zero-truncated
+negative binomial (TNB) distribution. This version excludes zeros and rescales
+the probabilities accordingly so that they sum to one over positive counts only.
+}
+\details{
+The zero-truncated negative binomial probability for an observation \eqn{y > 0} is:
+\deqn{
+P(Y = y \mid Y > 0) = \frac{P(Y = y)}{1 - P(Y = 0)}
+}
+where \eqn{P(Y = y)} and \eqn{P(Y = 0)} are evaluated using the standard
+negative binomial PMF and CDF, respectively. The implementation uses
+\code{\link[stats]{dnbinom}} and \code{\link[stats]{pnbinom}} for computation.
+
+The function automatically vectorizes inputs, ensuring that the output
+corresponds elementwise to each set of parameters.
+}
+\examples{
+# Example: Zero-truncated negative binomial probabilities
+y <- 1:5
+mu <- 2
+size <- 1.5
+pdf.tnb(y, mu, size)
+
+# Log probabilities
+pdf.tnb(y, mu, size, log.p = TRUE)
+
+}
+\seealso{
+\code{\link[stats]{dnbinom}}, \code{\link[stats]{pnbinom}},
+and \code{\link{cdf.tnb}} for the corresponding cumulative function.
 }

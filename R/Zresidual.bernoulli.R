@@ -1,13 +1,53 @@
-#' A function to calculate z-residuals of a 'brm' fit.
-#' This function is to be used when the user needs to calculate the z-residuals of bernoulli
-#' @param fit is the fit object are from 'brms' package.
+#' Compute Z-Residuals for a Bernoulli/Logistic Model
 #'
+#' Computes Z-residuals for a fitted Bayesian Bernoulli/Logistic (binary) model.
+#' Z-residuals are calculated using posterior predictive methods
+#' and can be used for model diagnostics.
+#'
+#' @param fit A fitted \pkg{brms} model object.
+#' @param method Character string specifying the residual calculation method:
+#'   \code{"iscv"} for importance-sampled cross-validated randomized predictive p-values,
+#'   or \code{"rpost"} for randomized posterior predictive p-values or
+#'   \code{"mpost"} for middle-value posterior predictive p-values. Default is \code{"iscv"}.
+#' @param n.rep Integer; the number of replicated Z-residual sets to generate. Default is 1.
+#'
+#' @details
+#' The function performs the following steps:
+#' \enumerate{
+#'   \item Extracts the observed response vector from the model data.
+#'   \item Computes the log-PMF and log-CDF for the Bernoulli model using
+#'         \code{\link{log.pred.dist.bern}}.
+#'   \item Generates posterior predictive p-values according to the
+#'         specified \code{method}.
+#'   \item Converts the p-values to Z-residuals via the negative quantile of the
+#'         standard normal distribution.
+#' }
+#'
+#' The output is a matrix of Z-residuals with one column per replication.
+#'
+#' @return A numeric matrix of Z-residuals with attributes:
+#' \itemize{
+#'   \item \code{type}: Type of outcome (Bernoulli)
+#'   \item \code{zero_id}: Indices of zero outcomes
+#'   \item \code{log_pmf}: Log-probability mass function values
+#'   \item \code{log_cdf}: Log-cumulative distribution function values
+#'   \item \code{covariates}: Model covariates
+#'   \item \code{linear.pred}: Linear predictor values from the fitted model
+#' }
+#' The returned object has class \code{c("zresid", "matrix")}.
+#'
+#' @examples
+#' \dontrun{
+#' # Compute Z-residuals using ISCV method
+#' zres <- Zresidual.bernoulli(fit, method = "iscv", n.rep = 2)
+#'
+#' # Compute Z-residuals using posterior predictive method
+#' zres_post <- Zresidual.bernoulli(fit, method = "post")
+#' }
+#'
+#' @seealso
+#' \code{\link{log.pred.dist.bern}}, \code{\link{post_logrpp}}, \code{\link{iscv_logrpp}}
 #' @export
-#'
-#' @return \itemize{
-#'  \item{Zresid} {Z-residual}
-#'}
-
 Zresidual.bernoulli <- function(fit, method = "iscv", n.rep = 1){
 
   data <- fit$data
@@ -30,8 +70,8 @@ Zresidual.bernoulli <- function(fit, method = "iscv", n.rep = 1){
   lcdf <- ldist$lcdf_hat
 
   # Argument should be one of the element in rpp_list
-  rpp_list <- c(iscv = "iscv_logrpp", post = "post_logrpp")
-  names(rpp_list) <- c("iscv", "post")
+  rpp_list <- c(iscv = "iscv_logrpp", post = "post_logrpp", "post_logmpp")
+  names(rpp_list) <- c("iscv", "rpost", "mpost")
 
   #if(count_only) z_res<- matrix(NA, ncol = n.rep, nrow = dim(lpmf)[2])
   z_res<- matrix(NA, ncol = n.rep, nrow = n)

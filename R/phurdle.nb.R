@@ -1,11 +1,49 @@
-#' A function to calculate predictive probability of hurdle negative binomial.
+#' Cumulative Distribution Function of the Hurdle Negative Binomial Distribution
 #'
-#' @param y y values.
-#' @param mu mu parameter.
-#' @param size parameter.
-#' @param pi hu parameter.
+#' Computes the cumulative distribution function (CDF) or its logarithm for the
+#' hurdle negative binomial (HNB) distribution. The hurdle model combines a point
+#' mass at zero with a truncated negative binomial distribution for positive counts.
 #'
-
+#' @param y Numeric vector of observed count values.
+#' @param mu Numeric vector of mean parameters of the negative binomial distribution.
+#' @param size Numeric vector of shape (dispersion) parameters of the negative binomial distribution.
+#' @param pi Numeric vector of hurdle probabilities (probability of structural zeros).
+#' @param lower.tail Logical; if \code{TRUE} (default), probabilities are \eqn{P(Y \le y)};
+#'   otherwise, they are \eqn{P(Y > y)}.
+#' @param log.p Logical; if \code{TRUE}, probabilities are returned on the log scale.
+#'
+#' @details
+#' The hurdle negative binomial model assumes:
+#' \deqn{
+#' P(Y = 0) = \pi, \quad
+#' P(Y = y \mid Y > 0) = (1 - \pi) \frac{F_{NB}(y)-F_{NB}(0)}{1 - F_{NB}(0)}, \quad y > 0
+#' }
+#' where \eqn{F_{NB}(y)} is CDF of the standard
+#' negative binomial distribution.
+#'
+#' The function computes the upper or lower tail probabilities for both zeros and
+#' positive counts using the logarithmic form for numerical stability. Internal helper
+#' functions (\code{log_diff_exp}, \code{log_sum_exp}) are used to handle differences
+#' and sums of log-scale probabilities safely.
+#'
+#' @return
+#' A numeric vector of cumulative probabilities (or log-probabilities if \code{log.p = TRUE}).
+#'
+#' @examples
+#' # Example: Hurdle Negative Binomial CDF
+#' y <- 0:5
+#' mu <- 2
+#' size <- 1.5
+#' pi <- 0.3
+#' phurdle.nb(y, mu, size, pi)
+#'
+#' # Upper tail probabilities on log scale
+#' phurdle.nb(y, mu, size, pi, lower.tail = FALSE, log.p = TRUE)
+#'
+#' @seealso
+#' \code{\link[stats]{pnbinom}}, \code{\link[stats]{dnbinom}},
+#' \code{\link{pdf.tnb}} for the zero-truncated negative binomial PMF.
+#'
 phurdle.nb <- function(y, mu, size, pi, lower.tail = FALSE, log.p = FALSE)
 {
   log_diff_exp <- function (la, lb) # compute the logarithm of the difference between the exponentials of two log values.

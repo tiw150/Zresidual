@@ -2,17 +2,43 @@
 % Please edit documentation in R/test.nl.aov.R
 \name{test.nl.aov}
 \alias{test.nl.aov}
-\title{A function to calculate ANOVA}
+\title{ANOVA Test for Z-Residuals}
 \usage{
 test.nl.aov(Zresidual, fitted.value, k.anova = 10)
 }
 \arguments{
-\item{Zresidual}{A z-residual.}
+\item{Zresidual}{Numeric vector of Z-residuals.}
 
-\item{fitted.value}{Fitted values}
+\item{fitted.value}{Numeric or factor covariate to test against.}
 
-\item{k.anova}{Number of bins if applicable}
+\item{k.anova}{Integer; the maximum number of bins to discretize a numeric covariate (default 10).}
+}
+\value{
+Numeric p-value from the ANOVA F-test for the effect of the covariate on Z-residuals.
 }
 \description{
-A function to calculate ANOVA
+Performs an ANOVA test to assess whether Z-residuals differ across
+levels of a covariate. Numeric covariates with many distinct values
+are discretized into bins. Small or empty bins are removed before testing.
+}
+\details{
+The function handles covariates as follows:
+\itemize{
+  \item If \code{fitted.value} is a factor or has fewer than \code{k.anova} unique values, it is treated as categorical.
+  \item Otherwise, numeric covariates are binned into \code{k.anova} bins using \code{\link{cut}}.
+  \item Bins with fewer than 3 observations are removed.
+  \item If insufficient bins remain, the covariate is log-transformed and binned again.
+}
+ANOVA is then performed with \code{lm(Zresidual ~ binned_covariate)} and the p-value for the first term is returned.
+}
+\examples{
+\dontrun{
+Zres <- rnorm(100)
+x <- runif(100)
+test.nl.aov(Zres, x, k.anova = 5)
+}
+
+}
+\seealso{
+\code{\link[stats]{anova}}, \code{\link[stats]{lm}}
 }

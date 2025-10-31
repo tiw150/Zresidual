@@ -2,15 +2,48 @@
 % Please edit documentation in R/pdf.tp.R
 \name{pdf.tp}
 \alias{pdf.tp}
-\title{A function to calculate pmf of Truncated Poisson}
+\title{Probability Mass Function of the Zero-Truncated Poisson Distribution}
 \usage{
 pdf.tp(y, lambda, log.p = FALSE)
 }
 \arguments{
-\item{y}{y values.}
+\item{y}{Numeric vector of observed count values (\code{y > 0}).}
 
-\item{lambda}{lambda parameter of TP distribution.}
+\item{lambda}{Numeric vector of rate parameters (mean of the Poisson distribution).}
+
+\item{log.p}{Logical; if \code{TRUE}, returns log probabilities instead of probabilities.}
+}
+\value{
+A numeric vector of probabilities (or log-probabilities if \code{log.p = TRUE}).
 }
 \description{
-A function to calculate pmf of Truncated Poisson
+Computes the probability mass function (PMF) or log-PMF for the zero-truncated
+Poisson (TP) distribution. This version excludes zeros and rescales
+the probabilities so that they sum to one over positive counts only.
+}
+\details{
+The zero-truncated Poisson probability for an observation \eqn{y > 0} is:
+\deqn{
+P(Y = y \mid Y > 0) = \frac{P(Y = y)}{1 - P(Y = 0)}
+}
+where \eqn{P(Y = y)} and \eqn{P(Y = 0)} are evaluated using the standard
+Poisson PMF and CDF, respectively. The function uses
+\code{\link[stats]{dpois}} and \code{\link[stats]{ppois}} internally.
+
+This function automatically vectorizes inputs so that each probability
+corresponds elementwise to the provided parameter values.
+}
+\examples{
+# Example: Zero-truncated Poisson probabilities
+y <- 1:5
+lambda <- 2
+pdf.tp(y, lambda)
+
+# Log probabilities
+pdf.tp(y, lambda, log.p = TRUE)
+
+}
+\seealso{
+\code{\link[stats]{dpois}}, \code{\link[stats]{ppois}},
+and \code{\link{cdf.tp}} for the corresponding cumulative function.
 }

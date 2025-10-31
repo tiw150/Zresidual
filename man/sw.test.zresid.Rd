@@ -2,13 +2,33 @@
 % Please edit documentation in R/sw.test.zresid.R
 \name{sw.test.zresid}
 \alias{sw.test.zresid}
-\title{A function to calculate Shapiro Wilk test of Zresidual}
+\title{Shapiro-Wilk Normality Test for Z-Residuals}
 \usage{
 sw.test.zresid(Zresidual, ...)
 }
 \arguments{
-\item{Zresidual}{A Z-residual.}
+\item{Zresidual}{A numeric matrix of Z-residuals, where each column represents
+a separate set of residuals (e.g., from different posterior predictive draws or variables).}
+
+\item{...}{Additional arguments.}
+}
+\value{
+A numeric vector of Shapiro-Wilk p-values, one for each column of \code{Zresidual}.
 }
 \description{
-A function to calculate Shapiro Wilk test of Zresidual
+Performs the Shapiro-Wilk test for normality on each column of a matrix of Z-residuals.
+}
+\details{
+Infinite or non-finite values are handled by replacing negative infinity with -1e10
+and positive infinity with 1e10. Any NaN or remaining infinite values are reported via messages.
+}
+\examples{
+\dontrun{
+Zres <- matrix(rnorm(100), ncol=5)
+sw.pvals <- sw.test.zresid(Zres)
+}
+
+}
+\seealso{
+\code{\link[stats]{shapiro.test}}, \code{\link{Zresidual}}
 }

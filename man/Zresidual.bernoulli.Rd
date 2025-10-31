@@ -2,20 +2,61 @@
 % Please edit documentation in R/Zresidual.bernoulli.R
 \name{Zresidual.bernoulli}
 \alias{Zresidual.bernoulli}
-\title{A function to calculate z-residuals of a 'brm' fit.
-This function is to be used when the user needs to calculate the z-residuals of bernoulli}
+\title{Compute Z-Residuals for a Bernoulli/Logistic Model}
 \usage{
 Zresidual.bernoulli(fit, method = "iscv", n.rep = 1)
 }
 \arguments{
-\item{fit}{is the fit object are from 'brms' package.}
+\item{fit}{A fitted \pkg{brms} model object.}
+
+\item{method}{Character string specifying the residual calculation method:
+\code{"iscv"} for importance-sampled cross-validated randomized predictive p-values,
+or \code{"rpost"} for randomized posterior predictive p-values or
+\code{"mpost"} for middle-value posterior predictive p-values. Default is \code{"iscv"}.}
+
+\item{n.rep}{Integer; the number of replicated Z-residual sets to generate. Default is 1.}
 }
 \value{
+A numeric matrix of Z-residuals with attributes:
 \itemize{
- \item{Zresid} {Z-residual}
+  \item \code{type}: Type of outcome (Bernoulli)
+  \item \code{zero_id}: Indices of zero outcomes
+  \item \code{log_pmf}: Log-probability mass function values
+  \item \code{log_cdf}: Log-cumulative distribution function values
+  \item \code{covariates}: Model covariates
+  \item \code{linear.pred}: Linear predictor values from the fitted model
 }
+The returned object has class \code{c("zresid", "matrix")}.
 }
 \description{
-A function to calculate z-residuals of a 'brm' fit.
-This function is to be used when the user needs to calculate the z-residuals of bernoulli
+Computes Z-residuals for a fitted Bayesian Bernoulli/Logistic (binary) model.
+Z-residuals are calculated using posterior predictive methods
+and can be used for model diagnostics.
+}
+\details{
+The function performs the following steps:
+\enumerate{
+  \item Extracts the observed response vector from the model data.
+  \item Computes the log-PMF and log-CDF for the Bernoulli model using
+        \code{\link{log.pred.dist.bern}}.
+  \item Generates posterior predictive p-values according to the
+        specified \code{method}.
+  \item Converts the p-values to Z-residuals via the negative quantile of the
+        standard normal distribution.
+}
+
+The output is a matrix of Z-residuals with one column per replication.
+}
+\examples{
+\dontrun{
+# Compute Z-residuals using ISCV method
+zres <- Zresidual.bernoulli(fit, method = "iscv", n.rep = 2)
+
+# Compute Z-residuals using posterior predictive method
+zres_post <- Zresidual.bernoulli(fit, method = "post")
+}
+
+}
+\seealso{
+\code{\link{log.pred.dist.bern}}, \code{\link{post_logrpp}}, \code{\link{iscv_logrpp}}
 }

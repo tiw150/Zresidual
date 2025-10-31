@@ -1,9 +1,39 @@
-#' A function to calculate log predictive distribution (pmf and cdf) of logistic component of a 'brm' fit
+#' Compute Log Predictive Distributions for Logistic Regression of a 'brms' Fit
 #'
-#' @param fit A `brm` fit.
+#' Calculates the log probability mass function (log-PMF) and log
+#' cumulative distribution function (log-CDF) for
+#' a logistic model based on a fitted 'brms' model.
 #'
-#' @import Rlab
-
+#' @param fit A fitted model object from \code{brms}.
+#'
+#' @details
+#' The function extracts the posterior predictions of the Bernoulli component
+#' (structural zeros) using \code{posterior.pred()} for the mean parameter ("mu").
+#'
+#' For each observation:
+#' \itemize{
+#'   \item Computes the log-PMF of the observed binary outcome.
+#'   \item Computes the log-CDF (upper-tail probability) of the observed outcome.
+#' }
+#' This produces matrices of size \eqn{M \times N}, where \eqn{M} is the number of posterior draws
+#' and \eqn{N} is the number of observations.
+#'
+#' @return
+#' A list containing:
+#' \itemize{
+#'   \item \code{lpmf_hat}: numeric matrix of log-PMF values (posterior draws × observations).
+#'   \item \code{lcdf_hat}: numeric matrix of log-CDF values (posterior draws × observations).
+#' }
+#'
+#' @examples
+#' # Assuming 'fit' is a fitted brms logistic model
+#' # pred_dist <- log.pred.dist.bern(fit)
+#' # lpmf_hat <- pred_dist$lpmf_hat
+#' # lcdf_hat <- pred_dist$lcdf_hat
+#'
+#' @seealso
+#' \code{\link{posterior.pred}}, \code{\link{dbern}}, \code{\link{pbern}}
+#'
 log.pred.dist.bern <- function(fit){
 
   n <- dim(fit$data)[1]

@@ -2,17 +2,56 @@
 % Please edit documentation in R/phurdle.pois.R
 \name{phurdle.pois}
 \alias{phurdle.pois}
-\title{A function to calculate predictive probability of hurdle poisson.}
+\title{Cumulative Distribution Function of the Hurdle Poisson Distribution}
 \usage{
 phurdle.pois(y, lambda, pi, lower.tail = FALSE, log.p = FALSE)
 }
 \arguments{
-\item{y}{y values.}
+\item{y}{Numeric vector of observed count values.}
 
-\item{lambda}{lambda parameter.}
+\item{lambda}{Numeric vector of mean parameters of the poisson distribution.}
 
-\item{pi}{hu parameter.}
+\item{pi}{Numeric vector of hurdle probabilities (probability of structural zeros).}
+
+\item{lower.tail}{Logical; if \code{TRUE} (default), probabilities are \eqn{P(Y \le y)};
+otherwise, they are \eqn{P(Y > y)}.}
+
+\item{log.p}{Logical; if \code{TRUE}, probabilities are returned on the log scale.}
+}
+\value{
+A numeric vector of cumulative probabilities (or log-probabilities if \code{log.p = TRUE}).
 }
 \description{
-A function to calculate predictive probability of hurdle poisson.
+Computes the cumulative distribution function (CDF) or its logarithm for the
+hurdle Poisson (HP) distribution. The hurdle model combines a point
+mass at zero with a truncated poisson distribution for positive counts.
+}
+\details{
+The hurdle poisson model assumes:
+\deqn{
+P(Y = 0) = \pi, \quad
+P(Y = y \mid Y > 0) = (1 - \pi) \frac{F_{Pois}(y)-F_{Pois}(0)}{1 - F_{Pois}(0)}, \quad y > 0
+}
+where \eqn{F_{Pois}(y)} is CDF of the standard
+possion distribution.
+
+The function computes the upper or lower tail probabilities for both zeros and
+positive counts using the logarithmic form for numerical stability. Internal helper
+functions (\code{log_diff_exp}, \code{log_sum_exp}) are used to handle differences
+and sums of log-scale probabilities safely.
+}
+\examples{
+# Example: Hurdle Poisson CDF
+y <- 0:5
+lambda <- 2
+pi <- 0.3
+phurdle.pois(y, lambda, pi)
+
+# Upper tail probabilities on log scale
+phurdle.pois(y, lambda, pi, lower.tail = FALSE, log.p = TRUE)
+
+}
+\seealso{
+\code{\link[stats]{ppois}}, \code{\link[stats]{dpois}},
+\code{\link{pdf.tp}} for the zero-truncated Poisson PMF.
 }

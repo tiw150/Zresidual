@@ -1,9 +1,35 @@
-#' A function to calculate ANOVA
+#' ANOVA Test for Z-Residuals
 #'
-#' @param Zresidual A z-residual.
-#' @param fitted.value Fitted values
-#' @param k.anova Number of bins if applicable
-
+#' Performs an ANOVA test to assess whether Z-residuals differ across
+#' levels of a covariate. Numeric covariates with many distinct values
+#' are discretized into bins. Small or empty bins are removed before testing.
+#'
+#' @param Zresidual Numeric vector of Z-residuals.
+#' @param fitted.value Numeric or factor covariate to test against.
+#' @param k.anova Integer; the maximum number of bins to discretize a numeric covariate (default 10).
+#'
+#' @details
+#' The function handles covariates as follows:
+#' \itemize{
+#'   \item If \code{fitted.value} is a factor or has fewer than \code{k.anova} unique values, it is treated as categorical.
+#'   \item Otherwise, numeric covariates are binned into \code{k.anova} bins using \code{\link{cut}}.
+#'   \item Bins with fewer than 3 observations are removed.
+#'   \item If insufficient bins remain, the covariate is log-transformed and binned again.
+#' }
+#' ANOVA is then performed with \code{lm(Zresidual ~ binned_covariate)} and the p-value for the first term is returned.
+#'
+#' @return Numeric p-value from the ANOVA F-test for the effect of the covariate on Z-residuals.
+#'
+#' @examples
+#' \dontrun{
+#' Zres <- rnorm(100)
+#' x <- runif(100)
+#' test.nl.aov(Zres, x, k.anova = 5)
+#' }
+#'
+#' @seealso
+#' \code{\link[stats]{anova}}, \code{\link[stats]{lm}}
+#'
 test.nl.aov <- function(Zresidual, fitted.value, k.anova=10)
 {
   unique.vals <- unique(fitted.value)

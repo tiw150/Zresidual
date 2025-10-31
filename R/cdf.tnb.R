@@ -1,8 +1,45 @@
-#' A function to calculate cdf of Truncated Negative Binomial
+#' Cumulative Distribution Function (CDF) of Zero-Truncated Negative Binomial Distribution
 #'
-#' @param y y values.
-#' @param mu mu parameter of TNB distribution.
-#' @param size size parameter of TNB distribution.
+#' Computes the cumulative distribution function (CDF) for a zero-truncated negative binomial (TNB) distribution.
+#' This function adjusts the standard negative binomial CDF to account for truncation at zero (i.e., only supports \eqn{y > 0}).
+#'
+#' @param y Numeric vector of quantiles (count values) for which to compute the CDF.
+#' @param mu Mean parameter (\eqn{\mu}) of the negative binomial distribution.
+#' @param size Dispersion (shape) parameter (\eqn{r}) of the negative binomial distribution.
+#' @param lower.tail Logical; if \code{TRUE} (default), probabilities are \eqn{P(Y \le y)}.
+#'   If \code{FALSE}, probabilities are \eqn{P(Y > y)}.
+#' @param log.p Logical; if \code{TRUE}, probabilities \eqn{p} are given as \eqn{\log(p)}.
+#'
+#' @details
+#' The function computes probabilities for the zero-truncated version of the negative binomial distribution:
+#' \deqn{P(Y \le y \mid Y > 0) = \frac{P(Y \le y) - P(Y = 0)}{1 - P(Y = 0)}.}
+#'
+#' Internally, this is implemented using the log-scale for numerical stability.
+#' When \code{lower.tail = FALSE}, it computes the upper-tail probabilities
+#' \eqn{P(Y > y \mid Y > 0)} instead.
+#'
+#' @return
+#' A numeric vector of the same length as the input, containing:
+#' \itemize{
+#'   \item CDF values (\eqn{P(Y \le y \mid Y > 0)}) if \code{lower.tail = TRUE}.
+#'   \item Upper-tail probabilities (\eqn{P(Y > y \mid Y > 0)}) if \code{lower.tail = FALSE}.
+#'   \item Log-probabilities if \code{log.p = TRUE}.
+#' }
+#'
+#' @seealso
+#' \code{\link[stats]{pnbinom}} for the standard negative binomial CDF.
+#'
+#' @examples
+#' # Example: Compute the CDF for y = 1:5
+#' mu <- 2
+#' size <- 1
+#' cdf.tnb(1:5, mu, size)
+#'
+#' # Compute the upper-tail probabilities
+#' cdf.tnb(1:5, mu, size, lower.tail = FALSE)
+#'
+#' # Log probabilities
+#' cdf.tnb(1:5, mu, size, log.p = TRUE)
 #'
 
 cdf.tnb <- function(y, mu, size, lower.tail = FALSE, log.p = FALSE) {

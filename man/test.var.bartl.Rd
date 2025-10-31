@@ -2,17 +2,43 @@
 % Please edit documentation in R/test.var.bartl.R
 \name{test.var.bartl}
 \alias{test.var.bartl}
-\title{A function to calculate Bartlett test of Zresidual}
+\title{Bartlett Test for Homogeneity of Variances of Z-Residual}
 \usage{
 test.var.bartl(Zresidual, fitted.value, k.bl = 10)
 }
 \arguments{
-\item{Zresidual}{A Z-residual.}
+\item{Zresidual}{Numeric vector of Z-residuals.}
 
-\item{fitted.value}{Fitted values}
+\item{fitted.value}{Numeric or factor covariate to test against.}
 
-\item{k.bl}{Number of bins if applicable}
+\item{k.bl}{Integer; the number of bins to discretize a numeric covariate (default 10).}
+}
+\value{
+Numeric p-value from Bartlett's test for homogeneity of variances.
 }
 \description{
-A function to calculate Bartlett test of Zresidual
+Performs Bartlett's test to assess whether the variance of Z-residuals
+differs across levels of a covariate. Numeric covariates with many distinct
+values are binned, and small or empty bins are removed before testing.
+}
+\details{
+The function handles covariates as follows:
+\itemize{
+  \item If \code{fitted.value} is a factor or has fewer than \code{k.bl} unique values, it is treated as categorical.
+  \item Otherwise, numeric covariates are binned into \code{k.bl} bins.
+  \item Bins with fewer than 3 observations are removed.
+  \item If insufficient bins remain, the covariate is log-transformed and binned again.
+}
+Bartlett's test is then applied to the Z-residuals grouped by the factor or binned covariate.
+}
+\examples{
+\dontrun{
+Zres <- rnorm(100)
+x <- runif(100)
+test.var.bartl(Zres, x, k.bl = 5)
+}
+
+}
+\seealso{
+\code{\link[stats]{bartlett.test}}, \code{\link[stats]{split}}
 }

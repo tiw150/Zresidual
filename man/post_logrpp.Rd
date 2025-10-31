@@ -2,15 +2,40 @@
 % Please edit documentation in R/post_logrpp.R
 \name{post_logrpp}
 \alias{post_logrpp}
-\title{A function to calculate posterior log rpp}
+\title{Compute Posterior Log Randomized Predictive p-values (Log-RPP)}
 \usage{
 post_logrpp(log_cdf, log_pmf)
 }
 \arguments{
-\item{log_cdf}{log cdf.}
+\item{log_cdf}{Numeric matrix of log cumulative probabilities for each observation
+(posterior samples × observations).}
 
-\item{log_pmf}{log pmf.}
+\item{log_pmf}{Numeric matrix of log probability mass function values for each observation
+(posterior samples × observations).}
+}
+\value{
+A numeric vector of log randomized posterior predictive p-values for each observation.
 }
 \description{
-A function to calculate posterior log rpp
+Calculates the posterior log randomized predictive p-values (log-RPP) for a set
+of observations given the log-PMF and log-CDF matrices from posterior predictive samples.
+}
+\details{
+The function computes a randomized posterior predictive p-values as follows:
+\enumerate{
+  \item A uniform random number is generated for each observation to randomize the probability for zero counts.
+  \item Probabilities exactly equal to 0 or 1 are replaced with small bounds (\eqn{10^{-5}} and \eqn{9 \cdot 10^{-5}}) to avoid numerical issues.
+}
+}
+\examples{
+\dontrun{
+# Assume log_cdf and log_pmf are matrices from posterior predictive draws
+log_rpp <- post_logrpp(log_cdf, log_pmf)
+head(exp(log_rpp))  # Randomized posterior predictive probabilities
+}
+
+}
+\seealso{
+\code{\link{post_logmpp}}, \code{\link{log.pred.dist.HNB}},
+\code{\link{log.pred.dist.NB}}, \code{\link{log.pred.dist.TNB}}.
 }

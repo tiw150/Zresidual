@@ -1,6 +1,43 @@
-#' A function to calculate pdf of hurdle poisson.
+#' Probability Mass Function of the Hurdle Poisson Distribution
 #'
-
+#' Computes the probability density (or log-density) for the Poisson hurdle distribution.
+#' This distribution combines a point mass at zero with a truncated-at-zero Poisson
+#' distribution for positive counts.
+#'
+#' @param y Numeric vector of observed counts.
+#' @param lambda Numeric vector of Poisson mean parameters (must be positive).
+#' @param pi Numeric vector of hurdle probabilities (probability of structural zeros),
+#'   where each value must be between 0 and 1.
+#' @param log Logical; if \code{TRUE}, probabilities are returned on the log scale.
+#'
+#' @details
+#' The hurdle Poisson distribution assumes:
+#' \deqn{
+#' P(Y = 0) = \pi
+#' }
+#' and for \eqn{y > 0}:
+#' \deqn{
+#' P(Y = y) = (1 - \pi) \frac{P_{\text{Pois}}(Y = y)}{1 - P_{\text{Pois}}(Y = 0)}
+#' }
+#' where \eqn{P_{\text{Pois}}(Y = y)} is the standard Poisson probability mass function.
+#'
+#' The function is vectorized over all parameters.
+#'
+#' @return
+#' A numeric vector of the same length as \code{y}, giving the density (or log-density)
+#' of the Poisson hurdle distribution.
+#'
+#' @examples
+#' # Example usage:
+#' y <- 0:5
+#' lambda <- 2
+#' pi <- 0.3
+#' dhurdle.pois(y, lambda, pi)
+#' dhurdle.pois(y, lambda, pi, log = TRUE)
+#'
+#' @seealso
+#' \code{\link{dpois}}, \code{\link{pnbinom}}, \code{\link{dhurdle.nb}}
+#'
 dhurdle.pois <- function(y, lambda, pi, log = FALSE) {
   log1mexp <- function(x) {
     ifelse(x <= log(2),
