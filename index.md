@@ -1,0 +1,33 @@
+# Z-residuals
+
+The Z-residual is residual diagnosis tool for diagnosing survival models
+and generalized linear models.
+
+## Installation
+
+You can install the development version of this package from
+[GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("tiw150/Zresidual")
+```
+
+## References
+
+Li, L., Wu, T., Feng, C., 2021. Model Diagnostics for Censored
+Regression via Randomized Survival Probabilities. Statistics in
+Medicine, 2020+. <https://doi.org/10.1002/sim.8852>;
+<https://onlinelibrary.wiley.com/share/author/F8DKBTX7IT7UT2WTSZP3?target=10.1002/sim.8852>
+
+Wu, T., Li, L., & Feng, C. (2023). Z-residual diagnostics for detecting
+misspecification of the functional form of covariates for shared frailty
+models. arXiv, page 2302.09106, 2023. Under review by Journal of Applied
+Statistics. <https://arxiv.org/abs/2302.09106>
+
+## Example
+
+This example provides a fundamental illustration of using the
+Z-residuals for diagnosing both the overall goodness of fit (GOF) and
+the functional form of covariates in a real application for modelling
+the survival times of acute myeloid leukemia patients.

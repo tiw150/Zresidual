@@ -55,7 +55,7 @@
                         <h4 data-toc-skip class="author">Tingxuan
 Wu</h4>
             
-            <h4 data-toc-skip class="date">November 03, 2025</h4>
+            <h4 data-toc-skip class="date">November 21, 2025</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/tiw150/Zresidual/blob/main/vignettes/Zresidual_demo.Rmd" class="external-link"><code>vignettes/Zresidual_demo.Rmd</code></a></small>
       <div class="d-none name"><code>Zresidual_demo.Rmd</code></div>
@@ -765,7 +765,7 @@ tested with the SW test.</p>
 <pre><code><span><span class="co">## Warning in box(...): "index" is not a graphical parameter</span></span></code></pre>
 <pre><code><span><span class="co">## Warning in title(...): "index" is not a graphical parameter</span></span></code></pre>
 <div class="figure" style="text-align: center">
-<img src="Zresidual_demo_files/figure-html/unnamed-chunk-7-.gif" alt="Figure 1: QQ plots of Z-residuals for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients" width="864"><p class="caption">
+<img src="Zresidual_demo_files/figure-html/unnamed-chunk-7-.gif" class="r-plt" alt="Figure 1: QQ plots of Z-residuals for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients" width="864"><p class="caption">
 Figure 1: QQ plots of Z-residuals for the wbc (left panels) and lwbc
 (right panels) models fitted to the survival data of acute myeloid
 leukemia patients
@@ -893,7 +893,7 @@ of wbc is inappropriate for modelling the survival time.</p>
 <span>     xlab<span class="op">=</span><span class="st">"Z-AOV with lwbc P-values for lwbc Model"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="va">pmin.aov.lwbc.LeukSurv</span>,col<span class="op">=</span><span class="st">"red"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="Zresidual_demo_files/figure-html/unnamed-chunk-13-1.png" alt="Figure 5: The histograms of 1000 replicated Z-SW, Z-SF, Z-AOV-LP and Z-AOV-log(wbc) p-values for the wbc model (left panels) and the lwbc model (right panels) fitted with the survival times of acute myeloid leukemia patients. The vertical red lines indicate $p_{min}$ for 1000 replicated p-values. Note that the upper limit  of the x-axis for Z-AOV-log(wbc) p-values for the lwbc model is 0.005, not 1 for others." width="864"><p class="caption">
+<img src="Zresidual_demo_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="Figure 5: The histograms of 1000 replicated Z-SW, Z-SF, Z-AOV-LP and Z-AOV-log(wbc) p-values for the wbc model (left panels) and the lwbc model (right panels) fitted with the survival times of acute myeloid leukemia patients. The vertical red lines indicate $p_{min}$ for 1000 replicated p-values. Note that the upper limit  of the x-axis for Z-AOV-log(wbc) p-values for the lwbc model is 0.005, not 1 for others." width="864"><p class="caption">
 Figure 5: The histograms of 1000 replicated Z-SW, Z-SF, Z-AOV-LP and
 Z-AOV-log(wbc) p-values for the wbc model (left panels) and the lwbc
 model (right panels) fitted with the survival times of acute myeloid
@@ -944,7 +944,7 @@ diagonal line.</p>
 <span><span class="fu"><a href="../reference/plot.cs.residual.html">plot.cs.residual</a></span><span class="op">(</span>cs.residual<span class="op">=</span><span class="va">ucs.LeukSurv.wbc</span>,main.title <span class="op">=</span> <span class="st">"CS Residuals of wbc model"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot.cs.residual.html">plot.cs.residual</a></span><span class="op">(</span>cs.residual<span class="op">=</span><span class="va">ucs.LeukSurv.logwbc</span>,main.title <span class="op">=</span> <span class="st">"CS Residuals of lwbc model"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="Zresidual_demo_files/figure-html/unnamed-chunk-15-1.png" alt="Figure 6: The estimated CHFs of the CS residuals for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients" width="864"><p class="caption">
+<img src="Zresidual_demo_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="Figure 6: The estimated CHFs of the CS residuals for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients" width="864"><p class="caption">
 Figure 6: The estimated CHFs of the CS residuals for the wbc (left
 panels) and lwbc (right panels) models fitted to the survival data of
 acute myeloid leukemia patients
@@ -967,7 +967,7 @@ Both of these lines demonstrate noticeable non-horizontal trends.</p>
 <span><span class="fu"><a href="../reference/plot.martg.resid.html">plot.martg.resid</a></span><span class="op">(</span><span class="va">martg.LeukSurv.wbc</span>,X<span class="op">=</span><span class="st">"wbc"</span>,main.title <span class="op">=</span> <span class="st">"Martingale Residuals of wbc Model"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot.martg.resid.html">plot.martg.resid</a></span><span class="op">(</span><span class="va">martg.LeukSurv.logwbc</span>,X<span class="op">=</span><span class="st">"logwbc"</span>,main.title <span class="op">=</span> <span class="st">"Martingale Residuals of lwbc Model"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="Zresidual_demo_files/figure-html/unnamed-chunk-16-1.png" alt="Figure 7: Scatter plot of the martingale residuals for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients" width="864"><p class="caption">
+<img src="Zresidual_demo_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="Figure 7: Scatter plot of the martingale residuals for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients" width="864"><p class="caption">
 Figure 7: Scatter plot of the martingale residuals for the wbc (left
 panels) and lwbc (right panels) models fitted to the survival data of
 acute myeloid leukemia patients
@@ -990,7 +990,7 @@ non-horizontal trends in their LOWESS curves.</p>
 <span><span class="fu"><a href="../reference/plot.dev.resid.html">plot.dev.resid</a></span><span class="op">(</span><span class="va">dev.LeukSurv.wbc</span>,X<span class="op">=</span><span class="st">"wbc"</span>,main.title <span class="op">=</span> <span class="st">"Deviance Residuals of wbc Model"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot.dev.resid.html">plot.dev.resid</a></span><span class="op">(</span><span class="va">dev.LeukSurv.logwbc</span>,X<span class="op">=</span><span class="st">"logwbc"</span>,main.title <span class="op">=</span> <span class="st">"Deviance Residuals of lwbc Model"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure" style="text-align: center">
-<img src="Zresidual_demo_files/figure-html/unnamed-chunk-17-1.png" alt="Figure 8: Scatter plot of the deviance residuals for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients" width="864"><p class="caption">
+<img src="Zresidual_demo_files/figure-html/unnamed-chunk-17-1.png" class="r-plt" alt="Figure 8: Scatter plot of the deviance residuals for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients" width="864"><p class="caption">
 Figure 8: Scatter plot of the deviance residuals for the wbc (left
 panels) and lwbc (right panels) models fitted to the survival data of
 acute myeloid leukemia patients
@@ -1009,7 +1009,7 @@ acute myeloid leukemia patients
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
