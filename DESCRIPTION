@@ -14,7 +14,7 @@ Description: This package provides functions for computing and analyzing Z-resid
 URL: https://tiw150.github.io/Zresidual
 BugReports: https://github.com/tiw150/Zresidual/issues
 Depends: R (>= 3.5.0)
-Imports: survival (>= 3.3-1), actuar, glmmTMB, nortest, EnvStats, doParallel, brms, dplyr, Rlab, tidyr, VGAM, DPQ
+Imports: survival (>= 3.3-1), actuar, glmmTMB, nortest, EnvStats, doParallel, brms, dplyr, Rlab, tidyr, VGAM, DPQ, matrixStats
 Suggests: 
     betareg,
     data.table (>= 1.10.0),
