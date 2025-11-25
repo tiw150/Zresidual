@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The Z-residual is residual diagnosis tool for diagnosing survival models and generalized linear models.
+Z-residual is a residual diagnosis tool for diagnosing survival models and generalized linear models.
 
 
 ## Installation
