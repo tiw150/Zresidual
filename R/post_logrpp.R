@@ -38,7 +38,7 @@ post_logrpp <- function(log_cdf, log_pmf){
     lM + log(exp (log.cdf-lM) + exp(log.pmf-lM))
   }
 
-  #**** Edit: DS 05/10/2025
+  #**** Edit: 05/10/2025
   log_sum_cdf <- colLogSumExps(log_cdf)
   log_sum_pmf <- colLogSumExps(log_pmf)+log_u
   log_pv<-Log_Add_Exps(log.cdf=log_sum_cdf, log.pmf=log_sum_pmf)

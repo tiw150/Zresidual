@@ -1,8 +1,93 @@
-#' A function to draw scatter plot of a Martingale Residual
+#' Plot martingale residuals for survival models
+#'
+#' Produce diagnostic plots for martingale residuals from survival models,
+#' with the option to plot against the observation index, the linear predictor,
+#' or a selected covariate. The function expects a vector (or one-column
+#' matrix) of martingale residuals with attributes attached by the residual
+#' computation functions in this package.
+#'
+#' The input \code{Martingale.residual} is typically obtained from
+#' \code{residual.coxph()}, \code{residual.coxph.frailty()}, or
+#' \code{residual.survreg()} with \code{residual.type = "martingale"}.
+#'
+#' The \code{X} argument controls the x-axis:
+#' \itemize{
+#'   \item \code{"index"}: plot martingale residuals against observation index.
+#'   \item \code{"lp"}: plot martingale residuals against the linear predictor
+#'         (attribute \code{"linear.pred"}).
+#'   \item \code{"covariate"}: prompt the user and print the available
+#'         covariate names to the console.
+#'   \item a character string matching one of the covariate names in
+#'         \code{attr(Martingale.residual, "covariates")}: plot martingale
+#'         residuals against that covariate.
+#' }
+#'
+#' In the \code{"lp"} and covariate cases, a LOWESS smooth is added to the
+#' plot to highlight systematic patterns in the residuals.
+#'
+#' @param Martingale.residual Numeric vector (or one-column matrix) of
+#'   martingale residuals, typically returned by one of the residual
+#'   functions in this package with \code{residual.type = "martingale"}.
+#'   It must carry the attributes \code{"censored.status"},
+#'   \code{"linear.pred"}, and \code{"covariates"} as described above.
+#' @param ylab Character string for the y-axis label. Default is
+#'   \code{"Martingale Residual"}.
+#' @param X Character string controlling the x-axis. Must be one of
+#'   \code{"index"}, \code{"lp"}, \code{"covariate"}, or the name of a
+#'   covariate contained in \code{attr(Martingale.residual, "covariates")}.
+#'   The default is effectively \code{"lp"} if \code{X} is not supplied.
+#' @param main.title Character string for the main plot title. Default is
+#'   \code{"Martingale Residual Plot"}.
+#' @param outlier.return Logical; if \code{TRUE}, attempted outliers (as
+#'   indicated by an external logical vector \code{is.outlier} in the calling
+#'   environment) are highlighted in the plot and their indices are returned
+#'   invisibly. If \code{FALSE} (default), no outlier indices are returned.
+#'   Note that this function does not compute outliers internally: it assumes
+#'   that a logical vector \code{is.outlier} of the same length as
+#'   \code{Martingale.residual} is available if outlier highlighting is
+#'   desired.
+#' @param ... Additional arguments passed to the underlying plotting functions.
+#'
+#' @details
+#' Non-finite martingale residuals are detected and truncated to lie slightly
+#' beyond the largest finite residual, with a warning message printed to alert
+#' the user that there may be problems with the model fit. Censored and
+#' uncensored observations are distinguished by color and plotting symbol in
+#' all display modes.
+#'
+#' @return
+#' The function is primarily called for its side-effect of producing a plot.
+#' If \code{outlier.return = TRUE}, it prints the indices of outlying points
+#' to the console and invisibly returns a list with component
+#' \code{outliers}, containing the indices where \code{is.outlier} is
+#' \code{TRUE}. Otherwise, it returns \code{NULL} invisibly.
+#'
+#' @seealso
+#' \code{residual.coxph}, \code{residual.coxph.frailty},
+#' \code{residual.survreg}, \code{\link[survival]{Surv}},
+#' \code{\link[survival]{survfit}}
+#'
+#' @examples
+#' \dontrun{
+#'   library(survival)
+#'
+#'   data(lung)
+#'   fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
+#'   r_m <- residual.coxph(fit, newdata = lung,
+#'                         residual.type = "martingale")
+#'
+#'   ## Basic plot vs. index
+#'   plot.martg.resid(r_m, X = "index")
+#'
+#'   ## Plot vs. linear predictor
+#'   plot.martg.resid(r_m, X = "lp")
+#'
+#'   ## Plot vs. a specific covariate, e.g. "age"
+#'   plot.martg.resid(r_m, X = "age")
+#' }
 #' @export plot.martg.resid
-#' @param Martingale.residual
 #'
-#'
+
 plot.martg.resid <- function(Martingale.residual,ylab = "Martingale Residual",
                              X = c("index", "lp", "covariate"),
                              main.title = "Martingale Residual Plot",
@@ -156,7 +241,8 @@ plot.martg.resid <- function(Martingale.residual,ylab = "Martingale Residual",
       #col = ifelse(is.outlier, "darkgoldenrod2", ifelse(censored,"darkolivegreen4","blue")),
       pch = c(3, 2)[censored + 1],
       xlab = colnames(fitted.value)[i],
-      main = main.title
+      main = main.title,
+      ...
     )
     lines(lowess(Martingale.residual ~ fitted.value[, i]),
           col = "red",

@@ -1,6 +1,6 @@
 #' A function to calculate ANOVA of Zresidual
 #'
-#' @param Zresidual A z-residual.
+#' @param Zresidual A Z-residual.
 #' @param X Linear predictor or covariate
 #' @param k.anova Number of bins if applicable
 #' @export

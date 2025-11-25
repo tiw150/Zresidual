@@ -1,4 +1,72 @@
-#input: survreg_fit is a survreg object
+#' Residuals for Accelerated failure time model models
+#'
+#' Compute several types of residuals (censored Z-residuals, Cox–Snell,
+#' martingale, and deviance) for accelerated failure time models fitted
+#' with \code{\link[survival]{survreg}}.
+#'
+#'
+#' @importFrom survival psurvreg dsurvreg
+#' @importFrom stats qnorm
+#'
+#' @param survreg_fit A fitted \code{\link[survival]{survreg}} model object.
+#'   The model should be a right-censored survival regression model (i.e.,
+#'   with a \code{Surv(time, status)} response), using one of the supported
+#'   distributions.
+#' @param newdata A \code{data.frame} containing the variables required by
+#'   \code{survreg_fit$terms}, including the \code{Surv()} response and all
+#'   covariates. Residuals are evaluated for the observations in
+#'   \code{newdata}.
+#' @param residual.type Character string specifying the type of residual to
+#'   compute. Must be one of \code{"censored Z-residual"}, \code{"Cox-Snell"},
+#'   \code{"martingale"}, or \code{"deviance"}. The default is the full vector
+#'   \code{c("censored Z-residual", "Cox-Snell", "martingale", "deviance")},
+#'   but in practice a single value should be supplied.
+#'
+#' @return A numeric matrix of dimension \eqn{n \times 1}, where \eqn{n} is
+#'   the number of observations in \code{newdata}. The single column is named
+#'   according to \code{residual.type}. Several attributes are attached:
+#'   \itemize{
+#'     \item \code{Survival.Prob}: vector of survival probabilities
+#'       \eqn{S_i(t_i)}.
+#'     \item \code{linear.pred}: vector of linear predictors
+#'       \eqn{\eta_i}.
+#'     \item \code{covariates}: model matrix of covariates used in the
+#'       linear predictor.
+#'     \item \code{censored.status}: event indicator (1 = event, 0 = censored).
+#'     \item \code{object.model.frame}: the \code{model.frame} constructed
+#'       from \code{survreg_fit$terms} and \code{newdata}.
+#'   }
+#'
+#' @examples
+#' \dontrun{
+#'   library(survival)
+#'
+#'   data(lung)
+#'
+#'   ## Weibull survival regression
+#'   fit_weib <- survreg(Surv(time, status) ~ age + sex,
+#'                       data = lung, dist = "weibull")
+#'
+#'   ## Censored Z-residuals
+#'   r_z <- residual.survreg(fit_weib, newdata = lung,
+#'                           residual.type = "censored Z-residual")
+#'
+#'   ## Cox–Snell residuals
+#'   r_cs <- residual.survreg(fit_weib, newdata = lung,
+#'                            residual.type = "Cox-Snell")
+#'
+#'   ## Martingale residuals
+#'   r_m <- residual.survreg(fit_weib, newdata = lung,
+#'                           residual.type = "martingale")
+#'
+#'   ## Deviance residuals
+#'   r_d <- residual.survreg(fit_weib, newdata = lung,
+#'                           residual.type = "deviance")
+#' }
+
+
+
+
 residual.survreg<-function(survreg_fit,newdata,
                            residual.type=c("censored Z-residual", "Cox-Snell",
                                            "martingale", "deviance"))

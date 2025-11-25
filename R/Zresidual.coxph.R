@@ -1,15 +1,41 @@
-#' A title
+#'Z-residuals for Cox proportional hazards models
 #'
-#' Some descriptions
+#' This function calculates Z-residuals based on a fitted `coxph` object from the `survival` package.
 #'
-#' @param fit_coxph is the fit object are from the coxph function in the survival package.
+#' @importFrom survival
+#' @importFrom stats qnorm runif
+#'
+#' @param fit_coxph A fitted object from the `coxph` function in the `survival` package.
+#' @param newdata Optional \code{data.frame} containing the variables used in \code{fit_coxph$formula}. If \code{NULL} (the default), residuals are computed on the original data used to fit the model. If supplied, \code{newdata} must contain the survival response and all covariates appearing in the original model formula.
+#' @param n.rep An integer specifying the number of random draws to use for calculating the Z-residuals for censored observations. Defaults to `nrep` (which should be defined in your environment, a common choice is 100).
 #'
 #' @export
 #'
-#' @return \itemize{
-#'  \item{Zresid}{Z-residual}
-#'}
+#' @return A numeric matrix of dimension \eqn{n \times} \code{n.rep},  where \eqn{n} is the number of observations in the (new) model frame.   Each column corresponds to one set of Z-residuals. The returned matrix has the following attributes attached:
+#'   \itemize{
+#'     \item \code{Survival.Prob}: vector of survival probabilities \eqn{S_i(t_i)}.
+#'     \item \code{linear.pred}: vector of linear predictors \eqn{\eta_i}.
+#'     \item \code{covariates}: data frame of covariates (model frame without the response).
+#'     \item \code{censored.status}: event indicator (1 = event,0 = censored).
+#'     \item \code{object.model.frame}: the \code{model.frame} used to compute the residuals.
+#'     \item \code{type}: character string \code{"survival"}.
+#'   }
 #'
+#'
+#' @examples
+#' \dontrun{
+#'   library(survival)
+#'   fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
+#'   # Calculate Z-residuals for the fitted model
+#'   z <- Zresidual.coxph(fit)
+#'   # multiple randomized replicates
+#'   z_multi <- Zresidual.coxph(fit, n.rep = 10)
+#'
+#' # Calculate Z-residuals for new data
+#' new_data <- data.frame(x = c(1, 2, 0.5))
+#' Z_resid_new <- Zresidual.survreg(fit_weibull, newdata = new_data)
+#' head(z_residuals_new)
+#'}
 
 Zresidual.coxph<-function (fit_coxph, newdata,n.rep=1)
 {

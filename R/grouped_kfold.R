@@ -1,3 +1,24 @@
+#' Create k-fold indices (internal helper)
+#'
+#' Generate k-fold cross-validation indices with simple stratification
+#' based on \code{y}.
+#'
+#' @param y Outcome used for stratification. Can be a \code{Surv} object,
+#'   factor, character, or numeric vector. Numeric vectors are coerced to
+#'   factor.
+#' @param k Integer; number of folds.
+#' @param list Logical; if \code{TRUE}, return a list of index vectors
+#'   for each fold, otherwise return an integer vector of fold labels.
+#' @param returnTrain Logical; when \code{list = TRUE}, return training
+#'   indices instead of test indices.
+#'
+#' @return A list of index vectors (one per fold) or an integer vector of
+#'   fold labels, depending on \code{list}.
+#'
+#' @keywords internal
+#' @noRd
+
+
 kfold_fn<-function (y, k, list = TRUE, returnTrain = FALSE)
 {
   if (class(y)[1] == "Surv")
@@ -49,6 +70,22 @@ kfold_fn<-function (y, k, list = TRUE, returnTrain = FALSE)
   out
 }
 
+#' Build k-fold splits with factor/censoring checks (internal)
+#'
+#' Generate a k-fold split that preserves factor levels in training sets
+#' and avoids empty factor-by-censoring cells in each training fold.
+#'
+#' @param fix_var Matrix or data frame of covariates.
+#' @param y Outcome used to seed the fold assignment (passed to
+#'   \code{kfold_fn}).
+#' @param k Integer; number of folds.
+#' @param censor Vector of censoring/status indicators, same length as \code{y}.
+#'
+#' @return A list of length \code{k}, each element containing the test indices
+#'   for that fold.
+#'
+#' @keywords internal
+#' @noRd
 
 make_fold<-function(fix_var,y,k,censor)
 {
