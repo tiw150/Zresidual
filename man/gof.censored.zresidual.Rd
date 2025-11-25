@@ -2,13 +2,34 @@
 % Please edit documentation in R/gof.censored.zresidual.R
 \name{gof.censored.zresidual}
 \alias{gof.censored.zresidual}
-\title{A function to perform a goodness-of-fit test on censored Z-residuals.}
+\title{Goodness-of-fit test for censored Z-residuals}
 \usage{
 gof.censored.zresidual(censored.Zresidual)
 }
 \arguments{
-\item{censored.Zresidual}{The censored Z-residuals to be tested.}
+\item{censored.Zresidual}{Numeric vector (or one-column matrix) of censored
+Z-residuals. It must carry an attribute \code{"censored.status"} giving
+the censoring indicator (1 = event, 0 = censored) for each observation.}
+}
+\value{
+A single numeric value: the p-value from
+  \code{EnvStats::gofTestCensored} using the Shapiro–Francia test
+  (\code{test = "sf"}) for a right-censored normal distribution
+  (\code{distribution = "norm"}). Larger p-values indicate no strong
+  evidence against normality of the censored Z-residuals.
 }
 \description{
-A function to perform a goodness-of-fit test on censored Z-residuals.
+Perform a normality goodness-of-fit test for censored Z-residuals using
+\code{\link[EnvStats]{gofTestCensored}}. This is typically used to assess
+whether censored Z-residuals are approximately standard normal under the
+fitted survival model.
+}
+\details{
+Infinite residual values (both positive and negative) are truncated to
+large finite values (\code{+/- 1e10}) before the test is applied.
+The censoring indicator is taken from the \code{"censored.status"}
+attribute of \code{censored.Zresidual}.
+}
+\seealso{
+\code{\link[EnvStats]{gofTestCensored}}
 }

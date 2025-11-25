@@ -2,25 +2,27 @@
 % Please edit documentation in R/Zresidual.survreg.R
 \name{Zresidual.survreg}
 \alias{Zresidual.survreg}
-\title{Calculate Z-residuals for a fitted survival regression model}
+\title{Z-residuals for Accelerated failure time model models}
 \usage{
 Zresidual.survreg(fit_survreg, newdata, n.rep = 1)
 }
 \arguments{
 \item{fit_survreg}{A fitted object from the `survreg` function in the `survival` package.}
 
-\item{newdata}{An optional data frame containing new observations for which to calculate the Z-residuals. If `NULL` (default), residuals are calculated for the data used to fit the model.}
+\item{newdata}{Optional \code{data.frame} containing the variables used in \code{fit_coxph$formula}. If \code{NULL} (the default), residuals are computed on the original data used to fit the model. If supplied, \code{newdata} must contain the survival response and all covariates appearing in the original model formula.}
 
 \item{n.rep}{An integer specifying the number of random draws to use for calculating the Z-residuals for censored observations. Defaults to `nrep` (which should be defined in your environment, a common choice is 100).}
 }
 \value{
-\itemize{ A matrix of Z-residuals. Each column represents a set of Z-residuals based on different random draws for censored observations. The matrix has the following attributes:
-  \item{Survival.Prob:} {The estimated survival probabilities.}
-  \item{linear.pred:} {The linear predictors from the survival regression model.}
-  \item{covariates:} {The covariate values used in the model.}
-  \item{censored.status:} {The censoring status (0 for censored, 1 for event).}
-  \item{object.model.frame:} {The model frame used for the analysis.}
-}
+A numeric matrix of dimension \eqn{n \times} \code{n.rep},  where \eqn{n} is the number of observations in the (new) model frame.   Each column corresponds to one set of Z-residuals. The returned matrix has the following attributes attached:
+  \itemize{
+    \item \code{Survival.Prob}: vector of survival probabilities \eqn{S_i(t_i)}.
+    \item \code{linear.pred}: vector of linear predictors \eqn{\eta_i}.
+    \item \code{covariates}: data frame of covariates (model frame without the response).
+    \item \code{censored.status}: event indicator (1 = event,0 = censored).
+    \item \code{object.model.frame}: the \code{model.frame} used to compute the residuals.
+    \item \code{type}: character string \code{"survival"}.
+  }
 }
 \description{
 This function calculates Z-residuals based on a fitted `survreg` object from the `survival` package.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot.dev.resid.R
 \name{plot.dev.resid}
 \alias{plot.dev.resid}
-\title{A function to draw scatter plot of a Deviance Residual}
+\title{Plot deviance residuals for survival models}
 \usage{
 \method{plot}{dev.resid}(
   Deviance.residual,
@@ -14,8 +14,94 @@
 )
 }
 \arguments{
-\item{Deviance.residual}{}
+\item{Deviance.residual}{Numeric vector (or one-column matrix) of deviance
+residuals, typically returned by one of the residual functions in this
+package with \code{residual.type = "deviance"}. It must carry the
+attributes \code{"censored.status"}, \code{"linear.pred"}, and
+\code{"covariates"} as described above.}
+
+\item{ylab}{Character string for the y-axis label. Default is
+\code{"Deviance Residual"}.}
+
+\item{X}{Character string controlling the x-axis. Must be one of
+\code{"index"}, \code{"lp"}, \code{"covariate"}, or the name of a
+covariate contained in \code{attr(Deviance.residual, "covariates")}.
+The default is effectively \code{"lp"} if \code{X} is not supplied.}
+
+\item{main.title}{Character string for the main plot title. Default is
+\code{"Deviance Residual Plot"}.}
+
+\item{outlier.return}{Logical; if \code{TRUE}, attempted outliers (as
+indicated by an external logical vector \code{is.outlier} in the calling
+environment) are highlighted in the plot and their indices are returned
+invisibly. If \code{FALSE} (default), no outlier indices are returned.
+Note that this function does not compute outliers internally: it assumes
+that a logical vector \code{is.outlier} of the same length as
+\code{Deviance.residual} is available if outlier highlighting is desired.}
+
+\item{...}{Additional arguments passed to the underlying plotting functions.}
+}
+\value{
+The function is primarily called for its side-effect of producing a plot.
+If \code{outlier.return = TRUE}, it prints the indices of outlying points
+to the console and invisibly returns a list with component
+\code{outliers}, containing the indices where \code{is.outlier} is
+\code{TRUE}. Otherwise, it returns \code{NULL} invisibly.
 }
 \description{
-A function to draw scatter plot of a Deviance Residual
+Produce diagnostic plots for deviance residuals from survival models,
+with the option to plot against the observation index, the linear
+predictor, or a selected covariate. The function expects a vector (or
+one-column matrix) of deviance residuals with attributes attached by
+the residual computation functions in this package.
+}
+\details{
+The input \code{Deviance.residual} is typically obtained from
+\code{residual.coxph()}, \code{residual.coxph.frailty()}, or
+\code{residual.survreg()} with \code{residual.type = "deviance"}.
+
+The \code{X} argument controls the x-axis:
+\itemize{
+  \item \code{"index"}: plot deviance residuals against observation index.
+  \item \code{"lp"}: plot deviance residuals against the linear predictor
+        (attribute \code{"linear.pred"}).
+  \item \code{"covariate"}: prompt the user and print the available
+        covariate names to the console.
+  \item a character string matching one of the covariate names in
+        \code{attr(Deviance.residual, "covariates")}: plot deviance
+        residuals against that covariate.
+}
+
+In the \code{"lp"} and covariate cases, a LOWESS smooth is added to the
+plot to highlight systematic patterns in the residuals.
+
+Non-finite deviance residuals are detected and truncated to lie slightly
+beyond the largest finite residual, with a message printed to alert the
+user that there may be problems with the model fit. Censored and
+uncensored observations are distinguished by color and plotting symbol
+in all display modes.
+}
+\examples{
+\dontrun{
+  library(survival)
+
+  data(lung)
+  fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
+  r_d <- residual.coxph(fit, newdata = lung,
+                        residual.type = "deviance")
+
+  ## Basic plot vs. index
+  plot.dev.resid(r_d, X = "index")
+
+  ## Plot vs. linear predictor
+  plot.dev.resid(r_d, X = "lp")
+
+  ## Plot vs. a specific covariate, e.g. "age"
+  plot.dev.resid(r_d, X = "age")
+}
+}
+\seealso{
+\code{residual.coxph}, \code{residual.coxph.frailty},
+\code{residual.survreg}, \code{\link[survival]{Surv}},
+\code{\link[survival]{survfit}}
 }

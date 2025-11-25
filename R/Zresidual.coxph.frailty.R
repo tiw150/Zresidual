@@ -25,7 +25,6 @@
 #' }
 #'
 #' @importFrom survival Surv
-#' @importFrom stats qnorm runif approx rowsum
 #'
 #' @param fit_coxph A fitted \code{\link[survival]{coxph}} object for a shared
 #'   frailty model, typically specified with a term such as

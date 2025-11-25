@@ -2,22 +2,56 @@
 % Please edit documentation in R/CV.Zresidual.R
 \name{CV.Zresidual}
 \alias{CV.Zresidual}
-\title{A title}
+\title{Cross-Validated Z-Residual Diagnostics for Survival Models}
 \usage{
 CV.Zresidual(fit.object, nfolds, foldlist = NULL, data = NULL, nrep = 1)
 }
 \arguments{
-\item{fit.object}{The fit object are one of 'coxph' and 'survreg'.}
+\item{fit.object}{A fitted survival model object of class `coxph` or `survreg`.}
 
-\item{data}{Data that used for fitting the survival model.}
+\item{nfolds}{Integer. Number of folds for cross-validation.}
+
+\item{foldlist}{Optional list specifying custom fold assignments. If `NULL`,
+folds are generated internally.}
+
+\item{data}{Optional dataset used to refit the model during cross-validation.
+Required when `foldlist` is provided or when the original model call
+does not contain the data explicitly.}
+
+\item{nrep}{Integer. Number of repeated cross-validations to perform.
+Default is 1.}
 }
 \value{
-\itemize{
- \item{Zresid}{CV Z-residual}
- \item{SP}{Survival Probabilities}
- \item{linear.pred}{linear predictor}
-}
+An object of class `"cvzresid"` containing the cross-validated Z-residual
+results and any model-specific diagnostic information.
 }
 \description{
-Some descriptions
+Computes cross-validated Z-residuals for fitted survival models, including
+Cox proportional hazards models (`coxph`) with or without frailty terms,
+and parametric survival regression models (`survreg`).
+The function automatically detects the model type from the fitted model
+object and applies the appropriate Z-residual cross-validation method.
+}
+\details{
+The function identifies whether the fitted model is:
+- a Cox model (`coxph`) with frailty terms,
+- a Cox model without frailty,
+- or a parametric survival model (`survreg`),
+and dispatches to the appropriate internal cross-validation function:
+`CV.Zresidual.coxph.frailty()`, `CV.Zresidual.coxph()`, or
+`CV.Zresidual.survreg()`.
+
+All required packages are loaded via `pacman::p_load()`.
+}
+\examples{
+\dontrun{
+library(survival)
+fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
+out <- CV.Zresidual(fit, nfolds = 5)
+}
+
+}
+\seealso{
+`CV.Zresidual.coxph()`, `CV.Zresidual.coxph.frailty()`,
+`CV.Zresidual.survreg()`
 }

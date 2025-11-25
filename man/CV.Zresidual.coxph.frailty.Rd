@@ -2,10 +2,131 @@
 % Please edit documentation in R/CV.Zresidual.coxph.frailty.R
 \name{CV.Zresidual.coxph.frailty}
 \alias{CV.Zresidual.coxph.frailty}
-\title{CV Zresidual for shared fraitly model using coxph function}
+\title{Cross-Validated Z-Residuals for Shared Frailty Cox Models}
 \usage{
 CV.Zresidual.coxph.frailty(fit.coxph, data, nfolds, foldlist, n.rep)
 }
+\arguments{
+\item{fit.coxph}{A fitted shared frailty Cox proportional hazards model
+from \pkg{survival}, created using \code{\link[survival]{coxph}} with
+a frailty term (e.g. \code{Surv(time, status) ~ x1 + x2 + frailty(group)}).}
+
+\item{data}{Optional \code{data.frame} used for cross-validation. It must
+contain the survival response, all fixed-effect covariates, and the
+frailty grouping factor used in \code{fit.coxph$formula}. If \code{NULL},
+the model frame of \code{fit.coxph} (via \code{model.frame.coxph()}) is
+used internally.}
+
+\item{nfolds}{Integer. Number of cross-validation folds. If \code{NULL},
+the number of folds is chosen heuristically based on the number of
+available cores, approximately as \code{10 \%/\%  ncores * ncores}.}
+
+\item{foldlist}{Optional list specifying fold indices. Each element should
+be an integer vector giving the row indices of the held-out (test) set
+for a given fold. If \code{NULL}, folds are created using
+\code{make_fold()}, stratifying primarily by the frailty grouping factor
+and ensuring that factor-by-censoring combinations are represented in
+each training set.}
+
+\item{n.rep}{Integer. Number of repeated Z-residual samples per observation
+in each fold (i.e. number of Monte Carlo replications for censored
+observations in \code{Zresidual.coxph.frailty}).}
+}
+\value{
+A numeric matrix of dimension \eqn{n \times} \code{n.rep}, where \eqn{n}
+is the number of rows in \code{data} (if supplied) or in the internal
+model frame of \code{fit.coxph}. Columns are named
+\code{"CV.Z-residual 1"}, \code{"CV.Z-residual 2"}, \dots, up to
+\code{n.rep}. The matrix has the following attributes attached:
+\itemize{
+  \item \code{"type"}: character string \code{"survival"}.
+  \item \code{"Survival.Prob"}: vector of predicted survival probabilities
+        at the observed time for each observation, assembled from all folds.
+  \item \code{"linear.pred"}: vector of fixed-effect linear predictors.
+  \item \code{"censored.status"}: event indicator (1 = event, 0 = censored).
+  \item \code{"covariates"}: matrix or data frame of covariates used in
+        the Z-residual computation (structure depends on whether
+        \code{data} is supplied).
+  \item \code{"object.model.frame"}: data frame representing the model
+        frame underlying the CV residuals (assembled from all folds).
+}
+
+This object is intended for downstream diagnostic and visualization
+tools (e.g. QQ-plots, residual-vs-covariate plots) tailored to shared
+frailty Cox models.
+}
 \description{
-CV Zresidual for shared fraitly model using coxph function
+Computes cross-validated (CV) Z-residuals for a shared frailty Cox
+proportional hazards model fitted with \code{\link[survival]{coxph}}
+using a term such as \code{frailty(group)}. The function performs
+K-fold cross-validation, refits the frailty Cox model on each training
+subset, and computes (possibly replicated) Z-residuals on the held-out
+fold via \code{Zresidual.coxph.frailty()}.
+}
+\details{
+The function operates in two modes:
+\itemize{
+  \item If \code{data} is not \code{NULL}, the folds are constructed (or
+    interpreted) in terms of the rows of \code{data}, and each fold fit
+    uses \code{data[-test, ]} as the training set and \code{data[test, ]}
+    as the test set.
+  \item If \code{data} is \code{NULL}, the internal model frame of
+    \code{fit.coxph} is used. In this case the function reconstructs a
+    data frame with explicit time and status columns plus covariates and
+    the frailty grouping factor, consistent with \code{fit.coxph$formula},
+    before refitting the model in each fold.
+}
+
+In both cases, the workflow is:
+\enumerate{
+  \item Extract the model frame and identify the frailty grouping factor
+        (the grouping variable in \code{frailty()}).
+  \item Create or use supplied folds via \code{foldlist}. By default,
+        \code{make_fold()} is called with the covariates, the grouping
+        factor, and the event indicator to enforce reasonable balance.
+  \item For each fold:
+    \itemize{
+      \item Fit the shared frailty Cox model to the training subset.
+      \item Compute Z-residuals on the held-out subset using
+            \code{Zresidual.coxph.frailty()}.
+      \item If the model fit fails, fill the corresponding fold residuals
+            with \code{NA}.
+    }
+  \item Stack the per-fold residual matrices into a single
+        \eqn{n \times} \code{n.rep} matrix, where \eqn{n} is the total
+        number of observations.
+  \item Collect and re-assemble attributes (survival probabilities, linear
+        predictors, censoring status, covariates, and model frame) in the
+        original observation order.
+}
+}
+\examples{
+\dontrun{
+  library(survival)
+
+  ## Example data with cluster/grouping variable
+  data(lung)
+  set.seed(1)
+  lung$cluster_id <- factor(sample(1:10, size = nrow(lung), replace = TRUE))
+
+  ## Shared frailty Cox model
+  fit_frail <- coxph(Surv(time, status) ~ age + sex + frailty(cluster_id),
+                     data = lung)
+
+  ## 5-fold CV Z-residuals with 10 Monte Carlo replications
+  cvz_frail <- CV.Zresidual.coxph.frailty(
+    fit.coxph = fit_frail,
+    data      = lung,
+    nfolds    = 5,
+    foldlist  = NULL,
+    n.rep     = 10
+  )
+}
+
+}
+\seealso{
+\code{\link[survival]{coxph}},
+\code{Zresidual.coxph.frailty},
+\code{CV.Zresidual.coxph},
+\code{make_fold}
 }

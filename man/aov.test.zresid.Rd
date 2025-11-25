@@ -7,7 +7,7 @@
 aov.test.zresid(Zresidual, X = c("lp", "covariate"), k.anova = 10)
 }
 \arguments{
-\item{Zresidual}{A z-residual.}
+\item{Zresidual}{A Z-residual.}
 
 \item{X}{Linear predictor or covariate}
 

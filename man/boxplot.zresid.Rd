@@ -2,7 +2,7 @@
 % Please edit documentation in R/boxplot.zresid.R
 \name{boxplot.zresid}
 \alias{boxplot.zresid}
-\title{A function to draw box plot of a z-residual}
+\title{Boxplot of Z-Residuals}
 \usage{
 \method{boxplot}{zresid}(
   Zresidual,
@@ -18,8 +18,99 @@
 )
 }
 \arguments{
-\item{Zresidual}{A z-residual.}
+\item{Zresidual}{A matrix of Z-residuals with one column per MCMC iteration.
+Must contain attributes:
+\describe{
+  \item{\code{"type"}}{Model type used to generate residuals (e.g., hurdle, truncated).}
+  \item{\code{"fitted.value"}}{Vector of fitted values for the model.}
+  \item{\code{"covariates"}}{Optional data frame of covariates.}
+  \item{\code{"zero_id"}}{Indices of zero observations (if applicable).}
+}}
+
+\item{irep}{Integer vector indicating which columns of
+\code{Zresidual} to plot. Default is \code{1}.}
+
+\item{X}{Character string specifying the x-axis variable:
+\itemize{
+  \item \code{"fitted.value"} (default): Bin fitted values.
+  \item \code{"covariate"}: Display a list of covariate names.
+  \item A specific covariate name present in \code{attr(Zresidual, "covariates")}.
+}}
+
+\item{num.bin}{Integer. Number of bins for grouping fitted values or selected
+covariate. Defaults to \code{10}.}
+
+\item{normality.test}{Character vector specifying which normality tests to report:
+\itemize{
+  \item \code{"SW"} - Shapiro-Wilk test for Z-residuals.
+  \item \code{"AOV"} - ANOVA-based test for variance/mean structure.
+  \item \code{"BL"} - Bartlett-type test for variance homogeneity.
+}
+Defaults to \code{c("SW","AOV","BL")}.}
+
+\item{k.test}{Integer. Number of groups to use for ANOVA/Bartlett-type tests.
+Default is \code{10}.}
+
+\item{main.title}{Character. Main title of the plot. Default includes the model
+type automatically.}
+
+\item{outlier.return}{Logical. If \code{TRUE}, returns the index of Z-residual
+values exceeding the threshold defined by \code{outlier.value}. Default is
+\code{FALSE}.}
+
+\item{outlier.value}{Numeric. Threshold for defining outliers based on absolute
+Z-residual magnitude. Default is \code{3.5}.}
+
+\item{...}{Additional graphical parameters passed to \code{\link[graphics]{plot}}
+or \code{\link[graphics]{legend}}.}
+}
+\value{
+If \code{outlier.return = TRUE}, returns a list containing:
+\itemize{
+  \item \code{outliers} - vector of indices where \code{|Zresidual| > outlier.value}.
+}
+Otherwise, the function returns \code{NULL} (invisible) and produces a diagnostic plot.
 }
 \description{
-A function to draw box plot of a z-residual
+Produces a boxplot of Z-residuals grouped by binned fitted values or a selected
+covariate. This diagnostic plot supports other count-data models (e.g. Bayesian
+hurdle, zero-truncated) by visualizing residual distribution, detecting outliers,
+and evaluating normality assumptions using Shapiro-Wilk, ANOVA, or Bartlett-type
+tests for Z-residuals.
+}
+\details{
+The function generates boxplots of Z-residuals across binned fitted values (or a
+selected covariate), which helps detect lack of fit, heteroscedasticity,
+and model misspecification.
+
+Infinite and non-finite residuals are automatically replaced with a maximal
+finite value (with preserved sign), and a warning message is displayed.
+
+When \code{X="covariate"}, users may supply any covariate name available in the
+\code{"covariates"} attribute. If a covariate contains too few unique bins,
+fitted values are transformed using \code{log()} to stabilize binning, with a
+message provided.
+
+Normality diagnostics are displayed in the plot legend. Internally, the function
+calls:
+\code{sw.test.zresid()}, \code{aov.test.zresid()}, and
+\code{bartlett.test.zresid()}.
+}
+\examples{
+\dontrun{
+# Assuming 'zres' is a Z-residual matrix produced by a model-fitting function:
+boxplot.zresid(zres)
+
+# Plot against a specific covariate
+boxplot.zresid(zres, X = "age")
+
+# Return outliers
+box.out <- boxplot.zresid(zres, outlier.return = TRUE)
+}
+
+}
+\seealso{
+\code{\link[graphics]{plot}}, \code{\link[graphics]{boxplot}},
+\code{\link[graphics]{legend}},
+\code{sw.test.zresid}, \code{aov.test.zresid}, \code{bartlett.test.zresid}
 }

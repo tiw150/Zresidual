@@ -2,8 +2,6 @@
 #'
 #' This function calculates Z-residuals based on a fitted `coxph` object from the `survival` package.
 #'
-#' @importFrom survival
-#' @importFrom stats qnorm runif
 #'
 #' @param fit_coxph A fitted object from the `coxph` function in the `survival` package.
 #' @param newdata Optional \code{data.frame} containing the variables used in \code{fit_coxph$formula}. If \code{NULL} (the default), residuals are computed on the original data used to fit the model. If supplied, \code{newdata} must contain the survival response and all covariates appearing in the original model formula.

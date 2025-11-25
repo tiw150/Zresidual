@@ -2,7 +2,7 @@
 % Please edit documentation in R/qqnorm.zresid.R
 \name{qqnorm.zresid}
 \alias{qqnorm.zresid}
-\title{A function to draw qq plot of a z-residual}
+\title{Normal Q-Q Plot for Z-Residuals with Outlier Detection and Normality Diagnostics}
 \usage{
 \method{qqnorm}{zresid}(
   Zresidual,
@@ -21,22 +21,101 @@
 )
 }
 \arguments{
-\item{Zresidual}{A z-residual.}
+\item{Zresidual}{A numeric matrix of Z-residuals where each column corresponds
+to an iteration or predictive draw. The function also uses the attribute
+\code{"type"} (optional model name) to construct default titles.}
 
-\item{diagnosis.test}{diagnosis test}
+\item{irep}{Integer or vector of integers indicating which column(s) of
+\code{Zresidual} to plot. Defaults to \code{1}.}
 
-\item{legend.settings}{A list of parameters available in legend().}
+\item{diagnosis.test}{Character string indicating the normality test to perform.
+Currently only \code{"SW"} (Shapiro–Wilk test; using \code{sw.test.zresid()})
+is supported.}
 
-\item{point.clr}{A vector of colors of points.}
+\item{main.title}{Main title of the plot. If missing, it is automatically
+constructed using the \code{"type"} attribute of \code{Zresidual}.}
 
-\item{point.type}{A vector of type of points.}
+\item{xlab, ylab}{Axis labels for the Q-Q plot.}
 
-\item{outlier.settings}{A list of parameters available in symbols() and text().}
+\item{outlier.return}{Logical; if \code{TRUE}, the function prints and returns
+the indices of detected outliers.}
 
-\item{X.anova}{X variable to run if ANOVA is selected in diagnosis.test. Possible c("lp", "covariate")}
+\item{outlier.value}{Numeric threshold used to classify an observation as
+an outlier based on \code{|Zresidual| > outlier.value}. Default is \code{3.5}.}
 
-\item{k.anova}{Number of bins if X.anova is 'covariates'.}
+\item{outlier.set}{Optional named list of graphical parameters passed to
+\code{\link[graphics]{symbols}} and \code{\link[graphics]{text}} for customizing
+the outlier annotation.}
+
+\item{my.mar}{Numeric vector giving margin sizes, passed internally to
+\code{par(mar = ...)}. Default is \code{c(5, 4, 4, 6) + 0.1}.}
+
+\item{legend.settings}{Optional named list of parameters to override default
+legend appearance settings.}
+
+\item{...}{Additional graphical arguments passed to \code{\link[stats]{qqnorm}}
+and \code{\link[graphics]{plot}}.}
+}
+\value{
+Invisibly returns a list with:
+\describe{
+  \item{outliers}{An integer vector containing the indices of detected outliers.}
+}
+If no outliers are detected, an empty integer vector is returned.
+
+A Q-Q plot is produced as a side effect.
 }
 \description{
-A function to draw qq plot of a z-residual
+Produces a normal Q-Q plot for Z-residuals, with optional
+Shapiro–Wilk normality testing, automatic handling of infinite and extreme values,
+axis breaks for very large residuals, and visual annotation of detected outliers.
+This diagnostic is designed for checking the normality assumption of Z-residuals
+obtained from Bayesian predictive model checks (posterior, LOOCV, ISCV, etc.).
+}
+\details{
+This function extends the base R Q-Q plot to better handle typical behavior
+of Z-residuals in Bayesian predictive checking:
+
+\itemize{
+  \item Infinite values (\code{Inf}/\code{-Inf}) are replaced with large finite
+        values and trigger a warning.
+  \item Very large Z-residuals (\code{|Z| ≥ 6}) are shown using axis breaks to
+        avoid plot distortion.
+  \item Outliers (\code{|Z| > outlier.value}) are highlighted and labeled.
+  \item Column-wise Shapiro–Wilk tests assess normality.
+  \item Legends summarize model type, selected Q-Q lines, and diagnostic results.
+}
+
+This diagnostic is suitable for Z-residuals such as randomized quantile
+residuals, posterior predictive Z-residuals, LOOCV/ISCV Z-residuals, and
+residuals from hurdle or zero-inflated Bayesian models.
+}
+\examples{
+set.seed(1)
+Z <- matrix(rnorm(200), ncol = 2)
+attr(Z, "type") <- "Example Model"
+
+# Basic Q-Q plot
+qqnorm.zresid(Z)
+
+# Use the second column with custom outlier threshold
+qqnorm.zresid(Z, irep = 2, outlier.value = 2.5)
+
+# Modify legend settings
+qqnorm.zresid(Z, legend.settings = list(cex = 0.8))
+
+}
+\references{
+Dunn, P. K., & Smyth, G. K. (1996). Randomized quantile residuals.
+\emph{Journal of Computational and Graphical Statistics}, 5(3), 236–244.
+
+Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B.,
+Vehtari, A., & Rubin, D. B. (2013).
+\emph{Bayesian Data Analysis}. CRC Press.
+}
+\seealso{
+\code{\link{boxplot.zresid}},
+  \code{\link[stats]{qqnorm}},
+  \code{\link[stats]{qqline}},
+  \code{\link[graphics]{plot}}.
 }

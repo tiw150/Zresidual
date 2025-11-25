@@ -2,19 +2,81 @@
 % Please edit documentation in R/Zresidual.R
 \name{Zresidual}
 \alias{Zresidual}
-\title{A title}
+\title{Compute Z-Residuals for Survival and Bayesian Regression Models}
 \usage{
 Zresidual(fit.object, nrep = 1, data = NULL, type = NULL, method = "iscv")
 }
 \arguments{
-\item{fit.object}{The fit object are one of 'coxph', 'survreg' and 'brms'.}
+\item{fit.object}{A fitted model object. Supported classes include:
+* `"coxph"` - Cox proportional hazards model (from **survival**)
+* `"survreg"` - Parametric survival regression
+* `"brmsfit"` - Bayesian regression model from **brms**}
+
+\item{nrep}{Integer. Number of repeated Z-residual samples to compute.
+Default is 1.}
+
+\item{data}{Optional dataset used for generating new model predictions
+and residuals. Required for some models, especially when frailty terms
+are present in `coxph`.}
+
+\item{type}{Optional character string. Residual type for **brms** hurdle
+and count models. The meaning of this argument depends on the chosen
+model family.}
+
+\item{method}{Character string indicating which predictive p-value
+method to use for Z-residual computation in `brmsfit` models.
+Options include `"iscv"` (importance-sampling cross-validated),
+`"loocv"`, and `"posterior"` (default `"iscv"`).}
 }
 \value{
-\itemize{
- \item{Zresid} {Z-residual}
-
-}
+An object of class `"zresid"` containing computed Z-residuals and any
+model-specific diagnostic output produced by the underlying Z-residual
+function.
 }
 \description{
-Some descriptions
+Computes Z-residuals for a variety of model types, including Cox proportional
+hazards models (`coxph`) with or without frailty terms, parametric survival
+regression models (`survreg`), and Bayesian regression models fitted using
+**brms** (`brmsfit`) for several supported distributions (Poisson,
+negative binomial, hurdle Poisson, hurdle negative binomial, and Bernoulli).
+
+The function automatically detects the model class and dispatches the call
+to the appropriate Z-residual calculation method.
+}
+\details{
+The function performs a class-specific dispatch:
+
+* **coxph**
+  - Detects frailty terms using `attr(fit.object$terms, "specials")$frailty`
+  - Calls `Zresidual.coxph()` or `Zresidual.coxph.frailty()`
+
+* **survreg**
+  - Calls `Zresidual.survreg()`
+
+* **brmsfit**
+  - Detects distribution via `family(fit.object)$family`
+  - Supported families:
+      `"hurdle_negbinomial"`, `"hurdle_poisson"`,
+      `"negbinomial"`, `"poisson"`, `"bernoulli"`
+  - Dispatches to the corresponding Z-residual function
+
+Unsupported model classes or unsupported **brms** families produce an error.
+}
+\examples{
+\dontrun{
+library(survival)
+fit1 <- coxph(Surv(time, status) ~ age + sex, data = lung)
+z1 <- Zresidual(fit1, nrep = 10, data = lung)
+
+library(brms)
+fit2 <- brm(count ~ x, data = df, family = poisson)
+z2 <- Zresidual(fit2, method = "posterior")
+}
+
+}
+\seealso{
+`CV.Zresidual()`,
+`Zresidual.coxph()`,
+`Zresidual.survreg()`,
+model-specific Z-residual methods for **brmsfit** families.
 }

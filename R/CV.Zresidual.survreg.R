@@ -17,7 +17,7 @@
 #'
 #' @param nfolds Integer. Number of cross-validation folds. If \code{NULL},
 #'   the number of folds is chosen heuristically based on the number of
-#'   available cores, approximately as \code{10 %/% ncores * ncores}.
+#'   available cores, approximately as \code{10 \%/\%  ncores * ncores}.
 #'
 #' @param foldlist Optional list specifying fold indices. Each element should
 #'   be an integer vector giving the row indices of the held-out (test) set

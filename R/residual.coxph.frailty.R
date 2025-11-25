@@ -22,7 +22,6 @@
 #' coefficients are stored in the fitted \code{coxph} object.
 #'
 #' @importFrom survival Surv
-#' @importFrom stats qnorm approx rowsum
 #'
 #' @param fit_coxph A fitted \code{\link[survival]{coxph}} object for a shared
 #'   frailty Cox model, typically specified with a term such as
