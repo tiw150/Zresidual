@@ -1,5 +1,70 @@
-#' CV Zresidual for shared fraitly model using coxph function
+#' Cross-Validated Z-Residuals for Cox Proportional Hazards Models
 #'
+#' @description
+#' Computes cross-validated (CV) Z-residuals for a Cox proportional hazards
+#' model (`coxph`), optionally including user-supplied data or performing
+#' CV using the model's internal model frame. The function performs
+#' K-fold cross-validation, fits the Cox model on each training subset, and
+#' computes Z-residuals on the held-out fold.
+#'
+#' @param fit.coxph A fitted Cox proportional hazards model from
+#'   \pkg{survival}, created using `coxph()`.
+#'
+#' @param data Optional data frame used for cross-validation.
+#'   If `NULL`, the model frame of `fit.coxph` is used internally.
+#'
+#' @param nfolds Integer. Number of cross-validation folds.
+#'   If `NULL`, folds are automatically constructed using a parallel
+#'   heuristic: number of folds = `10 %/% ncores * ncores`.
+#'
+#' @param foldlist Optional list specifying fold indices.
+#'   If `NULL`, folds are created using `make_fold()`, stratifying by
+#'   survival time and censoring status.
+#'
+#' @param n.rep Integer. Number of repeated Z-residual samples per observation.
+#'
+#' @details
+#' The function:
+#'
+#' 1. Extracts covariates and event information from either `data` or
+#'    the model frame of `fit.coxph`.
+#' 2. Creates or uses supplied folds.
+#' 3. For each fold:
+#'    * Fits the Cox model to the training subset.
+#'    * Computes Z-residuals on the held-out subset using
+#'      `Zresidual.coxph()`.
+#'    * Handles failed model fits by filling the fold with `NA`.
+#' 4. Combines results into a matrix of dimension
+#'    **n × n.rep**, where *n* is the number of observations.
+#'
+#' The returned object also stores attributes:
+#' * `"Survival.Prob"` – predicted survival probabilities
+#' * `"linear.pred"` – Cox linear predictors
+#' * `"censored.status"` – censoring indicator
+#' * `"covariates"` – original covariate matrix
+#' * `"object.model.frame"` – the reconstructed model frame
+#'
+#' @return
+#' A matrix of CV Z-residuals with attributes (listed above). The matrix
+#' is not given a specific S3 class by default, but is intended to be used
+#' by downstream diagnostic visualization or analysis tools.
+#'
+#' @examples
+#' \dontrun{
+#' library(survival)
+#' fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
+#'
+#' # 5-fold CV Z-residuals
+#' cvz <- CV.Zresidual.coxph(fit, data = lung, nfolds = 5, n.rep = 10)
+#' }
+#'
+#' @seealso
+#' `coxph()`,
+#' `Zresidual.coxph()`,
+#' `make_fold()`,
+#' `CV.Zresidual()`
+#'
+#' @export
 #' @importFrom parallel detectCores
 #' @importFrom doParallel registerDoParallel
 
