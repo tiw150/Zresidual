@@ -167,7 +167,13 @@ CVZresid.kidney<-CV.Zresidual(fit.object = fit_kidney,nrep=1000,nfolds = nrow(ki
 
 The first and second columns of Figure 1 display  scatterplots against the index and QQ plots of the Z-residuals calculated with the No-CV and LOOCV methods. The No-CV Z-residuals predominantly fall within the range of -3 to 3, displaying alignment with the $45^\circ$ straight line in the QQ plot. The QQ plot of the No-CV Z-residuals indicates a SW p-value of around 0.70, signifying a well-fitted model to the dataset. Thus, the diagnostic results using No-CV Z-residuals suggest the suitability of the shared frailty model for the dataset without identifying any outliers. However, analysis of the scatterplot of LOOCV Z-residuals reveals that the Z-residuals of cases labeled 20 and 42 exceed 3. These instances are considered outliers for the shared frailty model. The QQ plot of LOOCV Z-residuals displays a noticeable deviation from the $45^\circ$ straight line, attributed to the considerable Z-residuals of the two identified outliers. The SW p-value of LOOCV Z-residuals is notably small, measuring less than 0.01, as evident in the QQ plot. In summary, the diagnosis results with LOOCV Z-residuals suggest that the fitted shared frailty model is inadequate for this dataset, and two cases exhibit excessive Z-residuals, categorized as outliers for this model.
 
-```{r, fig.show="animate", animation.hook='gifski', interval=1, aniopts="controls,loop",cache= TRUE, fig.width=9, fig.height=9, echo=TRUE, results="hide",fig.align='center', fig.cap="Figure 1: Scatterplots and QQ plots of No-CV and LOOCV Z-residuals of the fitted shared frailty models based on the original kidney infection dataset.", message=FALSE}
+```{r, fig.show="animate", animation.hook = 'gifski',interval = 1, aniopts = "controls,loop",cache = TRUE,fig.width = 9,fig.height = 9, echo = TRUE,results = "hide",fig.align = 'center',fig.cap = "Figure 1: Scatterplots and QQ plots of No-CV and LOOCV Z-residuals of the fitted shared frailty models based on the original kidney infection dataset.", message = FALSE}
+
+if (all(is.finite(as.numeric(Zresid.kidney))) &&
+    all(is.finite(as.numeric(CVZresid.kidney)))) {
+  nrep_plot <- min(nrep,
+                   ncol(as.matrix(Zresid.kidney)),
+                   ncol(as.matrix(CVZresid.kidney)))
 
 for (j in 1:nrep) {
    par(mfrow = c(2, 2), mar = c(4, 4, 2, 2))
@@ -178,7 +184,9 @@ for (j in 1:nrep) {
     qqnorm.zresid(Zresid.kidney, main.title = "Z-residual QQ plot",index=j)
     qqnorm.zresid(CVZresid.kidney, main.title = "LOOCV Z-residual QQ plot",index=j)
     
-   
+  }
+} else {
+  message("Non-finite Z-residual values detected; animated plots are skipped in this vignette.")
 }
     
 ```

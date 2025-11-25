@@ -44,7 +44,6 @@ suppressPackageStartupMessages({
   library(animation)
   library(dplyr)
   library(distributions3)
-  library(hurdlemodels)
 })
 
 set.seed(123)
@@ -61,7 +60,6 @@ SW <- abbr("SW", "Shapiro-Wilk")
 ANOVA <- abbr("ANOVA", "Analysis of Variance")
 BL <- abbr("BL", "Bartlett's")
 
-path <- "C:/Users/ocf542/OneDrive - University of Saskatchewan/USask/Research/hurdle_model/demo/"
 ```
 
 
@@ -215,8 +213,7 @@ fit_hnb <- brm(bf(y ~ x + z, hu ~ x + z),
 ```
 
 ```{r echo=FALSE, eval=FALSE}
-# save(fit_hnb, file="./vignettes/vignette_hurdle_supportive/fit_hnb.Rdata")
-load("./vignette_hurdle_supportive/fit_hnb.Rdata")
+load("~/Desktop/Zresidual/vignettes/vignette_hurdle_supportive/fit_hnb.Rdata")
 ```
 
 The `hu` formula models the hurdle (zero) part, while the main formula models the count component. The `family = hurdle_negbinomial()` tells `brms` to use a hurdle model with a negative binomial distribution for the non-zero counts. We use default parameter setting on this example to fit the model.
@@ -232,14 +229,6 @@ zres_hnb_post_count <- Zresidual.hurdle.negbinomial(fit_hnb, type = "count", met
 zres_hnb_post_hurdle <- Zresidual.hurdle.negbinomial(fit_hnb, type = "hurdle", method = "post")
 ```
 
-```{r echo=FALSE}
-# save(zres_hnb_post_zero, file = "./vignettes/vignette_hurdle_supportive/zres_hnb_post_zero.Rdata")
-# save(zres_hnb_post_count, file = "./vignettes/vignette_hurdle_supportive/zres_hnb_post_count.Rdata")
-# save(zres_hnb_post_hurdle, file = "./vignettes/vignette_hurdle_supportive/zres_hnb_post_hurdle.Rdata")
-load(file = paste0(path, "zres_hnb_post_zero.Rdata"))
-load(file = paste0(path, "zres_hnb_post_count.Rdata"))
-load(file = paste0(path, "zres_hnb_post_hurdle.Rdata"))
-```
 
 ##### **What the function returns**
 

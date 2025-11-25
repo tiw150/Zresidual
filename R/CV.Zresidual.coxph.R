@@ -14,8 +14,8 @@
 #'   If `NULL`, the model frame of `fit.coxph` is used internally.
 #'
 #' @param nfolds Integer. Number of cross-validation folds.
-#'   If `NULL`, folds are automatically constructed using a parallel
-#'   heuristic: number of folds = `10 %/% ncores * ncores`.
+#'   If `NULL`, a default number of folds is chosen heuristically
+#'   based on the number of available cores (typically around 10 folds).
 #'
 #' @param foldlist Optional list specifying fold indices.
 #'   If `NULL`, folds are created using `make_fold()`, stratifying by
@@ -30,32 +30,36 @@
 #'    the model frame of `fit.coxph`.
 #' 2. Creates or uses supplied folds.
 #' 3. For each fold:
-#'    * Fits the Cox model to the training subset.
-#'    * Computes Z-residuals on the held-out subset using
+#'    - Fits the Cox model to the training subset.
+#'    - Computes Z-residuals on the held-out subset using
 #'      `Zresidual.coxph()`.
-#'    * Handles failed model fits by filling the fold with `NA`.
+#'    - Handles failed model fits by filling the fold with `NA`.
 #' 4. Combines results into a matrix of dimension
-#'    **n × n.rep**, where *n* is the number of observations.
-#'
-#' The returned object also stores attributes:
-#' * `"Survival.Prob"` – predicted survival probabilities
-#' * `"linear.pred"` – Cox linear predictors
-#' * `"censored.status"` – censoring indicator
-#' * `"covariates"` – original covariate matrix
-#' * `"object.model.frame"` – the reconstructed model frame
+#'    *n × n.rep*, where *n* is the number of observations.
 #'
 #' @return
-#' A matrix of CV Z-residuals with attributes (listed above). The matrix
-#' is not given a specific S3 class by default, but is intended to be used
-#' by downstream diagnostic visualization or analysis tools.
+#' A numeric matrix of dimension \eqn{n \times} \code{n.rep}, where
+#' \eqn{n} is the number of rows in \code{data} (if supplied) or in the
+#' internal model frame of \code{fit.coxph}. Columns are named
+#' `"CV.Z-residual 1"`, `"CV.Z-residual 2"`, …, up to \code{n.rep}.
+#' The matrix has the following attributes:
+#'
+#' * `type`: character string `"survival"`.
+#' * `Survival.Prob`: numeric vector of predicted survival probabilities
+#'   at the observed time for each observation.
+#' * `linear.pred`: numeric vector of Cox linear predictors.
+#' * `censored.status`: event indicator (1 = event, 0 = censored).
+#' * `covariates`: data frame of covariates used in the residual computation.
+#' * `object.model.frame`: data frame representing the model frame
+#'   underlying the CV residuals.
 #'
 #' @examples
 #' \dontrun{
-#' library(survival)
-#' fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
+#'   library(survival)
+#'   fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
 #'
-#' # 5-fold CV Z-residuals
-#' cvz <- CV.Zresidual.coxph(fit, data = lung, nfolds = 5, n.rep = 10)
+#'   # 5-fold CV Z-residuals
+#'   cvz <- CV.Zresidual.coxph(fit, data = lung, nfolds = 5, n.rep = 10)
 #' }
 #'
 #' @seealso
