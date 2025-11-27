@@ -4,7 +4,7 @@
 \alias{cdf.tnb}
 \title{Cumulative Distribution Function (CDF) of Zero-Truncated Negative Binomial Distribution}
 \usage{
-cdf.tnb(y, mu, size, lower.tail = FALSE, log.p = FALSE)
+\method{cdf}{tnb}(y, mu, size, lower.tail = FALSE, log.p = FALSE)
 }
 \arguments{
 \item{y}{Numeric vector of quantiles (count values) for which to compute the CDF.}

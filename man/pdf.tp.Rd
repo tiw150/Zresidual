@@ -4,7 +4,7 @@
 \alias{pdf.tp}
 \title{Probability Mass Function of the Zero-Truncated Poisson Distribution}
 \usage{
-pdf.tp(y, lambda, log.p = FALSE)
+\method{pdf}{tp}(y, lambda, log.p = FALSE)
 }
 \arguments{
 \item{y}{Numeric vector of observed count values (\code{y > 0}).}
