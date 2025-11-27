@@ -235,10 +235,6 @@ load("~/Desktop/Zresidual/data/fit_hnb.Rdata")
 #               family = hurdle_negbinomial())
 ```
 
-```{r echo=FALSE, eval=FALSE}
-
-```
-
 The `hu` formula models the hurdle (zero) part, while the main formula models the count component. The `family = hurdle_negbinomial()` tells `brms` to use a hurdle model with a negative binomial distribution for the non-zero counts. We use default parameter setting on this example to fit the model.
 
 ### Computing Z-residuals
@@ -247,9 +243,9 @@ In this example, we compute Z-residuals for the `r HNB` model separately for, lo
 
 ```{r eval=FALSE, message=FALSE, warning=FALSE, results='hide'}
 library(Zresidual)
-zres_hnb_post_zero <- Zresidual.hurdle.negbinomial(fit_hnb, type = "zero", method = "post")
-zres_hnb_post_count <- Zresidual.hurdle.negbinomial(fit_hnb, type = "count", method = "post")
-zres_hnb_post_hurdle <- Zresidual.hurdle.negbinomial(fit_hnb, type = "hurdle", method = "post")
+zres_hnb_post_zero <- Zresidual.hurdle.negbinomial(fit_hnb, type = "zero", method = "rpost")
+zres_hnb_post_count <- Zresidual.hurdle.negbinomial(fit_hnb, type = "count", method = "rpost")
+zres_hnb_post_hurdle <- Zresidual.hurdle.negbinomial(fit_hnb, type = "hurdle", method = "rpost")
 ```
 
 
@@ -293,135 +289,105 @@ qqnorm.zresid(zres_hnb_post_hurdle)
 
 ```{r message=FALSE, warning=FALSE, results='hide'}
 par(mfrow = c(1,3))
-plot.zresid(zres_hnb_post_zero, X="fitted.value", outlier.return = TRUE)
-plot.zresid(zres_hnb_post_count, X="fitted.value", outlier.return = TRUE, log = "x")
-plot.zresid(zres_hnb_post_hurdle, X="fitted.value", outlier.return = TRUE, log = "x")
+plot.zresid(zres_hnb_post_zero, X="lp", outlier.return = TRUE)
+plot.zresid(zres_hnb_post_count, X="lp", outlier.return = TRUE, log = "x")
+plot.zresid(zres_hnb_post_hurdle, X="lp", outlier.return = TRUE, log = "x")
 ```
 
 ```{r message=FALSE, warning=FALSE, results='hide'}
 par(mfrow = c(1,3))
-boxplot.zresid(zres_hnb_post_zero, X="fitted.value")
-boxplot.zresid(zres_hnb_post_count, X="fitted.value")
-boxplot.zresid(zres_hnb_post_hurdle, X="fitted.value")
+boxplot.zresid(zres_hnb_post_zero, X="lp")
+boxplot.zresid(zres_hnb_post_count, X="lp")
+boxplot.zresid(zres_hnb_post_hurdle, X="lp")
 ```
 
 The diagnostic evaluations for the true model—comprising scatter plots, Q-Q plots, and boxplots of Z-residuals—demonstrate that the model adequately captures the data structure. Across the logistic, count, and hurdle components, Z-residuals are evenly scattered around zero and mostly fall within the range of -3 to 3, indicating no visible model misfit. Complementary statistical tests, including the `r SW` test for normality, `r ANOVA` for mean equality, and `r BL` test for variance homogeneity, all return p-values above the 0.05 threshold. This suggests that the residuals follow a normal distribution and exhibit equal means and variances across fitted value intervals. The Q-Q plots further support normality through close alignment with the 45-degree reference line, while the boxplots confirm consistent residual means across partitions. Collectively, these diagnostics validate that the true model satisfies key distributional assumptions and that the proposed Z-residual methods are effective in detecting model adequacy.
 
 The plotting functions in the Zresidual package are designed to be flexible and lightweight, allowing users to quickly visualize residual patterns across different components of hurdle models. These functions support all customizable  arguments in base `R` functions such as axes, labels etc. by making them adaptable to a wide range of diagnostic workflows. The `plot.zresid()` function offers flexible diagnostic plotting for Z-residuals, supporting various x-axes such as index, fitted values, and covariates. Both `plot.zresid()` and `qqnorm.zresid()` automatically highlights outlier residuals that fall outside the typical (or user specified)range making it easier to identify problematic observations.
 
+##### Statistical Tests
 
+In addition to visual diagnostics, the package offers formal statistical tests to quantify deviations from normality or homogeneity of variance in Z-residuals by taking an `zresid` class object as an input.
 
-
-
-## Examples for Illustration and Demonstration
-
-###  Load the real Dataset
-
-
-
-
-```{r data-read}
-load("~/Desktop/Zresidual/data/kidney.rda")
-kidney$sex <- ifelse(kidney$sex == 1, "male", "female")
-kidney$sex<-as.factor(kidney$sex)
-kidney$id<-as.factor(kidney$id)
-
+**Shapiro-Wilk Test for Normality (`r SW`)**
+```{r}
+sw.test.zresid(zres_hnb_post_zero)
+sw.test.zresid(zres_hnb_post_count)
+sw.test.zresid(zres_hnb_post_hurdle)
 ```
 
 
-```{r echo = FALSE}
-DT::datatable(kidney,options = list(scrollX = TRUE, paging=TRUE), caption = "Table 1: A real dataset of acute myeloid leukemia patients.")
-
+**Analysis of Variance (`r ANOVA`)**
+```{r}
+aov.test.zresid(zres_hnb_post_zero)
+aov.test.zresid(zres_hnb_post_count)
+aov.test.zresid(zres_hnb_post_hurdle)
 ```
 
-### Fitting Models
+**Bartlett Test (`r BL`)**
+```{r}
+bartlett.test.zresid(zres_hnb_post_zero)
+bartlett.test.zresid(zres_hnb_post_count)
+bartlett.test.zresid(zres_hnb_post_hurdle)
+```
 
+These tests return standard `htest` or `aov` objects, making them easy to report, summarize, or integrate into automated workflows. One advantage of the visualization functions provided by the `Zresidual` package is that they allow users to diagnose the model both visually and using statistical tests simultaneously.
+
+We might be also interested in comparing our `r HNB` model to `r HP` model taking the `r HP` model as misspecified model .
+
+```{r eval=FALSE}
+load("~/Desktop/Zresidual/data/fit_hp.Rdata")
+#fit_hp <- brm(bf(y ~ x + z, hu ~ x + z),
+#               data = sim_data, 
+#               family = hurdle_negbinomial(),
+#               prior = prior("normal(1000, 1)", class = "shape"))
+```
+
+This `prior("normal(1000, 1)", class = "shape")` is a very strong prior, tightly centered around 1000. Its practical effect is to force the shape parameter to be very large, which in turn makes the model behave almost like a Poisson distribution for the positive counts (truncated part of the hurdle model).
+
+```{r eval=FALSE, message=FALSE, warning=FALSE, results='hide'}
+zres_hp_post_zero <- Zresidual.hurdle.poisson(fit_hp, type = "zero", method = "post")
+zres_hp_post_count <- Zresidual.hurdle.poisson(fit_hp, type = "count", method = "post")
+zres_hp_post_hurdle <- Zresidual.hurdle.poisson(fit_hp, type = "hurdle", method = "post")
+```
+
+
+```{r message=FALSE, warning=FALSE, results='hide'}
+par(mfrow = c(1,3))
+qqnorm.zresid(zres_hp_post_zero)
+qqnorm.zresid(zres_hp_post_count)
+qqnorm.zresid(zres_hp_post_hurdle)
+```
+
+```{r message=FALSE, warning=FALSE, results='hide'}
+par(mfrow = c(1,3))
+plot.zresid(zres_hp_post_zero, X="fitted.value", outlier.return = TRUE)
+plot.zresid(zres_hp_post_count, X="fitted.value", outlier.return = TRUE, log = "x")
+plot.zresid(zres_hp_post_hurdle, X="fitted.value", outlier.return = TRUE, log = "x")
+```
+
+```{r message=FALSE, warning=FALSE, results='hide'}
+par(mfrow = c(1,3))
+boxplot.zresid(zres_hp_post_zero, X="fitted.value")
+boxplot.zresid(zres_hp_post_count, X="fitted.value")
+boxplot.zresid(zres_hp_post_hurdle, X="fitted.value")
+```
+
+While the logistic component shows randomly scattered residuals and normal Q-Q alignment, supported by non-significant p-values, the count and hurdle components display clear signs of misspecification. These include banded residual patterns, heavy tails, Q-Q deviations, and significant p-values from the `r SW`, `r ANOVA`, and `r BL` tests. The overall hurdle model diagnostics reflect similar issues but cannot isolate the source of misfit. This highlights a key advantage of component-wise residual analysis: it reveals that the logistic sub-model is correctly specified, while the count component is not. Such separation enables more precise identification and correction of modeling issues.
+
+
+##Real Data Example for Illustration and Demonstration
 
 ```{r}
-fit_kidney <-coxph(Surv(time, status) ~ age + sex + disease+frailty(id, distribution="gamma"), data= kidney)
-```
-
-### Z-residual and LOOCV Z-residual calculation
-
-
-```{r, message=FALSE}
-library(Zresidual)
-Zresid.kidney<-Zresidual(fit.object = fit_kidney,nrep=10)
-CVZresid.kidney<-CV.Zresidual(fit.object = fit_kidney,nrep=10,nfolds = nrow(kidney))
-CVZresid.kidney<-CVZresid.kidney[-57,]
-```
-
-### Inspecting the Normality of Z-Residuals for Checking Overall GOF
-
-
-
-```{r}
-#| label: qqplot-zresid
-#| fig-show: animate
-#| animation.hook: "gifski"
-#| interval: 1
-#| aniopts: "controls,loop"
-#| cache: true
-#| fig-width: 9
-#| fig-height: 4.5
-#| echo: true
-#| results: hide
-#| fig-align: center
-#| fig-cap: "Figure 1: Scatterplots and QQ plots of No-CV and LOOCV Z-residuals of the fitted shared frailty models based on the original kidney infection dataset."
-par(mfrow = c(2, 2), mar = c(4, 4, 2, 2))
-plot.zresid(Zresid.kidney,X="index", main.title = "Z-residual Scatterplot",
-            outlier.return = TRUE)
-plot.zresid(CVZresid.kidney,X="index", main.title = "LOOCV Z-residual Scatterplot",
-            outlier.return = TRUE)
-qqnorm.zresid(Zresid.kidney, main.title = "Z-residual QQ plot")
-qqnorm.zresid(CVZresid.kidney, main.title = "LOOCV Z-residual QQ plot")
-    
-```
-
-### Diagnostic Tests with Z-residuals
-The Shapiro-Wilk (SW) or Shapiro-Francia (SF) normality tests applied to Z-residuals can be used to numerically test the overall GOF of the model. 
-
-```{r }
-
-sw.kidney<-sw.test.zresid(Zresid.kidney)
-sw.kidney.cv<-sw.test.zresid(CVZresid.kidney)
-sf.kidney<-sf.test.zresid(Zresid.kidney)
-sf.kidney.cv<-sf.test.zresid(CVZresid.kidney)
-gof_tests<-data.frame(sw.kidney,sw.kidney.cv,sf.kidney,sf.kidney.cv)
-```
-
-```{r echo = FALSE}
-DT::datatable(round(gof_tests,3),options = list(scrollX = TRUE, paging=TRUE),caption = "Table 2: 1000 replicated SW and SF p-values of No-CV and LOOCV Z-residuals of the fitted shared frailty models based on the original kidney infection dataset.")
-```
-There exists randomness in the Z-residuals of censored observations, meaning that different sets of Z-residuals can be generated for the same dataset using distinct random numbers. Thus, to test the robustness of the previously conducted diagnosis, we replicated a large number of realizations of Z-residuals. The Figure 2 exhibits histograms of 1000 SW test p-values, each derived from a set of No-CV or LOOCV Z-residuals. More than 95% of the SW p-values for No-CV Z-residuals surpass 0.05, whereas 100% of the SW p-values for LOOCV Z-residuals fall below 0.05. This consistency across numerous replications confirms that the evaluation of the misspecification of the shared frailty model is not incidental to a specific set of LOOCV Z-residuals but a recurring conclusion supported by extensive Z-residual replications.
-
-```{r echo=FALSE}
-pmin.sw.kidney<-pvalue.min(pv=sw.kidney)
-pmin.sw.kidney.cv<-pvalue.min(pv=sw.kidney.cv)
-pmin.sf.kidney<-pvalue.min(pv=sf.kidney)
-pmin.sf.kidney.cv<-pvalue.min(pv=sf.kidney.cv)
 
 ```
 
-```{r fig.height = 9,fig.width=9,fig.align='center', fig.cap="Figure 2: The histograms of 1000 replicated SW p-values of No-CV and LOOCV Z-residuals"}
-
-par(mfrow = c(2,2),mar=c(4,4,2,2))
-hist(sw.kidney,main="Replicated Z-SW P-values, No CV",breaks=20,
-     xlab="Z-SW P-values")
-abline(v=pmin.sw.kidney,col="red")
-hist(sw.kidney.cv,main="Replicated Z-SW P-values, LOOCV",breaks=20,
-     xlab="Z-SW P-values")
-abline(v=pmin.sw.kidney.cv,col="red")
-
-hist(sf.kidney,main="Replicated Z-SF P-values, No CV",breaks=20,
-     xlab="Z-SF P-values")
-abline(v=pmin.sf.kidney,col="red")
-hist(sf.kidney.cv,main="Replicated Z-SF P-values, LOOCV",breaks=20,
-     xlab="Z-SF P-values")
-abline(v=pmin.sf.kidney.cv,col="red")
-  
-```
 
 
+## Other Functions
+
+In addition to Z-residual computation and visualization, the `Zresidual` package provides several utility functions to support deeper model diagnostics and probabilistic analysis including functions for calculating the logarithmic predictive p-values (`post_logrpp()`, `iscv_logrpp()`). The package also includes dedicated functions to compute the logarithmic PDFs and CDFs for supported distributions. These can be used to manually inspect likelihood components or to derive custom model evaluation metrics. The log-scale calculations offer improved numerical stability, especially when dealing with small probabilities. These tools integrate seamlessly with outputs from Bayesian models fitted using `brms`, maintaining compatibility and flexibility. Together, they extend the package’s functionality beyond residual analysis, supporting a comprehensive and rigorous approach to Bayesian model checking.
+
+## References
 
 
