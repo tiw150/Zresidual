@@ -73,8 +73,8 @@ log.pred.dist.TP <- function(fit){
   lcdf_hat <- matrix(NA, mc_used, n)
 
   for (i in count.id){
-    lpmf_hat[,i] <- pdf.tp.li(sim.y[i], lambda = lambda[,i], log = TRUE)
-    lcdf_hat[,i] <- cdf.tp.li(sim.y[i], lambda = lambda[,i], lower.tail = FALSE, log.p = TRUE)
+    lpmf_hat[,i] <- pdf.tp(sim.y[i], lambda = lambda[,i], log = TRUE)
+    lcdf_hat[,i] <- cdf.tp(sim.y[i], lambda = lambda[,i], lower.tail = FALSE, log.p = TRUE)
   }
 
   pred_dist <- list(lpmf_hat = lpmf_hat, lcdf_hat = lcdf_hat, zero_id = zero_id)

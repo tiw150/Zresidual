@@ -242,7 +242,7 @@ The `hu` formula models the hurdle (zero) part, while the main formula models th
 
 In this example, we compute Z-residuals for the `r HNB` model separately for, logistic component (zero part) and count component using `Zresidual.hurdle.negbinomial()`. Apart from component-wise Z-residuals, the `Zresidual` package support overall model Z-residual calculation. The package take `brms` fit as an input and the `type` argument (`"zero", "count" or "hurdle"`) specifies which component to use when calculating the residuals. By default, Z-residuals are computed using the Importance Sampling Cross-Validation (`iscv`) method based on randomized predictive p-values (`r RPP`). Alternatively, users can choose the standard Posterior `r RPP` method by setting `method = "post"`.
 
-```{r eval=FALSE, message=FALSE, warning=FALSE, results='hide'}
+```{r}
 library(matrixStats)
 library(distributions3)
 library(Zresidual)
@@ -283,21 +283,21 @@ The `Zresidual` package includes built-in plotting functions (QQ Plot, Scatter P
 </ul>
 
 
-```{r message=FALSE, warning=FALSE, results='hide'}
+```{r }
 par(mfrow = c(1,3))
 qqnorm.zresid(zres_hnb_post_zero)
 qqnorm.zresid(zres_hnb_post_count)
 qqnorm.zresid(zres_hnb_post_hurdle)
 ```
 
-```{r message=FALSE, warning=FALSE, results='hide'}
+```{r }
 par(mfrow = c(1,3))
 plot.zresid(zres_hnb_post_zero, X="lp", outlier.return = TRUE)
 plot.zresid(zres_hnb_post_count, X="lp", outlier.return = TRUE, log = "x")
 plot.zresid(zres_hnb_post_hurdle, X="lp", outlier.return = TRUE, log = "x")
 ```
 
-```{r message=FALSE, warning=FALSE, results='hide'}
+```{r }
 par(mfrow = c(1,3))
 boxplot.zresid(zres_hnb_post_zero, X="lp")
 boxplot.zresid(zres_hnb_post_count, X="lp")
@@ -338,7 +338,7 @@ These tests return standard `htest` or `aov` objects, making them easy to report
 
 We might be also interested in comparing our `r HNB` model to `r HP` model taking the `r HP` model as misspecified model .
 
-```{r eval=FALSE}
+```{r }
 load("~/Desktop/Zresidual/data/fit_hp.Rdata")
 #fit_hp <- brm(bf(y ~ x + z, hu ~ x + z),
 #               data = sim_data, 
@@ -348,28 +348,28 @@ load("~/Desktop/Zresidual/data/fit_hp.Rdata")
 
 This `prior("normal(1000, 1)", class = "shape")` is a very strong prior, tightly centered around 1000. Its practical effect is to force the shape parameter to be very large, which in turn makes the model behave almost like a Poisson distribution for the positive counts (truncated part of the hurdle model).
 
-```{r eval=FALSE, message=FALSE, warning=FALSE, results='hide'}
-zres_hp_post_zero <- Zresidual.hurdle.poisson(fit_hp, type = "zero", method = "post")
-zres_hp_post_count <- Zresidual.hurdle.poisson(fit_hp, type = "count", method = "post")
-zres_hp_post_hurdle <- Zresidual.hurdle.poisson(fit_hp, type = "hurdle", method = "post")
+```{r }
+zres_hp_post_zero <- Zresidual.hurdle.poisson(fit_hp, type = "zero", method = "rpost")
+zres_hp_post_count <- Zresidual.hurdle.poisson(fit_hp, type = "count", method = "rpost")
+zres_hp_post_hurdle <- Zresidual.hurdle.poisson(fit_hp, type = "hurdle", method = "rpost")
 ```
 
 
-```{r message=FALSE, warning=FALSE, results='hide'}
+```{r}
 par(mfrow = c(1,3))
 qqnorm.zresid(zres_hp_post_zero)
 qqnorm.zresid(zres_hp_post_count)
 qqnorm.zresid(zres_hp_post_hurdle)
 ```
 
-```{r message=FALSE, warning=FALSE, results='hide'}
+```{r }
 par(mfrow = c(1,3))
 plot.zresid(zres_hp_post_zero, X="fitted.value", outlier.return = TRUE)
 plot.zresid(zres_hp_post_count, X="fitted.value", outlier.return = TRUE, log = "x")
 plot.zresid(zres_hp_post_hurdle, X="fitted.value", outlier.return = TRUE, log = "x")
 ```
 
-```{r message=FALSE, warning=FALSE, results='hide'}
+```{r }
 par(mfrow = c(1,3))
 boxplot.zresid(zres_hp_post_zero, X="fitted.value")
 boxplot.zresid(zres_hp_post_count, X="fitted.value")
