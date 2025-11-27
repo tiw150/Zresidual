@@ -425,13 +425,13 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
       test.legend <- list(legend = c(expression(bold("P-value:")), current_test_pv),
                           cex = 1, bty = "n", xpd = TRUE, adj = c(0, 0.5))
     }
-    default.legend <- list(legend = unique.cats, col = legend_colors,pch = legend_pchs,
-                           #  col = unique(col),pch = unique(pch),
-                           cex = 1, xpd = TRUE, bty = "n",
-                           title = if (!hasArg("title")) default.legend.title else title,
-                           horiz = FALSE, y.intersp = 1)
-    legend.args <- modifyList(default.legend, args[!names(args) %in% c("col", "pch")])
-    legend.args <- legend.args[names(legend.args) %in% formalArgs(legend)]
+    # default.legend <- list(legend = unique.cats, col = legend_colors,pch = legend_pchs,
+    #                        #  col = unique(col),pch = unique(pch),
+    #                        cex = 1, xpd = TRUE, bty = "n",
+    #                        title = if (!hasArg("title")) default.legend.title else title,
+    #                        horiz = FALSE, y.intersp = 1)
+    # legend.args <- modifyList(default.legend, args[!names(args) %in% c("col", "pch")])
+    # legend.args <- legend.args[names(legend.args) %in% formalArgs(legend)]
     default.outlier <- list(pos = 4, labels = id.outlier, cex = 0.8,
                             col = "darkolivegreen4", add = TRUE, inches = FALSE,
                             circles = rep((par("usr")[2] - par("usr")[1]) * 0.03,

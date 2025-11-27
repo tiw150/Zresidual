@@ -144,7 +144,7 @@ A QQ plot based on Z-residuals can be used to graphically assess the model's ove
 #| results: hide
 #| fig-align: center
 #| fig-cap: "Figure 1: QQ plots of Z-residuals for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients"
-nrep <- 10  
+nrep <- 5  
 foreach (j = 1:nrep) %do% {
   par(mfrow = c(1, 2), mar = c(4, 4, 2, 2))
   qqnorm.zresid(
@@ -178,7 +178,7 @@ The scatterplots of Z-residuals against the linear predictor don't exhibit visib
 #| fig-align: center
 #| fig-cap: "Figure 2: Scatter plots and box plots of Z-residuals against LP for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients"
 
-nrep=10
+nrep=5
 
 foreach (j = 1:nrep)  %do%  {
   par(mfrow = c(2, 2), mar = c(4, 4, 1.5, 2))
@@ -225,7 +225,7 @@ The above diagnostics results reveal no serious misspecification in  these two m
 #| results: hide
 #| fig-align: center
 #| fig-cap: "Figure 3: Scatter plots and box plots of Z-residuals against covariate (wbc) for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients"
-nrep=10
+nrep=5
 foreach (j = 1:nrep)  %do%  {
   par(mfrow = c(2, 2), mar = c(4, 4, 1.5, 2))
 
@@ -273,7 +273,7 @@ The boxplots of the Z-residuals against categorical covariate sex shows the grou
 #| results: hide
 #| fig-align: center
 #| fig-cap: "Figure 4: Scatter plots and box plots of Z-residuals against covariate (sex) for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients"
-nrep=10
+nrep=5
 foreach (j = 1:nrep)  %do%  {
   par(mfrow = c(1, 2))
   boxplot.zresid(
