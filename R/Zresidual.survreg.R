@@ -35,11 +35,6 @@
 #' z_residuals <- Zresidual.survreg(fit_weibull,newdata=lung)
 #' head(z_residuals)
 #'
-#' # Calculate Z-residuals for new data
-#' new_data <- data.frame(x = c(1, 2, 0.5))
-#' Z_residuals_new <- Zresidual.survreg(fit_weibull, newdata = new_data)
-#' head(z_residuals_new)
-#'
 #'
 Zresidual.survreg<-function(fit_survreg,newdata,n.rep=1)
 {
