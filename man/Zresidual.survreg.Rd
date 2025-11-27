@@ -32,10 +32,11 @@ This function calculates Z-residuals based on a fitted `survreg` object from the
 library(survival)
 
 # Fit a Weibull survival regression model
+data(cancer, package="survival")
 fit_weibull <- survreg(Surv(time, status) ~ age, data = lung, dist = "weibull")
 
 # Calculate Z-residuals for the fitted model
-z_residuals <- Zresidual.survreg(fit_weibull)
+z_residuals <- Zresidual.survreg(fit_weibull,newdata=lung)
 head(z_residuals)
 
 # Calculate Z-residuals for new data
