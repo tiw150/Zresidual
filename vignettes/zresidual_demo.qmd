@@ -84,7 +84,7 @@ This example provides a fundamental illustration of using the Z-residuals for di
 The dataset employed in our analysis contains 411 patients who were recorded at the M. D. Anderson Cancer Center between 1980 and 1996. These patients were under the age of 60 and hailed from 24 administrative districts. The data collected information on the survival time for acute myeloid leukemia and prognostic factors, including  age, sex, white blood cell count (wbc) at diagnosis, and the townsend score (tpi) for which higher values indicate less affluent areas. The censoring rate is 29.2%. The response variable of interest is the survival time in days, which is the time from entry to the study or death. The preliminary study showed that the wbc is highly right-skewed. Logarithm transformation is often used to reduce the impact of extremely large values of the covariate on the response variable, such as the wbc variable in this application. However, a logarithm transformation may mask the impact of extremely large values of the covariate on the outcome variable.
 
 ```{r data-read}
-data("LeukSurv")
+load("~/Desktop/Zresidual/data/LeukSurv.rda")
 LeukSurv$district<-as.factor(LeukSurv$district)
 LeukSurv$sex<-as.factor(LeukSurv$sex)
 LeukSurv$logwbc<- log(LeukSurv$wbc+0.001)
@@ -119,8 +119,8 @@ Once the model is fitted, we can calculate Z-residuals for two models.
 
 ```{r zresiduals-linear, cache=TRUE}
 library(Zresidual)
-Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,nrep=100)
-Zresid.LeukSurv.logwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,nrep=100)
+Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,nrep=10)
+Zresid.LeukSurv.logwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,nrep=10)
 
 ```
 
@@ -268,19 +268,19 @@ DT::datatable(round(gof_tests,3),options = list(scrollX = TRUE, paging=TRUE),cap
 The Z-residuals can be divided into $k$ groups by cutting the covariates or linear predictors into equally-spaced intervals. To quantitatively evaluate the homogeneity of grouped Z-residuals, we propose testing the equality of group means and group variances. For this purpose, we employ the F-test in ANOVA to assess the equality of means and Bartlett's test to examine the equality of variances.
 
 ```{r }
-aov.wbc.lp<-aov.test.zresid(Zresid.LeukSurv.wbc, k.anova=10)
-aov.lwbc.lp<-aov.test.zresid(Zresid.LeukSurv.logwbc, k.anova=10)
+aov.wbc.lp<-aov.test.zresid(Zresid.LeukSurv.wbc,X = "lp", k.anova=10)
+aov.lwbc.lp<-aov.test.zresid(Zresid.LeukSurv.logwbc,X = "lp", k.anova=10)
 
-#bl.wbc.lp<-bartlett.test.zresid(Zresid.LeukSurv.wbc, k.bl=10)
-#bl.lwbc.lp<-bartlett.test.zresid(Zresid.LeukSurv.logwbc, k.bl=10)
+bl.wbc.lp<-bartlett.test.zresid(Zresid.LeukSurv.wbc,X = "lp", k.bl=10)
+bl.lwbc.lp<-bartlett.test.zresid(Zresid.LeukSurv.logwbc,X = "lp", k.bl=10)
 
 aov.wbc<-aov.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.anova=10)
 aov.lwbc<-aov.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.anova=10)
 
-#bl.wbc<-bartlett.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.bl=10)
-#bl.lwbc<-bartlett.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.bl=10)
+bl.wbc<-bartlett.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.bl=10)
+bl.lwbc<-bartlett.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.bl=10)
 
-#homogeneity_tests<-data.frame(aov.wbc.lp,aov.lwbc.lp,bl.wbc.lp,bl.lwbc.lp,aov.wbc,aov.lwbc,bl.wbc,bl.lwbc)
+homogeneity_tests<-data.frame(aov.wbc.lp,aov.lwbc.lp,bl.wbc.lp,bl.lwbc.lp,aov.wbc,aov.lwbc,bl.wbc,bl.lwbc)
 
 
 ```
@@ -382,7 +382,9 @@ abline(v = pmin.aov.lwbc.LeukSurv, col = "red")
 The normality of censored Z-residuals is tested by an extended SF method for censored observations, which is implemented with gofTestCensored in the R package EnvStats.
 
 ```{r}
-censored.Zresid.LeukSurv.wbc<-residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type="censored Z-residual")
+censored.Zresid.LeukSurv.wbc<-residuals(fit.object = fit_LeukSurv_wbc,
+                                      data=LeukSurv,
+                                      residual.type="censored Z-residual")
 
 censored.Zresid.LeukSurv.logwbc<-residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type="censored Z-residual")
 
