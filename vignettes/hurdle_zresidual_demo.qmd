@@ -229,6 +229,7 @@ Now, we use the `brms` package to fit a hurdle negative binomial model to the si
 
 ```{r model_fit}
 library(brms)
+library(distributions3)
 load("~/Desktop/Zresidual/data/fit_hnb.Rdata")
 #fit_hnb <- brm(bf(y ~ x + z, hu ~ x + z),
 #               data = sim_data, 
@@ -242,6 +243,8 @@ The `hu` formula models the hurdle (zero) part, while the main formula models th
 In this example, we compute Z-residuals for the `r HNB` model separately for, logistic component (zero part) and count component using `Zresidual.hurdle.negbinomial()`. Apart from component-wise Z-residuals, the `Zresidual` package support overall model Z-residual calculation. The package take `brms` fit as an input and the `type` argument (`"zero", "count" or "hurdle"`) specifies which component to use when calculating the residuals. By default, Z-residuals are computed using the Importance Sampling Cross-Validation (`iscv`) method based on randomized predictive p-values (`r RPP`). Alternatively, users can choose the standard Posterior `r RPP` method by setting `method = "post"`.
 
 ```{r eval=FALSE, message=FALSE, warning=FALSE, results='hide'}
+library(matrixStats)
+library(distributions3)
 library(Zresidual)
 zres_hnb_post_zero <- Zresidual.hurdle.negbinomial(fit_hnb, type = "zero", method = "rpost")
 zres_hnb_post_count <- Zresidual.hurdle.negbinomial(fit_hnb, type = "count", method = "rpost")
