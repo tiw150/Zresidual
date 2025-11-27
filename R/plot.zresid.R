@@ -276,7 +276,9 @@ plot.zresid <- function(Zresidual, irep = 1:ncol(Zresidual), ylab = "Z-Residual"
 
   ## --- build legend args only when needed (fixed) ---
   legend.args <- NULL
-  if (!is.null(unique.cats)) {
+  if (!is.null(unique.cats) && length(unique.cats) > 0 &&
+      !is.null(legend_colors) && length(legend_colors) > 0 &&
+      !is.null(legend_pchs)   && length(legend_pchs)   > 0) {
     default.legend <- list(
       legend = unique.cats,
       col = legend_colors,
