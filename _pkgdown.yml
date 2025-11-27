@@ -8,7 +8,7 @@ articles:
     contents:
       - getting-started
       - zresidual_demo
-      - cv_Zresidual_demo
+      - cv_zresidual_demo
       - vignette_logistic
 navbar:
   title: "Z-residuals"

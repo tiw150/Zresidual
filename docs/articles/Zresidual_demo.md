@@ -1,6 +1,44 @@
 # Z-residual diagnostic tool for assessing covariate functional form in shared frailty models
 
-## Introduction
+## 1 Installing Zresidual and Other packages
+
+### 1.1 Installing Z-residua from the source
+
+### 1.2 Intalling and Loading R Packages used in this Demo
+
+Code
+
+``` r
+# Vector of required packages
+pkgs <- c(
+  "survival","EnvStats","foreach", "statip", "VGAM", "plotrix", "actuar",
+  "stringr", "Rlab", "dplyr", "rlang", "tidyr",
+  "matrixStats", "timeDate", "katex", "gt","loo"
+)
+
+# Check for missing packages and install if needed
+missing_pkgs <- pkgs[!pkgs %in% installed.packages()[, "Package"]]
+if (length(missing_pkgs) > 0) {
+  message("Installing missing packages: ", paste(missing_pkgs, collapse = ", "))
+  install.packages(missing_pkgs, dependencies = TRUE)
+} else {
+  message("All required packages are already installed.")
+}
+
+# Load all packages
+invisible(lapply(pkgs, library, character.only = TRUE))
+
+options(mc.cores = parallel::detectCores())
+```
+
+## 2 References
+
+Wu, T., Li, L., & Feng, C. (2024). Z-residual diagnostic tool for
+assessing covariate functional form in shared frailty models. Journal of
+Applied Statistics, 52(1), 28–58.
+https://doi.org/10.1080/02664763.2024.2355551
+
+## 3 Introduction
 
 This vignette explains how to use the Zresidual package to calculate
 Z-residuals based on the output of the coxph function from the survival
@@ -12,7 +50,7 @@ data analysis results, please refer to the original paper titled
 “Z-residual diagnostics for detecting misspecification of the functional
 form of covariates for shared frailty models.
 
-## Definition of Z-residual
+## 4 Definition of Z-residual
 
 We use Z-residual to diagnose shared frailty models in a Cox
 proportional hazard setting with a baseline function unspecified.
@@ -29,9 +67,9 @@ S_{ij}^{R}(y_{ij}, \delta_{ij}, U_{ij}) =
 \left\{
 \begin{array}{rl}
 S_{ij}(y_{ij}), & \text{if $y_{ij}$ is uncensored, i.e., $\delta_{ij}=1$,}\\
-U_{ij}\,S_{ij}(y_{ij}), & \text{if $y_{ij}$ is censored, i.e., $\delta_{ij}=0$,} 
+U_{ij}\,S_{ij}(y_{ij}), & \text{if $y_{ij}$ is censored, i.e., $\delta_{ij}=0$,}
 \end{array}
-\right. \label{rsp} 
+\right. \label{rsp}
 \end{equation}
 ```
 where $`U_{ij}`$ is a uniform random number on $`(0, 1)`$, and
@@ -59,27 +97,9 @@ However, the presence of such extreme SPs, even very few, is indicative
 of model misspecification. Normal transformation can highlight such
 extreme RSPs.
 
-## Installation
+## 5 Examples for Illustration and Demonstration
 
-You can install the development version of this package from
-[GitHub](https://github.com/tiw150/Zresidual) with:
-devtools::install_github(“tiw150/Zresidual”)
-
-## References
-
-Li, L., Wu, T., Feng, C., 2021. Model Diagnostics for Censored
-Regression via Randomized Survival Probabilities. Statistics in
-Medicine, 2020+. <https://doi.org/10.1002/sim.8852>;
-<https://onlinelibrary.wiley.com/share/author/F8DKBTX7IT7UT2WTSZP3?target=10.1002/sim.8852>
-
-Wu, T., Li, L., & Feng, C. (2024). Z-residual diagnostic tool for
-assessing covariate functional form in shared frailty models. Journal of
-Applied Statistics, 52(1), 28–58.
-<https://doi.org/10.1080/02664763.2024.2355551>
-
-## Examples for Illustration and Demonstration
-
-### A real dataset
+### 5.1 Load the real Dataset
 
 This example provides a fundamental illustration of using the
 Z-residuals for diagnosing both the overall goodness of fit (GOF) and
@@ -102,23 +122,23 @@ variable in this application. However, a logarithm transformation may
 mask the impact of extremely large values of the covariate on the
 outcome variable.
 
+Code
+
 ``` r
-library(Zresidual)
-library(survival)
-library(EnvStats)
-library(foreach)
-data("LeukSurv")
+load("~/Desktop/Zresidual/data/LeukSurv.rda")
 LeukSurv$district<-as.factor(LeukSurv$district)
 LeukSurv$sex<-as.factor(LeukSurv$sex)
 LeukSurv$logwbc<- log(LeukSurv$wbc+0.001)
 LeukSurv<-LeukSurv[LeukSurv$age<60,]
 ```
 
-### Fit the models
+### 5.2 Fitting Models
 
 We fitted two shared frailty models, one with covariates wbc, age, sex
 and tpi, which is labelled as the wbc model, and the other with log(wbc)
 replacing wbc, which is labelled as the lwbc model.
+
+Code
 
 ``` r
 fit_LeukSurv_wbc <- coxph(Surv(time, cens) ~ age  +sex+ wbc +tpi  +
@@ -127,16 +147,19 @@ fit_LeukSurv_logwbc  <- coxph(Surv(time, cens) ~ age +sex + logwbc + tpi +
           frailty(district, distribution="gamma"), data= LeukSurv)
 ```
 
-### Z-residual calculation
+### 5.3 Computing Z-Residuals
 
 Once the model is fitted, we can calculate Z-residuals for two models.
 
+Code
+
 ``` r
-Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,nrep=100)
-Zresid.LeukSurv.logwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,nrep=100)
+library(Zresidual)
+Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,nrep=10)
+Zresid.LeukSurv.logwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,nrep=10)
 ```
 
-### Graphically assess model
+### 5.4 Inspecting the Normality of Z-Residuals for Checking Overall GOF
 
 Diagnosing the overall goodness-of-fit (GOF) using Z-residuals as
 follows:
@@ -150,799 +173,21 @@ diagonal line. The Z-SW tests also give large p-values for two models,
 where Z-SW is the test method that the normality of Z-residuals is
 tested with the SW test.
 
+Code
+
 ``` r
-foreach (j = 1:nrep) %do%
-  {
-    par(mfrow = c(1, 2), mar = c(4, 4, 2, 2))
-    qqnorm.zresid(Zresid.LeukSurv.wbc, main.title = "Z-residual QQ plot of wbc model",index=j)
-    qqnorm.zresid(Zresid.LeukSurv.logwbc, main.title = "Z-residual QQ plot of lwbc model",index=j)
-  }
+  par(mfrow = c(1, 2), mar = c(4, 4, 2, 2))
+  qqnorm.zresid(
+    Zresid.LeukSurv.wbc,
+    main.title = "Z-residual QQ plot of wbc model"
+  )
+  qqnorm.zresid(
+    Zresid.LeukSurv.logwbc,
+    main.title = "Z-residual QQ plot of lwbc model"
+  )
 ```
 
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-    ## Warning in plot.window(...): "index" is not a graphical parameter
-
-    ## Warning in plot.xy(xy, type, ...): "index" is not a graphical parameter
-
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-    ## Warning in axis(side = side, at = at, labels = labels, ...): "index" is not a
-    ## graphical parameter
-
-    ## Warning in box(...): "index" is not a graphical parameter
-
-    ## Warning in title(...): "index" is not a graphical parameter
-
-![Figure 1: QQ plots of Z-residuals for the wbc (left panels) and lwbc
-(right panels) models fitted to the survival data of acute myeloid
-leukemia
-patients](Zresidual_demo_files/figure-html/unnamed-chunk-7-.gif)
+![](zresidual_demo_files/figure-html/qqplot-zresid-1.png)
 
 Figure 1: QQ plots of Z-residuals for the wbc (left panels) and lwbc
 (right panels) models fitted to the survival data of acute myeloid
@@ -966,6 +211,44 @@ and Z-BL are the methods of applying ANOVA and Bartlett to test the
 equality of the means and variances of Z-residuals against the groups
 formed with the linear predictor.
 
+Code
+
+``` r
+par(mfrow = c(2, 2), mar = c(4, 4, 1.5, 2))
+plot.zresid(
+    Zresid.LeukSurv.wbc,X="index",
+    main.title = "Z-residual Scatterplot of wbc model"
+  )
+```
+
+Code
+
+``` r
+plot.zresid(
+    Zresid.LeukSurv.logwbc,X="index",
+    main.title = "Z-residual Scatterplot of lwbc model"
+  )
+```
+
+Code
+
+``` r
+boxplot.zresid(
+    Zresid.LeukSurv.wbc,X = "lp",
+    main.title = "Z-residual Boxplot of wbc model"
+  )
+boxplot.zresid(
+    Zresid.LeukSurv.logwbc,X = "lp",
+    main.title = "Z-residual Boxplot of lwbc model"
+  )
+```
+
+![](zresidual_demo_files/figure-html/fig-zresid-scatter-box-.gif)
+
+Figure 1: Figure 2: Scatter plots and box plots of Z-residuals against
+LP for the wbc (left panels) and lwbc (right panels) models fitted to
+the survival data of acute myeloid leukemia patients
+
 Identifing specific model misspecifications using Z-residuals as
 follows:
 
@@ -986,7 +269,54 @@ covariate log(wbc) test for the lwbc models strongly suggests that the
 log transformation of wbc is likely inappropriate for modelling the
 survival time.
 
-### Quantitative assess model
+Code
+
+``` r
+  par(mfrow = c(2, 2), mar = c(4, 4, 1.5, 2))
+
+  plot.zresid(
+    Zresid.LeukSurv.wbc,
+    X = "wbc",
+    main.title = "Z-residual Scatterplot of wbc model"
+  )
+```
+
+Code
+
+``` r
+  plot.zresid(
+    Zresid.LeukSurv.logwbc,
+    X = "logwbc",
+    main.title = "Z-residual Scatterplot of lwbc model"
+  )
+```
+
+Code
+
+``` r
+  boxplot.zresid(
+    Zresid.LeukSurv.wbc,
+    X = "wbc",
+    main.title = "Z-residual Boxplot of wbc model"
+  )
+  boxplot.zresid(
+    Zresid.LeukSurv.logwbc,
+    X = "logwbc",
+    main.title = "Z-residual Boxplot of lwbc model"
+  )
+```
+
+![](zresidual_demo_files/figure-html/fig-zresid-scatter-box-wbc-.gif)
+
+Figure 2: Figure 3: Scatter plots and box plots of Z-residuals against
+covariate (wbc) for the wbc (left panels) and lwbc (right panels) models
+fitted to the survival data of acute myeloid leukemia patients
+
+The boxplots of the Z-residuals against categorical covariate sex shows
+the grouped Z-residuals appear to have equal means and variances across
+groups. The p-values of Z-AOV and Z-BL are greater than 0.05.
+
+### 5.5 Diagnostic Tests with Z-residuals
 
 The Shapiro-Wilk (SW) or Shapiro-Francia (SF) normality tests applied to
 Z-residuals can be used to numerically test the overall GOF of the
@@ -996,6 +326,8 @@ survival probabilities can be converted into a diagnosis of the
 normality of the censored Z-residuals. Thus, by utilizing the
 gofTestCensored function from the R package EnvStats, one can examine
 the normality of censored Z-residuals.
+
+Code
 
 ``` r
 sw.wbc<-sw.test.zresid(Zresid.LeukSurv.wbc)
@@ -1012,20 +344,40 @@ propose testing the equality of group means and group variances. For
 this purpose, we employ the F-test in ANOVA to assess the equality of
 means and Bartlett’s test to examine the equality of variances.
 
-``` r
-aov.wbc.lp<-aov.test.zresid(Zresid.LeukSurv.wbc, k.anova=10)
-aov.lwbc.lp<-aov.test.zresid(Zresid.LeukSurv.logwbc, k.anova=10)
+Code
 
-#bl.wbc.lp<-bartlett.test.zresid(Zresid.LeukSurv.wbc, k.bl=10)
-#bl.lwbc.lp<-bartlett.test.zresid(Zresid.LeukSurv.logwbc, k.bl=10)
+``` r
+library(Zresidual)
+
+packageVersion("Zresidual")
+```
+
+    [1] '0.1.0'
+
+Code
+
+``` r
+ls("package:Zresidual")[grep("bartlett", ls("package:Zresidual"))]
+```
+
+    [1] "bartlett.test.zresid"
+
+Code
+
+``` r
+aov.wbc.lp<-aov.test.zresid(Zresid.LeukSurv.wbc,X = "lp", k.anova=10)
+aov.lwbc.lp<-aov.test.zresid(Zresid.LeukSurv.logwbc,X = "lp", k.anova=10)
+
+bl.wbc.lp<-bartlett.test.zresid(Zresid.LeukSurv.wbc,X = "lp", k.bl=10)
+bl.lwbc.lp<-bartlett.test.zresid(Zresid.LeukSurv.logwbc,X = "lp", k.bl=10)
 
 aov.wbc<-aov.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.anova=10)
 aov.lwbc<-aov.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.anova=10)
 
-#bl.wbc<-bartlett.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.bl=10)
-#bl.lwbc<-bartlett.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.bl=10)
+bl.wbc<-bartlett.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.bl=10)
+bl.lwbc<-bartlett.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.bl=10)
 
-homogeneity_tests<-data.frame(aov.wbc.lp,aov.lwbc.lp,aov.wbc,aov.lwbc)
+homogeneity_tests<-data.frame(aov.wbc.lp,aov.lwbc.lp,bl.wbc.lp,bl.lwbc.lp,aov.wbc,aov.lwbc,bl.wbc,bl.lwbc)
 ```
 
 The histograms of 1000 replicated Z-residual test p-values for the wbc
@@ -1039,103 +391,142 @@ all smaller than 0.001. The consistently small Z-AOV with log(wbc)
 p-values further confirm that the log transformation of wbc is
 inappropriate for modelling the survival time.
 
+Code
+
 ``` r
-par(mfrow = c(4,2),mar=c(4,4,2,2))
-hist(sw.wbc,main="Replicated Z-SW P-values for wbc Model",breaks=20,
-     xlab="Z-SW P-values for wbc Model")
-abline(v=pmin.sw.LeukSurv.wbc,col="red")
-hist(sw.lwbc,main="Replicated Z-SW P-values for lwbc Model",breaks=20,
-     xlab="Z-SW P-values for lwbc Model")
-abline(v=pmin.sw.LeukSurv.lwbc,col="red")
+par(mfrow = c(4, 2), mar = c(4, 4, 2, 2))
 
-hist(sf.wbc,main="Replicated Z-SF P-values for wbc Model",breaks=20,
-     xlab="Z-SF P-values for wbc Model")
-abline(v=pmin.sf.LeukSurv.wbc,col="red")
-hist(sf.lwbc,main="Replicated Z-SF P-values for lwbc Model",breaks=20,
-     xlab="Z-SF P-values for lwbc Model")
-abline(v=pmin.sf.LeukSurv.lwbc,col="red")
+hist(
+  sw.wbc,
+  main  = "Replicated Z-SW P-values for wbc Model",
+  breaks = 20,
+  xlab  = "Z-SW P-values for wbc Model"
+)
+abline(v = pmin.sw.LeukSurv.wbc, col = "red")
 
-hist(aov.wbc.lp,main="Replicated Z-AOV with LP P-values for wbc Model",breaks=20,
-     xlab="Z-AOV with LP P-values for wbc Model")
-abline(v=pmin.aov.lp.LeukSurv.wbc,col="red")
-hist(aov.lwbc.lp,main="Replicated Z-AOV with LP P-values for lwbc Model",breaks=20,
-     xlab="Z-AOV with LP P-values for lwbc Model")
-abline(v=pmin.aov.lp.LeukSurv.lwbc,col="red")
+hist(
+  sw.lwbc,
+  main  = "Replicated Z-SW P-values for lwbc Model",
+  breaks = 20,
+  xlab  = "Z-SW P-values for lwbc Model"
+)
+abline(v = pmin.sw.LeukSurv.lwbc, col = "red")
 
-hist(aov.wbc,main="Replicated Z-AOV with wbc P-values for wbc Model",breaks=20,
-     xlab="Z-AOV with wbc P-values for wbc Model")
-abline(v=pmin.aov.wbc.LeukSurv,col="red")
-hist(aov.lwbc,main="Replicated Z-AOV with wbc P-values for lwbc Model",breaks=20,
-     xlab="Z-AOV with lwbc P-values for lwbc Model")
-abline(v=pmin.aov.lwbc.LeukSurv,col="red")
+hist(
+  sf.wbc,
+  main  = "Replicated Z-SF P-values for wbc Model",
+  breaks = 20,
+  xlab  = "Z-SF P-values for wbc Model"
+)
+abline(v = pmin.sf.LeukSurv.wbc, col = "red")
+
+hist(
+  sf.lwbc,
+  main  = "Replicated Z-SF P-values for lwbc Model",
+  breaks = 20,
+  xlab  = "Z-SF P-values for lwbc Model"
+)
+abline(v = pmin.sf.LeukSurv.lwbc, col = "red")
+
+hist(
+  aov.wbc.lp,
+  main  = "Replicated Z-AOV with LP P-values for wbc Model",
+  breaks = 20,
+  xlab  = "Z-AOV with LP P-values for wbc Model"
+)
+abline(v = pmin.aov.lp.LeukSurv.wbc, col = "red")
+
+hist(
+  aov.lwbc.lp,
+  main  = "Replicated Z-AOV with LP P-values for lwbc Model",
+  breaks = 20,
+  xlab  = "Z-AOV with LP P-values for lwbc Model"
+)
+abline(v = pmin.aov.lp.LeukSurv.lwbc, col = "red")
+
+hist(
+  aov.wbc,
+  main  = "Replicated Z-AOV with wbc P-values for wbc Model",
+  breaks = 20,
+  xlab  = "Z-AOV with wbc P-values for wbc Model"
+)
+abline(v = pmin.aov.wbc.LeukSurv, col = "red")
+
+hist(
+  aov.lwbc,
+  main  = "Replicated Z-AOV with wbc P-values for wbc Model",
+  breaks = 20,
+  xlab  = "Z-AOV with wbc P-values for lwbc Model"
+)
+abline(v = pmin.aov.lwbc.LeukSurv, col = "red")
 ```
 
-![Figure 5: The histograms of 1000 replicated Z-SW, Z-SF, Z-AOV-LP and
-Z-AOV-log(wbc) p-values for the wbc model (left panels) and the lwbc
-model (right panels) fitted with the survival times of acute myeloid
-leukemia patients. The vertical red lines indicate \$p\_{min}\$ for 1000
-replicated p-values. Note that the upper limit of the x-axis for
-Z-AOV-log(wbc) p-values for the lwbc model is 0.005, not 1 for
-others.](Zresidual_demo_files/figure-html/unnamed-chunk-13-1.png)
+![](zresidual_demo_files/figure-html/fig-zresid-hist-pvalues-1.png)
 
-Figure 5: The histograms of 1000 replicated Z-SW, Z-SF, Z-AOV-LP and
-Z-AOV-log(wbc) p-values for the wbc model (left panels) and the lwbc
-model (right panels) fitted with the survival times of acute myeloid
-leukemia patients. The vertical red lines indicate $`p_{min}`$ for 1000
-replicated p-values. Note that the upper limit of the x-axis for
-Z-AOV-log(wbc) p-values for the lwbc model is 0.005, not 1 for others.
+Figure 3: Figure 5: The histograms of 1000 replicated Z-SW, Z-SF,
+Z-AOV-LP and Z-AOV-log(wbc) p-values for the wbc model (left panels) and
+the lwbc model (right panels) fitted with the survival times of acute
+myeloid leukemia patients. The vertical red lines indicate $`p_{min}`$
+for 1000 replicated p-values. Note that the upper limit of the x-axis
+for Z-AOV-log(wbc) p-values for the lwbc model is 0.005, not 1 for
+others.
 
-## Other residual calculation
+## 6 Other residual calculation
 
-### censored Z-residuals
+### 6.1 censored Z-residuals
 
 The normality of censored Z-residuals is tested by an extended SF method
 for censored observations, which is implemented with gofTestCensored in
 the R package EnvStats.
 
-``` r
-censored.Zresid.LeukSurv.wbc<-residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type="censored Z-residual")
+Code
 
-censored.Zresid.LeukSurv.logwbc<-residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type="censored Z-residual")
+``` r
+censored.Zresid.LeukSurv.wbc<-surv_residuals(fit.object = fit_LeukSurv_wbc,
+                                      data=LeukSurv,
+                                      residual.type="censored Z-residual")
+
+censored.Zresid.LeukSurv.logwbc<-surv_residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type="censored Z-residual")
 
 gof.censored.zresidual(censored.Zresidual=censored.Zresid.LeukSurv.wbc)
 ```
 
-    ## [1] 0.5702324
+    [1] 0.5702324
+
+Code
 
 ``` r
 gof.censored.zresidual(censored.Zresidual=censored.Zresid.LeukSurv.logwbc)
 ```
 
-    ## [1] 0.07535993
+    [1] 0.07535993
 
-### Cox-Snell residual
+### 6.2 Cox-Snell residual
 
 The overall GOF tests and graphical checking with Cox-Snell residuals
 show that both the wbc and lwbc models provide adequate fits to the
 dataset. The estimated CHFs of the CS residuals of both of the wbc and
 lwbc models align closely along the $`45^{\circ}`$ diagonal line.
 
+Code
+
 ``` r
 ##unmodified CS residuals
-ucs.LeukSurv.wbc<-residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type = "Cox-Snell" )
-ucs.LeukSurv.logwbc<-residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "Cox-Snell" )
+ucs.LeukSurv.wbc<-surv_residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type = "Cox-Snell" )
+ucs.LeukSurv.logwbc<-surv_residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "Cox-Snell" )
 
 par(mfrow = c(1,2))
 plot.cs.residual(cs.residual=ucs.LeukSurv.wbc,main.title = "CS Residuals of wbc model")
 plot.cs.residual(cs.residual=ucs.LeukSurv.logwbc,main.title = "CS Residuals of lwbc model")
 ```
 
-![Figure 6: The estimated CHFs of the CS residuals for the wbc (left
-panels) and lwbc (right panels) models fitted to the survival data of
-acute myeloid leukemia
-patients](Zresidual_demo_files/figure-html/unnamed-chunk-15-1.png)
+![](zresidual_demo_files/figure-html/unnamed-chunk-6-1.png)
 
 Figure 6: The estimated CHFs of the CS residuals for the wbc (left
 panels) and lwbc (right panels) models fitted to the survival data of
 acute myeloid leukemia patients
 
-### Martingale residual
+### 6.3 Martingale residual
 
 The martingale residuals are mostly within the interval (-3, 1) for
 those two models. In the scatterplots of martingale residuals under the
@@ -1143,45 +534,43 @@ wbc model, the LOWESS curves have a slight upward slope on the left,
 while under the lwbc model, they display a pronounced downward curve.
 Both of these lines demonstrate noticeable non-horizontal trends.
 
+Code
+
 ``` r
-martg.LeukSurv.wbc<-residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type = "martingale")
-martg.LeukSurv.logwbc<-residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "martingale" )
+martg.LeukSurv.wbc<-surv_residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type = "martingale")
+martg.LeukSurv.logwbc<-surv_residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "martingale" )
 
 par(mfrow = c(1,2))
 plot.martg.resid(martg.LeukSurv.wbc,X="wbc",main.title = "Martingale Residuals of wbc Model")
 plot.martg.resid(martg.LeukSurv.logwbc,X="logwbc",main.title = "Martingale Residuals of lwbc Model")
 ```
 
-![Figure 7: Scatter plot of the martingale residuals for the wbc (left
-panels) and lwbc (right panels) models fitted to the survival data of
-acute myeloid leukemia
-patients](Zresidual_demo_files/figure-html/unnamed-chunk-16-1.png)
+![](zresidual_demo_files/figure-html/unnamed-chunk-7-1.png)
 
 Figure 7: Scatter plot of the martingale residuals for the wbc (left
 panels) and lwbc (right panels) models fitted to the survival data of
 acute myeloid leukemia patients
 
-### Deviance residual
+### 6.4 Deviance residual
 
 The deviance residuals are more symmetrically distributed than
 martingale residuals and they are mostly within the interval (-3, 3). In
 both models, the scatterplots of deviance residuals exhibit strikingly
 non-horizontal trends in their LOWESS curves.
 
+Code
+
 ``` r
 #Deviance residuals
-dev.LeukSurv.wbc<-residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type = "deviance" )
-dev.LeukSurv.logwbc<-residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "deviance" )
+dev.LeukSurv.wbc<-surv_residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type = "deviance" )
+dev.LeukSurv.logwbc<-surv_residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "deviance" )
 
 par(mfrow = c(1,2))
 plot.dev.resid(dev.LeukSurv.wbc,X="wbc",main.title = "Deviance Residuals of wbc Model")
 plot.dev.resid(dev.LeukSurv.logwbc,X="logwbc",main.title = "Deviance Residuals of lwbc Model")
 ```
 
-![Figure 8: Scatter plot of the deviance residuals for the wbc (left
-panels) and lwbc (right panels) models fitted to the survival data of
-acute myeloid leukemia
-patients](Zresidual_demo_files/figure-html/unnamed-chunk-17-1.png)
+![](zresidual_demo_files/figure-html/unnamed-chunk-8-1.png)
 
 Figure 8: Scatter plot of the deviance residuals for the wbc (left
 panels) and lwbc (right panels) models fitted to the survival data of

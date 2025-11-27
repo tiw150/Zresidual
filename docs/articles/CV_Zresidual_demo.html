@@ -10,7 +10,15 @@
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Cross-validatory Z-Residual for Diagnosing Shared Frailty Models">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="cv_zresidual_demo_files/libs/quarto-html/popper.min.js"></script><script src="cv_zresidual_demo_files/libs/quarto-html/tippy.umd.min.js"></script><link href="cv_zresidual_demo_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="cv_zresidual_demo_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link rel="stylesheet" href="mystyles.css">
+<link href="cv_zresidual_demo_files/libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="cv_zresidual_demo_files/libs/htmlwidgets-1.6.4/htmlwidgets.js"></script><link href="cv_zresidual_demo_files/libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
+<script src="cv_zresidual_demo_files/libs/datatables-binding-0.34.0/datatables.js"></script><link href="cv_zresidual_demo_files/libs/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
+<link href="cv_zresidual_demo_files/libs/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
+<link href="cv_zresidual_demo_files/libs/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
+<script src="cv_zresidual_demo_files/libs/crosstalk-1.2.2/js/crosstalk.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Cross-validatory Z-Residual for Diagnosing Shared Frailty Models">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -39,344 +47,179 @@
 
 
   </div>
-</nav><div class="container template-article">
-
-
-
-<link href="CV_Zresidual_demo_files/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
-<script src="CV_Zresidual_demo_files/htmlwidgets-1.6.4/htmlwidgets.js"></script><link href="CV_Zresidual_demo_files/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet">
-<script src="CV_Zresidual_demo_files/datatables-binding-0.34.0/datatables.js"></script><link href="CV_Zresidual_demo_files/dt-core-1.13.6/css/jquery.dataTables.min.css" rel="stylesheet">
-<link href="CV_Zresidual_demo_files/dt-core-1.13.6/css/jquery.dataTables.extra.css" rel="stylesheet">
-<script src="CV_Zresidual_demo_files/dt-core-1.13.6/js/jquery.dataTables.min.js"></script><link href="CV_Zresidual_demo_files/crosstalk-1.2.2/css/crosstalk.min.css" rel="stylesheet">
-<script src="CV_Zresidual_demo_files/crosstalk-1.2.2/js/crosstalk.min.js"></script><div class="row">
+</nav><div class="container template-quarto">
+<div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Cross-validatory Z-Residual for Diagnosing Shared Frailty Models</h1>
-                        <h4 data-toc-skip class="author">Tingxuan
-Wu</h4>
-            
-            <h4 data-toc-skip class="date">November 26, 2025</h4>
-      
-      <small class="dont-index">Source: <a href="https://github.com/tiw150/Zresidual/blob/HEAD/vignettes/CV_Zresidual_demo.Rmd" class="external-link"><code>vignettes/CV_Zresidual_demo.Rmd</code></a></small>
-      <div class="d-none name"><code>CV_Zresidual_demo.Rmd</code></div>
+
+
+      <p class="date">2025-11-27</p>
+
+      <small class="dont-index">Source: <a href="https://github.com/tiw150/Zresidual/blob/HEAD/vignettes/cv_zresidual_demo.qmd" class="external-link"><code>vignettes/cv_zresidual_demo.qmd</code></a></small>
+      <div class="d-none name"><code></code></div>
     </div>
 
-    
-    
-<style type="text/css">
-.main-container {
-  max-width: 2000px;
-  margin-left: 100px;
-  margin-right: 100px;
-}
 
-body{ /* Normal  */
-      font-size: 16px;
-}
-td {  /* Table  */
-  font-size: 12px;
-}
-h1.title {
-  font-size: 32px;
-  color: DarkRed;
-}
-h1 { /* Header 1 */
-  font-size: 28px;
-  color: DarkBlue;
-}
-h2 { /* Header 2 */
-    font-size: 25px;
-  color: DarkBlue;
-}
-h3 { /* Header 3 */
-  font-size: 22px;
-  font-family: "Times New Roman", Times, serif;
-  color: DarkBlue;
-}
-code.r{ /* Code block */
-    font-size: 12px;
-}
-pre { /* Code block - determines code spacing between lines */
-    font-size: 12px;
-    max-height: 250px;
-    overflow-y: auto;
 
-}
-</style>
-<div class="section level2">
-<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+
+
+
+    <section class="level2" data-number="1"><h2 data-number="1" id="installing-zresidual-and-other-packages">
+<span class="header-section-number">1</span> Installing Zresidual and Other packages<a class="anchor" aria-label="anchor" href="#installing-zresidual-and-other-packages"></a>
 </h2>
-<p>This vignette explains how to use the Zresidual package to calculate
-cross-validatory (CV) Z-residuals based on the output of the coxph
-function from the survival package in R. It also serves as a
-demonstration of how to use cross-validatory Z-residuals to identify
-outliers in semi-parametric shared frailty models. To fully understand
-the detailed definitions and the example data analysis results, please
-refer to the original paper titled “Cross-validatory Z-Residual for
-Diagnosing Shared Frailty Models”.</p>
+<section class="level3" data-number="1.1"><h3 data-number="1.1" id="installing-z-residua-from-the-source">
+<span class="header-section-number">1.1</span> Installing Z-residua from the source<a class="anchor" aria-label="anchor" href="#installing-z-residua-from-the-source"></a>
+</h3>
+</section><section class="level3" data-number="1.2"><h3 data-number="1.2" id="intalling-and-loading-r-packages-used-in-this-demo">
+<span class="header-section-number">1.2</span> Intalling and Loading R Packages used in this Demo<a class="anchor" aria-label="anchor" href="#intalling-and-loading-r-packages-used-in-this-demo"></a>
+</h3>
+<div class="cell" data-layout-align="center">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Vector of required packages</span></span>
+<span><span class="va">pkgs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"survival"</span>,<span class="st">"EnvStats"</span>,<span class="st">"foreach"</span>, <span class="st">"statip"</span>, <span class="st">"VGAM"</span>, <span class="st">"plotrix"</span>, <span class="st">"actuar"</span>,</span>
+<span>  <span class="st">"stringr"</span>, <span class="st">"Rlab"</span>, <span class="st">"dplyr"</span>, <span class="st">"rlang"</span>, <span class="st">"tidyr"</span>,</span>
+<span>  <span class="st">"matrixStats"</span>, <span class="st">"timeDate"</span>, <span class="st">"katex"</span>, <span class="st">"gt"</span>,<span class="st">"loo"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Check for missing packages and install if needed</span></span>
+<span><span class="va">missing_pkgs</span> <span class="op">&lt;-</span> <span class="va">pkgs</span><span class="op">[</span><span class="op">!</span><span class="va">pkgs</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html" class="external-link">installed.packages</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span>, <span class="st">"Package"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">missing_pkgs</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"Installing missing packages: "</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">missing_pkgs</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="va">missing_pkgs</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"All required packages are already installed."</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Load all packages</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">pkgs</span>, <span class="va">library</span>, character.only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">detectCores</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</details>
 </div>
-<div class="section level2">
-<h2 id="definition-of-cross-validatory-z-residual">Definition of Cross-validatory Z-residual<a class="anchor" aria-label="anchor" href="#definition-of-cross-validatory-z-residual"></a>
+</section></section><section class="level2" data-number="2"><h2 data-number="2" id="references">
+<span class="header-section-number">2</span> References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<p>We use Z-residual to diagnose shared frailty models in a Cox
-proportional hazard setting with a baseline function unspecified.
-Suppose there are
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math>
-groups of individuals, with each group containing
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>n</mi><mi>i</mi></msub><annotation encoding="application/x-tex">n_i</annotation></semantics></math>
-individuals, indexed as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>
-= 1, 2, ,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math>
-in the case of clustered failure survival data. Let
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">y_{ij}</annotation></semantics></math>
-be a possibly right-censored observation for the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>th
-individual from the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>th
-group, and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>δ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">\delta_{ij}</annotation></semantics></math>
-be the indicator for being uncensored. The normalized randomized
-survival probabilities (RSPs) for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">y_{ij}</annotation></semantics></math>
-in the shared frailty model is defined as:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>S</mi><mrow><mi>i</mi><mi>j</mi></mrow><mi>R</mi></msubsup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>δ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>U</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>S</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> is uncensored, i.e., </mtext><mspace width="0.333em"></mspace></mrow><mrow><msub><mi>δ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mn>1</mn></mrow><mtext mathvariant="normal">,</mtext></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>U</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="0.167em"></mspace><msub><mi>S</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> is censored, i.e., </mtext><mspace width="0.333em"></mspace></mrow><mrow><msub><mi>δ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mn>0</mn></mrow><mtext mathvariant="normal">,</mtext></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">\begin{equation}
+<p>Wu, T., Feng, C., &amp; Li, L. (2024). Cross-Validatory Z-Residual for Diagnosing Shared Frailty Models. The American Statistician, 79(2), 198–211. https://doi.org/10.1080/00031305.2024.2421370</p>
+</section><section class="level2" data-number="3"><h2 data-number="3" id="introduction">
+<span class="header-section-number">3</span> Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
+</h2>
+<p>This vignette explains how to use the Zresidual package to calculate cross-validatory (CV) Z-residuals based on the output of the coxph function from the survival package in R. It also serves as a demonstration of how to use cross-validatory Z-residuals to identify outliers in semi-parametric shared frailty models. To fully understand the detailed definitions and the example data analysis results, please refer to the original paper titled “Cross-validatory Z-Residual for Diagnosing Shared Frailty Models”.</p>
+</section><section class="level2" data-number="4"><h2 data-number="4" id="definition-of-cross-validatory-z-residual">
+<span class="header-section-number">4</span> Definition of Cross-validatory Z-residual<a class="anchor" aria-label="anchor" href="#definition-of-cross-validatory-z-residual"></a>
+</h2>
+<p>We use Z-residual to diagnose shared frailty models in a Cox proportional hazard setting with a baseline function unspecified. Suppose there are <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math> groups of individuals, with each group containing <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>n</mi><mi>i</mi></msub><annotation encoding="application/x-tex">n_i</annotation></semantics></math> individuals, indexed as <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math> = 1, 2, , <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math> in the case of clustered failure survival data. Let <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">y_{ij}</annotation></semantics></math> be a possibly right-censored observation for the <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>j</mi><annotation encoding="application/x-tex">j</annotation></semantics></math>th individual from the <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>th group, and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>δ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">\delta_{ij}</annotation></semantics></math> be the indicator for being uncensored. The normalized randomized survival probabilities (RSPs) for <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">y_{ij}</annotation></semantics></math> in the shared frailty model is defined as: <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>S</mi><mrow><mi>i</mi><mi>j</mi></mrow><mi>R</mi></msubsup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>δ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>U</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>S</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> is uncensored, i.e., </mtext><mspace width="0.333em"></mspace></mrow><mrow><msub><mi>δ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mn>1</mn></mrow><mtext mathvariant="normal">,</mtext></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>U</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="0.167em"></mspace><msub><mi>S</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> is censored, i.e., </mtext><mspace width="0.333em"></mspace></mrow><mrow><msub><mi>δ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mn>0</mn></mrow><mtext mathvariant="normal">,</mtext></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">\begin{equation}
 S_{ij}^{R}(y_{ij}, \delta_{ij}, U_{ij}) =
 \left\{
 \begin{array}{rl}
 S_{ij}(y_{ij}), &amp; \text{if $y_{ij}$ is uncensored, i.e., $\delta_{ij}=1$,}\\
-U_{ij}\,S_{ij}(y_{ij}), &amp; \text{if $y_{ij}$ is censored, i.e., $\delta_{ij}=0$,} 
+U_{ij}\,S_{ij}(y_{ij}), &amp; \text{if $y_{ij}$ is censored, i.e., $\delta_{ij}=0$,}
 \end{array}
-\right. \label{rsp} 
-\end{equation}</annotation></semantics></math> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>U</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">U_{ij}</annotation></semantics></math>
-is a uniform random number on
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(0, 1)</annotation></semantics></math>,
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>S</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>⋅</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">S_{ij}(\cdot)</annotation></semantics></math>
-is the postulated survival function for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">t_{ij}</annotation></semantics></math>
-given
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">x_{ij}</annotation></semantics></math>.
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>S</mi><mrow><mi>i</mi><mi>j</mi></mrow><mi>R</mi></msubsup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>δ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>U</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">S_{ij}^{R}(y_{ij}, \delta_{ij}, U_{ij})</annotation></semantics></math>
-is a random number between
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0</mn><annotation encoding="application/x-tex">0</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>S</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">S_{ij}(y_{ij})</annotation></semantics></math>
-when
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">y_{ij}</annotation></semantics></math>
-is censored. It is proved that the RSPs are uniformly distributed on
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(0,1)</annotation></semantics></math>
-given
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mi>i</mi></msub><annotation encoding="application/x-tex">x_{i}</annotation></semantics></math>
-under the true model. Therefore, the RSPs can be transformed into
-residuals with any desired distribution. We prefer to transform them
-with the normal quantile:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>r</mi><mrow><mi>i</mi><mi>j</mi></mrow><mi>Z</mi></msubsup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>δ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>U</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>−</mi><msup><mi>Φ</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>S</mi><mrow><mi>i</mi><mi>j</mi></mrow><mi>R</mi></msubsup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>δ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>U</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
+\right. \label{rsp}
+\end{equation}</annotation></semantics></math> where <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>U</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">U_{ij}</annotation></semantics></math> is a uniform random number on <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(0, 1)</annotation></semantics></math>, and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>S</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>⋅</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">S_{ij}(\cdot)</annotation></semantics></math> is the postulated survival function for <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">t_{ij}</annotation></semantics></math> given <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">x_{ij}</annotation></semantics></math>. <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>S</mi><mrow><mi>i</mi><mi>j</mi></mrow><mi>R</mi></msubsup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>δ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>U</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">S_{ij}^{R}(y_{ij}, \delta_{ij}, U_{ij})</annotation></semantics></math> is a random number between <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0</mn><annotation encoding="application/x-tex">0</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>S</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">S_{ij}(y_{ij})</annotation></semantics></math> when <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">y_{ij}</annotation></semantics></math> is censored. It is proved that the RSPs are uniformly distributed on <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(0,1)</annotation></semantics></math> given <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mi>i</mi></msub><annotation encoding="application/x-tex">x_{i}</annotation></semantics></math> under the true model. Therefore, the RSPs can be transformed into residuals with any desired distribution. We prefer to transform them with the normal quantile: <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>r</mi><mrow><mi>i</mi><mi>j</mi></mrow><mi>Z</mi></msubsup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>δ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>U</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>−</mi><msup><mi>Φ</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>S</mi><mrow><mi>i</mi><mi>j</mi></mrow><mi>R</mi></msubsup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>δ</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>U</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">\begin{equation}
 r_{ij}^{Z}(y_{ij}, \delta_{ij}, U_{ij})=-\Phi^{-1} (S_{ij}^R(y_{ij}, \delta_{ij}, U_{ij})),\label{zresid}
-\end{equation}</annotation></semantics></math> which is normally
-distributed under the true model, so that we can conduct model
-diagnostics with Z-residuals for censored data in the same way as
-conducting model diagnostics for a normal regression model. There are a
-few advantages of transforming RSPs into Z-residuals. First, the
-diagnostics methods for checking normal regression are rich in the
-literature. Second, transforming RSPs into normal deviates facilitates
-the identification of extremely small and large RSPs. The frequency of
-such small RSPs may be too small to be highlighted by the plots of RSPs.
-However, the presence of such extreme SPs, even very few, is indicative
-of model misspecification. Normal transformation can highlight such
-extreme RSPs.</p>
-<p>In our study, we employ both leave-one-out cross-validation (LOOCV)
-and 10-fold cross-validation (10-fold CV) techniques to compute
-cross-validatory Z-residuals. In LOOCV Z-residual, one observation,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><annotation encoding="application/x-tex">t_{ij}^{test}</annotation></semantics></math>,
-is excluded from the dataset with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
-observations. The remaining observations, acting as the training
-dataset, are used for parameter estimation in the shared frailty model.
-Fitting the model to the training dataset produces the estimated
-regression coefficients,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mrow><mi>β</mi><mi>′</mi></mrow><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{\beta'}</annotation></semantics></math>,
-and frailty effects,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><msub><mi>z</mi><mi>i</mi></msub><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{z_i}</annotation></semantics></math>.
-The Breslow estimator helps estimate the cumulative baseline hazard
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><msub><mi>H</mi><mn>0</mn></msub><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{H_0}</annotation></semantics></math>).
-The survival function
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>S</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{S}{ij} (y{ij})</annotation></semantics></math>
-for the test observation
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><annotation encoding="application/x-tex">y_{ij}^{test}</annotation></semantics></math>
-is computed using:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>S</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo>exp</mo><mo stretchy="false" form="prefix">{</mo><mi>−</mi><mover><msub><mi>z</mi><mi>i</mi></msub><mo accent="true">̂</mo></mover><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mover><mrow><mi>β</mi><mi>′</mi></mrow><mo accent="true">̂</mo></mover><msub><mi>x</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><msub><mover><mi>H</mi><mo accent="true">̂</mo></mover><mn>0</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="postfix">}</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
+\end{equation}</annotation></semantics></math> which is normally distributed under the true model, so that we can conduct model diagnostics with Z-residuals for censored data in the same way as conducting model diagnostics for a normal regression model. There are a few advantages of transforming RSPs into Z-residuals. First, the diagnostics methods for checking normal regression are rich in the literature. Second, transforming RSPs into normal deviates facilitates the identification of extremely small and large RSPs. The frequency of such small RSPs may be too small to be highlighted by the plots of RSPs. However, the presence of such extreme SPs, even very few, is indicative of model misspecification. Normal transformation can highlight such extreme RSPs.</p>
+<p>In our study, we employ both leave-one-out cross-validation (LOOCV) and 10-fold cross-validation (10-fold CV) techniques to compute cross-validatory Z-residuals. In LOOCV Z-residual, one observation, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><annotation encoding="application/x-tex">t_{ij}^{test}</annotation></semantics></math>, is excluded from the dataset with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math> observations. The remaining observations, acting as the training dataset, are used for parameter estimation in the shared frailty model. Fitting the model to the training dataset produces the estimated regression coefficients, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mrow><mi>β</mi><mi>′</mi></mrow><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{\beta'}</annotation></semantics></math>, and frailty effects, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><msub><mi>z</mi><mi>i</mi></msub><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{z_i}</annotation></semantics></math>. The Breslow estimator helps estimate the cumulative baseline hazard (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><msub><mi>H</mi><mn>0</mn></msub><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{H_0}</annotation></semantics></math>). The survival function <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover><mi>S</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\hat{S}{ij} (y{ij})</annotation></semantics></math> for the test observation <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><annotation encoding="application/x-tex">y_{ij}^{test}</annotation></semantics></math> is computed using: <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>S</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo>exp</mo><mo stretchy="false" form="prefix">{</mo><mi>−</mi><mover><msub><mi>z</mi><mi>i</mi></msub><mo accent="true">̂</mo></mover><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mover><mrow><mi>β</mi><mi>′</mi></mrow><mo accent="true">̂</mo></mover><msub><mi>x</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><msub><mover><mi>H</mi><mo accent="true">̂</mo></mover><mn>0</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>y</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="postfix">}</mo><mi>.</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
 \hat{S}_{ij}(y_{ij}^{test}) = \exp \{- \hat{z_i} \exp(\hat{\beta'} x_{ij}) \hat{H}_0(y_{ij}^{test}) \}.
-\end{equation}</annotation></semantics></math> Subsequently, the RSP for
-the observed
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">t_{ij}</annotation></semantics></math>
-is defined as:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mover><mi>S</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow><mi>R</mi></msubsup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><mo>,</mo><msub><mi>d</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>U</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mover><mi>S</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><msubsup><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> is uncensored, i.e., </mtext><mspace width="0.333em"></mspace></mrow><mrow><msub><mi>d</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mn>1</mn></mrow><mtext mathvariant="normal">,</mtext></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>U</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="0.167em"></mspace><msub><mover><mi>S</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><msubsup><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> is censored, i.e., </mtext><mspace width="0.333em"></mspace></mrow><mrow><msub><mi>d</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mn>0</mn></mrow><mtext mathvariant="normal">.</mtext></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">\begin{equation}
+\end{equation}</annotation></semantics></math> Subsequently, the RSP for the observed <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">t_{ij}</annotation></semantics></math> is defined as: <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mover><mi>S</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow><mi>R</mi></msubsup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><mo>,</mo><msub><mi>d</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>U</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mover><mi>S</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><msubsup><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> is uncensored, i.e., </mtext><mspace width="0.333em"></mspace></mrow><mrow><msub><mi>d</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mn>1</mn></mrow><mtext mathvariant="normal">,</mtext></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>U</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mspace width="0.167em"></mspace><msub><mover><mi>S</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">if </mtext><mspace width="0.333em"></mspace></mrow><msubsup><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> is censored, i.e., </mtext><mspace width="0.333em"></mspace></mrow><mrow><msub><mi>d</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>=</mo><mn>0</mn></mrow><mtext mathvariant="normal">.</mtext></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">\begin{equation}
 \hat{S}_{ij}^{R}(t_{ij}^{test}, d_{ij}, U_{ij})=
 \left\{
 \begin{array}{rl}
 \hat{S}_{ij}(t_{ij}^{test}), &amp; \text{if $t_{ij}^{test}$ is uncensored, i.e., $d_{ij}=1$,}\\
-U_{ij}\,\hat{S}_{ij}(t_{ij}^{test}), &amp; \text{if $t_{ij}^{test}$ is censored, i.e., $d_{ij}=0$.} 
+U_{ij}\,\hat{S}_{ij}(t_{ij}^{test}), &amp; \text{if $t_{ij}^{test}$ is censored, i.e., $d_{ij}=0$.}
 \end{array}
-\right. 
-\end{equation}</annotation></semantics></math> Resulting in the
-Z-residual for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><annotation encoding="application/x-tex">t_{ij}^{test}</annotation></semantics></math>:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>z</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><mo>,</mo><msub><mi>d</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>U</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>−</mi><msup><mi>Φ</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mover><mi>S</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow><mi>R</mi></msubsup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><mo>,</mo><msub><mi>d</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>U</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
+\right.
+\end{equation}</annotation></semantics></math> Resulting in the Z-residual for <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><annotation encoding="application/x-tex">t_{ij}^{test}</annotation></semantics></math>: <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mover><mi>z</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><mo>,</mo><msub><mi>d</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>U</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>−</mi><msup><mi>Φ</mi><mrow><mi>−</mi><mn>1</mn></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mover><mi>S</mi><mo accent="true">̂</mo></mover><mrow><mi>i</mi><mi>j</mi></mrow><mi>R</mi></msubsup><mrow><mo stretchy="true" form="prefix">(</mo><msubsup><mi>t</mi><mrow><mi>i</mi><mi>j</mi></mrow><mrow><mi>t</mi><mi>e</mi><mi>s</mi><mi>t</mi></mrow></msubsup><mo>,</mo><msub><mi>d</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo>,</mo><msub><mi>U</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">\begin{equation}
 \hat{z}_{ij}(t_{ij}^{test}, d_{ij}, U_{ij})=-\Phi^{-1} (\hat{S}_{ij}^R(t_{ij}^{test}, d_{ij}, U_{ij})).
-\end{equation}</annotation></semantics></math> By repeating these steps
-for each observation
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
-times), a LOOCV predictive Z-residual is calculated for each
-observation.</p>
-<p>For cluster-based or categorical covariate values, specific
-considerations are employed during the LOOCV and k-fold CV methods.
-Clusters with only one observation cannot be included in the training
-dataset, and similar requirements are imposed on categorical covariates.
-As such, cross-validatory Z-residuals for these observations are
-designated as NA in the implementation.</p>
-</div>
-<div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+\end{equation}</annotation></semantics></math> By repeating these steps for each observation (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math> times), a LOOCV predictive Z-residual is calculated for each observation.</p>
+<p>For cluster-based or categorical covariate values, specific considerations are employed during the LOOCV and k-fold CV methods. Clusters with only one observation cannot be included in the training dataset, and similar requirements are imposed on categorical covariates. As such, cross-validatory Z-residuals for these observations are designated as NA in the implementation.</p>
+</section><section class="level2" data-number="5"><h2 data-number="5" id="examples-for-illustration-and-demonstration">
+<span class="header-section-number">5</span> Examples for Illustration and Demonstration<a class="anchor" aria-label="anchor" href="#examples-for-illustration-and-demonstration"></a>
 </h2>
-<p>You can install the development version of this package from <a href="https://github.com/tiw150/Zresidual" class="external-link">GitHub</a> with:
-devtools::install_github(“tiw150/Zresidual”)</p>
-</div>
-<div class="section level2">
-<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
-</h2>
-<p>Wu, T., Li, L., &amp; Feng, C. (2023). Cross-validatory Z-Residual
-for Diagnosing Shared Frailty Models. arXiv, page 2303.09616, 2023.
-Under review by The American Statistician. <a href="https://arxiv.org/abs/2303.09616" class="external-link uri">https://arxiv.org/abs/2303.09616</a></p>
-<p>Li, L., Wu, T., Feng, C., 2021. Model Diagnostics for Censored
-Regression via Randomized Survival Probabilities. Statistics in
-Medicine, 2020+. <a href="https://doi.org/10.1002/sim.8852" class="external-link uri">https://doi.org/10.1002/sim.8852</a>; <a href="https://arxiv.org/abs/1911.00198" class="external-link uri">https://arxiv.org/abs/1911.00198</a></p>
-</div>
-<div class="section level2">
-<h2 id="examples-for-illustration-and-demonstration">Examples for Illustration and Demonstration<a class="anchor" aria-label="anchor" href="#examples-for-illustration-and-demonstration"></a>
-</h2>
-<div class="section level3">
-<h3 id="a-real-dataset">A real dataset<a class="anchor" aria-label="anchor" href="#a-real-dataset"></a>
+<section class="level3" data-number="5.1"><h3 data-number="5.1" id="load-the-real-dataset">
+<span class="header-section-number">5.1</span> Load the real Dataset<a class="anchor" aria-label="anchor" href="#load-the-real-dataset"></a>
 </h3>
-<p>This example demonstrates the practical application of
-cross-validatory Z-residuals in identifying outliers within a study on
-kidney infections. The dataset comprises records from 38 kidney patients
-using a portable dialysis machine. It documents the times of the first
-and second recurrences of kidney infections for these patients. Each
-patient’s survival time is defined as the duration until infection from
-catheter insertion. The patient records are considered as clusters due
-to shared frailty, signifying the common effect across patients.
-Instances where the catheter is removed for reasons other than infection
-are treated as censored observations, accounting for 24% of the dataset.
-The dataset encompasses 38 patient clusters, with each patient having
-exactly two observations, resulting in a total sample size of 76. This
-dataset is frequently employed to exemplify shared frailty models.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tiw150.github.io/Zresidual">Zresidual</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival" class="external-link">survival</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"kidney"</span><span class="op">)</span></span>
+<p>This example demonstrates the practical application of cross-validatory Z-residuals in identifying outliers within a study on kidney infections. The dataset comprises records from 38 kidney patients using a portable dialysis machine. It documents the times of the first and second recurrences of kidney infections for these patients. Each patient’s survival time is defined as the duration until infection from catheter insertion. The patient records are considered as clusters due to shared frailty, signifying the common effect across patients. Instances where the catheter is removed for reasons other than infection are treated as censored observations, accounting for 24% of the dataset. The dataset encompasses 38 patient clusters, with each patient having exactly two observations, resulting in a total sample size of 76. This dataset is frequently employed to exemplify shared frailty models.</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="st">"~/Desktop/Zresidual/data/kidney.rda"</span><span class="op">)</span></span>
 <span><span class="va">kidney</span><span class="op">$</span><span class="va">sex</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">kidney</span><span class="op">$</span><span class="va">sex</span> <span class="op">==</span> <span class="fl">1</span>, <span class="st">"male"</span>, <span class="st">"female"</span><span class="op">)</span></span>
 <span><span class="va">kidney</span><span class="op">$</span><span class="va">sex</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">kidney</span><span class="op">$</span><span class="va">sex</span><span class="op">)</span></span>
 <span><span class="va">kidney</span><span class="op">$</span><span class="va">id</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">kidney</span><span class="op">$</span><span class="va">id</span><span class="op">)</span></span></code></pre></div>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"filter":"none","vertical":false,"caption":"<caption>Table 1: The kidney infection dataset<\/caption>","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","63","64","65","66","67","68","69","70","71","72","73","74","75","76"],["1","1","2","2","3","3","4","4","5","5","6","6","7","7","8","8","9","9","10","10","11","11","12","12","13","13","14","14","15","15","16","16","17","17","18","18","19","19","20","20","21","21","22","22","23","23","24","24","25","25","26","26","27","27","28","28","29","29","30","30","31","31","32","32","33","33","34","34","35","35","36","36","37","37","38","38"],[8,16,23,13,22,28,447,318,30,12,24,245,7,9,511,30,53,196,15,154,7,333,141,8,96,38,149,70,536,25,17,4,185,177,292,114,22,159,15,108,152,562,402,24,13,66,39,46,12,40,113,201,132,156,34,30,2,25,130,26,27,58,5,43,152,30,190,5,119,8,54,16,6,78,63,8],[1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,0,0,1,0,1,0,1,1,1,1,0,0,1,0,1,1,1,0,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,0,0,0,1,1,0],[28,28,48,48,32,32,31,32,10,10,16,17,51,51,55,56,69,69,51,52,44,44,34,34,35,35,42,42,17,17,60,60,60,60,43,44,53,53,44,44,46,47,30,30,62,63,42,43,43,43,57,58,10,10,52,52,53,53,54,54,56,56,50,51,57,57,44,45,22,22,42,42,52,52,60,60],["male","male","female","female","male","male","female","female","male","male","female","female","male","male","female","female","female","female","male","male","female","female","female","female","female","female","female","female","female","female","male","male","female","female","female","female","female","female","female","female","male","male","female","female","female","female","female","female","male","male","female","female","female","female","female","female","male","male","female","female","female","female","female","female","female","female","female","female","female","female","female","female","female","female","male","male"],["Other","Other","GN","GN","Other","Other","Other","Other","Other","Other","Other","Other","GN","GN","GN","GN","AN","AN","GN","GN","AN","AN","Other","Other","AN","AN","AN","AN","Other","Other","AN","AN","Other","Other","Other","Other","GN","GN","Other","Other","PKD","PKD","Other","Other","AN","AN","AN","AN","AN","AN","AN","AN","GN","GN","AN","AN","GN","GN","GN","GN","AN","AN","AN","AN","PKD","PKD","GN","GN","Other","Other","Other","Other","PKD","PKD","PKD","PKD"],[2.3,2.3,1.9,1.9,1.2,1.2,0.5,0.5,1.5,1.5,1.1,1.1,3,3,0.5,0.5,0.7,0.7,0.4,0.4,0.6,0.6,1.2,1.2,1.4,1.4,0.4,0.4,0.4,0.4,1.1,1.1,0.8,0.8,0.8,0.8,0.5,0.5,1.3,1.3,0.2,0.2,0.6,0.6,1.7,1.7,1,1,0.7,0.7,0.5,0.5,1.1,1.1,1.8,1.8,1.5,1.5,1.5,1.5,1.7,1.7,1.3,1.3,2.9,2.9,0.7,0.7,2.2,2.2,0.7,0.7,2.1,2.1,1.2,1.2]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>id<\/th>\n      <th>time<\/th>\n      <th>status<\/th>\n      <th>age<\/th>\n      <th>sex<\/th>\n      <th>disease<\/th>\n      <th>frail<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollX":true,"paging":true,"columnDefs":[{"className":"dt-right","targets":[2,3,4,7]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"id","targets":1},{"name":"time","targets":2},{"name":"status","targets":3},{"name":"age","targets":4},{"name":"sex","targets":5},{"name":"disease","targets":6},{"name":"frail","targets":7}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</details>
 </div>
-<div class="section level3">
-<h3 id="fit-the-models">Fit the models<a class="anchor" aria-label="anchor" href="#fit-the-models"></a>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-9eceb20dc2a931752ae4" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-9eceb20dc2a931752ae4">{"x":{"filter":"none","vertical":false,"caption":"<caption>Table 1: A real dataset of acute myeloid leukemia patients.<\/caption>","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","63","64","65","66","67","68","69","70","71","72","73","74","75","76"],["1","1","2","2","3","3","4","4","5","5","6","6","7","7","8","8","9","9","10","10","11","11","12","12","13","13","14","14","15","15","16","16","17","17","18","18","19","19","20","20","21","21","22","22","23","23","24","24","25","25","26","26","27","27","28","28","29","29","30","30","31","31","32","32","33","33","34","34","35","35","36","36","37","37","38","38"],[8,16,23,13,22,28,447,318,30,12,24,245,7,9,511,30,53,196,15,154,7,333,141,8,96,38,149,70,536,25,17,4,185,177,292,114,22,159,15,108,152,562,402,24,13,66,39,46,12,40,113,201,132,156,34,30,2,25,130,26,27,58,5,43,152,30,190,5,119,8,54,16,6,78,63,8],[1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,0,0,1,0,1,0,1,1,1,1,0,0,1,0,1,1,1,0,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,0,0,0,1,1,0],[28,28,48,48,32,32,31,32,10,10,16,17,51,51,55,56,69,69,51,52,44,44,34,34,35,35,42,42,17,17,60,60,60,60,43,44,53,53,44,44,46,47,30,30,62,63,42,43,43,43,57,58,10,10,52,52,53,53,54,54,56,56,50,51,57,57,44,45,22,22,42,42,52,52,60,60],["male","male","female","female","male","male","female","female","male","male","female","female","male","male","female","female","female","female","male","male","female","female","female","female","female","female","female","female","female","female","male","male","female","female","female","female","female","female","female","female","male","male","female","female","female","female","female","female","male","male","female","female","female","female","female","female","male","male","female","female","female","female","female","female","female","female","female","female","female","female","female","female","female","female","male","male"],["Other","Other","GN","GN","Other","Other","Other","Other","Other","Other","Other","Other","GN","GN","GN","GN","AN","AN","GN","GN","AN","AN","Other","Other","AN","AN","AN","AN","Other","Other","AN","AN","Other","Other","Other","Other","GN","GN","Other","Other","PKD","PKD","Other","Other","AN","AN","AN","AN","AN","AN","AN","AN","GN","GN","AN","AN","GN","GN","GN","GN","AN","AN","AN","AN","PKD","PKD","GN","GN","Other","Other","Other","Other","PKD","PKD","PKD","PKD"],[2.3,2.3,1.9,1.9,1.2,1.2,0.5,0.5,1.5,1.5,1.1,1.1,3,3,0.5,0.5,0.7,0.7,0.4,0.4,0.6,0.6,1.2,1.2,1.4,1.4,0.4,0.4,0.4,0.4,1.1,1.1,0.8,0.8,0.8,0.8,0.5,0.5,1.3,1.3,0.2,0.2,0.6,0.6,1.7,1.7,1,1,0.7,0.7,0.5,0.5,1.1,1.1,1.8,1.8,1.5,1.5,1.5,1.5,1.7,1.7,1.3,1.3,2.9,2.9,0.7,0.7,2.2,2.2,0.7,0.7,2.1,2.1,1.2,1.2]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>id<\/th>\n      <th>time<\/th>\n      <th>status<\/th>\n      <th>age<\/th>\n      <th>sex<\/th>\n      <th>disease<\/th>\n      <th>frail<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollX":true,"paging":true,"columnDefs":[{"className":"dt-right","targets":[2,3,4,7]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"id","targets":1},{"name":"time","targets":2},{"name":"status","targets":3},{"name":"age","targets":4},{"name":"sex","targets":5},{"name":"disease","targets":6},{"name":"frail","targets":7}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section><section class="level3" data-number="5.2"><h3 data-number="5.2" id="fitting-models">
+<span class="header-section-number">5.2</span> Fitting Models<a class="anchor" aria-label="anchor" href="#fitting-models"></a>
 </h3>
-<p>We fit a shared gamma frailty model with three covariates:
-covariates: age in years, gender (male or female), and four disease
-types (0=GN, 1=AN, 2=PKD, 3=Other).</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<p>We fit a shared gamma frailty model with three covariates: covariates: age in years, gender (male or female), and four disease types (0=GN, 1=AN, 2=PKD, 3=Other).</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit_kidney</span> <span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">status</span><span class="op">)</span> <span class="op">~</span> <span class="va">age</span> <span class="op">+</span> <span class="va">sex</span> <span class="op">+</span> <span class="va">disease</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/frailty.html" class="external-link">frailty</a></span><span class="op">(</span><span class="va">id</span>, distribution<span class="op">=</span><span class="st">"gamma"</span><span class="op">)</span>, data<span class="op">=</span> <span class="va">kidney</span><span class="op">)</span></span></code></pre></div>
+</details>
 </div>
-<div class="section level3">
-<h3 id="z-residual-and-loocv-z-residual-calculation">Z-residual and LOOCV Z-residual calculation<a class="anchor" aria-label="anchor" href="#z-residual-and-loocv-z-residual-calculation"></a>
+</section><section class="level3" data-number="5.3"><h3 data-number="5.3" id="z-residual-and-loocv-z-residual-calculation">
+<span class="header-section-number">5.3</span> Z-residual and LOOCV Z-residual calculation<a class="anchor" aria-label="anchor" href="#z-residual-and-loocv-z-residual-calculation"></a>
 </h3>
-<p>We computed Z-residuals using the No-CV and LOOCV methods for the
-kidney infection dataset. Given the similarity in performance between
-the 10-fold CV and LOOCV Z-residual methods demonstrated in the
-simulation studies and the manageable computational load, we focused on
-the LOOCV method.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">Zresid.kidney</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/Zresidual.html">Zresidual</a></span><span class="op">(</span>fit.object <span class="op">=</span> <span class="va">fit_kidney</span>,nrep<span class="op">=</span><span class="fl">1000</span><span class="op">)</span></span>
-<span><span class="va">CVZresid.kidney</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/CV.Zresidual.html">CV.Zresidual</a></span><span class="op">(</span>fit.object <span class="op">=</span> <span class="va">fit_kidney</span>,nrep<span class="op">=</span><span class="fl">1000</span>,nfolds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">kidney</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Warning in coxpenal.fit(X, Y, istrat, offset, init = init, control, weights =</span></span>
-<span><span class="co">## weights, : Inner loop failed to coverge for iterations 2</span></span></code></pre>
+<p>We computed Z-residuals using the No-CV and LOOCV methods for the kidney infection dataset. Given the similarity in performance between the 10-fold CV and LOOCV Z-residual methods demonstrated in the simulation studies and the manageable computational load, we focused on the LOOCV method.</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tiw150.github.io/Zresidual">Zresidual</a></span><span class="op">)</span></span>
+<span><span class="va">Zresid.kidney</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/Zresidual.html">Zresidual</a></span><span class="op">(</span>fit.object <span class="op">=</span> <span class="va">fit_kidney</span>,nrep<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">CVZresid.kidney</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/CV.Zresidual.html">CV.Zresidual</a></span><span class="op">(</span>fit.object <span class="op">=</span> <span class="va">fit_kidney</span>,nrep<span class="op">=</span><span class="fl">10</span>,nfolds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">kidney</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">CVZresid.kidney</span><span class="op">&lt;-</span><span class="va">CVZresid.kidney</span><span class="op">[</span><span class="op">-</span><span class="fl">57</span>,<span class="op">]</span></span></code></pre></div>
+</details>
 </div>
-<div class="section level3">
-<h3 id="graphically-assess-model">Graphically assess model<a class="anchor" aria-label="anchor" href="#graphically-assess-model"></a>
+</section><section class="level3" data-number="5.4"><h3 data-number="5.4" id="inspecting-the-normality-of-z-residuals-for-checking-overall-gof">
+<span class="header-section-number">5.4</span> Inspecting the Normality of Z-Residuals for Checking Overall GOF<a class="anchor" aria-label="anchor" href="#inspecting-the-normality-of-z-residuals-for-checking-overall-gof"></a>
 </h3>
-<p>The first and second columns of Figure 1 display scatterplots against
-the index and QQ plots of the Z-residuals calculated with the No-CV and
-LOOCV methods. The No-CV Z-residuals predominantly fall within the range
-of -3 to 3, displaying alignment with the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>45</mn><mo>∘</mo></msup><annotation encoding="application/x-tex">45^\circ</annotation></semantics></math>
-straight line in the QQ plot. The QQ plot of the No-CV Z-residuals
-indicates a SW p-value of around 0.70, signifying a well-fitted model to
-the dataset. Thus, the diagnostic results using No-CV Z-residuals
-suggest the suitability of the shared frailty model for the dataset
-without identifying any outliers. However, analysis of the scatterplot
-of LOOCV Z-residuals reveals that the Z-residuals of cases labeled 20
-and 42 exceed 3. These instances are considered outliers for the shared
-frailty model. The QQ plot of LOOCV Z-residuals displays a noticeable
-deviation from the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>45</mn><mo>∘</mo></msup><annotation encoding="application/x-tex">45^\circ</annotation></semantics></math>
-straight line, attributed to the considerable Z-residuals of the two
-identified outliers. The SW p-value of LOOCV Z-residuals is notably
-small, measuring less than 0.01, as evident in the QQ plot. In summary,
-the diagnosis results with LOOCV Z-residuals suggest that the fitted
-shared frailty model is inadequate for this dataset, and two cases
-exhibit excessive Z-residuals, categorized as outliers for this
-model.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">Zresid.kidney</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">&amp;&amp;</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">CVZresid.kidney</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">nrep_plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">nrep</span>,</span>
-<span>                   <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">Zresid.kidney</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>                   <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">CVZresid.kidney</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">nrep</span><span class="op">)</span> <span class="op">{</span></span>
-<span>   <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>, mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="../reference/plot.zresid.html">plot.zresid</a></span><span class="op">(</span><span class="va">Zresid.kidney</span>,X<span class="op">=</span><span class="st">"index"</span>, main.title <span class="op">=</span> <span class="st">"Z-residual Scatterplot"</span>,</span>
-<span>                index<span class="op">=</span><span class="va">j</span>,outlier.return <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="../reference/plot.zresid.html">plot.zresid</a></span><span class="op">(</span><span class="va">CVZresid.kidney</span>,X<span class="op">=</span><span class="st">"index"</span>, main.title <span class="op">=</span> <span class="st">"LOOCV Z-residual Scatterplot"</span>,</span>
-<span>                index<span class="op">=</span><span class="va">j</span>,outlier.return <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="../reference/qqnorm.zresid.html">qqnorm.zresid</a></span><span class="op">(</span><span class="va">Zresid.kidney</span>, main.title <span class="op">=</span> <span class="st">"Z-residual QQ plot"</span>,index<span class="op">=</span><span class="va">j</span><span class="op">)</span></span>
-<span>    <span class="fu"><a href="../reference/qqnorm.zresid.html">qqnorm.zresid</a></span><span class="op">(</span><span class="va">CVZresid.kidney</span>, main.title <span class="op">=</span> <span class="st">"LOOCV Z-residual QQ plot"</span>,index<span class="op">=</span><span class="va">j</span><span class="op">)</span></span>
-<span>    </span>
-<span>  <span class="op">}</span></span>
-<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"Non-finite Z-residual values detected; animated plots are skipped in this vignette."</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
+<p>The first and second columns of Figure 1 display scatterplots against the index and QQ plots of the Z-residuals calculated with the No-CV and LOOCV methods. The No-CV Z-residuals predominantly fall within the range of -3 to 3, displaying alignment with the <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>45</mn><mo>∘</mo></msup><annotation encoding="application/x-tex">45^\circ</annotation></semantics></math> straight line in the QQ plot. The QQ plot of the No-CV Z-residuals indicates a SW p-value of around 0.70, signifying a well-fitted model to the dataset. Thus, the diagnostic results using No-CV Z-residuals suggest the suitability of the shared frailty model for the dataset without identifying any outliers. However, analysis of the scatterplot of LOOCV Z-residuals reveals that the Z-residuals of cases labeled 20 and 42 exceed 3. These instances are considered outliers for the shared frailty model. The QQ plot of LOOCV Z-residuals displays a noticeable deviation from the <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>45</mn><mo>∘</mo></msup><annotation encoding="application/x-tex">45^\circ</annotation></semantics></math> straight line, attributed to the considerable Z-residuals of the two identified outliers. The SW p-value of LOOCV Z-residuals is notably small, measuring less than 0.01, as evident in the QQ plot. In summary, the diagnosis results with LOOCV Z-residuals suggest that the fitted shared frailty model is inadequate for this dataset, and two cases exhibit excessive Z-residuals, categorized as outliers for this model.</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>, mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plot.zresid.html">plot.zresid</a></span><span class="op">(</span><span class="va">Zresid.kidney</span>,X<span class="op">=</span><span class="st">"index"</span>, main.title <span class="op">=</span> <span class="st">"Z-residual Scatterplot"</span>,</span>
+<span>            outlier.return <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+</details><details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot.zresid.html">plot.zresid</a></span><span class="op">(</span><span class="va">CVZresid.kidney</span>,X<span class="op">=</span><span class="st">"index"</span>, main.title <span class="op">=</span> <span class="st">"LOOCV Z-residual Scatterplot"</span>,</span>
+<span>            outlier.return <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+</details><details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/qqnorm.zresid.html">qqnorm.zresid</a></span><span class="op">(</span><span class="va">Zresid.kidney</span>, main.title <span class="op">=</span> <span class="st">"Z-residual QQ plot"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/qqnorm.zresid.html">qqnorm.zresid</a></span><span class="op">(</span><span class="va">CVZresid.kidney</span>, main.title <span class="op">=</span> <span class="st">"LOOCV Z-residual QQ plot"</span><span class="op">)</span></span></code></pre></div>
+</details><div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="cv_zresidual_demo_files/figure-html/qqplot-zresid-.gif" width="864"></p>
+<figcaption>Figure 1: Scatterplots and QQ plots of No-CV and LOOCV Z-residuals of the fitted shared frailty models based on the original kidney infection dataset.</figcaption></figure>
 </div>
-<div class="section level3">
-<h3 id="quantitative-assess-model">Quantitative assess model<a class="anchor" aria-label="anchor" href="#quantitative-assess-model"></a>
+</div>
+</div>
+</section><section class="level3" data-number="5.5"><h3 data-number="5.5" id="diagnostic-tests-with-z-residuals">
+<span class="header-section-number">5.5</span> Diagnostic Tests with Z-residuals<a class="anchor" aria-label="anchor" href="#diagnostic-tests-with-z-residuals"></a>
 </h3>
-<p>The Shapiro-Wilk (SW) or Shapiro-Francia (SF) normality tests applied
-to Z-residuals can be used to numerically test the overall GOF of the
-model.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<p>The Shapiro-Wilk (SW) or Shapiro-Francia (SF) normality tests applied to Z-residuals can be used to numerically test the overall GOF of the model.</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sw.kidney</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/sw.test.zresid.html">sw.test.zresid</a></span><span class="op">(</span><span class="va">Zresid.kidney</span><span class="op">)</span></span>
 <span><span class="va">sw.kidney.cv</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/sw.test.zresid.html">sw.test.zresid</a></span><span class="op">(</span><span class="va">CVZresid.kidney</span><span class="op">)</span></span>
 <span><span class="va">sf.kidney</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/sf.test.zresid.html">sf.test.zresid</a></span><span class="op">(</span><span class="va">Zresid.kidney</span><span class="op">)</span></span>
 <span><span class="va">sf.kidney.cv</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/sf.test.zresid.html">sf.test.zresid</a></span><span class="op">(</span><span class="va">CVZresid.kidney</span><span class="op">)</span></span>
 <span><span class="va">gof_tests</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">sw.kidney</span>,<span class="va">sw.kidney.cv</span>,<span class="va">sf.kidney</span>,<span class="va">sf.kidney.cv</span><span class="op">)</span></span></code></pre></div>
-<div class="datatables html-widget html-fill-item" id="htmlwidget-e5c8c404fe174e4c81bd" style="width:100%;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-e5c8c404fe174e4c81bd">{"x":{"filter":"none","vertical":false,"caption":"<caption>Table 2: 1000 replicated SW and SF p-values of No-CV and LOOCV Z-residuals of the fitted shared frailty models based on the original kidney infection dataset.<\/caption>","data":[["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","34","35","36","37","38","39","40","41","42","43","44","45","46","47","48","49","50","51","52","53","54","55","56","57","58","59","60","61","62","63","64","65","66","67","68","69","70","71","72","73","74","75","76","77","78","79","80","81","82","83","84","85","86","87","88","89","90","91","92","93","94","95","96","97","98","99","100","101","102","103","104","105","106","107","108","109","110","111","112","113","114","115","116","117","118","119","120","121","122","123","124","125","126","127","128","129","130","131","132","133","134","135","136","137","138","139","140","141","142","143","144","145","146","147","148","149","150","151","152","153","154","155","156","157","158","159","160","161","162","163","164","165","166","167","168","169","170","171","172","173","174","175","176","177","178","179","180","181","182","183","184","185","186","187","188","189","190","191","192","193","194","195","196","197","198","199","200","201","202","203","204","205","206","207","208","209","210","211","212","213","214","215","216","217","218","219","220","221","222","223","224","225","226","227","228","229","230","231","232","233","234","235","236","237","238","239","240","241","242","243","244","245","246","247","248","249","250","251","252","253","254","255","256","257","258","259","260","261","262","263","264","265","266","267","268","269","270","271","272","273","274","275","276","277","278","279","280","281","282","283","284","285","286","287","288","289","290","291","292","293","294","295","296","297","298","299","300","301","302","303","304","305","306","307","308","309","310","311","312","313","314","315","316","317","318","319","320","321","322","323","324","325","326","327","328","329","330","331","332","333","334","335","336","337","338","339","340","341","342","343","344","345","346","347","348","349","350","351","352","353","354","355","356","357","358","359","360","361","362","363","364","365","366","367","368","369","370","371","372","373","374","375","376","377","378","379","380","381","382","383","384","385","386","387","388","389","390","391","392","393","394","395","396","397","398","399","400","401","402","403","404","405","406","407","408","409","410","411","412","413","414","415","416","417","418","419","420","421","422","423","424","425","426","427","428","429","430","431","432","433","434","435","436","437","438","439","440","441","442","443","444","445","446","447","448","449","450","451","452","453","454","455","456","457","458","459","460","461","462","463","464","465","466","467","468","469","470","471","472","473","474","475","476","477","478","479","480","481","482","483","484","485","486","487","488","489","490","491","492","493","494","495","496","497","498","499","500","501","502","503","504","505","506","507","508","509","510","511","512","513","514","515","516","517","518","519","520","521","522","523","524","525","526","527","528","529","530","531","532","533","534","535","536","537","538","539","540","541","542","543","544","545","546","547","548","549","550","551","552","553","554","555","556","557","558","559","560","561","562","563","564","565","566","567","568","569","570","571","572","573","574","575","576","577","578","579","580","581","582","583","584","585","586","587","588","589","590","591","592","593","594","595","596","597","598","599","600","601","602","603","604","605","606","607","608","609","610","611","612","613","614","615","616","617","618","619","620","621","622","623","624","625","626","627","628","629","630","631","632","633","634","635","636","637","638","639","640","641","642","643","644","645","646","647","648","649","650","651","652","653","654","655","656","657","658","659","660","661","662","663","664","665","666","667","668","669","670","671","672","673","674","675","676","677","678","679","680","681","682","683","684","685","686","687","688","689","690","691","692","693","694","695","696","697","698","699","700","701","702","703","704","705","706","707","708","709","710","711","712","713","714","715","716","717","718","719","720","721","722","723","724","725","726","727","728","729","730","731","732","733","734","735","736","737","738","739","740","741","742","743","744","745","746","747","748","749","750","751","752","753","754","755","756","757","758","759","760","761","762","763","764","765","766","767","768","769","770","771","772","773","774","775","776","777","778","779","780","781","782","783","784","785","786","787","788","789","790","791","792","793","794","795","796","797","798","799","800","801","802","803","804","805","806","807","808","809","810","811","812","813","814","815","816","817","818","819","820","821","822","823","824","825","826","827","828","829","830","831","832","833","834","835","836","837","838","839","840","841","842","843","844","845","846","847","848","849","850","851","852","853","854","855","856","857","858","859","860","861","862","863","864","865","866","867","868","869","870","871","872","873","874","875","876","877","878","879","880","881","882","883","884","885","886","887","888","889","890","891","892","893","894","895","896","897","898","899","900","901","902","903","904","905","906","907","908","909","910","911","912","913","914","915","916","917","918","919","920","921","922","923","924","925","926","927","928","929","930","931","932","933","934","935","936","937","938","939","940","941","942","943","944","945","946","947","948","949","950","951","952","953","954","955","956","957","958","959","960","961","962","963","964","965","966","967","968","969","970","971","972","973","974","975","976","977","978","979","980","981","982","983","984","985","986","987","988","989","990","991","992","993","994","995","996","997","998","999","1000"],[0.61,0.617,0.465,0.672,0.522,0.46,0.361,0.376,0.631,0.38,0.4,0.571,0.797,0.466,0.41,0.396,0.442,0.2,0.55,0.753,0.212,0.014,0.589,0.473,0.733,0.706,0.385,0.737,0.367,0.5620000000000001,0.236,0.639,0.51,0.8110000000000001,0.238,0.708,0.199,0.865,0.8080000000000001,0.764,0.331,0.699,0.698,0.803,0.674,0.579,0.678,0.415,0.571,0.584,0.5649999999999999,0.712,0.762,0.494,0.535,0.724,0.642,0.823,0.608,0.453,0.573,0.746,0.278,0.734,0.61,0.737,0.125,0.552,0.375,0.805,0.637,0.7,0.881,0.745,0.418,0.176,0.6919999999999999,0.217,0.834,0.362,0.302,0.421,0.819,0.8139999999999999,0.316,0.5639999999999999,0.792,0.415,0.554,0.5,0.42,0.7,0.51,0.397,0.54,0.792,0.8080000000000001,0.716,0.607,0.538,0.754,0.839,0.786,0.155,0.724,0.478,0.9429999999999999,0.671,0.484,0.35,0.643,0.651,0.399,0.193,0.361,0.591,0.46,0.857,0.446,0.448,0.292,0.425,0.463,0.86,0.553,0.923,0.523,0.381,0.802,0.5580000000000001,0.547,0.775,0.7,0.49,0.15,0.515,0.73,0.314,0.51,0.27,0.438,0.552,0.77,0.531,0.674,0.515,0.332,0.757,0.782,0.462,0.78,0.451,0.6,0.74,0.423,0.372,0.357,0.7,0.52,0.316,0.749,0.706,0.349,0.357,0.6850000000000001,0.751,0.03,0.648,0.639,0.746,0.773,0.759,0.723,0.398,0.729,0.33,0.588,0.457,0.624,0.844,0.826,0.608,0.717,0.46,0.832,0.402,0.742,0.518,0.424,0.876,0.336,0.543,0.725,0.419,0.294,0.715,0.733,0.513,0.159,0.741,0.5570000000000001,0.526,0.385,0.777,0.755,0.556,0.444,0.352,0.59,0.747,0.535,0.745,0.775,0.589,0.657,0.602,0.703,0.244,0.891,0.399,0.678,0.855,0.681,0.338,0.19,0.768,0.61,0.545,0.828,0.233,0.381,0.427,0.819,0.722,0.481,0.426,0.491,0.621,0.737,0.357,0.447,0.61,0.584,0.615,0.638,0.49,0.441,0.79,0.7,0.633,0.508,0.646,0.502,0.836,0.399,0.66,0.517,0.672,0.8100000000000001,0.638,0.469,0.7,0.358,0.83,0.279,0.606,0.576,0.337,0.634,0.161,0.5580000000000001,0.281,0.633,0.572,0.765,0.905,0.631,0.527,0.789,0.626,0.6889999999999999,0.453,0.493,0.626,0.636,0.736,0.705,0.348,0.68,0.532,0.339,0.769,0.115,0.458,0.828,0.782,0.334,0.655,0.522,0.745,0.6860000000000001,0.75,0.832,0.707,0.319,0.731,0.52,0.225,0.615,0.344,0.782,0.6,0.539,0.855,0.296,0.5629999999999999,0.526,0.238,0.395,0.703,0.902,0.453,0.761,0.358,0.6879999999999999,0.497,0.434,0.83,0.586,0.153,0.414,0.364,0.573,0.953,0.828,0.607,0.577,0.586,0.516,0.759,0.728,0.301,0.319,0.6899999999999999,0.832,0.489,0.77,0.822,0.601,0.351,0.5679999999999999,0.489,0.9,0.678,0.345,0.443,0.419,0.736,0.42,0.881,0.5620000000000001,0.651,0.732,0.677,0.356,0.538,0.761,0.471,0.756,0.972,0.753,0.605,0.605,0.64,0.414,0.743,0.674,0.673,0.633,0.733,0.6830000000000001,0.731,0.257,0.514,0.488,0.5,0.616,0.804,0.327,0.771,0.541,0.733,0.661,0.8120000000000001,0.6860000000000001,0.769,0.784,0.441,0.464,0.7,0.486,0.617,0.881,0.6870000000000001,0.661,0.107,0.702,0.888,0.66,0.6889999999999999,0.738,0.556,0.259,0.338,0.742,0.543,0.263,0.697,0.916,0.671,0.472,0.611,0.584,0.722,0.54,0.342,0.898,0.227,0.042,0.51,0.707,0.137,0.74,0.541,0.51,0.625,0.503,0.504,0.6889999999999999,0.697,0.494,0.606,0.749,0.24,0.766,0.453,0.8139999999999999,0.579,0.358,0.407,0.481,0.555,0.76,0.746,0.303,0.677,0.853,0.469,0.669,0.77,0.569,0.71,0.762,0.5600000000000001,0.734,0.37,0.632,0.523,0.205,0.729,0.593,0.6899999999999999,0.794,0.379,0.456,0.8149999999999999,0.5659999999999999,0.673,0.622,0.385,0.804,0.606,0.759,0.82,0.359,0.555,0.6909999999999999,0.832,0.453,0.307,0.723,0.782,0.648,0.541,0.54,0.6929999999999999,0.8149999999999999,0.6889999999999999,0.886,0.045,0.218,0.322,0.62,0.727,0.529,0.803,0.854,0.638,0.502,0.61,0.335,0.719,0.219,0.781,0.5570000000000001,0.584,0.8120000000000001,0.555,0.366,0.329,0.625,0.293,0.293,0.477,0.704,0.376,0.445,0.65,0.6830000000000001,0.695,0.752,0.679,0.67,0.672,0.609,0.278,0.777,0.399,0.774,0.473,0.499,0.068,0.277,0.702,0.486,0.499,0.735,0.411,0.66,0.137,0.498,0.598,0.6899999999999999,0.5679999999999999,0.584,0.643,0.462,0.533,0.66,0.605,0.5659999999999999,0.732,0.8110000000000001,0.534,0.859,0.776,0.493,0.495,0.6830000000000001,0.762,0.382,0.353,0.221,0.119,0.634,0.532,0.7,0.64,0.601,0.393,0.527,0.737,0.633,0.344,0.874,0.519,0.673,0.654,0.637,0.706,0.27,0.15,0.188,0.847,0.6909999999999999,0.766,0.85,0.744,0.556,0.631,0.667,0.512,0.741,0.349,0.515,0.836,0.634,0.201,0.491,0.471,0.196,0.327,0.5590000000000001,0.615,0.628,0.53,0.389,0.302,0.715,0.657,0.364,0.6870000000000001,0.248,0.653,0.762,0.637,0.501,0.391,0.555,0.527,0.656,0.766,0.042,0.852,0.419,0.576,0.8159999999999999,0.357,0.36,0.525,0.108,0.6879999999999999,0.492,0.201,0.762,0.573,0.642,0.502,0.701,0.674,0.822,0.388,0.61,0.154,0.579,0.539,0.421,0.681,0.75,0.595,0.383,0.5669999999999999,0.165,0.798,0.619,0.519,0.788,0.506,0.6820000000000001,0.738,0.595,0.754,0.589,0.543,0.732,0.542,0.531,0.209,0.8110000000000001,0.667,0.533,0.472,0.63,0.602,0.37,0.709,0.6870000000000001,0.378,0.782,0.518,0.758,0.532,0.485,0.346,0.6850000000000001,0.389,0.066,0.219,0.383,0.45,0.8120000000000001,0.713,0.614,0.799,0.77,0.591,0.755,0.374,0.976,0.606,0.699,0.5620000000000001,0.39,0.7,0.411,0.858,0.656,0.37,0.642,0.274,0.55,0.746,0.298,0.449,0.531,0.309,0.607,0.694,0.711,0.716,0.274,0.723,0.923,0.5580000000000001,0.8179999999999999,0.653,0.643,0.631,0.708,0.429,0.762,0.528,0.632,0.576,0.867,0.597,0.451,0.634,0.304,0.583,0.336,0.716,0.628,0.573,0.478,0.362,0.516,0.458,0.352,0.432,0.794,0.298,0.5590000000000001,0.473,0.628,0.492,0.724,0.297,0.46,0.5620000000000001,0.841,0.84,0.434,0.621,0.519,0.478,0.57,0.455,0.47,0.983,0.277,0.611,0.77,0.665,0.5580000000000001,0.478,0.639,0.287,0.574,0.711,0.843,0.706,0.454,0.636,0.548,0.248,0.839,0.536,0.312,0.736,0.612,0.727,0.295,0.494,0.538,0.744,0.77,0.635,0.986,0.618,0.6879999999999999,0.735,0.518,0.5669999999999999,0.437,0.538,0.573,0.553,0.641,0.893,0.619,0.704,0.751,0.7,0.299,0.846,0.5580000000000001,0.642,0.532,0.518,0.638,0.26,0.141,0.225,0.704,0.576,0.9340000000000001,0.586,0.525,0.735,0.402,0.402,0.5639999999999999,0.891,0.436,0.614,0.6830000000000001,0.774,0.619,0.145,0.679,0.83,0.443,0.57,0.696,0.673,0.416,0.508,0.196,0.452,0.784,0.549,0.795,0.715,0.357,0.793,0.517,0.122,0.864,0.6830000000000001,0.716,0.591,0.511,0.618,0.41,0.8169999999999999,0.734,0.423,0.51,0.641,0.825,0.4,0.098,0.648,0.198,0.284,0.747,0.635,0.584,0.278,0.257,0.427,0.248,0.629,0.356,0.718,0.661,0.461,0.539,0.384,0.382,0.79,0.578,0.99,0.705,0.486,0.659,0.695,0.628,0.536,0.6929999999999999,0.73,0.556,0.462,0.485,0.576,0.378,0.325,0.471,0.349,0.805,0.5629999999999999,0.526,0.699,0.5639999999999999,0.537,0.801,0.332,0.474,0.578,0.44,0.639,0.618,0.21,0.388,0.656,0.5600000000000001,0.704,0.59,0.623,0.578,0.831,0.763,0.414,0.716,0.58,0.532,0.525,0.831,0.899,0.741,0.33,0.431,0.64,0.9320000000000001,0.728,0.6919999999999999,0.6820000000000001,0.663,0.8,0.749,0.832,0.65,0.569,0.296,0.278,0.795,0.666,0.327,0.74,0.212,0.771,0.108,0.744,0.656,0.629,0.486,0.581,0.429,0.707,0.574,0.352,0.863,0.6850000000000001,0.393,0.259,0.217,0.528,0.657,0.592,0.659,0.605,0.606,0.479,0.632,0.375,0.677,0.5679999999999999,0.674,0.257],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0.755,0.797,0.61,0.819,0.708,0.5620000000000001,0.456,0.5649999999999999,0.826,0.31,0.575,0.831,0.874,0.496,0.537,0.5669999999999999,0.648,0.344,0.619,0.839,0.315,0.011,0.731,0.629,0.869,0.773,0.573,0.907,0.5620000000000001,0.741,0.255,0.761,0.648,0.889,0.353,0.783,0.33,0.962,0.9320000000000001,0.912,0.546,0.85,0.868,0.92,0.83,0.626,0.8120000000000001,0.342,0.746,0.75,0.744,0.882,0.892,0.5679999999999999,0.672,0.856,0.719,0.9320000000000001,0.545,0.538,0.763,0.885,0.364,0.906,0.64,0.804,0.118,0.697,0.579,0.9350000000000001,0.822,0.833,0.953,0.918,0.407,0.276,0.848,0.34,0.96,0.477,0.384,0.625,0.93,0.896,0.423,0.712,0.927,0.501,0.634,0.657,0.59,0.848,0.707,0.627,0.644,0.9379999999999999,0.9389999999999999,0.859,0.772,0.763,0.88,0.925,0.885,0.175,0.864,0.609,0.975,0.821,0.6919999999999999,0.549,0.776,0.819,0.55,0.289,0.4,0.724,0.606,0.9429999999999999,0.644,0.6919999999999999,0.212,0.532,0.6889999999999999,0.9350000000000001,0.77,0.981,0.756,0.451,0.9429999999999999,0.719,0.76,0.912,0.8149999999999999,0.6860000000000001,0.204,0.547,0.87,0.447,0.717,0.514,0.608,0.707,0.872,0.6889999999999999,0.856,0.661,0.428,0.901,0.8169999999999999,0.675,0.885,0.5580000000000001,0.731,0.91,0.586,0.481,0.336,0.786,0.6860000000000001,0.452,0.834,0.879,0.227,0.536,0.852,0.929,0.024,0.838,0.732,0.876,0.857,0.838,0.88,0.61,0.91,0.43,0.837,0.634,0.748,0.909,0.89,0.778,0.805,0.67,0.9320000000000001,0.591,0.866,0.703,0.632,0.871,0.466,0.664,0.819,0.639,0.432,0.86,0.869,0.703,0.248,0.876,0.595,0.6879999999999999,0.483,0.922,0.905,0.79,0.619,0.429,0.724,0.794,0.727,0.745,0.895,0.754,0.858,0.792,0.839,0.225,0.9429999999999999,0.588,0.824,0.902,0.8139999999999999,0.416,0.205,0.852,0.729,0.653,0.88,0.162,0.5590000000000001,0.605,0.921,0.842,0.702,0.586,0.63,0.774,0.866,0.316,0.437,0.8070000000000001,0.8120000000000001,0.716,0.789,0.547,0.587,0.916,0.858,0.826,0.668,0.741,0.583,0.877,0.603,0.823,0.704,0.797,0.876,0.594,0.605,0.902,0.334,0.913,0.397,0.824,0.767,0.455,0.758,0.233,0.741,0.489,0.73,0.753,0.848,0.969,0.8169999999999999,0.717,0.851,0.805,0.872,0.635,0.617,0.725,0.821,0.899,0.853,0.363,0.8139999999999999,0.706,0.546,0.862,0.126,0.612,0.957,0.884,0.46,0.795,0.624,0.852,0.851,0.79,0.925,0.874,0.515,0.907,0.734,0.396,0.802,0.515,0.928,0.698,0.738,0.915,0.483,0.794,0.711,0.335,0.5590000000000001,0.865,0.963,0.598,0.837,0.475,0.806,0.426,0.572,0.944,0.73,0.3,0.538,0.609,0.6860000000000001,0.974,0.948,0.759,0.76,0.772,0.75,0.871,0.894,0.44,0.42,0.773,0.908,0.634,0.803,0.835,0.742,0.572,0.599,0.631,0.974,0.821,0.455,0.67,0.551,0.898,0.584,0.968,0.656,0.791,0.847,0.755,0.468,0.726,0.878,0.582,0.86,0.978,0.836,0.839,0.741,0.795,0.664,0.878,0.861,0.846,0.747,0.849,0.6860000000000001,0.735,0.445,0.598,0.496,0.696,0.733,0.718,0.344,0.786,0.664,0.908,0.834,0.913,0.766,0.883,0.892,0.504,0.382,0.821,0.502,0.6899999999999999,0.958,0.852,0.766,0.22,0.869,0.976,0.8179999999999999,0.796,0.779,0.728,0.192,0.401,0.871,0.638,0.247,0.861,0.963,0.886,0.654,0.799,0.731,0.881,0.668,0.443,0.973,0.259,0.036,0.604,0.911,0.16,0.901,0.791,0.5620000000000001,0.835,0.552,0.636,0.8120000000000001,0.824,0.6850000000000001,0.6820000000000001,0.836,0.284,0.898,0.664,0.9320000000000001,0.776,0.396,0.555,0.644,0.726,0.835,0.819,0.487,0.797,0.9360000000000001,0.499,0.787,0.795,0.619,0.859,0.852,0.6909999999999999,0.677,0.473,0.851,0.647,0.162,0.842,0.739,0.736,0.901,0.582,0.551,0.9350000000000001,0.5590000000000001,0.749,0.842,0.6,0.9399999999999999,0.756,0.866,0.884,0.52,0.734,0.78,0.93,0.675,0.516,0.887,0.905,0.75,0.6870000000000001,0.757,0.8139999999999999,0.927,0.862,0.949,0.03,0.324,0.469,0.8129999999999999,0.472,0.696,0.87,0.948,0.845,0.6909999999999999,0.727,0.522,0.859,0.363,0.9320000000000001,0.741,0.754,0.914,0.754,0.398,0.482,0.697,0.399,0.494,0.656,0.862,0.552,0.554,0.782,0.86,0.884,0.9389999999999999,0.889,0.859,0.8149999999999999,0.717,0.391,0.873,0.469,0.883,0.572,0.617,0.067,0.241,0.778,0.638,0.716,0.763,0.545,0.827,0.172,0.764,0.766,0.88,0.708,0.784,0.797,0.575,0.63,0.822,0.752,0.624,0.883,0.8120000000000001,0.707,0.9370000000000001,0.952,0.638,0.442,0.897,0.859,0.605,0.479,0.295,0.162,0.756,0.72,0.865,0.771,0.718,0.499,0.63,0.86,0.754,0.3,0.965,0.646,0.797,0.824,0.792,0.847,0.367,0.182,0.265,0.918,0.82,0.901,0.96,0.876,0.7,0.759,0.8179999999999999,0.644,0.799,0.407,0.729,0.92,0.8,0.345,0.663,0.453,0.306,0.403,0.739,0.699,0.717,0.759,0.621,0.48,0.842,0.673,0.593,0.859,0.284,0.754,0.854,0.695,0.706,0.585,0.735,0.6879999999999999,0.845,0.9,0.026,0.903,0.611,0.596,0.931,0.5679999999999999,0.266,0.74,0.08699999999999999,0.873,0.643,0.294,0.804,0.708,0.734,0.648,0.897,0.861,0.945,0.453,0.77,0.242,0.547,0.653,0.456,0.6879999999999999,0.853,0.782,0.49,0.676,0.303,0.721,0.773,0.695,0.883,0.6899999999999999,0.833,0.8110000000000001,0.718,0.919,0.713,0.8070000000000001,0.891,0.745,0.649,0.328,0.838,0.8120000000000001,0.748,0.622,0.8100000000000001,0.652,0.5610000000000001,0.851,0.781,0.526,0.9,0.434,0.85,0.52,0.578,0.508,0.773,0.35,0.07099999999999999,0.343,0.594,0.669,0.9,0.77,0.79,0.929,0.892,0.761,0.874,0.493,0.971,0.639,0.798,0.673,0.624,0.736,0.61,0.954,0.848,0.413,0.8169999999999999,0.395,0.759,0.887,0.463,0.5639999999999999,0.712,0.42,0.8139999999999999,0.805,0.873,0.839,0.406,0.791,0.979,0.739,0.955,0.844,0.732,0.843,0.839,0.608,0.92,0.716,0.733,0.68,0.9360000000000001,0.774,0.607,0.788,0.499,0.628,0.391,0.843,0.596,0.584,0.448,0.422,0.645,0.6919999999999999,0.469,0.328,0.93,0.4,0.7,0.661,0.722,0.702,0.715,0.52,0.639,0.778,0.926,0.924,0.617,0.838,0.716,0.619,0.752,0.551,0.664,0.966,0.313,0.711,0.878,0.788,0.597,0.6850000000000001,0.705,0.482,0.677,0.842,0.961,0.8149999999999999,0.597,0.757,0.6830000000000001,0.324,0.9360000000000001,0.502,0.425,0.862,0.747,0.9,0.427,0.667,0.545,0.918,0.93,0.737,0.989,0.796,0.85,0.897,0.748,0.698,0.665,0.737,0.777,0.713,0.83,0.966,0.772,0.796,0.797,0.838,0.461,0.916,0.611,0.824,0.713,0.587,0.843,0.375,0.142,0.198,0.833,0.6870000000000001,0.957,0.765,0.538,0.891,0.664,0.488,0.746,0.952,0.632,0.727,0.822,0.856,0.84,0.211,0.831,0.914,0.522,0.586,0.825,0.741,0.548,0.621,0.342,0.36,0.858,0.723,0.895,0.858,0.5610000000000001,0.896,0.5669999999999999,0.238,0.946,0.803,0.893,0.778,0.58,0.83,0.634,0.908,0.749,0.59,0.624,0.791,0.922,0.478,0.063,0.851,0.373,0.247,0.866,0.753,0.784,0.472,0.348,0.577,0.294,0.834,0.478,0.856,0.77,0.726,0.744,0.53,0.532,0.9389999999999999,0.731,0.982,0.867,0.595,0.586,0.794,0.762,0.648,0.85,0.885,0.749,0.652,0.634,0.757,0.531,0.397,0.6909999999999999,0.5590000000000001,0.904,0.826,0.5610000000000001,0.858,0.712,0.703,0.906,0.514,0.631,0.623,0.457,0.787,0.845,0.329,0.382,0.795,0.669,0.86,0.8,0.77,0.783,0.894,0.886,0.58,0.901,0.723,0.584,0.5590000000000001,0.893,0.958,0.896,0.503,0.509,0.835,0.9419999999999999,0.8080000000000001,0.852,0.66,0.76,0.913,0.884,0.9399999999999999,0.787,0.586,0.445,0.347,0.89,0.799,0.535,0.888,0.318,0.904,0.176,0.824,0.645,0.806,0.549,0.753,0.429,0.824,0.71,0.5600000000000001,0.968,0.757,0.575,0.413,0.342,0.758,0.819,0.633,0.713,0.679,0.774,0.602,0.823,0.494,0.858,0.712,0.835,0.332],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>sw.kidney<\/th>\n      <th>sw.kidney.cv<\/th>\n      <th>sf.kidney<\/th>\n      <th>sf.kidney.cv<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollX":true,"paging":true,"columnDefs":[{"className":"dt-right","targets":[1,2,3,4]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"sw.kidney","targets":1},{"name":"sw.kidney.cv","targets":2},{"name":"sf.kidney","targets":3},{"name":"sf.kidney.cv","targets":4}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><p>There exists randomness in the Z-residuals of censored observations,
-meaning that different sets of Z-residuals can be generated for the same
-dataset using distinct random numbers. Thus, to test the robustness of
-the previously conducted diagnosis, we replicated a large number of
-realizations of Z-residuals. The Figure 2 exhibits histograms of 1000 SW
-test p-values, each derived from a set of No-CV or LOOCV Z-residuals.
-More than 95% of the SW p-values for No-CV Z-residuals surpass 0.05,
-whereas 100% of the SW p-values for LOOCV Z-residuals fall below 0.05.
-This consistency across numerous replications confirms that the
-evaluation of the misspecification of the shared frailty model is not
-incidental to a specific set of LOOCV Z-residuals but a recurring
-conclusion supported by extensive Z-residual replications.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+</details>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="datatables html-widget html-fill-item" id="htmlwidget-f30d7598595affc4f25a" style="width:100%;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-f30d7598595affc4f25a">{"x":{"filter":"none","vertical":false,"caption":"<caption>Table 2: 1000 replicated SW and SF p-values of No-CV and LOOCV Z-residuals of the fitted shared frailty models based on the original kidney infection dataset.<\/caption>","data":[["1","2","3","4","5","6","7","8","9","10"],[0.64,0.39,0.491,0.5620000000000001,0.385,0.6860000000000001,0.678,0.539,0.8129999999999999,0.725],[0,0.003,0,0,0.001,0,0.001,0.001,0.002,0],[0.797,0.5679999999999999,0.698,0.6860000000000001,0.304,0.855,0.863,0.698,0.946,0.795],[0,0.002,0,0,0.001,0,0.001,0.001,0.002,0]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>sw.kidney<\/th>\n      <th>sw.kidney.cv<\/th>\n      <th>sf.kidney<\/th>\n      <th>sf.kidney.cv<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollX":true,"paging":true,"columnDefs":[{"className":"dt-right","targets":[1,2,3,4]},{"orderable":false,"targets":0},{"name":" ","targets":0},{"name":"sw.kidney","targets":1},{"name":"sw.kidney.cv","targets":2},{"name":"sf.kidney","targets":3},{"name":"sf.kidney.cv","targets":4}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p>There exists randomness in the Z-residuals of censored observations, meaning that different sets of Z-residuals can be generated for the same dataset using distinct random numbers. Thus, to test the robustness of the previously conducted diagnosis, we replicated a large number of realizations of Z-residuals. The Figure 2 exhibits histograms of 1000 SW test p-values, each derived from a set of No-CV or LOOCV Z-residuals. More than 95% of the SW p-values for No-CV Z-residuals surpass 0.05, whereas 100% of the SW p-values for LOOCV Z-residuals fall below 0.05. This consistency across numerous replications confirms that the evaluation of the misspecification of the shared frailty model is not incidental to a specific set of LOOCV Z-residuals but a recurring conclusion supported by extensive Z-residual replications.</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span>,mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">4</span>,<span class="fl">2</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">sw.kidney</span>,main<span class="op">=</span><span class="st">"Replicated Z-SW P-values, No CV"</span>,breaks<span class="op">=</span><span class="fl">20</span>,</span>
 <span>     xlab<span class="op">=</span><span class="st">"Z-SW P-values"</span><span class="op">)</span></span>
@@ -391,18 +234,404 @@ conclusion supported by extensive Z-residual replications.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">sf.kidney.cv</span>,main<span class="op">=</span><span class="st">"Replicated Z-SF P-values, LOOCV"</span>,breaks<span class="op">=</span><span class="fl">20</span>,</span>
 <span>     xlab<span class="op">=</span><span class="st">"Z-SF P-values"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="va">pmin.sf.kidney.cv</span>,col<span class="op">=</span><span class="st">"red"</span><span class="op">)</span></span></code></pre></div>
-<div class="figure" style="text-align: center">
-<img src="CV_Zresidual_demo_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="Figure 2: The histograms of 1000 replicated SW p-values of No-CV and LOOCV Z-residuals" width="864"><p class="caption">
-Figure 2: The histograms of 1000 replicated SW p-values of No-CV and
-LOOCV Z-residuals
-</p>
+</details><div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="cv_zresidual_demo_files/figure-html/unnamed-chunk-7-1.png" width="864"></p>
+<figcaption>Figure 2: The histograms of 1000 replicated SW p-values of No-CV and LOOCV Z-residuals</figcaption></figure>
 </div>
 </div>
 </div>
-  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+</section></section><script>
+/* loadtoc.js — overlay TOC drawer (no layout shift, up to h3)
+   - Creates a fixed-position overlay panel + backdrop
+   - Clones existing Quarto TOC if found; else builds from <main> h2/h3
+   - Collapses h3 under h2 initially; click to toggle
+   - Closes on link click, backdrop click, or ESC
+   - Prevents body scroll when open; does NOT push page content
+*/
+
+(() => {
+  // ===== Config =====
+  const CFG = {
+    side: 'right',            // 'right' | 'left'
+    fontSize: '14px',
+    width: 400,               // px
+    maxWidthVw: 92,           // %
+    headerOffset: 80,         // px: scroll margin for headings
+    zBase: 2000,              // base z-index for overlay/backdrop
+    buildFromHeadingsIfMissingSidebar: true, // fallback builder
+    headingSelector: 'main :is(h2,h3)',      // used if building fallback
+    maxDepth: 3,              // up to h3
+    toggleHotkey: 'KeyT',     // Cmd/Ctrl+Shift+T toggles
+  };
+
+  // ===== Utilities =====
+  const $ = (sel, el=document) => el.querySelector(sel);
+  const $$ = (sel, el=document) => [...el.querySelectorAll(sel)];
+  const on = (el, ev, fn, opts) => el && el.addEventListener(ev, fn, opts);
+
+  const slugify = (txt) =>
+    txt.toLowerCase()
+       .trim()
+       .replace(/[\s\.\,\/:\;\?\!\(\)\[\]\{\}"'`]+/g, '-')
+       .replace(/-+/g, '-')
+       .replace(/^-|-$/g, '');
+
+  function ensureId(el) {
+    if (!el.id) el.id = slugify(el.textContent || 'section');
+    return el.id;
+  }
+
+  function injectStyles() {
+    const style = document.createElement('style');
+    style.setAttribute('data-toc-style', 'overlay');
+    style.textContent = `
+      :root {
+        --toc-width:${CFG.width}px;
+        --toc-offset:${CFG.headerOffset}px;
+        --toc-z:${CFG.zBase};
+        --toc-font-size:${CFG.fontSize};
+      }
+      main :is(h1,h2,h3,h4,h5,h6){ scroll-margin-top: var(--toc-offset); }
+
+      #toc-toggle-btn {
+        position: fixed; top: 50px; ${CFG.side}: 10px;
+        z-index: calc(var(--toc-z) + 2);
+        padding: 0.1rem 0.6rem; border: 1px solid #ddd; border-radius: 999px;
+        background: #fff; cursor: pointer; box-shadow: 0 8px 24px rgba(0,0,0,.10);
+        font: 1000 32px system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      }
+
+      #toc-backdrop {
+        position: fixed; inset: 0; background: rgba(0,0,0,.25);
+        opacity: 0; pointer-events: none; transition: opacity .2s ease;
+        z-index: var(--toc-z);
+      }
+      body.toc-open #toc-backdrop { opacity: 1; pointer-events: auto; }
+
+      #toc-panel {
+        position: fixed; top: 0; ${CFG.side}: 0; height: 100vh;
+        width: var(--toc-width); max-width: ${CFG.maxWidthVw}vw;
+        background: #fff; box-shadow: ${CFG.side==='right' ? '-16px' : '16px'} 0 32px rgba(0,0,0,.08);
+        transform: translateX(${CFG.side==='right' ? '100%' : '-100%'});
+        transition: transform .22s ease;
+        z-index: calc(var(--toc-z) + 1);
+        display: flex; flex-direction: column;
+      }
+      body.toc-open #toc-panel { transform: translateX(0); }
+      body.toc-open { overflow: hidden; }
+
+      #toc-head {
+        display:flex; align-items:center; justify-content:space-between;
+        gap:0.5rem; padding:.75rem .9rem; border-bottom:1px solid #eee;
+      }
+      #toc-head h3{ margin:0; font:600 16px system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+
+      #toc-content {
+        overflow:auto;
+        padding:.6rem .85rem 1rem;
+        font-size: var(--toc-font-size);
+      }
+      #toc-content nav, #toc-content .book-toc { line-height:1.5; }
+      #toc-content ul { list-style:none; margin:.25rem 0; padding-left:1rem; }
+      #toc-content li { margin:.1rem 0; }
+      #toc-content a { text-decoration:none; }
+      #toc-content .lvl-1 > a { font-weight:600; }
+      #toc-content .lvl-2 > a { font-weight:500; }
+      #toc-content .lvl-3 > a { font-weight:400; }
+
+      .toc-icon-btn{
+        border:1px solid #ddd; border-radius:8px; padding:.35rem .55rem; background:#fff; cursor:pointer;
+      }
+
+      /* collapsible h3 under h2 */
+      .toc-caret { margin-right:.35rem; user-select:none; cursor:pointer; }
+      .toc-collapsed > ul { display:none; }
+      .toc-caret::before { content: '▾'; display:inline-block; transform: rotate(0deg); transition: transform .12s linear; }
+      .toc-collapsed > .toc-row .toc-caret::before { transform: rotate(-90deg); }
+      .toc-row { display:flex; align-items:center; gap:.25rem; }
+    `;
+    document.head.appendChild(style);
+  }
+
+  // Create skeleton (toggle button, backdrop, panel)
+  function createShell() {
+    // Toggle button (if user already has one with #toc-toggle-btn, reuse)
+    let toggle = document.getElementById('toc-toggle-btn');
+    if (!toggle) {
+      toggle = document.createElement('button');
+      toggle.id = 'toc-toggle-btn';
+      toggle.type = 'button';
+      toggle.setAttribute('aria-expanded','false');
+      toggle.setAttribute('aria-controls','toc-panel');
+      toggle.title = 'Open Table of Contents';
+      toggle.textContent = '☰';
+      document.body.appendChild(toggle);
+    }
+
+    // Backdrop
+    let backdrop = document.getElementById('toc-backdrop');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.id = 'toc-backdrop';
+      backdrop.setAttribute('aria-hidden','true');
+      document.body.appendChild(backdrop);
+    }
+
+    // Panel
+    let panel = document.getElementById('toc-panel');
+    if (!panel) {
+      panel = document.createElement('aside');
+      panel.id = 'toc-panel';
+      panel.setAttribute('role','dialog');
+      panel.setAttribute('aria-modal','true');
+      panel.setAttribute('aria-label','Table of Contents');
+
+      const head = document.createElement('div');
+      head.id = 'toc-head';
+      const h = document.createElement('h3'); h.textContent = 'Table of Contents';
+      const close = document.createElement('button'); close.className='toc-icon-btn'; close.id='toc-close'; close.textContent='✕'; close.title='Close TOC';
+      head.append(h, close);
+
+      const content = document.createElement('div');
+      content.id = 'toc-content';
+      content.innerHTML = '<p><em>Loading…</em></p>';
+
+      panel.append(head, content);
+      document.body.appendChild(panel);
+    }
+
+    return { toggle, backdrop, panel };
+  }
+
+  function openTOC(toggleBtn) {
+    document.body.classList.add('toc-open');
+    toggleBtn?.setAttribute('aria-expanded','true');
+  }
+  function closeTOC(toggleBtn) {
+    document.body.classList.remove('toc-open');
+    toggleBtn?.setAttribute('aria-expanded','false');
+  }
+
+  // Build TOC DOM: either clone Quarto sidebar TOC or build from headings
+  function findExistingTOC() {
+    // Try common Quarto TOC containers
+    return (
+      $('nav[role="navigation"].toc-active') ||
+      $('#TOC') ||
+      $('nav.sidebar-navigation .toc-active') ||
+      null
+    );
+  }
+
+  function buildFromHeadings() {
+    const container = document.createElement('div');
+    container.className = 'book-toc';
+    const ul1 = document.createElement('ul');
+
+    const heads = $$(CFG.headingSelector).filter(h => {
+      const level = Number(h.tagName.slice(1));
+      return level >= 2 && level <= CFG.maxDepth;
+    });
+
+    let currentH2LI = null;
+    heads.forEach(h => {
+      const level = Number(h.tagName.slice(1));
+      const id = '#' + ensureId(h);
+      const a = document.createElement('a');
+      a.href = id;
+      a.textContent = h.textContent.trim() || (level === 2 ? 'Section' : 'Subsection');
+
+      if (level === 2) {
+        const li = document.createElement('li'); li.className = 'lvl-2';
+        const row = document.createElement('div'); row.className = 'toc-row';
+        const caret = document.createElement('span'); caret.className = 'toc-caret'; caret.title = 'Toggle subsections';
+        row.append(caret, a);
+        li.appendChild(row);
+
+        const ul2 = document.createElement('ul'); // for h3 children
+        li.appendChild(ul2);
+        li.classList.add('toc-collapsed'); // start collapsed
+        ul1.appendChild(li);
+        currentH2LI = li;
+
+        on(caret, 'click', () => li.classList.toggle('toc-collapsed'));
+      } else if (level === 3) {
+        if (!currentH2LI) {
+          // Create a dummy h2 wrapper if needed
+          const dummy = document.createElement('li'); dummy.className = 'lvl-2 toc-collapsed';
+          const row = document.createElement('div'); row.className = 'toc-row';
+          const caret = document.createElement('span'); caret.className = 'toc-caret'; caret.title = 'Toggle subsections';
+          const label = document.createElement('a'); label.href = '#'; label.textContent = '(Untitled section)';
+          row.append(caret, label);
+          dummy.appendChild(row);
+          const ul2 = document.createElement('ul'); dummy.appendChild(ul2);
+          ul1.appendChild(dummy);
+          currentH2LI = dummy;
+          on(caret, 'click', () => dummy.classList.toggle('toc-collapsed'));
+        }
+        const ul2 = currentH2LI.querySelector('ul') || (() => { const u=document.createElement('ul'); currentH2LI.appendChild(u); return u; })();
+        const li3 = document.createElement('li'); li3.className = 'lvl-3';
+        li3.appendChild(a);
+        ul2.appendChild(li3);
+      }
+    });
+
+    // Wrap under a fake lvl-1 “This page”
+    const li1 = document.createElement('li'); li1.className = 'lvl-1';
+    const aTop = document.createElement('a'); aTop.href = '#'; aTop.textContent = document.title || 'This page';
+    li1.appendChild(aTop);
+    li1.appendChild(ul1);
+
+    const rootUL = document.createElement('ul'); rootUL.appendChild(li1);
+    container.appendChild(rootUL);
+    return container;
+  }
+
+  function prepareLinksCloseOnClick(scopeEl, toggleBtn) {
+    $$('#toc-content a', scopeEl).forEach(a => {
+      on(a, 'click', () => {
+        // let the browser jump first, then close to avoid covering target
+        setTimeout(() => closeTOC(toggleBtn), 0);
+      });
+    });
+  }
+
+  // ===== Init =====
+  function init() {
+    injectStyles();
+    const { toggle, backdrop, panel } = createShell();
+
+    const closeBtn = $('#toc-close', panel);
+    const content = $('#toc-content', panel);
+
+    // Open/close wiring
+    on(toggle, 'click', () => openTOC(toggle));
+    on(closeBtn, 'click', () => closeTOC(toggle));
+    on(backdrop, 'click', () => closeTOC(toggle));
+    on(document, 'keydown', (e) => {
+      if (e.key === 'Escape') closeTOC(toggle);
+      // Cmd/Ctrl+Shift+T hotkey
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.code === CFG.toggleHotkey) {
+        e.preventDefault();
+        document.body.classList.contains('toc-open') ? closeTOC(toggle) : openTOC(toggle);
+      }
+    });
+
+    // Fill content
+    const existing = findExistingTOC();
+    if (existing) {
+      const cloned = existing.cloneNode(true);
+      // If the cloned nav already has nested lists, just drop it in
+      content.innerHTML = '';
+      content.appendChild(cloned);
+      // Optional: start with h3 collapsed if structure resembles h2>ul>li>ul
+      // (Skip auto-collapse for cloned Quarto TOC to avoid fighting its JS)
+      prepareLinksCloseOnClick(panel, toggle);
+    } else if (CFG.buildFromHeadingsIfMissingSidebar) {
+      const built = buildFromHeadings();
+      content.innerHTML = '';
+      content.appendChild(built);
+      prepareLinksCloseOnClick(panel, toggle);
+    } else {
+      content.innerHTML = '<p><em>No TOC found on this page.</em></p>';
+    }
+  }
+
+  // Run after DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+
+</script><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'light-border',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config);
+    }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script></main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
-
 
 
     <footer><div class="pkgdown-footer-left">

@@ -145,10 +145,10 @@ Diagnosing Shared Frailty Models. The American Statistician, 79(2),
   : Residuals for shared frailty Cox proportional hazards models
 - [`residual.survreg()`](https://tiw150.github.io/Zresidual/reference/residual.survreg.md)
   : Residuals for Accelerated failure time model models
-- [`residuals()`](https://tiw150.github.io/Zresidual/reference/residuals.md)
-  : Residuals for supported survival models
 - [`sf.test.zresid()`](https://tiw150.github.io/Zresidual/reference/sf.test.zresid.md)
   : A function to calculate Shapiro-Francia test of Zresidual
+- [`surv_residuals()`](https://tiw150.github.io/Zresidual/reference/surv_residuals.md)
+  : Residuals for supported survival models
 - [`sw.test.zresid()`](https://tiw150.github.io/Zresidual/reference/sw.test.zresid.md)
   : Shapiro-Wilk Normality Test for Z-Residuals
 - [`test.nl.aov()`](https://tiw150.github.io/Zresidual/reference/test.nl.aov.md)
@@ -163,8 +163,8 @@ Diagnosing Shared Frailty Models. The American Statistician, 79(2),
 - [getting-started](https://tiw150.github.io/Zresidual/articles/getting-started.md):
 - [Z-residual diagnostic tool for assessing covariate functional form in
   shared frailty
-  models](https://tiw150.github.io/Zresidual/articles/Zresidual_demo.md):
+  models](https://tiw150.github.io/Zresidual/articles/zresidual_demo.md):
 - [Cross-validatory Z-Residual for Diagnosing Shared Frailty
-  Models](https://tiw150.github.io/Zresidual/articles/CV_Zresidual_demo.md):
+  Models](https://tiw150.github.io/Zresidual/articles/cv_zresidual_demo.md):
 - [Z-residual Diagnosis for Logistic
   Regression](https://tiw150.github.io/Zresidual/articles/vignette_logistic.md):

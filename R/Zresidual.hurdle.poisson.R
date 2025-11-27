@@ -95,7 +95,7 @@ Zresidual.hurdle.poisson <- function(fit,  type , method = "iscv", n.rep = 1){
     zero_id = zero_id,
     log_pmf = lpmf,
     log_cdf = lcdf,
-    covariates = subset(fit$data, select = -get(response)),
+    covariates = fit$data[, setdiff(names(fit$data), response), drop = FALSE],
     linear.pred = fitted(fit, type = "conditional")[,1]
   ))
 

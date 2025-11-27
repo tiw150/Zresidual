@@ -2,11 +2,11 @@ pandoc: 3.6.3
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
-  CV_Zresidual_demo: CV_Zresidual_demo.html
+  cv_zresidual_demo: cv_zresidual_demo.html
   getting-started: getting-started.html
   vignette_logistic: vignette_logistic.html
-  Zresidual_demo: Zresidual_demo.html
-last_built: 2025-11-26T23:00Z
+  zresidual_demo: zresidual_demo.html
+last_built: 2025-11-27T18:27Z
 urls:
   reference: https://tiw150.github.io/Zresidual/reference
   article: https://tiw150.github.io/Zresidual/articles

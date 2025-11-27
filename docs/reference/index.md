@@ -113,10 +113,10 @@
   : Residuals for shared frailty Cox proportional hazards models
 - [`residual.survreg()`](https://tiw150.github.io/Zresidual/reference/residual.survreg.md)
   : Residuals for Accelerated failure time model models
-- [`residuals()`](https://tiw150.github.io/Zresidual/reference/residuals.md)
-  : Residuals for supported survival models
 - [`sf.test.zresid()`](https://tiw150.github.io/Zresidual/reference/sf.test.zresid.md)
   : A function to calculate Shapiro-Francia test of Zresidual
+- [`surv_residuals()`](https://tiw150.github.io/Zresidual/reference/surv_residuals.md)
+  : Residuals for supported survival models
 - [`sw.test.zresid()`](https://tiw150.github.io/Zresidual/reference/sw.test.zresid.md)
   : Shapiro-Wilk Normality Test for Z-Residuals
 - [`test.nl.aov()`](https://tiw150.github.io/Zresidual/reference/test.nl.aov.md)

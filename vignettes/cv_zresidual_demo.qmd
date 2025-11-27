@@ -162,6 +162,7 @@ We computed Z-residuals using the No-CV and LOOCV methods for the kidney infecti
 library(Zresidual)
 Zresid.kidney<-Zresidual(fit.object = fit_kidney,nrep=10)
 CVZresid.kidney<-CV.Zresidual(fit.object = fit_kidney,nrep=10,nfolds = nrow(kidney))
+CVZresid.kidney<-CVZresid.kidney[-57,]
 ```
 
 ### Inspecting the Normality of Z-Residuals for Checking Overall GOF

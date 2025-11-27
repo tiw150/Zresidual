@@ -95,7 +95,7 @@ Zresidual.hurdle.negbinomial <- function(fit, type , method = "iscv", n.rep = 1)
     zero_id = zero_id,
     log_pmf = lpmf,
     log_cdf = lcdf,
-    covariates = fit$data %>% select(-all_of(response)),
+    covariates = fit$data[, setdiff(names(fit$data), response), drop = FALSE],
     linear.pred = predict(fit, type = "conditional")[,1]
   ))
 
