@@ -10,7 +10,7 @@ output:
     theme: flatly      # Remove default Bootstrap theme
     # includes:
     #   in_header: vignette_hurdle_supportive/custom_header.html
-bibliography: vignette_hurdle_supportive/refs.bib       # Point to your BibTeX file
+#bibliography: vignette_hurdle_supportive/refs.bib       # Point to your BibTeX file
 link-citations: yes
 # runtime: shiny
 date: "`r Sys.Date()`"
@@ -114,7 +114,7 @@ where \(\Phi^{-1}(.)\) is the quantile function of standard normal distribution.
 ## Installation
 
 ```{r eval=FALSE}
-devtools::install_github("tiw150/Zresidual")
+#devtools::install_github("tiw150/Zresidual")
 ```
 
 
@@ -216,8 +216,8 @@ The `Zresidual` package includes built-in plotting functions (QQ Plot, Scatter P
 ```{r}
 par(mfrow = c(1,3))
 qqnorm.zresid(zres_logit_iscv)
-plot.zresid(zres_logit_iscv, X="x2", outlier.return = TRUE)
-boxplot.zresid(zres_logit_iscv, X="x2")
+plot.zresid(zres_logit_iscv, X="x2", outlier.return = TRUE,categor=TRUE)
+boxplot.zresid(zres_logit_iscv, X="lp")
 ```
 
 ```{r}
@@ -252,8 +252,8 @@ aov.test.zresid(zres_logit_post, X="lp")
 
 **Bartlett Test (`r BL`)**
 ```{r}
-bartlett.test.zresid(zres_logit_iscv, X="lp")
-bartlett.test.zresid(zres_logit_post, X="lp")
+#bartlett.test.zresid(zres_logit_iscv, X="lp")
+#bartlett.test.zresid(zres_logit_post, X="lp")
 ```
 
 These tests return standard `htest` or `aov` objects, making them easy to report, summarize, or integrate into automated workflows. One advantage of the visualization functions provided by the `Zresidual` package is that they allow users to diagnose the model both visually and using statistical tests simultaneously.

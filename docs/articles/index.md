@@ -8,3 +8,5 @@
   models](https://tiw150.github.io/Zresidual/articles/Zresidual_demo.md):
 - [Cross-validatory Z-Residual for Diagnosing Shared Frailty
   Models](https://tiw150.github.io/Zresidual/articles/CV_Zresidual_demo.md):
+- [Z-residual Diagnosis for Logistic
+  Regression](https://tiw150.github.io/Zresidual/articles/vignette_logistic.md):
