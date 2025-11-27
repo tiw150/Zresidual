@@ -58,25 +58,25 @@
 #'
 #'   ## Cox PH model
 #'   fit_cox <- coxph(Surv(time, status) ~ age + sex, data = lung)
-#'   r1 <- residuals(fit_cox, data = lung,
+#'   r1 <- surv_residuals(fit_cox, data = lung,
 #'                   residual.type = "censored Z-residual")
 #'
 #'   ## Shared frailty Cox model
 #'   lung$inst <- factor(lung$inst)
 #'   fit_frail <- coxph(Surv(time, status) ~ age + sex + frailty(inst),
 #'                      data = lung)
-#'   r2 <- residuals(fit_frail, data = lung,
+#'   r2 <- surv_residuals(fit_frail, data = lung,
 #'                   residual.type = "Cox-Snell")
 #'
 #'   ## Parametric survival model (Weibull)
 #'   fit_weib <- survreg(Surv(time, status) ~ age + sex, data = lung,
 #'                       dist = "weibull")
-#'   r3 <- residuals(fit_weib, data = lung,
+#'   r3 <- surv_residuals(fit_weib, data = lung,
 #'                   residual.type = "censored Z-residual")
 #' }
-#' @export residuals
+#' @export surv_residuals
 
-residuals <- function(fit.object,
+surv_residuals <- function(fit.object,
                       data,
                       residual.type = c("censored Z-residual", "Cox-Snell",
                                         "martingale", "deviance"))

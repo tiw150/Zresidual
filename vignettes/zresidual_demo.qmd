@@ -41,9 +41,15 @@ set.seed(123)
 ```{r}
 #| label: install-zresidual
 #| echo: true
-#| 
-if (!requireNamespace("devtools", quietly = TRUE)) install.packages("devtools")
-devtools::install_github("tiw150/Zresidual",dependencies = TRUE, build_vignettes = TRUE)
+#| include: false
+#| message: false
+if (!requireNamespace("Zresidual", quietly = TRUE)) {
+  if (!requireNamespace("devtools", quietly = TRUE)) {
+    install.packages("devtools")
+  }
+  devtools::install_github("tiw150/Zresidual")
+}
+library(Zresidual)
 
 ```
 
@@ -266,6 +272,15 @@ DT::datatable(round(gof_tests,3),options = list(scrollX = TRUE, paging=TRUE),cap
 ```
 
 The Z-residuals can be divided into $k$ groups by cutting the covariates or linear predictors into equally-spaced intervals. To quantitatively evaluate the homogeneity of grouped Z-residuals, we propose testing the equality of group means and group variances. For this purpose, we employ the F-test in ANOVA to assess the equality of means and Bartlett's test to examine the equality of variances.
+
+```{r}
+#| label: check-zresidual-version
+library(Zresidual)
+
+packageVersion("Zresidual")
+ls("package:Zresidual")[grep("bartlett", ls("package:Zresidual"))]
+
+```
 
 ```{r }
 aov.wbc.lp<-aov.test.zresid(Zresid.LeukSurv.wbc,X = "lp", k.anova=10)
