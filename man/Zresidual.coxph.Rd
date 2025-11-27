@@ -4,7 +4,7 @@
 \alias{Zresidual.coxph}
 \title{Z-residuals for Cox proportional hazards models}
 \usage{
-Zresidual.coxph(fit_coxph, newdata, n.rep = 1)
+Zresidual.coxph(fit_coxph, newdata, n.rep)
 }
 \arguments{
 \item{fit_coxph}{A fitted object from the `coxph` function in the `survival` package.}
