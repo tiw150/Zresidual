@@ -2,7 +2,6 @@ url: https://tiw150.github.io/Zresidual/
 template:
   bootstrap: 5
   bootswatch: flatly
-
 articles:
   - title: "How to use various features of the package."
     contents:
