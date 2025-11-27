@@ -4,17 +4,32 @@ Title: Z-residual for Regression Modelling
 Version: 0.1.0
 Authors@R: c(person(given = "Tingxuan", family = "Wu", role = c("aut","cre"), 
                     email = "tiw150@mail.usask.ca"),
-             person(given = "Hettiarachchige Alias Egodage", family = "Dananji", role = c("aut"), 
-                    email = "ocf542@mail.usask.ca"),
              person(given = "Longhai", family = "Li", role = c("aut"), 
                     email = "longhai@math.usask.ca"),
+             person(given = "Hettiarachchige Alias Egodage", family = "Dananji", role = c("ctb"), 
+                    email = "ocf542@mail.usask.ca"),    
              person(given = "Cindy", family = "Feng", role = c("ctb"), 
                     email = "longhai@math.usask.ca"))
+License: GPL-3
 Description: This package provides functions for computing and analyzing Z-residuals and cross-validatory Z-residuals from fitting outputs of several R packages, including coxph, survreg, glmmTMB, brms, ...
 URL: https://tiw150.github.io/Zresidual
 BugReports: https://github.com/tiw150/Zresidual/issues
 Depends: R (>= 3.5.0)
-Imports: survival (>= 3.3-1), actuar, glmmTMB, nortest, EnvStats, doParallel, brms, dplyr, Rlab, tidyr, VGAM, DPQ, matrixStats
+Imports:
+    survival (>= 3.3-1),
+    actuar,
+    glmmTMB,
+    nortest,
+    EnvStats,
+    doParallel,
+    brms,
+    dplyr,
+    Rlab,
+    tidyr,
+    VGAM,
+    DPQ,
+    matrixStats,
+    stringr
 Suggests: 
     betareg,
     data.table (>= 1.10.0),
@@ -28,7 +43,6 @@ Suggests:
     testthat (>= 1.0.2),
     DT,
     pkgdown,
-    knitr,
     gifski,
     animation,
     png,

@@ -27,7 +27,7 @@ the predictive distributions across all posterior draws.
 \details{
 For each posterior draw and observation, the function computes:
 \itemize{
-  \item \code{lpmf_hat}: Log predictive mass function values using \code{pdf.tp.li()}.
+  \item \code{lpmf_hat}: Log predictive mass function values using \code{pdf.tp()}.
   \item \code{lcdf_hat}: Log cumulative distribution function values
   using \code{cdf.tp.li()} with \code{lower.tail = FALSE}.
 }
@@ -42,6 +42,6 @@ str(pred_dist)
 
 }
 \seealso{
-\code{\link{pdf.tp.li}}, \code{\link{cdf.tp.li}},
+\code{\link{pdf.tp}}, \code{\link{cdf.tp.li}},
 and \code{\link[brms]{posterior_predict}} for related computations.
 }

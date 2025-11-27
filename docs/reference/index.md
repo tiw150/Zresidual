@@ -87,11 +87,11 @@
   Distribution
 - [`phurdle.pois()`](https://tiw150.github.io/Zresidual/reference/phurdle.pois.md)
   : Cumulative Distribution Function of the Hurdle Poisson Distribution
-- [`plot(`*`<cs.residual>`*`)`](https://tiw150.github.io/Zresidual/reference/plot.cs.residual.md)
+- [`plot.cs.residual()`](https://tiw150.github.io/Zresidual/reference/plot.cs.residual.md)
   : Cox–Snell residual plot for survival models
-- [`plot(`*`<dev.resid>`*`)`](https://tiw150.github.io/Zresidual/reference/plot.dev.resid.md)
+- [`plot.dev.resid()`](https://tiw150.github.io/Zresidual/reference/plot.dev.resid.md)
   : Plot deviance residuals for survival models
-- [`plot(`*`<martg.resid>`*`)`](https://tiw150.github.io/Zresidual/reference/plot.martg.resid.md)
+- [`plot.martg.resid()`](https://tiw150.github.io/Zresidual/reference/plot.martg.resid.md)
   : Plot martingale residuals for survival models
 - [`plot.zresid()`](https://tiw150.github.io/Zresidual/reference/plot.zresid.md)
   : Plot Z-Residuals for Bayesian and Frequentist Count / Hurdle / Zero

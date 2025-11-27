@@ -9,8 +9,7 @@ the residual computation functions in this package.
 ## Usage
 
 ``` r
-# S3 method for class 'martg.resid'
-plot(
+plot.martg.resid(
   Martingale.residual,
   ylab = "Martingale Residual",
   X = c("index", "lp", "covariate"),

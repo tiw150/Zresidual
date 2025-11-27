@@ -19,7 +19,6 @@ Zresidual.negbinomial(fit, method = "iscv", n.rep = 1)
 \value{
 A numeric matrix of Z-residuals with attributes:
 \itemize{
-  \item \code{type}: The specified model component (currently NULL)
   \item \code{zero_id}: Indices of zero outcomes
   \item \code{log_pmf}: Log-probability mass function values
   \item \code{log_cdf}: Log-cumulative distribution function values

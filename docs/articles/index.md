@@ -10,3 +10,5 @@
   Models](https://tiw150.github.io/Zresidual/articles/cv_zresidual_demo.md):
 - [Z-residual Diagnosis for Logistic
   Regression](https://tiw150.github.io/Zresidual/articles/vignette_logistic.md):
+- [Component-wise Z-residual Diagnosis for Bayesian Hurdle
+  Models](https://tiw150.github.io/Zresidual/articles/hurdle_zresidual_demo.md):

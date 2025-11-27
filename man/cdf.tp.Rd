@@ -4,7 +4,7 @@
 \alias{cdf.tp}
 \title{Cumulative Distribution Function (CDF) of Zero-Truncated Poisson Distribution}
 \usage{
-\method{cdf}{tp}(y, lambda, lower.tail = FALSE, log.p = FALSE)
+cdf.tp(y, lambda, lower.tail = FALSE, log.p = FALSE)
 }
 \arguments{
 \item{y}{Numeric vector of quantiles (count values) for which to compute the CDF.}

@@ -289,9 +289,16 @@ aov.test.zresid(zres_logit_post, X="lp")
 **Bartlett Test (BL)**
 
 ``` r
-#bartlett.test.zresid(zres_logit_iscv, X="lp")
-#bartlett.test.zresid(zres_logit_post, X="lp")
+bartlett.test.zresid(zres_logit_iscv, X="lp")
 ```
+
+    ## [1] 0.3795297
+
+``` r
+bartlett.test.zresid(zres_logit_post, X="lp")
+```
+
+    ## [1] 0.1328637
 
 These tests return standard `htest` or `aov` objects, making them easy
 to report, summarize, or integrate into automated workflows. One

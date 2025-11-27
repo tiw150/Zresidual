@@ -74,13 +74,13 @@ The model must include the distributional parameter <code>mu</code> (mean parame
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>For each posterior draw and observation, the function computes:</p><ul><li><p><code>lpmf_hat</code>: Log predictive mass function values using <code>pdf.tp.li()</code>.</p></li>
+    <p>For each posterior draw and observation, the function computes:</p><ul><li><p><code>lpmf_hat</code>: Log predictive mass function values using <code><a href="pdf.tp.html">pdf.tp()</a></code>.</p></li>
 <li><p><code>lcdf_hat</code>: Log cumulative distribution function values
   using <code>cdf.tp.li()</code> with <code>lower.tail = FALSE</code>.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code>pdf.tp.li</code>, <code>cdf.tp.li</code>,
+    <div class="dont-index"><p><code><a href="pdf.tp.html">pdf.tp</a></code>, <code>cdf.tp.li</code>,
 and <code><a href="https://mc-stan.org/rstantools/reference/posterior_predict.html" class="external-link">posterior_predict</a></code> for related computations.</p></div>
     </div>
 

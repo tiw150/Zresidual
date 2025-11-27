@@ -27,7 +27,6 @@
 #'
 #' @return A numeric matrix of Z-residuals with attributes:
 #' \itemize{
-#'   \item \code{type}: The specified model component (currently NULL)
 #'   \item \code{zero_id}: Indices of zero outcomes
 #'   \item \code{log_pmf}: Log-probability mass function values
 #'   \item \code{log_cdf}: Log-cumulative distribution function values
@@ -85,8 +84,6 @@ Zresidual.negbinomial <- function(fit, method = "iscv", n.rep = 1){
   colnames(z_res) <- paste0("Z-residual ", 1:n.rep)
 
   attributes(z_res) <- c(attributes(z_res),list(
-    type = NULL,
-    #count_only = count_only,
     zero_id = zero_id,
     log_pmf = lpmf,
     log_cdf = lcdf,

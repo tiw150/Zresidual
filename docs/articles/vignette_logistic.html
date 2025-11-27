@@ -362,8 +362,11 @@ as an input.</p>
 <p><strong>Bartlett Test
 (<abbr title="Bartlett's">BL</abbr>)</strong></p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">#bartlett.test.zresid(zres_logit_iscv, X="lp")</span></span>
-<span><span class="co">#bartlett.test.zresid(zres_logit_post, X="lp")</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/bartlett.test.zresid.html">bartlett.test.zresid</a></span><span class="op">(</span><span class="va">zres_logit_iscv</span>, X<span class="op">=</span><span class="st">"lp"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 0.3795297</span></span></code></pre>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/bartlett.test.zresid.html">bartlett.test.zresid</a></span><span class="op">(</span><span class="va">zres_logit_post</span>, X<span class="op">=</span><span class="st">"lp"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">## [1] 0.1328637</span></span></code></pre>
 <p>These tests return standard <code>htest</code> or <code>aov</code>
 objects, making them easy to report, summarize, or integrate into
 automated workflows. One advantage of the visualization functions

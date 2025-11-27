@@ -10,6 +10,7 @@ articles:
       - zresidual_demo
       - cv_zresidual_demo
       - vignette_logistic
+      - hurdle_zresidual_demo
 navbar:
   title: "Z-residuals"
   left:

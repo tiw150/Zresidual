@@ -4,7 +4,7 @@
 \alias{pdf.tnb}
 \title{Probability Mass Function of the Zero-Truncated Negative Binomial Distribution}
 \usage{
-\method{pdf}{tnb}(y, mu, size, log.p = FALSE)
+pdf.tnb(y, mu, size, log.p = FALSE)
 }
 \arguments{
 \item{y}{Numeric vector of observed count values (\code{y > 0}).}
