@@ -197,7 +197,7 @@ The `family = bernoulli()` tells `brms` to use a logistic regression for binary 
 
 In this example, we compute Z-residuals for the logistic regression using `Zresidual.bernoulli()`. The package take `brms` fit as an input for the `Zresidual.bernoulli()` function. If the model is Hurdle model, the `type` argument (`"zero", "count" or "hurdle"`) specifies which component to use when calculating the residuals. By default, Z-residuals are computed using the Importance Sampling Cross-Validation (`iscv`) method based on randomized predictive p-values (`r RPP`). Alternatively, users can choose the standard Posterior `r RPP` method by setting `method = "post"`.
 
-```{r message=FALSE, warning=FALSE, results='hide'}
+```{r }
 
 zres_logit_iscv <- Zresidual.bernoulli(fit_logit)
 zres_logit_post <- Zresidual.bernoulli(fit_logit, method = "rpost")
