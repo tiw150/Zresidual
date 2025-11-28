@@ -212,7 +212,7 @@ pmin.sf.kidney.cv<-pvalue.min(pv=sf.kidney.cv)
 
 ```
 
-```{r fig.height = 9,fig.width=9,fig.align='center', fig.cap="Figure 2: The histograms of 1000 replicated SW p-values of No-CV and LOOCV Z-residuals"}
+```{r}
 
 par(mfrow = c(2,2),mar=c(4,4,2,2))
 hist(sw.kidney,main="Replicated Z-SW P-values, No CV",breaks=20,
