@@ -5,7 +5,6 @@ template:
 articles:
   - title: "How to use various features of the package."
     contents:
-      - getting-started
       - zresidual_demo
       - cv_zresidual_demo
       - vignette_logistic
