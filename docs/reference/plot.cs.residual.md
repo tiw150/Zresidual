@@ -9,7 +9,8 @@ cumulative hazard should lie close to the 45-degree line.
 ## Usage
 
 ``` r
-plot.cs.residual(
+# S3 method for class 'cs.residual'
+plot(
   cs.residual,
   ylab = "Cumulative Hazard Function",
   main.title = "Cox-Snell Residuals Scatterplot",

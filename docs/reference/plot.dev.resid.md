@@ -9,7 +9,8 @@ residual computation functions in this package.
 ## Usage
 
 ``` r
-plot.dev.resid(
+# S3 method for class 'dev.resid'
+plot(
   Deviance.residual,
   ylab = "Deviance Residual",
   X = c("index", "lp", "covariate"),

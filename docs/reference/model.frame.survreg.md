@@ -5,5 +5,6 @@ An internal S3 method for model.matrix.
 ## Usage
 
 ``` r
-model.frame.survreg(formula, ...)
+# S3 method for class 'survreg'
+model.frame(formula, ...)
 ```
