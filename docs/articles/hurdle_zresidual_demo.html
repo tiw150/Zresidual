@@ -69,7 +69,7 @@
 </section><section class="level3" data-number="1.2"><h3 data-number="1.2" id="intalling-and-loading-r-packages-used-in-this-demo">
 <span class="header-section-number">1.2</span> Intalling and Loading R Packages used in this Demo<a class="anchor" aria-label="anchor" href="#intalling-and-loading-r-packages-used-in-this-demo"></a>
 </h3>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Vector of required packages</span></span>
 <span><span class="va">pkgs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
@@ -196,7 +196,7 @@ z_i = -\Phi^{-1}(\text{rpp}_i(y_i^\text{obs}|\theta)) \sim N(0, 1)
 <a class="anchor" aria-label="anchor" href="#model-fitting-with-brms"></a>
 </h3>
 <p>To demonstrate how <code>Zresidual</code> works with hurdle models, we first simulate data from a <abbr title="Hurdle Negative Binomial">HNB</abbr> model. This simulated dataset allows us to evaluate how well the model and residual diagnostics perform when the true data-generating process is known.</p>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Simulation parameters</span></span>
 <span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">100</span></span>
@@ -230,7 +230,7 @@ z_i = -\Phi^{-1}(\text{rpp}_i(y_i^\text{obs}|\theta)) \sim N(0, 1)
 </div>
 <p>This dataset includes a single continuous predictor <code>x</code>, a rando error variable <code>z</code> and the outcome <code>y</code> is generated from a hurdle negative binomial process. Note that the error variable is not included in generating the <code>y</code> outcome variable. The hurdle (zero) part is modeled with a logistic function and the count part uses a zero-truncated negative binomial distribution.</p>
 <p>Now, we use the <code>brms</code> package to fit a hurdle negative binomial model to the simulated data.</p>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/alexpghayes/distributions3" class="external-link">distributions3</a></span><span class="op">)</span></span>
@@ -245,7 +245,7 @@ z_i = -\Phi^{-1}(\text{rpp}_i(y_i^\text{obs}|\theta)) \sim N(0, 1)
 <span class="header-section-number">4.2</span> Computing Z-residuals<a class="anchor" aria-label="anchor" href="#computing-z-residuals"></a>
 </h3>
 <p>In this example, we compute Z-residuals for the <abbr title="Hurdle Negative Binomial">HNB</abbr> model separately for, logistic component (zero part) and count component using <code><a href="../reference/Zresidual.hurdle.negbinomial.html">Zresidual.hurdle.negbinomial()</a></code>. Apart from component-wise Z-residuals, the <code>Zresidual</code> package support overall model Z-residual calculation. The package take <code>brms</code> fit as an input and the <code>type</code> argument (<code>"zero", "count" or "hurdle"</code>) specifies which component to use when calculating the residuals. By default, Z-residuals are computed using the Importance Sampling Cross-Validation (<code>iscv</code>) method based on randomized predictive p-values (<abbr title="Randomized Predictive P-value">RPP</abbr>). Alternatively, users can choose the standard Posterior <abbr title="Randomized Predictive P-value">RPP</abbr> method by setting <code>method = "post"</code>.</p>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/HenrikBengtsson/matrixStats" class="external-link">matrixStats</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/alexpghayes/distributions3" class="external-link">distributions3</a></span><span class="op">)</span></span>
@@ -301,41 +301,41 @@ Whether there are patterns in residuals across fitted values (which may suggest 
 Whether residuals differ across covariates (optional extensions).
 </li>
 </ul>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/qqnorm.zresid.html">qqnorm.zresid</a></span><span class="op">(</span><span class="va">zres_hnb_post_zero</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/qqnorm.zresid.html">qqnorm.zresid</a></span><span class="op">(</span><span class="va">zres_hnb_post_count</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/qqnorm.zresid.html">qqnorm.zresid</a></span><span class="op">(</span><span class="va">zres_hnb_post_hurdle</span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure><p><img src="hurdle_zresidual_demo_files/figure-html/unnamed-chunk-4-1.png" class="quarto-figure quarto-figure-center" width="672"></p>
+<div>
+<figure><p><img src="hurdle_zresidual_demo_files/figure-html/unnamed-chunk-4-1.png" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot.zresid.html">plot.zresid</a></span><span class="op">(</span><span class="va">zres_hnb_post_zero</span>, X<span class="op">=</span><span class="st">"lp"</span>, outlier.return <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot.zresid.html">plot.zresid</a></span><span class="op">(</span><span class="va">zres_hnb_post_count</span>, X<span class="op">=</span><span class="st">"lp"</span>, outlier.return <span class="op">=</span> <span class="cn">TRUE</span>, log <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot.zresid.html">plot.zresid</a></span><span class="op">(</span><span class="va">zres_hnb_post_hurdle</span>, X<span class="op">=</span><span class="st">"lp"</span>, outlier.return <span class="op">=</span> <span class="cn">TRUE</span>, log <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure><p><img src="hurdle_zresidual_demo_files/figure-html/unnamed-chunk-5-1.png" class="quarto-figure quarto-figure-center" width="672"></p>
+<div>
+<figure><p><img src="hurdle_zresidual_demo_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/boxplot.zresid.html">boxplot.zresid</a></span><span class="op">(</span><span class="va">zres_hnb_post_zero</span>, X<span class="op">=</span><span class="st">"lp"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/boxplot.zresid.html">boxplot.zresid</a></span><span class="op">(</span><span class="va">zres_hnb_post_count</span>, X<span class="op">=</span><span class="st">"lp"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/boxplot.zresid.html">boxplot.zresid</a></span><span class="op">(</span><span class="va">zres_hnb_post_hurdle</span>, X<span class="op">=</span><span class="st">"lp"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure><p><img src="hurdle_zresidual_demo_files/figure-html/unnamed-chunk-6-1.png" class="quarto-figure quarto-figure-center" width="672"></p>
+<div>
+<figure><p><img src="hurdle_zresidual_demo_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
 </figure>
 </div>
 </div>
@@ -347,7 +347,7 @@ Whether residuals differ across covariates (optional extensions).
 </h5>
 <p>In addition to visual diagnostics, the package offers formal statistical tests to quantify deviations from normality or homogeneity of variance in Z-residuals by taking an <code>zresid</code> class object as an input.</p>
 <p><strong>Shapiro-Wilk Test for Normality (<abbr title="Shapiro-Wilk">SW</abbr>)</strong></p>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/sw.test.zresid.html">sw.test.zresid</a></span><span class="op">(</span><span class="va">zres_hnb_post_zero</span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output cell-output-stdout">
@@ -365,7 +365,7 @@ Whether residuals differ across covariates (optional extensions).
 </div>
 </div>
 <p><strong>Analysis of Variance (<abbr title="Analysis of Variance">ANOVA</abbr>)</strong></p>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/aov.test.zresid.html">aov.test.zresid</a></span><span class="op">(</span><span class="va">zres_hnb_post_zero</span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output cell-output-stdout">
@@ -383,7 +383,7 @@ Whether residuals differ across covariates (optional extensions).
 </div>
 </div>
 <p><strong>Bartlett Test (<abbr title="Bartlett's">BL</abbr>)</strong></p>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/bartlett.test.zresid.html">bartlett.test.zresid</a></span><span class="op">(</span><span class="va">zres_hnb_post_zero</span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output cell-output-stdout">
@@ -402,7 +402,7 @@ Whether residuals differ across covariates (optional extensions).
 </div>
 <p>These tests return standard <code>htest</code> or <code>aov</code> objects, making them easy to report, summarize, or integrate into automated workflows. One advantage of the visualization functions provided by the <code>Zresidual</code> package is that they allow users to diagnose the model both visually and using statistical tests simultaneously.</p>
 <p>We might be also interested in comparing our <abbr title="Hurdle Negative Binomial">HNB</abbr> model to <abbr title="Hurdle Poisson">HP</abbr> model taking the <abbr title="Hurdle Poisson">HP</abbr> model as misspecified model .</p>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="st">"~/Desktop/Zresidual/data/fit_hp.Rdata"</span><span class="op">)</span></span>
 <span><span class="co">#fit_hp &lt;- brm(bf(y ~ x + z, hu ~ x + z),</span></span>
@@ -412,14 +412,14 @@ Whether residuals differ across covariates (optional extensions).
 </details>
 </div>
 <p>This <code>prior("normal(1000, 1)", class = "shape")</code> is a very strong prior, tightly centered around 1000. Its practical effect is to force the shape parameter to be very large, which in turn makes the model behave almost like a Poisson distribution for the positive counts (truncated part of the hurdle model).</p>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">zres_hp_post_zero</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Zresidual.hurdle.poisson.html">Zresidual.hurdle.poisson</a></span><span class="op">(</span><span class="va">fit_hp</span>, type <span class="op">=</span> <span class="st">"zero"</span>, method <span class="op">=</span> <span class="st">"rpost"</span><span class="op">)</span></span>
 <span><span class="va">zres_hp_post_count</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Zresidual.hurdle.poisson.html">Zresidual.hurdle.poisson</a></span><span class="op">(</span><span class="va">fit_hp</span>, type <span class="op">=</span> <span class="st">"count"</span>, method <span class="op">=</span> <span class="st">"rpost"</span><span class="op">)</span></span>
 <span><span class="va">zres_hp_post_hurdle</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Zresidual.hurdle.poisson.html">Zresidual.hurdle.poisson</a></span><span class="op">(</span><span class="va">fit_hp</span>, type <span class="op">=</span> <span class="st">"hurdle"</span>, method <span class="op">=</span> <span class="st">"rpost"</span><span class="op">)</span></span></code></pre></div>
 </details>
 </div>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/qqnorm.zresid.html">qqnorm.zresid</a></span><span class="op">(</span><span class="va">zres_hp_post_zero</span><span class="op">)</span></span>
@@ -430,8 +430,8 @@ Whether residuals differ across covariates (optional extensions).
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/qqnorm.zresid.html">qqnorm.zresid</a></span><span class="op">(</span><span class="va">zres_hp_post_hurdle</span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure><p><img src="hurdle_zresidual_demo_files/figure-html/unnamed-chunk-12-1.png" class="quarto-figure quarto-figure-center" width="672"></p>
+<div>
+<figure><p><img src="hurdle_zresidual_demo_files/figure-html/unnamed-chunk-12-1.png" width="672"></p>
 </figure>
 </div>
 </div>
@@ -439,7 +439,7 @@ Whether residuals differ across covariates (optional extensions).
 <pre><code>Outlier Indices : 2 4 14 20 24 25 26 42 83 94 </code></pre>
 </div>
 </div>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot.zresid.html">plot.zresid</a></span><span class="op">(</span><span class="va">zres_hp_post_zero</span>, X<span class="op">=</span><span class="st">"lp"</span>, outlier.return <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -450,8 +450,8 @@ Whether residuals differ across covariates (optional extensions).
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot.zresid.html">plot.zresid</a></span><span class="op">(</span><span class="va">zres_hp_post_hurdle</span>, X<span class="op">=</span><span class="st">"lp"</span>, outlier.return <span class="op">=</span> <span class="cn">TRUE</span>, log <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure><p><img src="hurdle_zresidual_demo_files/figure-html/unnamed-chunk-13-1.png" class="quarto-figure quarto-figure-center" width="672"></p>
+<div>
+<figure><p><img src="hurdle_zresidual_demo_files/figure-html/unnamed-chunk-13-1.png" width="672"></p>
 </figure>
 </div>
 </div>
@@ -459,15 +459,15 @@ Whether residuals differ across covariates (optional extensions).
 <pre><code>Outlier Indices( hurdle ): 2 4 14 20 24 25 26 42 83 94 </code></pre>
 </div>
 </div>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/boxplot.zresid.html">boxplot.zresid</a></span><span class="op">(</span><span class="va">zres_hp_post_zero</span>, X<span class="op">=</span><span class="st">"lp"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/boxplot.zresid.html">boxplot.zresid</a></span><span class="op">(</span><span class="va">zres_hp_post_count</span>, X<span class="op">=</span><span class="st">"lp"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/boxplot.zresid.html">boxplot.zresid</a></span><span class="op">(</span><span class="va">zres_hp_post_hurdle</span>, X<span class="op">=</span><span class="st">"lp"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure><p><img src="hurdle_zresidual_demo_files/figure-html/unnamed-chunk-14-1.png" class="quarto-figure quarto-figure-center" width="672"></p>
+<div>
+<figure><p><img src="hurdle_zresidual_demo_files/figure-html/unnamed-chunk-14-1.png" width="672"></p>
 </figure>
 </div>
 </div>

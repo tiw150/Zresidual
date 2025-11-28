@@ -44,8 +44,6 @@ suppressPackageStartupMessages({
   library(animation)
   library(dplyr)
   library(Rlab)
-  
-  devtools::install_github("tiw150/Zresidual")
   library(Zresidual)
 })
 
