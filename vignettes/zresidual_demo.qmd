@@ -121,11 +121,6 @@ LeukSurv<-LeukSurv[LeukSurv$age<60,]
 ```
 
 
-```{r echo = FALSE}
-DT::datatable(LeukSurv,options = list(scrollX = TRUE, paging=TRUE), caption = "Table 1: A real dataset of acute myeloid leukemia patients.")
-
-```
-
 
 ### Fitting Models
 
@@ -283,10 +278,6 @@ sf.lwbc<-sf.test.zresid(Zresid.LeukSurv.logwbc)
 gof_tests<-data.frame(sw.wbc,sw.lwbc,sf.wbc,sf.lwbc)
 ```
 
-```{r echo = FALSE}
-DT::datatable(round(gof_tests,3),options = list(scrollX = TRUE, paging=TRUE),caption = "Table 2: 1000 replicated Z-SW and Z-SF p-values for the wbc model (left panels) and the lwbc    model (right panels) fitted with the survival times of acute myeloid leukemia patients.")
-
-```
 
 The Z-residuals can be divided into $k$ groups by cutting the covariates or linear predictors into equally-spaced intervals. To quantitatively evaluate the homogeneity of grouped Z-residuals, we propose testing the equality of group means and group variances. For this purpose, we employ the F-test in ANOVA to assess the equality of means and Bartlett's test to examine the equality of variances.
 

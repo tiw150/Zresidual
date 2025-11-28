@@ -141,10 +141,6 @@ kidney$id<-as.factor(kidney$id)
 ```
 
 
-```{r echo = FALSE}
-DT::datatable(kidney,options = list(scrollX = TRUE, paging=TRUE), caption = "Table 1: A real dataset of acute myeloid leukemia patients.")
-
-```
 
 ### Fitting Models
 
@@ -205,9 +201,7 @@ sf.kidney.cv<-sf.test.zresid(CVZresid.kidney)
 gof_tests<-data.frame(sw.kidney,sw.kidney.cv,sf.kidney,sf.kidney.cv)
 ```
 
-```{r echo = FALSE}
-DT::datatable(round(gof_tests,3),options = list(scrollX = TRUE, paging=TRUE),caption = "Table 2: 1000 replicated SW and SF p-values of No-CV and LOOCV Z-residuals of the fitted shared frailty models based on the original kidney infection dataset.")
-```
+
 There exists randomness in the Z-residuals of censored observations, meaning that different sets of Z-residuals can be generated for the same dataset using distinct random numbers. Thus, to test the robustness of the previously conducted diagnosis, we replicated a large number of realizations of Z-residuals. The Figure 2 exhibits histograms of 1000 SW test p-values, each derived from a set of No-CV or LOOCV Z-residuals. More than 95% of the SW p-values for No-CV Z-residuals surpass 0.05, whereas 100% of the SW p-values for LOOCV Z-residuals fall below 0.05. This consistency across numerous replications confirms that the evaluation of the misspecification of the shared frailty model is not incidental to a specific set of LOOCV Z-residuals but a recurring conclusion supported by extensive Z-residual replications.
 
 ```{r echo=FALSE}

@@ -520,7 +520,7 @@ plot.cs.residual(cs.residual=ucs.LeukSurv.wbc,main.title = "CS Residuals of wbc 
 plot.cs.residual(cs.residual=ucs.LeukSurv.logwbc,main.title = "CS Residuals of lwbc model")
 ```
 
-![](zresidual_demo_files/figure-html/unnamed-chunk-6-1.png)
+![](zresidual_demo_files/figure-html/unnamed-chunk-4-1.png)
 
 Figure 6: The estimated CHFs of the CS residuals for the wbc (left
 panels) and lwbc (right panels) models fitted to the survival data of
@@ -545,7 +545,7 @@ plot.martg.resid(martg.LeukSurv.wbc,X="wbc",main.title = "Martingale Residuals o
 plot.martg.resid(martg.LeukSurv.logwbc,X="logwbc",main.title = "Martingale Residuals of lwbc Model")
 ```
 
-![](zresidual_demo_files/figure-html/unnamed-chunk-7-1.png)
+![](zresidual_demo_files/figure-html/unnamed-chunk-5-1.png)
 
 Figure 7: Scatter plot of the martingale residuals for the wbc (left
 panels) and lwbc (right panels) models fitted to the survival data of
@@ -570,7 +570,7 @@ plot.dev.resid(dev.LeukSurv.wbc,X="wbc",main.title = "Deviance Residuals of wbc 
 plot.dev.resid(dev.LeukSurv.logwbc,X="logwbc",main.title = "Deviance Residuals of lwbc Model")
 ```
 
-![](zresidual_demo_files/figure-html/unnamed-chunk-8-1.png)
+![](zresidual_demo_files/figure-html/unnamed-chunk-6-1.png)
 
 Figure 8: Scatter plot of the deviance residuals for the wbc (left
 panels) and lwbc (right panels) models fitted to the survival data of
