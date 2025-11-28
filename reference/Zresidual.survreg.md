@@ -1,4 +1,4 @@
-# Calculate Z-residuals for a fitted survival regression model
+# Z-residuals for Accelerated failure time model models
 
 This function calculates Z-residuals based on a fitted \`survreg\`
 object from the \`survival\` package.
@@ -18,9 +18,11 @@ Zresidual.survreg(fit_survreg, newdata, n.rep = 1)
 
 - newdata:
 
-  An optional data frame containing new observations for which to
-  calculate the Z-residuals. If \`NULL\` (default), residuals are
-  calculated for the data used to fit the model.
+  Optional `data.frame` containing the variables used in
+  `fit_coxph$formula`. If `NULL` (the default), residuals are computed
+  on the original data used to fit the model. If supplied, `newdata`
+  must contain the survival response and all covariates appearing in the
+  original model formula.
 
 - n.rep:
 
@@ -31,15 +33,23 @@ Zresidual.survreg(fit_survreg, newdata, n.rep = 1)
 
 ## Value
 
-- Survival.Prob: The estimated survival probabilities.
+A numeric matrix of dimension \\n \times\\ `n.rep`, where \\n\\ is the
+number of observations in the (new) model frame. Each column corresponds
+to one set of Z-residuals. The returned matrix has the following
+attributes attached:
 
-- linear.pred: The linear predictors from the survival regression model.
+- `Survival.Prob`: vector of survival probabilities \\S_i(t_i)\\.
 
-- covariates: The covariate values used in the model.
+- `linear.pred`: vector of linear predictors \\\eta_i\\.
 
-- censored.status: The censoring status (0 for censored, 1 for event).
+- `covariates`: data frame of covariates (model frame without the
+  response).
 
-- object.model.frame: The model frame used for the analysis.
+- `censored.status`: event indicator (1 = event,0 = censored).
+
+- `object.model.frame`: the `model.frame` used to compute the residuals.
+
+- `type`: character string `"survival"`.
 
 ## Examples
 
@@ -47,20 +57,18 @@ Zresidual.survreg(fit_survreg, newdata, n.rep = 1)
 library(survival)
 
 # Fit a Weibull survival regression model
-fit_weibull <- survreg(Surv(time, status) ~ x, data = lung, dist = "weibull")
-#> Error in eval(predvars, data, env): object 'x' not found
+data(cancer, package="survival")
+fit_weibull <- survreg(Surv(time, status) ~ age, data = lung, dist = "weibull")
 
 # Calculate Z-residuals for the fitted model
-z_residuals <- Zresidual.survreg(fit_weibull)
-#> Error in Zresidual.survreg(fit_weibull): argument "newdata" is missing, with no default
+z_residuals <- Zresidual.survreg(fit_weibull,newdata=lung)
 head(z_residuals)
-#> Error: object 'z_residuals' not found
-
-# Calculate Z-residuals for new data
-new_data <- data.frame(x = c(1, 2, 0.5))
-Z_residuals_new <- Zresidual.survreg(fit_weibull, newdata = new_data)
-#> Error: object 'fit_weibull' not found
-head(z_residuals_new)
-#> Error: object 'z_residuals_new' not found
+#>      Z-residual 1
+#> [1,]    0.1427079
+#> [2,]    0.5487250
+#> [3,]    2.7479618
+#> [4,]   -0.5074260
+#> [5,]    1.4224828
+#> [6,]    2.3325122
 
 ```

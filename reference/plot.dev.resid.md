@@ -1,6 +1,10 @@
-# A function to draw scatter plot of a Deviance Residual
+# Plot deviance residuals for survival models
 
-A function to draw scatter plot of a Deviance Residual
+Produce diagnostic plots for deviance residuals from survival models,
+with the option to plot against the observation index, the linear
+predictor, or a selected covariate. The function expects a vector (or
+one-column matrix) of deviance residuals with attributes attached by the
+residual computation functions in this package.
 
 ## Usage
 
@@ -19,3 +23,108 @@ plot(
 ## Arguments
 
 - Deviance.residual:
+
+  Numeric vector (or one-column matrix) of deviance residuals, typically
+  returned by one of the residual functions in this package with
+  `residual.type = "deviance"`. It must carry the attributes
+  `"censored.status"`, `"linear.pred"`, and `"covariates"` as described
+  above.
+
+- ylab:
+
+  Character string for the y-axis label. Default is
+  `"Deviance Residual"`.
+
+- X:
+
+  Character string controlling the x-axis. Must be one of `"index"`,
+  `"lp"`, `"covariate"`, or the name of a covariate contained in
+  `attr(Deviance.residual, "covariates")`. The default is effectively
+  `"lp"` if `X` is not supplied.
+
+- main.title:
+
+  Character string for the main plot title. Default is
+  `"Deviance Residual Plot"`.
+
+- outlier.return:
+
+  Logical; if `TRUE`, attempted outliers (as indicated by an external
+  logical vector `is.outlier` in the calling environment) are
+  highlighted in the plot and their indices are returned invisibly. If
+  `FALSE` (default), no outlier indices are returned. Note that this
+  function does not compute outliers internally: it assumes that a
+  logical vector `is.outlier` of the same length as `Deviance.residual`
+  is available if outlier highlighting is desired.
+
+- ...:
+
+  Additional arguments passed to the underlying plotting functions.
+
+## Value
+
+The function is primarily called for its side-effect of producing a
+plot. If `outlier.return = TRUE`, it prints the indices of outlying
+points to the console and invisibly returns a list with component
+`outliers`, containing the indices where `is.outlier` is `TRUE`.
+Otherwise, it returns `NULL` invisibly.
+
+## Details
+
+The input `Deviance.residual` is typically obtained from
+[`residual.coxph()`](https://tiw150.github.io/Zresidual/reference/residual.coxph.md),
+[`residual.coxph.frailty()`](https://tiw150.github.io/Zresidual/reference/residual.coxph.frailty.md),
+or
+[`residual.survreg()`](https://tiw150.github.io/Zresidual/reference/residual.survreg.md)
+with `residual.type = "deviance"`.
+
+The `X` argument controls the x-axis:
+
+- `"index"`: plot deviance residuals against observation index.
+
+- `"lp"`: plot deviance residuals against the linear predictor
+  (attribute `"linear.pred"`).
+
+- `"covariate"`: prompt the user and print the available covariate names
+  to the console.
+
+- a character string matching one of the covariate names in
+  `attr(Deviance.residual, "covariates")`: plot deviance residuals
+  against that covariate.
+
+In the `"lp"` and covariate cases, a LOWESS smooth is added to the plot
+to highlight systematic patterns in the residuals.
+
+Non-finite deviance residuals are detected and truncated to lie slightly
+beyond the largest finite residual, with a message printed to alert the
+user that there may be problems with the model fit. Censored and
+uncensored observations are distinguished by color and plotting symbol
+in all display modes.
+
+## See also
+
+`residual.coxph`, `residual.coxph.frailty`, `residual.survreg`,
+[`Surv`](https://rdrr.io/pkg/survival/man/Surv.html),
+[`survfit`](https://rdrr.io/pkg/survival/man/survfit.html)
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+  library(survival)
+
+  data(lung)
+  fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
+  r_d <- residual.coxph(fit, newdata = lung,
+                        residual.type = "deviance")
+
+  ## Basic plot vs. index
+  plot.dev.resid(r_d, X = "index")
+
+  ## Plot vs. linear predictor
+  plot.dev.resid(r_d, X = "lp")
+
+  ## Plot vs. a specific covariate, e.g. "age"
+  plot.dev.resid(r_d, X = "age")
+} # }
+```

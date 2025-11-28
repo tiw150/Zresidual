@@ -12,7 +12,7 @@ aov.test.zresid(Zresidual, X = c("lp", "covariate"), k.anova = 10)
 
 - Zresidual:
 
-  A z-residual.
+  A Z-residual.
 
 - X:
 

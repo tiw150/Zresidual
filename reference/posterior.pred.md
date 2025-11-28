@@ -56,7 +56,8 @@ The function performs the following steps:
 [`log.pred.dist.HNB`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.HNB.md),
 [`log.pred.dist.NB`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.NB.md),
 [`log.pred.dist.HP`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.HP.md),
-`posterior_linpred` (from brms) for comparison.
+[`posterior_linpred`](https://mc-stan.org/rstantools/reference/posterior_linpred.html)
+(from brms) for comparison.
 
 ## Examples
 

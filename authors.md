@@ -4,9 +4,9 @@
 
 - **Tingxuan Wu**. Author, maintainer.
 
-- **Hettiarachchige Alias Egodage Dananji**. Author.
-
 - **Longhai Li**. Author.
+
+- **Hettiarachchige Alias Egodage Dananji**. Contributor.
 
 - **Cindy Feng**. Contributor.
 
@@ -15,13 +15,12 @@
 Source:
 [`DESCRIPTION`](https://github.com/tiw150/Zresidual/blob/main/DESCRIPTION)
 
-Wu T, Dananji H, Li L (2025). *Zresidual: Z-residual for Regression
-Modelling*. R package version 0.1.0,
-<https://tiw150.github.io/Zresidual>.
+Wu T, Li L (2025). *Zresidual: Z-residual for Regression Modelling*. R
+package version 0.1.0, <https://tiw150.github.io/Zresidual>.
 
     @Manual{,
       title = {Zresidual: Z-residual for Regression Modelling},
-      author = {Tingxuan Wu and Hettiarachchige Alias Egodage Dananji and Longhai Li},
+      author = {Tingxuan Wu and Longhai Li},
       year = {2025},
       note = {R package version 0.1.0},
       url = {https://tiw150.github.io/Zresidual},

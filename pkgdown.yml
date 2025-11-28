@@ -2,9 +2,11 @@ pandoc: 3.1.11
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
-  getting-started: getting-started.html
-  Zresidual_demo: Zresidual_demo.html
-last_built: 2025-11-25T16:34Z
+  cv_zresidual_demo: cv_zresidual_demo.html
+  hurdle_zresidual_demo: hurdle_zresidual_demo.html
+  zresidual_demo: zresidual_demo.html
+  zresidual_logistic_demo: zresidual_logistic_demo.html
+last_built: 2025-11-28T21:00Z
 urls:
   reference: https://tiw150.github.io/Zresidual/reference
   article: https://tiw150.github.io/Zresidual/articles

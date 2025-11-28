@@ -33,8 +33,6 @@ Zresidual.poisson(fit, method = "iscv", n.rep = 1)
 
 A numeric matrix of Z-residuals with attributes:
 
-- `type`: The specified model component (currently NULL)
-
 - `zero_id`: Indices of zero outcomes
 
 - `log_pmf`: Log-probability mass function values

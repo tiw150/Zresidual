@@ -1,8 +1,10 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://tiw150.github.io/Zresidual/404.html</loc></url>
-<url><loc>https://tiw150.github.io/Zresidual/articles/Zresidual_demo.html</loc></url>
-<url><loc>https://tiw150.github.io/Zresidual/articles/getting-started.html</loc></url>
+<url><loc>https://tiw150.github.io/Zresidual/articles/cv_zresidual_demo.html</loc></url>
+<url><loc>https://tiw150.github.io/Zresidual/articles/hurdle_zresidual_demo.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/articles/index.html</loc></url>
+<url><loc>https://tiw150.github.io/Zresidual/articles/zresidual_demo.html</loc></url>
+<url><loc>https://tiw150.github.io/Zresidual/articles/zresidual_logistic_demo.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/authors.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/index.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/CV.Zresidual.coxph.frailty.html</loc></url>
@@ -54,8 +56,11 @@
 <url><loc>https://tiw150.github.io/Zresidual/reference/posterior.pred.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/pvalue.min.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/qqnorm.zresid.html</loc></url>
-<url><loc>https://tiw150.github.io/Zresidual/reference/residuals.html</loc></url>
+<url><loc>https://tiw150.github.io/Zresidual/reference/residual.coxph.frailty.html</loc></url>
+<url><loc>https://tiw150.github.io/Zresidual/reference/residual.coxph.html</loc></url>
+<url><loc>https://tiw150.github.io/Zresidual/reference/residual.survreg.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/sf.test.zresid.html</loc></url>
+<url><loc>https://tiw150.github.io/Zresidual/reference/surv_residuals.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/sw.test.zresid.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/test.nl.aov.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/test.var.bartl.html</loc></url>
