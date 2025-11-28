@@ -268,6 +268,3 @@ abline(v=pmin.sf.kidney.cv,col="red")
 ```
 
 ![](cv_zresidual_demo_files/figure-html/unnamed-chunk-5-1.png)
-
-Figure 2: The histograms of 1000 replicated SW p-values of No-CV and
-LOOCV Z-residuals

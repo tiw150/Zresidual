@@ -510,10 +510,6 @@ plot.cs.residual(cs.residual=ucs.LeukSurv.logwbc,main.title = "CS Residuals of l
 
 ![](zresidual_demo_files/figure-html/unnamed-chunk-4-1.png)
 
-Figure 6: The estimated CHFs of the CS residuals for the wbc (left
-panels) and lwbc (right panels) models fitted to the survival data of
-acute myeloid leukemia patients
-
 ### 6.3 Martingale residual
 
 The martingale residuals are mostly within the interval (-3, 1) for
@@ -535,10 +531,6 @@ plot.martg.resid(martg.LeukSurv.logwbc,X="logwbc",main.title = "Martingale Resid
 
 ![](zresidual_demo_files/figure-html/unnamed-chunk-5-1.png)
 
-Figure 7: Scatter plot of the martingale residuals for the wbc (left
-panels) and lwbc (right panels) models fitted to the survival data of
-acute myeloid leukemia patients
-
 ### 6.4 Deviance residual
 
 The deviance residuals are more symmetrically distributed than
@@ -559,7 +551,3 @@ plot.dev.resid(dev.LeukSurv.logwbc,X="logwbc",main.title = "Deviance Residuals o
 ```
 
 ![](zresidual_demo_files/figure-html/unnamed-chunk-6-1.png)
-
-Figure 8: Scatter plot of the deviance residuals for the wbc (left
-panels) and lwbc (right panels) models fitted to the survival data of
-acute myeloid leukemia patients
