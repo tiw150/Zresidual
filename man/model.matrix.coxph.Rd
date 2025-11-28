@@ -4,7 +4,7 @@
 \alias{model.matrix.coxph}
 \title{An internal S3 method for model.matrix.}
 \usage{
-model.matrix.coxph(object, data = NULL, contrast.arg = object$contrasts, ...)
+\method{model.matrix}{coxph}(object, data = NULL, contrast.arg = object$contrasts, ...)
 }
 \description{
 An internal S3 method for model.matrix.

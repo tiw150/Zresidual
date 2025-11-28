@@ -4,7 +4,7 @@
 \alias{model.frame.survreg}
 \title{An internal S3 method for model.matrix.}
 \usage{
-model.frame.survreg(formula, ...)
+\method{model.frame}{survreg}(formula, ...)
 }
 \description{
 An internal S3 method for model.matrix.
