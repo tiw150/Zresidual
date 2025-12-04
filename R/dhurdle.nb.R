@@ -52,7 +52,7 @@
 #' # Compare structural zero vs positive counts
 #' dhurdle.nb(0, mu, size, pi)      # P(Y = 0)
 #' dhurdle.nb(1, mu, size, pi)      # P(Y = 1)
-#'
+#' @export
 dhurdle.nb <- function(y, mu, size, pi, log = FALSE) {
   log1mexp <- function(x) {
     ifelse(x <= log(2),

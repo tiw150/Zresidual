@@ -34,7 +34,7 @@
 #' @seealso
 #' \code{\link[stats]{dpois}}, \code{\link[stats]{ppois}},
 #' and \code{\link{cdf.tp}} for the corresponding cumulative function.
-#'
+#' @export
 pdf.tp <- function(y, lambda, log.p = FALSE)
 {
 

@@ -4,7 +4,7 @@
 \alias{posterior.pred}
 \title{Extract Posterior Predicted Parameters from a Hurdle or Count Model}
 \usage{
-posterior.pred(fit, dpar, count.only = TRUE, mc_used)
+posterior.pred(fit, dpar, count.only = TRUE)
 }
 \arguments{
 \item{fit}{A fitted \pkg{brms} model object containing data, formula, and MCMC posterior draws.}

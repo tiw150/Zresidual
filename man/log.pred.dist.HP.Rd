@@ -46,7 +46,3 @@ str(pred_dist)
 }
 
 }
-\seealso{
-\code{\link{dhurdle.pois}}, \code{\link{phurdle.pois}},
-and \code{\link[brms]{posterior_predict}} for related computations.
-}

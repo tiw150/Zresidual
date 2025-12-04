@@ -48,7 +48,6 @@ cdf.tp(1:5, lambda, lower.tail = FALSE)
 
 # Compute log-CDF values
 cdf.tp(1:5, lambda, log.p = TRUE)
-
 }
 \seealso{
 \code{\link[stats]{ppois}} for the standard Poisson CDF.

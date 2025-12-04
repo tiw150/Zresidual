@@ -44,7 +44,3 @@ str(pred_dist)
 }
 
 }
-\seealso{
-\code{\link{dhurdle.nb}}, \code{\link{phurdle.nb}},
-and \code{\link[brms]{posterior_predict}} for related computations.
-}

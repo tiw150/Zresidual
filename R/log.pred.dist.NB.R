@@ -36,10 +36,7 @@
 #' str(pred_dist)
 #' }
 #'
-#' @seealso
-#' \code{\link[stats]{dnbinom}}, \code{\link[stats]{pnbinom}},
-#' and \code{\link[brms]{posterior_predict}} for related computations.
-#'
+
 log.pred.dist.NB <- function(fit){
 
   chains <- summary(fit)$chains

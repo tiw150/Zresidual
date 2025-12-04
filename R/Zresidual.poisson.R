@@ -56,7 +56,6 @@ Zresidual.poisson <- function(fit, method = "iscv", n.rep = 1){
   if(!response %in% model.var) response <- strsplit(as.character(fit$formula$formula), "~")[[2]]
   sim.y <- as.matrix(model.data[, response])
   n <- length(sim.y)
-  #if(type == "count") id <- which(sim.y > 0) else id <- 1:n
   zero_id <- which(sim.y == 0)
 
   # Argument should be one of the element in type_list
@@ -67,19 +66,16 @@ Zresidual.poisson <- function(fit, method = "iscv", n.rep = 1){
   lpmf <- ldist$lpmf_hat
   lcdf <- ldist$lcdf_hat
 
-  # Argument should be one of the element in rpp_list
+
   rpp_list <- c(iscv = "iscv_logrpp", post = "post_logrpp", "post_logmpp")
   names(rpp_list) <- c("iscv", "rpost", "mpost")
 
-  #if(count_only) z_res<- matrix(NA, ncol = n.rep, nrow = dim(lpmf)[2])
   z_res<- matrix(NA, ncol = n.rep, nrow = n)
 
   for (i in 1:n.rep) {
     rpp <- get(rpp_list[[method]])(lcdf, lpmf)
     z_res[, i] <- -qnorm(rpp, log.p = T)
   }
-
-  #if(type == "count") z_res <- z_res[-zero_id,]
 
   colnames(z_res) <- paste0("Z-residual ", 1:n.rep)
 

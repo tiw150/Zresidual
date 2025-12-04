@@ -49,7 +49,6 @@ cdf.tnb(1:5, mu, size, lower.tail = FALSE)
 
 # Log probabilities
 cdf.tnb(1:5, mu, size, log.p = TRUE)
-
 }
 \seealso{
 \code{\link[stats]{pnbinom}} for the standard negative binomial CDF.

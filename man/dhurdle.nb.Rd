@@ -60,7 +60,6 @@ dhurdle.nb(0:5, mu, size, pi, log = TRUE)
 # Compare structural zero vs positive counts
 dhurdle.nb(0, mu, size, pi)      # P(Y = 0)
 dhurdle.nb(1, mu, size, pi)      # P(Y = 1)
-
 }
 \seealso{
 \code{\link[stats]{dnbinom}} for the Negative Binomial PMF,

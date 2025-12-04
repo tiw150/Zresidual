@@ -37,7 +37,7 @@
 #' \code{\link{log.pred.dist.HNB}}, \code{\link{log.pred.dist.NB}}, \code{\link{log.pred.dist.HP}},
 #' \code{\link{posterior_linpred}} (from brms) for comparison.
 #'
-posterior.pred <- function(fit, dpar, count.only = TRUE, mc_used){
+posterior.pred <- function(fit, dpar, count.only = TRUE){
 
   .LINK_FUNCTIONS <- list(
     log = function(x) exp(x),  # If link is "log", apply exp()
@@ -87,7 +87,6 @@ posterior.pred <- function(fit, dpar, count.only = TRUE, mc_used){
     mu = fit$family$link,
     shape = fit$family$link_shape)
 
-  # Define the column name prefixes in MCMC parameter estimates
   para_prefix_list <- list(
     zero = "^b_hu_", # For hurdle portion
     mu = "^b_", #For mu
@@ -102,9 +101,18 @@ posterior.pred <- function(fit, dpar, count.only = TRUE, mc_used){
     mm[-id,] <- NA
   }
 
-  to_brmsnames_mm <- brms:::rename(colnames(mm))
-  para_col <- paste0(para_prefix_list[[dpar]], gsub("\\[|\\]|\\(|\\)", "", to_brmsnames_mm))
+  to_brmsnames_mm <- sanitize_names(colnames(mm))
+
+  para_col <- paste0(
+    para_prefix_list[[dpar]],
+    gsub("\\[|\\]|\\(|\\)", "", to_brmsnames_mm)
+  )
+
   para <- as.data.frame(fit, variable = para_col, regex = TRUE)
+  if (ncol(mm) != ncol(para)) {
+    stop("Model matrix and estimate column names do not match.")
+  }
+
   if(ncol(mm) != ncol(para)) stop("Model matrix and estimate column names do not match.")
   log_parameter <- tcrossprod(as.matrix(para), mm)
 

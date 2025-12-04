@@ -27,8 +27,7 @@
 #' test.var.bartl(Zres, x, k.bl = 5)
 #' }
 #'
-#' @seealso
-#' \code{\link[stats]{bartlett.test}}, \code{\link[stats]{split}}
+
 test.var.bartl <- function(Zresidual, fitted.value, k.bl=10)
 {
   Zresidual <- Zresidual[which(!is.na(Zresidual))]

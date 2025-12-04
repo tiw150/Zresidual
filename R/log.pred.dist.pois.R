@@ -34,10 +34,7 @@
 #' str(pred_dist)
 #' }
 #'
-#' @seealso
-#' \code{\link[stats]{dpois}}, \code{\link[stats]{ppois}},
-#' and \code{\link[brms]{posterior_predict}} for related computations.
-#'
+
 log.pred.dist.pois <- function(fit){
 
   chains <- summary(fit)$chains

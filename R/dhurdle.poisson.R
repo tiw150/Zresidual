@@ -37,7 +37,7 @@
 #'
 #' @seealso
 #' \code{\link{dpois}}, \code{\link{pnbinom}}, \code{\link{dhurdle.nb}}
-#'
+#' @export
 dhurdle.pois <- function(y, lambda, pi, log = FALSE) {
   log1mexp <- function(x) {
     ifelse(x <= log(2),

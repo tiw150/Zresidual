@@ -40,7 +40,7 @@
 #'
 #' # Compute log-CDF values
 #' cdf.tp(1:5, lambda, log.p = TRUE)
-#'
+#' @export
 
 cdf.tp<- function(y, lambda, lower.tail = FALSE, log.p = FALSE) {
 

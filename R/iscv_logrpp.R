@@ -37,16 +37,7 @@
 #' A numeric vector of length \eqn{N}, giving the log randomized predictive
 #' p-values for each observation.
 #'
-#' @examples
-#' # Example matrices (toy example)
-#' log_cdf <- matrix(log(pnorm(rnorm(20))), 4000, 5)
-#' log_pmf <- matrix(log(dnorm(rnorm(20))), 4000, 5)
-#' result <- iscv_logrpp(log_cdf, log_pmf)
-#' head(result)
-#'
-#' @seealso
-#' \code{\link{colLogSumExps}}, \code{\link{log_sum_exp}},
-#' \code{\link{loocv_logrpp}}, \code{\link{posterior_logrpp}}
+#' @examples NULL
 #'
 iscv_logrpp <- function(log_cdf, log_pmf){
   mc_used <- dim(log_pmf)[1] # 4000
@@ -59,7 +50,6 @@ iscv_logrpp <- function(log_cdf, log_pmf){
     lM + log(exp (log.cdf-lM) + exp(log.pmf-lM))
   }
 
-  #**** Edit: DS 05/10/2025
   logrpp_iscv <- colLogSumExps(Log_Add_Exps(log.cdf = log_cdf, log.pmf = log_pmf + log_u) - log_pmf) -
     colLogSumExps(-log_pmf)
   # logrpp_iscv<-apply(log_pv - log_pmf, 2, log_sum_exp) -

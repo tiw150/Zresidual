@@ -10,6 +10,7 @@
 ^\\.github$
 ^_pkgdown\\.yml$
 
+^vignettes$
 ^vignettes/\\.quarto$
 ^vignettes/.+_cache$
 ^vignettes/.+_files$

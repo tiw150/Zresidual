@@ -40,7 +40,7 @@
 #'
 #' # Log probabilities
 #' cdf.tnb(1:5, mu, size, log.p = TRUE)
-#'
+#' @export
 
 cdf.tnb <- function(y, mu, size, lower.tail = FALSE, log.p = FALSE) {
 

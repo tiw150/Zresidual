@@ -42,7 +42,3 @@ str(pred_dist)
 }
 
 }
-\seealso{
-\code{\link{pdf.tnb}}, \code{\link{cdf.tnb}},
-and \code{\link[brms]{posterior_predict}} for related computations.
-}

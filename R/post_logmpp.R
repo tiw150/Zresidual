@@ -18,17 +18,9 @@
 #'
 #' @return A numeric vector of log posterior mid-value predictive probabilities for each observation.
 #'
-#' @examples
-#' \dontrun{
-#' # Assume log_cdf and log_pmf are matrices from posterior predictive draws
-#' log_mpp <- post_logmpp(log_cdf, log_pmf)
-#' head(exp(log_mpp))  # Posterior predictive probabilities
-#' }
+#' @examples NULL
 #'
-#' @seealso
-#' \code{\link{log.pred.dist.HNB}}, \code{\link{log.pred.dist.NB}},
-#' \code{\link{log.pred.dist.TNB}} for generating log-PMF and log-CDF inputs.
-#'
+
 post_logmpp <- function(log_cdf, log_pmf){
   mc_used <- dim(log_pmf)[1]
   n <- dim(log_pmf)[2]
@@ -39,7 +31,6 @@ post_logmpp <- function(log_cdf, log_pmf){
     lM + log(exp (log.cdf-lM) + exp(log.pmf-lM))
   }
 
-  #**** Edit: DS 05/10/2025
   log_sum_cdf <- colLogSumExps(log_cdf)
   log_sum_pmf <- colLogSumExps(log_pmf)+log_u
   log_pv<-Log_Add_Exps(log.cdf=log_sum_cdf, log.pmf=log_sum_pmf)

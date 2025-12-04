@@ -20,15 +20,8 @@
 #'
 #' @return Numeric p-value from the ANOVA F-test for the effect of the covariate on Z-residuals.
 #'
-#' @examples
-#' \dontrun{
-#' Zres <- rnorm(100)
-#' x <- runif(100)
-#' test.nl.aov(Zres, x, k.anova = 5)
-#' }
-#'
-#' @seealso
-#' \code{\link[stats]{anova}}, \code{\link[stats]{lm}}
+#' @examples NULL
+#' @keywords internal
 #'
 test.nl.aov <- function(Zresidual, fitted.value, k.anova=10)
 {

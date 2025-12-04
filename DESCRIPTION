@@ -29,6 +29,8 @@ Imports:
     VGAM,
     DPQ,
     matrixStats,
+    latex2exp,
+    rlang,
     stringr
 Suggests: 
     betareg,
@@ -46,6 +48,7 @@ Suggests:
     gifski,
     animation,
     png,
+    pacman,
     magick
 VignetteBuilder: knitr
 LazyData: true

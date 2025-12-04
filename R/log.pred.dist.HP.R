@@ -36,10 +36,6 @@
 #' str(pred_dist)
 #' }
 #'
-#' @seealso
-#' \code{\link{dhurdle.pois}}, \code{\link{phurdle.pois}},
-#' and \code{\link[brms]{posterior_predict}} for related computations.
-#'
 log.pred.dist.HP <- function(fit){
 
   chains <- summary(fit)$chains

@@ -31,9 +31,7 @@
 #' # lpmf_hat <- pred_dist$lpmf_hat
 #' # lcdf_hat <- pred_dist$lcdf_hat
 #'
-#' @seealso
-#' \code{\link{posterior.pred}}, \code{\link{dbern}}, \code{\link{pbern}}
-#'
+
 log.pred.dist.bern <- function(fit){
 
   n <- dim(fit$data)[1]

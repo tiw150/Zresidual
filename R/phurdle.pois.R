@@ -41,7 +41,7 @@
 #' @seealso
 #' \code{\link[stats]{ppois}}, \code{\link[stats]{dpois}},
 #' \code{\link{pdf.tp}} for the zero-truncated Poisson PMF.
-#'
+#' @export
 phurdle.pois <- function(y, lambda, pi, lower.tail = FALSE, log.p = FALSE)
 {
   log_diff_exp <- function (la, lb)

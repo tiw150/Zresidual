@@ -39,6 +39,3 @@ test.var.bartl(Zres, x, k.bl = 5)
 }
 
 }
-\seealso{
-\code{\link[stats]{bartlett.test}}, \code{\link[stats]{split}}
-}

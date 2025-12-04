@@ -40,6 +40,3 @@ and \eqn{N} is the number of observations.
 # lcdf_hat <- pred_dist$lcdf_hat
 
 }
-\seealso{
-\code{\link{posterior.pred}}, \code{\link{dbern}}, \code{\link{pbern}}
-}

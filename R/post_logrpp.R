@@ -17,17 +17,9 @@
 #'
 #' @return A numeric vector of log randomized posterior predictive p-values for each observation.
 #'
-#' @examples
-#' \dontrun{
-#' # Assume log_cdf and log_pmf are matrices from posterior predictive draws
-#' log_rpp <- post_logrpp(log_cdf, log_pmf)
-#' head(exp(log_rpp))  # Randomized posterior predictive probabilities
-#' }
+#' @examples NULL
 #'
-#' @seealso
-#' \code{\link{post_logmpp}}, \code{\link{log.pred.dist.HNB}},
-#' \code{\link{log.pred.dist.NB}}, \code{\link{log.pred.dist.TNB}}.
-#'
+
 post_logrpp <- function(log_cdf, log_pmf){
   mc_used <- dim(log_pmf)[1]
   n <- dim(log_pmf)[2]

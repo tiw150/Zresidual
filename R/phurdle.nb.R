@@ -43,7 +43,7 @@
 #' @seealso
 #' \code{\link[stats]{pnbinom}}, \code{\link[stats]{dnbinom}},
 #' \code{\link{pdf.tnb}} for the zero-truncated negative binomial PMF.
-#'
+#' @export
 phurdle.nb <- function(y, mu, size, pi, lower.tail = FALSE, log.p = FALSE)
 {
   log_diff_exp <- function (la, lb) # compute the logarithm of the difference between the exponentials of two log values.

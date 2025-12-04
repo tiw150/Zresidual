@@ -113,12 +113,12 @@ Zresidual <- function(fit.object, nrep = 1,data = NULL,type=NULL,method = "iscv"
 
     } else if (distr == "negbinomial") {
 
-      Zresid_fun <- Zresidual.negbinomial(fit = fit.object,  type = "NB",
+      Zresid_fun <- Zresidual.negbinomial(fit = fit.object,
                                           method = method,n.rep = nrep)
 
     } else if (distr == "poisson") {
 
-      Zresid_fun <- Zresidual.poisson(fit = fit.object, type = "pois",
+      Zresid_fun <- Zresidual.poisson(fit = fit.object,
                                       method = method,n.rep = nrep)
 
     } else if (distr == "bernoulli") {

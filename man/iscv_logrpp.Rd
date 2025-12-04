@@ -47,14 +47,6 @@ Values numerically equal to 0 or 1 are replaced by \eqn{\log(1e-5)} and
 \eqn{\log(9e-5)} respectively to keep calculations stable.
 }
 \examples{
-# Example matrices (toy example)
-log_cdf <- matrix(log(pnorm(rnorm(20))), 4000, 5)
-log_pmf <- matrix(log(dnorm(rnorm(20))), 4000, 5)
-result <- iscv_logrpp(log_cdf, log_pmf)
-head(result)
+NULL
 
-}
-\seealso{
-\code{\link{colLogSumExps}}, \code{\link{log_sum_exp}},
-\code{\link{loocv_logrpp}}, \code{\link{posterior_logrpp}}
 }

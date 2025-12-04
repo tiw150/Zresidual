@@ -31,10 +31,7 @@
 #' str(pred_dist)
 #' }
 #'
-#' @seealso
-#' \code{\link{pdf.tp}}, \code{\link{cdf.tp.li}},
-#' and \code{\link[brms]{posterior_predict}} for related computations.
-#'
+
 log.pred.dist.TP <- function(fit){
 
   chains <- summary(fit)$chains

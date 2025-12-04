@@ -29,14 +29,6 @@ The function computes a stabilized version of the posterior predictive p-values:
 }
 }
 \examples{
-\dontrun{
-# Assume log_cdf and log_pmf are matrices from posterior predictive draws
-log_mpp <- post_logmpp(log_cdf, log_pmf)
-head(exp(log_mpp))  # Posterior predictive probabilities
-}
+NULL
 
-}
-\seealso{
-\code{\link{log.pred.dist.HNB}}, \code{\link{log.pred.dist.NB}},
-\code{\link{log.pred.dist.TNB}} for generating log-PMF and log-CDF inputs.
 }
