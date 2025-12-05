@@ -134,7 +134,7 @@ frequently employed to exemplify shared frailty models.
 Code
 
 ``` r
-load("~/Desktop/Zresidual/data/kidney.rda")
+load(here::here("inst/extdata/kidney.rda"))
 kidney$sex <- ifelse(kidney$sex == 1, "male", "female")
 kidney$sex<-as.factor(kidney$sex)
 kidney$id<-as.factor(kidney$id)

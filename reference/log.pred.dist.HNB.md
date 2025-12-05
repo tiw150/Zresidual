@@ -52,14 +52,6 @@ For each posterior draw and each observation, the function computes:
   [`phurdle.nb()`](https://tiw150.github.io/Zresidual/reference/phurdle.nb.md)
   with `lower.tail = FALSE`.
 
-## See also
-
-[`dhurdle.nb`](https://tiw150.github.io/Zresidual/reference/dhurdle.nb.md),
-[`phurdle.nb`](https://tiw150.github.io/Zresidual/reference/phurdle.nb.md),
-and
-[`posterior_predict`](https://mc-stan.org/rstantools/reference/posterior_predict.html)
-for related computations.
-
 ## Examples
 
 ``` r

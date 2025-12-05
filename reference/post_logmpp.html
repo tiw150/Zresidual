@@ -69,19 +69,11 @@ predictive samples.</p>
     <p>The function computes a stabilized version of the posterior predictive p-values:</p><ol><li><p>It sums the log-CDF and log-PMF across posterior samples using log-sum-exp for numerical stability.</p></li>
 <li><p>Probabilities exactly equal to 0 or 1 are replaced with small bounds (\(10^{-5}\) and \(9 \cdot 10^{-5}\)) to avoid numerical issues in further computations.</p></li>
 </ol></div>
-    <div class="section level2">
-    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="log.pred.dist.HNB.html">log.pred.dist.HNB</a></code>, <code><a href="log.pred.dist.NB.html">log.pred.dist.NB</a></code>,
-<code><a href="log.pred.dist.TNB.html">log.pred.dist.TNB</a></code> for generating log-PMF and log-CDF inputs.</p></div>
-    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="co"># Assume log_cdf and log_pmf are matrices from posterior predictive draws</span></span></span>
-<span class="r-in"><span><span class="va">log_mpp</span> <span class="op">&lt;-</span> <span class="fu">post_logmpp</span><span class="op">(</span><span class="va">log_cdf</span>, <span class="va">log_pmf</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">log_mpp</span><span class="op">)</span><span class="op">)</span>  <span class="co"># Posterior predictive probabilities</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="cn">NULL</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

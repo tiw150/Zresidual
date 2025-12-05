@@ -39,19 +39,9 @@ p-values:
     (\\10^{-5}\\ and \\9 \cdot 10^{-5}\\) to avoid numerical issues in
     further computations.
 
-## See also
-
-[`log.pred.dist.HNB`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.HNB.md),
-[`log.pred.dist.NB`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.NB.md),
-[`log.pred.dist.TNB`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.TNB.md)
-for generating log-PMF and log-CDF inputs.
-
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-# Assume log_cdf and log_pmf are matrices from posterior predictive draws
-log_mpp <- post_logmpp(log_cdf, log_pmf)
-head(exp(log_mpp))  # Posterior predictive probabilities
-} # }
+NULL
+#> NULL
 ```

@@ -48,17 +48,9 @@ The function handles covariates as follows:
 ANOVA is then performed with `lm(Zresidual ~ binned_covariate)` and the
 p-value for the first term is returned.
 
-## See also
-
-[`anova`](https://rdrr.io/r/stats/anova.html),
-[`lm`](https://rdrr.io/r/stats/lm.html)
-
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-Zres <- rnorm(100)
-x <- runif(100)
-test.nl.aov(Zres, x, k.anova = 5)
-} # }
+NULL
+#> NULL
 ```

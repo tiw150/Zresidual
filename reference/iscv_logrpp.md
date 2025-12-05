@@ -53,18 +53,9 @@ Internally, this function:
 Values numerically equal to 0 or 1 are replaced by \\\log(1e-5)\\ and
 \\\log(9e-5)\\ respectively to keep calculations stable.
 
-## See also
-
-`colLogSumExps`, `log_sum_exp`, `loocv_logrpp`, `posterior_logrpp`
-
 ## Examples
 
 ``` r
-# Example matrices (toy example)
-log_cdf <- matrix(log(pnorm(rnorm(20))), 4000, 5)
-log_pmf <- matrix(log(dnorm(rnorm(20))), 4000, 5)
-result <- iscv_logrpp(log_cdf, log_pmf)
-#> Error in iscv_logrpp(log_cdf, log_pmf): could not find function "iscv_logrpp"
-head(result)
-#> Error: object 'result' not found
+NULL
+#> NULL
 ```

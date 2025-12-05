@@ -43,11 +43,6 @@ For each observation:
 This produces matrices of size \\M \times N\\, where \\M\\ is the number
 of posterior draws and \\N\\ is the number of observations.
 
-## See also
-
-[`posterior.pred`](https://tiw150.github.io/Zresidual/reference/posterior.pred.md),
-`dbern`, `pbern`
-
 ## Examples
 
 ``` r

@@ -66,9 +66,9 @@ y <- 0:5
 lambda <- 2
 pi <- 0.3
 phurdle.pois(y, lambda, pi)
-#> Error in phurdle.pois(y, lambda, pi): could not find function "phurdle.pois"
+#> [1] 0.70000000 0.48087530 0.26175060 0.11566747 0.04262590 0.01340927
 
 # Upper tail probabilities on log scale
 phurdle.pois(y, lambda, pi, lower.tail = FALSE, log.p = TRUE)
-#> Error in phurdle.pois(y, lambda, pi, lower.tail = FALSE, log.p = TRUE): could not find function "phurdle.pois"
+#> [1] -0.3566749 -0.7321473 -1.3403631 -2.1570359 -3.1552932 -4.3118087
 ```

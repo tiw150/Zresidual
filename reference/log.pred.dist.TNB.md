@@ -45,14 +45,6 @@ For each posterior draw and observation, the function computes:
   [`cdf.tnb()`](https://tiw150.github.io/Zresidual/reference/cdf.tnb.md)
   with `lower.tail = FALSE`.
 
-## See also
-
-[`pdf.tnb`](https://tiw150.github.io/Zresidual/reference/pdf.tnb.md),
-[`cdf.tnb`](https://tiw150.github.io/Zresidual/reference/cdf.tnb.md),
-and
-[`posterior_predict`](https://mc-stan.org/rstantools/reference/posterior_predict.html)
-for related computations.
-
 ## Examples
 
 ``` r

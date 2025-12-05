@@ -49,7 +49,7 @@
       <h1>Z-residual diagnostic tool for assessing covariate functional form in shared frailty models</h1>
 
 
-      <p class="date">2025-11-28</p>
+      <p class="date">2025-12-05</p>
 
       <small class="dont-index">Source: <a href="https://github.com/tiw150/Zresidual/blob/main/vignettes/zresidual_demo.qmd" class="external-link"><code>vignettes/zresidual_demo.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
@@ -125,7 +125,7 @@ r_{ij}^{Z}(y_{ij}, \delta_{ij}, U_{ij})=-\Phi^{-1} (S_{ij}^R(y_{ij}, \delta_{ij}
 <p>The dataset employed in our analysis contains 411 patients who were recorded at the M. D. Anderson Cancer Center between 1980 and 1996. These patients were under the age of 60 and hailed from 24 administrative districts. The data collected information on the survival time for acute myeloid leukemia and prognostic factors, including age, sex, white blood cell count (wbc) at diagnosis, and the townsend score (tpi) for which higher values indicate less affluent areas. The censoring rate is 29.2%. The response variable of interest is the survival time in days, which is the time from entry to the study or death. The preliminary study showed that the wbc is highly right-skewed. Logarithm transformation is often used to reduce the impact of extremely large values of the covariate on the response variable, such as the wbc variable in this application. However, a logarithm transformation may mask the impact of extremely large values of the covariate on the outcome variable.</p>
 <div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="st">"~/Desktop/Zresidual/data/LeukSurv.rda"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="fu">here</span><span class="fu">::</span><span class="fu">here</span><span class="op">(</span><span class="st">"inst/extdata/LeukSurv.rda"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">LeukSurv</span><span class="op">$</span><span class="va">district</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">LeukSurv</span><span class="op">$</span><span class="va">district</span><span class="op">)</span></span>
 <span><span class="va">LeukSurv</span><span class="op">$</span><span class="va">sex</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">LeukSurv</span><span class="op">$</span><span class="va">sex</span><span class="op">)</span></span>
 <span><span class="va">LeukSurv</span><span class="op">$</span><span class="va">logwbc</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">LeukSurv</span><span class="op">$</span><span class="va">wbc</span><span class="op">+</span><span class="fl">0.001</span><span class="op">)</span></span>

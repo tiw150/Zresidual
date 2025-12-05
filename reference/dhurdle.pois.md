@@ -57,7 +57,7 @@ y <- 0:5
 lambda <- 2
 pi <- 0.3
 dhurdle.pois(y, lambda, pi)
-#> Error in dhurdle.pois(y, lambda, pi): could not find function "dhurdle.pois"
+#> [1] 0.30000000 0.21912470 0.21912470 0.14608313 0.07304157 0.02921663
 dhurdle.pois(y, lambda, pi, log = TRUE)
-#> Error in dhurdle.pois(y, lambda, pi, log = TRUE): could not find function "dhurdle.pois"
+#> [1] -1.203973 -1.518114 -1.518114 -1.923579 -2.616727 -3.533017
 ```

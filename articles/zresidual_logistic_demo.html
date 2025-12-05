@@ -49,7 +49,7 @@
       <h1>Z-residual Diagnosis for Logistic Regression</h1>
 
 
-      <p class="date">2025-11-28</p>
+      <p class="date">2025-12-05</p>
 
       <small class="dont-index">Source: <a href="https://github.com/tiw150/Zresidual/blob/main/vignettes/zresidual_logistic_demo.qmd" class="external-link"><code>vignettes/zresidual_logistic_demo.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
@@ -175,7 +175,7 @@ z_i = -\Phi^{-1}(\text{rpp}_i(y_i^\text{obs}|\theta)) \sim N(0, 1)
 <span><span class="co">#fit_logit &lt;- brm(bf(logit_formula),</span></span>
 <span><span class="co">#               data = data_logit, </span></span>
 <span><span class="co">#               family = bernoulli())</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="st">"~/Desktop/Zresidual/data/fit_logit.Rdata"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="fu">here</span><span class="fu">::</span><span class="fu">here</span><span class="op">(</span><span class="st">"inst/extdata/fit_logit.Rdata"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </details>
 </div>
 <p>The <code>family = bernoulli()</code> tells <code>brms</code> to use a logistic regression for binary response. We use default parameter setting on this example to fit the model.</p>

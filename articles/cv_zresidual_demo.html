@@ -49,7 +49,7 @@
       <h1>Cross-validatory Z-Residual for Diagnosing Shared Frailty Models</h1>
 
 
-      <p class="date">2025-11-28</p>
+      <p class="date">2025-12-05</p>
 
       <small class="dont-index">Source: <a href="https://github.com/tiw150/Zresidual/blob/main/vignettes/cv_zresidual_demo.qmd" class="external-link"><code>vignettes/cv_zresidual_demo.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
@@ -138,7 +138,7 @@ U_{ij}\,\hat{S}_{ij}(t_{ij}^{test}), &amp; \text{if $t_{ij}^{test}$ is censored,
 <p>This example demonstrates the practical application of cross-validatory Z-residuals in identifying outliers within a study on kidney infections. The dataset comprises records from 38 kidney patients using a portable dialysis machine. It documents the times of the first and second recurrences of kidney infections for these patients. Each patient’s survival time is defined as the duration until infection from catheter insertion. The patient records are considered as clusters due to shared frailty, signifying the common effect across patients. Instances where the catheter is removed for reasons other than infection are treated as censored observations, accounting for 24% of the dataset. The dataset encompasses 38 patient clusters, with each patient having exactly two observations, resulting in a total sample size of 76. This dataset is frequently employed to exemplify shared frailty models.</p>
 <div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="st">"~/Desktop/Zresidual/data/kidney.rda"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/load.html" class="external-link">load</a></span><span class="op">(</span><span class="fu">here</span><span class="fu">::</span><span class="fu">here</span><span class="op">(</span><span class="st">"inst/extdata/kidney.rda"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">kidney</span><span class="op">$</span><span class="va">sex</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">kidney</span><span class="op">$</span><span class="va">sex</span> <span class="op">==</span> <span class="fl">1</span>, <span class="st">"male"</span>, <span class="st">"female"</span><span class="op">)</span></span>
 <span><span class="va">kidney</span><span class="op">$</span><span class="va">sex</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">kidney</span><span class="op">$</span><span class="va">sex</span><span class="op">)</span></span>
 <span><span class="va">kidney</span><span class="op">$</span><span class="va">id</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">kidney</span><span class="op">$</span><span class="va">id</span><span class="op">)</span></span></code></pre></div>

@@ -57,9 +57,9 @@ the corresponding cumulative function.
 y <- 1:5
 lambda <- 2
 pdf.tp(y, lambda)
-#> Error in pdf.tp(y, lambda): could not find function "pdf.tp"
+#> [1] 0.31303529 0.31303529 0.20869019 0.10434510 0.04173804
 
 # Log probabilities
 pdf.tp(y, lambda, log.p = TRUE)
-#> Error in pdf.tp(y, lambda, log.p = TRUE): could not find function "pdf.tp"
+#> [1] -1.161439 -1.161439 -1.566904 -2.260052 -3.176342
 ```

@@ -55,14 +55,6 @@ For each posterior draw and observation, the function computes:
 The function also identifies indices of zero and positive count
 responses.
 
-## See also
-
-[`dhurdle.pois`](https://tiw150.github.io/Zresidual/reference/dhurdle.pois.md),
-[`phurdle.pois`](https://tiw150.github.io/Zresidual/reference/phurdle.pois.md),
-and
-[`posterior_predict`](https://mc-stan.org/rstantools/reference/posterior_predict.html)
-for related computations.
-
 ## Examples
 
 ``` r

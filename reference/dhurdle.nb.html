@@ -104,18 +104,17 @@ The function handles vectorized inputs and returns a numeric vector of the same 
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Compute hurdle NB probabilities for counts 0–5</span></span></span>
 <span class="r-in"><span><span class="fu">dhurdle.nb</span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">5</span>, <span class="va">mu</span>, <span class="va">size</span>, <span class="va">pi</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in dhurdle.nb(0:5, mu, size, pi):</span> could not find function "dhurdle.nb"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.30000000 0.23333333 0.15555556 0.10370370 0.06913580 0.04609053</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Log-scale probabilities</span></span></span>
 <span class="r-in"><span><span class="fu">dhurdle.nb</span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">5</span>, <span class="va">mu</span>, <span class="va">size</span>, <span class="va">pi</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in dhurdle.nb(0:5, mu, size, pi, log = TRUE):</span> could not find function "dhurdle.nb"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -1.203973 -1.455287 -1.860752 -2.266217 -2.671683 -3.077148</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Compare structural zero vs positive counts</span></span></span>
 <span class="r-in"><span><span class="fu">dhurdle.nb</span><span class="op">(</span><span class="fl">0</span>, <span class="va">mu</span>, <span class="va">size</span>, <span class="va">pi</span><span class="op">)</span>      <span class="co"># P(Y = 0)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in dhurdle.nb(0, mu, size, pi):</span> could not find function "dhurdle.nb"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.3</span>
 <span class="r-in"><span><span class="fu">dhurdle.nb</span><span class="op">(</span><span class="fl">1</span>, <span class="va">mu</span>, <span class="va">size</span>, <span class="va">pi</span><span class="op">)</span>      <span class="co"># P(Y = 1)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in dhurdle.nb(1, mu, size, pi):</span> could not find function "dhurdle.nb"</span>
-<span class="r-in"><span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2333333</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

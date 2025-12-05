@@ -74,9 +74,9 @@ mu <- 2
 size <- 1.5
 pi <- 0.3
 phurdle.nb(y, mu, size, pi)
-#> Error in phurdle.nb(y, mu, size, pi): could not find function "phurdle.nb"
+#> [1] 0.70000000 0.46601122 0.29887638 0.18745315 0.11582394 0.07079986
 
 # Upper tail probabilities on log scale
 phurdle.nb(y, mu, size, pi, lower.tail = FALSE, log.p = TRUE)
-#> Error in phurdle.nb(y, mu, size, pi, lower.tail = FALSE, log.p = TRUE): could not find function "phurdle.nb"
+#> [1] -0.3566749 -0.7635456 -1.2077252 -1.6742263 -2.1556840 -2.6478983
 ```

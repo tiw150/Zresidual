@@ -114,7 +114,7 @@ outcome variable.
 Code
 
 ``` r
-load("~/Desktop/Zresidual/data/LeukSurv.rda")
+load(here::here("inst/extdata/LeukSurv.rda"))
 LeukSurv$district<-as.factor(LeukSurv$district)
 LeukSurv$sex<-as.factor(LeukSurv$sex)
 LeukSurv$logwbc<- log(LeukSurv$wbc+0.001)

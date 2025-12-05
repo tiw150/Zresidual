@@ -72,15 +72,15 @@ pi <- 0.3
 
 # Compute hurdle NB probabilities for counts 0–5
 dhurdle.nb(0:5, mu, size, pi)
-#> Error in dhurdle.nb(0:5, mu, size, pi): could not find function "dhurdle.nb"
+#> [1] 0.30000000 0.23333333 0.15555556 0.10370370 0.06913580 0.04609053
 
 # Log-scale probabilities
 dhurdle.nb(0:5, mu, size, pi, log = TRUE)
-#> Error in dhurdle.nb(0:5, mu, size, pi, log = TRUE): could not find function "dhurdle.nb"
+#> [1] -1.203973 -1.455287 -1.860752 -2.266217 -2.671683 -3.077148
 
 # Compare structural zero vs positive counts
 dhurdle.nb(0, mu, size, pi)      # P(Y = 0)
-#> Error in dhurdle.nb(0, mu, size, pi): could not find function "dhurdle.nb"
+#> [1] 0.3
 dhurdle.nb(1, mu, size, pi)      # P(Y = 1)
-#> Error in dhurdle.nb(1, mu, size, pi): could not find function "dhurdle.nb"
+#> [1] 0.2333333
 ```

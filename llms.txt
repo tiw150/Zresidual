@@ -149,10 +149,8 @@ Diagnosing Shared Frailty Models. The American Statistician, 79(2),
   : A function to calculate Shapiro-Francia test of Zresidual
 - [`surv_residuals()`](https://tiw150.github.io/Zresidual/reference/surv_residuals.md)
   : Residuals for supported survival models
-- [`sw.test.zresid()`](https://tiw150.github.io/Zresidual/reference/sw.test.zresid.md)
+- [`sw(`*`<test.zresid>`*`)`](https://tiw150.github.io/Zresidual/reference/sw.test.zresid.md)
   : Shapiro-Wilk Normality Test for Z-Residuals
-- [`test.nl.aov()`](https://tiw150.github.io/Zresidual/reference/test.nl.aov.md)
-  : ANOVA Test for Z-Residuals
 - [`test.var.bartl()`](https://tiw150.github.io/Zresidual/reference/test.var.bartl.md)
   : Bartlett Test for Homogeneity of Variances of Z-Residual
 

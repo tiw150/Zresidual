@@ -102,11 +102,11 @@ and sums of log-scale probabilities safely.</p>
 <span class="r-in"><span><span class="va">lambda</span> <span class="op">&lt;-</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="va">pi</span> <span class="op">&lt;-</span> <span class="fl">0.3</span></span></span>
 <span class="r-in"><span><span class="fu">phurdle.pois</span><span class="op">(</span><span class="va">y</span>, <span class="va">lambda</span>, <span class="va">pi</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in phurdle.pois(y, lambda, pi):</span> could not find function "phurdle.pois"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.70000000 0.48087530 0.26175060 0.11566747 0.04262590 0.01340927</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Upper tail probabilities on log scale</span></span></span>
 <span class="r-in"><span><span class="fu">phurdle.pois</span><span class="op">(</span><span class="va">y</span>, <span class="va">lambda</span>, <span class="va">pi</span>, lower.tail <span class="op">=</span> <span class="cn">FALSE</span>, log.p <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in phurdle.pois(y, lambda, pi, lower.tail = FALSE, log.p = TRUE):</span> could not find function "phurdle.pois"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.3566749 -0.7321473 -1.3403631 -2.1570359 -3.1552932 -4.3118087</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
