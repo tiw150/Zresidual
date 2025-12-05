@@ -8,7 +8,7 @@ parameters for positive counts only or for all observations.
 ## Usage
 
 ``` r
-posterior.pred(fit, dpar, count.only = TRUE, mc_used)
+posterior.pred(fit, dpar, count.only = TRUE)
 ```
 
 ## Arguments

@@ -47,10 +47,6 @@ The function handles covariates as follows:
 Bartlett's test is then applied to the Z-residuals grouped by the factor
 or binned covariate.
 
-## See also
-
-[`bartlett.test`](https://rdrr.io/r/stats/bartlett.test.html), `split`
-
 ## Examples
 
 ``` r

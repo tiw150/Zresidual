@@ -63,9 +63,9 @@ y <- 1:5
 mu <- 2
 size <- 1.5
 pdf.tnb(y, mu, size)
-#> Error in pdf.tnb(y, mu, size): could not find function "pdf.tnb"
+#> [1] 0.33426968 0.23876406 0.15917604 0.10232745 0.06432011
 
 # Log probabilities
 pdf.tnb(y, mu, size, log.p = TRUE)
-#> Error in pdf.tnb(y, mu, size, log.p = TRUE): could not find function "pdf.tnb"
+#> [1] -1.095807 -1.432279 -1.837745 -2.279577 -2.743883
 ```

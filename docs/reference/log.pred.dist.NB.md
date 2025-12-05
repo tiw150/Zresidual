@@ -52,13 +52,6 @@ The function also identifies indices of zero-valued observations, which
 can be useful for model diagnostic procedures such as Z-residuals or
 posterior predictive checks.
 
-## See also
-
-[`dnbinom`](https://rdrr.io/r/stats/NegBinomial.html),
-[`pnbinom`](https://rdrr.io/r/stats/NegBinomial.html), and
-[`posterior_predict`](https://mc-stan.org/rstantools/reference/posterior_predict.html)
-for related computations.
-
 ## Examples
 
 ``` r

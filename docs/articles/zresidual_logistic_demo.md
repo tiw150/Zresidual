@@ -154,7 +154,7 @@ library(brms)
 #fit_logit <- brm(bf(logit_formula),
 #               data = data_logit, 
 #               family = bernoulli())
-load("~/Desktop/Zresidual/data/fit_logit.Rdata")
+load(here::here("inst/extdata/fit_logit.Rdata"))
 ```
 
 The `family = bernoulli()` tells `brms` to use a logistic regression for

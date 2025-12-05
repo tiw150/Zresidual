@@ -42,13 +42,6 @@ For each posterior draw and observation, the function computes:
 - `lcdf_hat`: Log cumulative distribution function values using
   `cdf.tp.li()` with `lower.tail = FALSE`.
 
-## See also
-
-[`pdf.tp`](https://tiw150.github.io/Zresidual/reference/pdf.tp.md),
-`cdf.tp.li`, and
-[`posterior_predict`](https://mc-stan.org/rstantools/reference/posterior_predict.html)
-for related computations.
-
 ## Examples
 
 ``` r

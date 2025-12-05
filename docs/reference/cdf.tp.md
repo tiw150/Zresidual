@@ -67,13 +67,13 @@ CDF.
 # Example: Compute the zero-truncated Poisson CDF for y = 1:5
 lambda <- 2
 cdf.tp(1:5, lambda)
-#> Error in cdf.tp(1:5, lambda): could not find function "cdf.tp"
+#> [1] 0.68696471 0.37392943 0.16523924 0.06089414 0.01915611
 
 # Compute upper-tail probabilities
 cdf.tp(1:5, lambda, lower.tail = FALSE)
-#> Error in cdf.tp(1:5, lambda, lower.tail = FALSE): could not find function "cdf.tp"
+#> [1] 0.68696471 0.37392943 0.16523924 0.06089414 0.01915611
 
 # Compute log-CDF values
 cdf.tp(1:5, lambda, log.p = TRUE)
-#> Error in cdf.tp(1:5, lambda, log.p = TRUE): could not find function "cdf.tp"
+#> [1] -0.3754723 -0.9836882 -1.8003609 -2.7986183 -3.9551338
 ```

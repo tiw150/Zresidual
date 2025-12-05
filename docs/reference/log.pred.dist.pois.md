@@ -49,13 +49,6 @@ For each posterior draw and observation, the function computes:
 
 The function also identifies indices of zero-valued observations.
 
-## See also
-
-[`dpois`](https://rdrr.io/r/stats/Poisson.html),
-[`ppois`](https://rdrr.io/r/stats/Poisson.html), and
-[`posterior_predict`](https://mc-stan.org/rstantools/reference/posterior_predict.html)
-for related computations.
-
 ## Examples
 
 ``` r

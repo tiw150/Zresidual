@@ -223,7 +223,8 @@ Code
 ``` r
 library(brms)
 library(distributions3)
-load("~/Desktop/Zresidual/data/fit_hnb.Rdata")
+load(here::here("inst/extdata/fit_hnb.Rdata"))
+
 #fit_hnb <- brm(bf(y ~ x + z, hu ~ x + z),
 #               data = sim_data, 
 #               family = hurdle_negbinomial())
@@ -473,7 +474,7 @@ taking the HP model as misspecified model .
 Code
 
 ``` r
-load("~/Desktop/Zresidual/data/fit_hp.Rdata")
+load(here::here("inst/extdata/fit_hp.Rdata"))
 #fit_hp <- brm(bf(y ~ x + z, hu ~ x + z),
 #               data = sim_data, 
 #               family = hurdle_negbinomial(),

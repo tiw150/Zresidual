@@ -69,13 +69,13 @@ negative binomial CDF.
 mu <- 2
 size <- 1
 cdf.tnb(1:5, mu, size)
-#> Error in cdf.tnb(1:5, mu, size): could not find function "cdf.tnb"
+#> [1] 0.6666667 0.4444444 0.2962963 0.1975309 0.1316872
 
 # Compute the upper-tail probabilities
 cdf.tnb(1:5, mu, size, lower.tail = FALSE)
-#> Error in cdf.tnb(1:5, mu, size, lower.tail = FALSE): could not find function "cdf.tnb"
+#> [1] 0.6666667 0.4444444 0.2962963 0.1975309 0.1316872
 
 # Log probabilities
 cdf.tnb(1:5, mu, size, log.p = TRUE)
-#> Error in cdf.tnb(1:5, mu, size, log.p = TRUE): could not find function "cdf.tnb"
+#> [1] -0.4054651 -0.8109302 -1.2163953 -1.6218604 -2.0273255
 ```
