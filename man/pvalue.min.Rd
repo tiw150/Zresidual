@@ -7,7 +7,10 @@
 pvalue.min(pv)
 }
 \arguments{
-\item{pv}{}
+\item{pv}{Numeric vector of p-values.}
+}
+\value{
+A single numeric value: the minimum adjusted p-value.
 }
 \description{
 A function to calculate the min p-value

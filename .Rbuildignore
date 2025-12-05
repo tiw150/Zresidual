@@ -9,7 +9,7 @@
 ^data-raw$
 ^\\.github$
 ^_pkgdown\\.yml$
-
+^Zresidual\.Rproj$
 ^vignettes$
 ^vignettes/\\.quarto$
 ^vignettes/.+_cache$
@@ -19,3 +19,7 @@
 ^README_cache$
 ^README\.log$
 ^vignettes/\.quarto$
+
+
+
+

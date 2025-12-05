@@ -5,7 +5,7 @@
 \title{Cox–Snell residual plot for survival models}
 \usage{
 \method{plot}{cs.residual}(
-  cs.residual,
+  x,
   ylab = "Cumulative Hazard Function",
   main.title = "Cox-Snell Residuals Scatterplot",
   outlier.return = FALSE,
@@ -13,7 +13,7 @@
 )
 }
 \arguments{
-\item{cs.residual}{Numeric vector (or one-column matrix) of Cox–Snell
+\item{x}{Numeric vector (or one-column matrix) of Cox–Snell
 residuals, typically returned by one of the residual functions in this
 package with \code{residual.type = "Cox-Snell"}. It must carry the
 attribute \code{"censored.status"}, giving the event indicator
@@ -26,7 +26,7 @@ attribute \code{"censored.status"}, giving the event indicator
 \code{"Cox-Snell Residuals Scatterplot"}.}
 
 \item{outlier.return}{Logical; if \code{TRUE}, potential outliers are
-identified using a simple cutoff \code{|cs.residual| > 3.5}. Their
+identified using a simple cutoff \code{|x| > 3.5}. Their
 indices are printed to the console and returned invisibly. If
 \code{FALSE} (default), no outlier indices are returned. Note that the
 current implementation attempts to highlight outliers using additional
@@ -40,7 +40,7 @@ or to the underlying base graphics functions.}
 \value{
 The function is primarily called for its side-effect of producing a plot.
 If \code{outlier.return = TRUE}, it prints the indices of points flagged
-as outliers (\code{|cs.residual| > 3.5}) and invisibly returns a list with
+as outliers (\code{|x| > 3.5}) and invisibly returns a list with
 component \code{outliers}, containing these indices. Otherwise, it returns
 \code{NULL} invisibly.
 }
@@ -52,7 +52,7 @@ distribution with mean 1, so the nonparametric estimate of the cumulative
 hazard should lie close to the 45-degree line.
 }
 \details{
-The input \code{cs.residual} is typically obtained from the residual
+The input \code{x} is typically obtained from the residual
 functions in this package (e.g., \code{residual.coxph()},
 \code{residual.coxph.frailty()}, or \code{residual.survreg()}) with
 \code{residual.type = "Cox-Snell"}.
@@ -66,19 +66,18 @@ exponential(1) reference line \eqn{H(t) = t}.
 }
 \examples{
 \dontrun{
-  library(survival)
+ library(survival)
 
-  data(lung)
-  fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
-  cs_resid <- residual.coxph(fit, newdata = lung,
-                             residual.type = "Cox-Snell")
+ data(lung)
+ fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
+ cs_resid <- residual.coxph(fit, newdata = lung,  residual.type = "Cox-Snell")
 
-  ## Cox–Snell residual plot
-  plot.cs.residual(cs_resid)
+ ## Cox–Snell residual plot
+ plot(cs_resid) # The user can now call plot() directly
 
-  ## Return indices of large residuals
-  out <- plot.cs.residual(cs_resid, outlier.return = TRUE)
-  out$outliers
+ ## Return indices of large residuals
+ out <- plot(cs_resid, outlier.return = TRUE)
+ out$outliers
 }
 }
 \seealso{

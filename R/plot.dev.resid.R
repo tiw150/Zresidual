@@ -6,20 +6,19 @@
 #' one-column matrix) of deviance residuals with attributes attached by
 #' the residual computation functions in this package.
 #'
-#' The input \code{Deviance.residual} is typically obtained from
+#' The input \code{x} is typically obtained from
 #' \code{residual.coxph()}, \code{residual.coxph.frailty()}, or
 #' \code{residual.survreg()} with \code{residual.type = "deviance"}.
 #'
-#' The \code{X} argument controls the x-axis:
+#' The \code{x_axis_var} argument controls the x-axis:
 #' \itemize{
-#'   \item \code{"index"}: plot deviance residuals against observation index.
-#'   \item \code{"lp"}: plot deviance residuals against the linear predictor
-#'         (attribute \code{"linear.pred"}).
-#'   \item \code{"covariate"}: prompt the user and print the available
-#'         covariate names to the console.
-#'   \item a character string matching one of the covariate names in
-#'         \code{attr(Deviance.residual, "covariates")}: plot deviance
-#'         residuals against that covariate.
+#'  \item \code{"index"}: plot deviance residuals against observation index.
+#'  \item \code{"lp"}: plot deviance residuals against the linear predictor
+#'  (attribute \code{"linear.pred"}).
+#'  \item \code{"covariate"}: prompt the user and print the available
+#'  covariate names to the console.
+#'  \item a character string matching one of the covariate names in
+#'  \code{attr(x, "covariates")}: plot deviance residuals against that covariate.
 #' }
 #'
 #' In the \code{"lp"} and covariate cases, a LOWESS smooth is added to the
@@ -31,26 +30,26 @@
 #' uncensored observations are distinguished by color and plotting symbol
 #' in all display modes.
 #'
-#' @param Deviance.residual Numeric vector (or one-column matrix) of deviance
-#'   residuals, typically returned by one of the residual functions in this
-#'   package with \code{residual.type = "deviance"}. It must carry the
-#'   attributes \code{"censored.status"}, \code{"linear.pred"}, and
-#'   \code{"covariates"} as described above.
+#' @param x Numeric vector (or one-column matrix) of deviance
+#'  residuals, typically returned by one of the residual functions in this
+#'  package with \code{residual.type = "deviance"}. It must carry the
+#'  attributes \code{"censored.status"}, \code{"linear.pred"}, and
+#'  \code{"covariates"} as described above.
 #' @param ylab Character string for the y-axis label. Default is
-#'   \code{"Deviance Residual"}.
-#' @param X Character string controlling the x-axis. Must be one of
-#'   \code{"index"}, \code{"lp"}, \code{"covariate"}, or the name of a
-#'   covariate contained in \code{attr(Deviance.residual, "covariates")}.
-#'   The default is effectively \code{"lp"} if \code{X} is not supplied.
+#'  \code{"Deviance Residual"}.
+#' @param x_axis_var Character string controlling the x-axis. Must be one of
+#'  \code{"index"}, \code{"lp"}, \code{"covariate"}, or the name of a
+#'  covariate contained in \code{attr(x, "covariates")}.
+#'  The default is effectively \code{"lp"} if \code{x_axis_var} is not supplied.
 #' @param main.title Character string for the main plot title. Default is
-#'   \code{"Deviance Residual Plot"}.
+#'  \code{"Deviance Residual Plot"}.
 #' @param outlier.return Logical; if \code{TRUE}, attempted outliers (as
-#'   indicated by an external logical vector \code{is.outlier} in the calling
-#'   environment) are highlighted in the plot and their indices are returned
-#'   invisibly. If \code{FALSE} (default), no outlier indices are returned.
-#'   Note that this function does not compute outliers internally: it assumes
-#'   that a logical vector \code{is.outlier} of the same length as
-#'   \code{Deviance.residual} is available if outlier highlighting is desired.
+#'  indicated by an external logical vector \code{is.outlier} in the calling
+#'  environment) are highlighted in the plot and their indices are returned
+#'  invisibly. If \code{FALSE} (default), no outlier indices are returned.
+#'  Note that this function does not compute outliers internally: it assumes
+#'  that a logical vector \code{is.outlier} of the same length as
+#'  \code{x} is available if outlier highlighting is desired.
 #' @param ... Additional arguments passed to the underlying plotting functions.
 #'
 #' @return
@@ -68,30 +67,32 @@
 #'
 #' @examples
 #' \dontrun{
-#'   library(survival)
+#'  library(survival)
 #'
-#'   data(lung)
-#'   fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
-#'   r_d <- residual.coxph(fit, newdata = lung,
-#'                         residual.type = "deviance")
+#'  data(lung)
+#'  fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
+#'  r_d <- residual.coxph(fit, newdata = lung,residual.type = "deviance")
 #'
-#'   ## Basic plot vs. index
-#'   plot.dev.resid(r_d, X = "index")
+#'  ## Basic plot vs. index
+#'  plot(r_d, x_axis_var = "index")
 #'
-#'   ## Plot vs. linear predictor
-#'   plot.dev.resid(r_d, X = "lp")
+#'  ## Plot vs. linear predictor
+#'  plot(r_d, x_axis_var = "lp")
 #'
-#'   ## Plot vs. a specific covariate, e.g. "age"
-#'   plot.dev.resid(r_d, X = "age")
+#'  ## Plot vs. a specific covariate, e.g. "age"
+#'  plot(r_d, x_axis_var = "age")
 #' }
-#' @export plot.dev.resid
-#'
-plot.dev.resid <- function(Deviance.residual,ylab = "Deviance Residual",
-                           X = c("index", "lp", "covariate"),
+#' @method plot dev.resid
+#' @export
+plot.dev.resid <- function(x,ylab = "Deviance Residual",
+                           x_axis_var = c("index", "lp", "covariate"),
                            main.title = "Deviance Residual Plot",
                            outlier.return = FALSE,
                            ...)
 {
+  Deviance.residual <- x
+  X <- x_axis_var
+
   sign.na <- function(x)
   {
     sign.x <- sign(x)

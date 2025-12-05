@@ -5,16 +5,16 @@
 \title{Plot martingale residuals for survival models}
 \usage{
 \method{plot}{martg.resid}(
-  Martingale.residual,
+  x,
   ylab = "Martingale Residual",
-  X = c("index", "lp", "covariate"),
+  x_axis_var = c("index", "lp", "covariate"),
   main.title = "Martingale Residual Plot",
   outlier.return = FALSE,
   ...
 )
 }
 \arguments{
-\item{Martingale.residual}{Numeric vector (or one-column matrix) of
+\item{x}{Numeric vector (or one-column matrix) of
 martingale residuals, typically returned by one of the residual
 functions in this package with \code{residual.type = "martingale"}.
 It must carry the attributes \code{"censored.status"},
@@ -23,10 +23,10 @@ It must carry the attributes \code{"censored.status"},
 \item{ylab}{Character string for the y-axis label. Default is
 \code{"Martingale Residual"}.}
 
-\item{X}{Character string controlling the x-axis. Must be one of
+\item{x_axis_var}{Character string controlling the x-axis. Must be one of
 \code{"index"}, \code{"lp"}, \code{"covariate"}, or the name of a
-covariate contained in \code{attr(Martingale.residual, "covariates")}.
-The default is effectively \code{"lp"} if \code{X} is not supplied.}
+covariate contained in \code{attr(x, "covariates")}.
+The default is effectively \code{"lp"} if \code{x_axis_var} is not supplied.}
 
 \item{main.title}{Character string for the main plot title. Default is
 \code{"Martingale Residual Plot"}.}
@@ -37,8 +37,7 @@ environment) are highlighted in the plot and their indices are returned
 invisibly. If \code{FALSE} (default), no outlier indices are returned.
 Note that this function does not compute outliers internally: it assumes
 that a logical vector \code{is.outlier} of the same length as
-\code{Martingale.residual} is available if outlier highlighting is
-desired.}
+\code{x} is available if outlier highlighting is desired.}
 
 \item{...}{Additional arguments passed to the underlying plotting functions.}
 }
@@ -57,20 +56,19 @@ matrix) of martingale residuals with attributes attached by the residual
 computation functions in this package.
 }
 \details{
-The input \code{Martingale.residual} is typically obtained from
+The input \code{x} is typically obtained from
 \code{residual.coxph()}, \code{residual.coxph.frailty()}, or
 \code{residual.survreg()} with \code{residual.type = "martingale"}.
 
-The \code{X} argument controls the x-axis:
+The \code{x_axis_var} argument controls the x-axis:
 \itemize{
-  \item \code{"index"}: plot martingale residuals against observation index.
-  \item \code{"lp"}: plot martingale residuals against the linear predictor
-        (attribute \code{"linear.pred"}).
-  \item \code{"covariate"}: prompt the user and print the available
-        covariate names to the console.
-  \item a character string matching one of the covariate names in
-        \code{attr(Martingale.residual, "covariates")}: plot martingale
-        residuals against that covariate.
+ \item \code{"index"}: plot martingale residuals against observation index.
+ \item \code{"lp"}: plot martingale residuals against the linear predictor
+ (attribute \code{"linear.pred"}).
+ \item \code{"covariate"}: prompt the user and print the available
+ covariate names to the console.
+ \item a character string matching one of the covariate names in
+ \code{attr(x, "covariates")}: plot martingale residuals against that covariate.
 }
 
 In the \code{"lp"} and covariate cases, a LOWESS smooth is added to the
@@ -85,21 +83,21 @@ all display modes.
 }
 \examples{
 \dontrun{
-  library(survival)
+library(survival)
 
-  data(lung)
-  fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
-  r_m <- residual.coxph(fit, newdata = lung,
-                        residual.type = "martingale")
+data(lung)
+fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
+r_m <- residual.coxph(fit, newdata = lung,
+                      residual.type = "martingale")
 
-  ## Basic plot vs. index
-  plot.martg.resid(r_m, X = "index")
+## Basic plot vs. index
+plot(r_m, x_axis_var = "index")
 
-  ## Plot vs. linear predictor
-  plot.martg.resid(r_m, X = "lp")
+## Plot vs. linear predictor
+plot(r_m, x_axis_var = "lp")
 
-  ## Plot vs. a specific covariate, e.g. "age"
-  plot.martg.resid(r_m, X = "age")
+## Plot vs. a specific covariate, e.g. "age"
+plot(r_m, x_axis_var = "age")
 }
 }
 \seealso{

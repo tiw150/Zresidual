@@ -1,7 +1,9 @@
 #' A function to calculate the min p-value
-#' @export
-#' @param pv
 #'
+#' @param pv Numeric vector of p-values.
+#'
+#' @return A single numeric value: the minimum adjusted p-value.
+#' @export
 pvalue.min <- function (pv)
 {
   pv <- pv[is.finite(pv)]

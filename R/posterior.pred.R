@@ -35,8 +35,7 @@
 #'
 #' @seealso
 #' \code{\link{log.pred.dist.HNB}}, \code{\link{log.pred.dist.NB}}, \code{\link{log.pred.dist.HP}},
-#' \code{\link{posterior_linpred}} (from brms) for comparison.
-#'
+#' \code{\link[brms:posterior_linpred]{posterior_linpred}}
 posterior.pred <- function(fit, dpar, count.only = TRUE){
 
   .LINK_FUNCTIONS <- list(
