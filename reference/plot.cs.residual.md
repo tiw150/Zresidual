@@ -11,7 +11,7 @@ cumulative hazard should lie close to the 45-degree line.
 ``` r
 # S3 method for class 'cs.residual'
 plot(
-  cs.residual,
+  x,
   ylab = "Cumulative Hazard Function",
   main.title = "Cox-Snell Residuals Scatterplot",
   outlier.return = FALSE,
@@ -21,7 +21,7 @@ plot(
 
 ## Arguments
 
-- cs.residual:
+- x:
 
   Numeric vector (or one-column matrix) of Cox–Snell residuals,
   typically returned by one of the residual functions in this package
@@ -42,8 +42,8 @@ plot(
 - outlier.return:
 
   Logical; if `TRUE`, potential outliers are identified using a simple
-  cutoff `|cs.residual| > 3.5`. Their indices are printed to the console
-  and returned invisibly. If `FALSE` (default), no outlier indices are
+  cutoff `|x| > 3.5`. Their indices are printed to the console and
+  returned invisibly. If `FALSE` (default), no outlier indices are
   returned. Note that the current implementation attempts to highlight
   outliers using additional plotting calls and assumes access to objects
   named `Zresidual` and `j` in the calling environment; users may wish
@@ -59,14 +59,14 @@ plot(
 
 The function is primarily called for its side-effect of producing a
 plot. If `outlier.return = TRUE`, it prints the indices of points
-flagged as outliers (`|cs.residual| > 3.5`) and invisibly returns a list
-with component `outliers`, containing these indices. Otherwise, it
-returns `NULL` invisibly.
+flagged as outliers (`|x| > 3.5`) and invisibly returns a list with
+component `outliers`, containing these indices. Otherwise, it returns
+`NULL` invisibly.
 
 ## Details
 
-The input `cs.residual` is typically obtained from the residual
-functions in this package (e.g.,
+The input `x` is typically obtained from the residual functions in this
+package (e.g.,
 [`residual.coxph()`](https://tiw150.github.io/Zresidual/reference/residual.coxph.md),
 [`residual.coxph.frailty()`](https://tiw150.github.io/Zresidual/reference/residual.coxph.frailty.md),
 or
@@ -89,18 +89,17 @@ to the exponential(1) reference line \\H(t) = t\\.
 
 ``` r
 if (FALSE) { # \dontrun{
-  library(survival)
+ library(survival)
 
-  data(lung)
-  fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
-  cs_resid <- residual.coxph(fit, newdata = lung,
-                             residual.type = "Cox-Snell")
+ data(lung)
+ fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
+ cs_resid <- residual.coxph(fit, newdata = lung,  residual.type = "Cox-Snell")
 
-  ## Cox–Snell residual plot
-  plot.cs.residual(cs_resid)
+ ## Cox–Snell residual plot
+ plot(cs_resid) # The user can now call plot() directly
 
-  ## Return indices of large residuals
-  out <- plot.cs.residual(cs_resid, outlier.return = TRUE)
-  out$outliers
+ ## Return indices of large residuals
+ out <- plot(cs_resid, outlier.return = TRUE)
+ out$outliers
 } # }
 ```

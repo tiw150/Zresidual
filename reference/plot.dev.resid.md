@@ -11,9 +11,9 @@ residual computation functions in this package.
 ``` r
 # S3 method for class 'dev.resid'
 plot(
-  Deviance.residual,
+  x,
   ylab = "Deviance Residual",
-  X = c("index", "lp", "covariate"),
+  x_axis_var = c("index", "lp", "covariate"),
   main.title = "Deviance Residual Plot",
   outlier.return = FALSE,
   ...
@@ -22,7 +22,7 @@ plot(
 
 ## Arguments
 
-- Deviance.residual:
+- x:
 
   Numeric vector (or one-column matrix) of deviance residuals, typically
   returned by one of the residual functions in this package with
@@ -35,12 +35,12 @@ plot(
   Character string for the y-axis label. Default is
   `"Deviance Residual"`.
 
-- X:
+- x_axis_var:
 
   Character string controlling the x-axis. Must be one of `"index"`,
   `"lp"`, `"covariate"`, or the name of a covariate contained in
-  `attr(Deviance.residual, "covariates")`. The default is effectively
-  `"lp"` if `X` is not supplied.
+  `attr(x, "covariates")`. The default is effectively `"lp"` if
+  `x_axis_var` is not supplied.
 
 - main.title:
 
@@ -54,8 +54,8 @@ plot(
   highlighted in the plot and their indices are returned invisibly. If
   `FALSE` (default), no outlier indices are returned. Note that this
   function does not compute outliers internally: it assumes that a
-  logical vector `is.outlier` of the same length as `Deviance.residual`
-  is available if outlier highlighting is desired.
+  logical vector `is.outlier` of the same length as `x` is available if
+  outlier highlighting is desired.
 
 - ...:
 
@@ -71,14 +71,14 @@ Otherwise, it returns `NULL` invisibly.
 
 ## Details
 
-The input `Deviance.residual` is typically obtained from
+The input `x` is typically obtained from
 [`residual.coxph()`](https://tiw150.github.io/Zresidual/reference/residual.coxph.md),
 [`residual.coxph.frailty()`](https://tiw150.github.io/Zresidual/reference/residual.coxph.frailty.md),
 or
 [`residual.survreg()`](https://tiw150.github.io/Zresidual/reference/residual.survreg.md)
 with `residual.type = "deviance"`.
 
-The `X` argument controls the x-axis:
+The `x_axis_var` argument controls the x-axis:
 
 - `"index"`: plot deviance residuals against observation index.
 
@@ -89,8 +89,8 @@ The `X` argument controls the x-axis:
   to the console.
 
 - a character string matching one of the covariate names in
-  `attr(Deviance.residual, "covariates")`: plot deviance residuals
-  against that covariate.
+  `attr(x, "covariates")`: plot deviance residuals against that
+  covariate.
 
 In the `"lp"` and covariate cases, a LOWESS smooth is added to the plot
 to highlight systematic patterns in the residuals.
@@ -111,20 +111,19 @@ in all display modes.
 
 ``` r
 if (FALSE) { # \dontrun{
-  library(survival)
+ library(survival)
 
-  data(lung)
-  fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
-  r_d <- residual.coxph(fit, newdata = lung,
-                        residual.type = "deviance")
+ data(lung)
+ fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
+ r_d <- residual.coxph(fit, newdata = lung,residual.type = "deviance")
 
-  ## Basic plot vs. index
-  plot.dev.resid(r_d, X = "index")
+ ## Basic plot vs. index
+ plot(r_d, x_axis_var = "index")
 
-  ## Plot vs. linear predictor
-  plot.dev.resid(r_d, X = "lp")
+ ## Plot vs. linear predictor
+ plot(r_d, x_axis_var = "lp")
 
-  ## Plot vs. a specific covariate, e.g. "age"
-  plot.dev.resid(r_d, X = "age")
+ ## Plot vs. a specific covariate, e.g. "age"
+ plot(r_d, x_axis_var = "age")
 } # }
 ```
