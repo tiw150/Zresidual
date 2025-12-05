@@ -112,7 +112,7 @@ This example provides a fundamental illustration of using the Z-residuals for di
 The dataset employed in our analysis contains 411 patients who were recorded at the M. D. Anderson Cancer Center between 1980 and 1996. These patients were under the age of 60 and hailed from 24 administrative districts. The data collected information on the survival time for acute myeloid leukemia and prognostic factors, including  age, sex, white blood cell count (wbc) at diagnosis, and the townsend score (tpi) for which higher values indicate less affluent areas. The censoring rate is 29.2%. The response variable of interest is the survival time in days, which is the time from entry to the study or death. The preliminary study showed that the wbc is highly right-skewed. Logarithm transformation is often used to reduce the impact of extremely large values of the covariate on the response variable, such as the wbc variable in this application. However, a logarithm transformation may mask the impact of extremely large values of the covariate on the outcome variable.
 
 ```{r data-read}
-load(system.file("extdata", "LeukSurv.rda", package = "Zresidual"))
+load(here::here("inst/extdata/LeukSurv.rda"))
 LeukSurv$district<-as.factor(LeukSurv$district)
 LeukSurv$sex<-as.factor(LeukSurv$sex)
 LeukSurv$logwbc<- log(LeukSurv$wbc+0.001)

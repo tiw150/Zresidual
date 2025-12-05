@@ -230,7 +230,7 @@ Now, we use the `brms` package to fit a hurdle negative binomial model to the si
 ```{r model_fit}
 library(brms)
 library(distributions3)
-load(system.file("extdata", "fit_hnb.Rdata", package = "Zresidual"))
+load(here::here("inst/extdata/fit_hnb.Rdata"))
 
 #fit_hnb <- brm(bf(y ~ x + z, hu ~ x + z),
 #               data = sim_data, 
@@ -340,7 +340,7 @@ These tests return standard `htest` or `aov` objects, making them easy to report
 We might be also interested in comparing our `r HNB` model to `r HP` model taking the `r HP` model as misspecified model .
 
 ```{r }
-load(system.file("extdata", "fit_hp.Rdata", package = "Zresidual"))
+load(here::here("inst/extdata/fit_hp.Rdata"))
 #fit_hp <- brm(bf(y ~ x + z, hu ~ x + z),
 #               data = sim_data, 
 #               family = hurdle_negbinomial(),

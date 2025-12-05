@@ -186,7 +186,7 @@ library(brms)
 #fit_logit <- brm(bf(logit_formula),
 #               data = data_logit, 
 #               family = bernoulli())
-load(system.file("extdata", "fit_logit.Rdata", package = "Zresidual"))
+load(here::here("inst/extdata/fit_logit.Rdata"))
 ```
 
 

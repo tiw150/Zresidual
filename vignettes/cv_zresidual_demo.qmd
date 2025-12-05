@@ -133,7 +133,7 @@ This example demonstrates the practical application of cross-validatory Z-residu
 
 
 ```{r data-read}
-load(system.file("extdata", "kidney.rda",      package = "Zresidual"))
+load(here::here("inst/extdata/kidney.rda"))
 kidney$sex <- ifelse(kidney$sex == 1, "male", "female")
 kidney$sex<-as.factor(kidney$sex)
 kidney$id<-as.factor(kidney$id)
