@@ -1,22 +1,20 @@
-# Cross-Validated Z-Residual Diagnostics for Survival Models
+# Cross-validated Z-residual diagnostics (generic)
 
-Computes cross-validated Z-residuals for fitted survival models,
-including Cox proportional hazards models (\`coxph\`) with or without
-frailty terms, and parametric survival regression models (\`survreg\`).
-The function automatically detects the model type from the fitted model
-object and applies the appropriate Z-residual cross-validation method.
+Generic function for cross-validated Z-residual diagnostics. Method
+dispatch is based on the class of `object`. Methods are currently
+provided for survival models such as `coxph` and `survreg`.
 
 ## Usage
 
 ``` r
-CV.Zresidual(fit.object, nfolds, foldlist = NULL, data = NULL, nrep = 1)
+CV.Zresidual(object, nfolds, foldlist = NULL, data = NULL, nrep = 1, ...)
 ```
 
 ## Arguments
 
-- fit.object:
+- object:
 
-  A fitted survival model object of class \`coxph\` or \`survreg\`.
+  A fitted model object.
 
 - nfolds:
 
@@ -24,47 +22,34 @@ CV.Zresidual(fit.object, nfolds, foldlist = NULL, data = NULL, nrep = 1)
 
 - foldlist:
 
-  Optional list specifying custom fold assignments. If \`NULL\`, folds
-  are generated internally.
+  Optional list specifying custom fold assignments. If `NULL`, folds are
+  generated internally by the method.
 
 - data:
 
-  Optional dataset used to refit the model during cross-validation.
-  Required when \`foldlist\` is provided or when the original model call
-  does not contain the data explicitly.
+  Optional data frame used to refit the model during cross-validation,
+  when required by the method.
 
 - nrep:
 
   Integer. Number of repeated cross-validations to perform. Default is
   1.
 
+- ...:
+
+  Further arguments passed on to specific methods.
+
 ## Value
 
-An object of class \`"cvzresid"\` containing the cross-validated
-Z-residual results and any model-specific diagnostic information.
-
-## Details
-
-The function identifies whether the fitted model is: - a Cox model
-(\`coxph\`) with frailty terms, - a Cox model without frailty, - or a
-parametric survival model (\`survreg\`), and dispatches to the
-appropriate internal cross-validation function:
-\`CV.Zresidual.coxph.frailty()\`, \`CV.Zresidual.coxph()\`, or
-\`CV.Zresidual.survreg()\`.
-
-All required packages are loaded via \`pacman::p_load()\`.
-
-## See also
-
-\`CV.Zresidual.coxph()\`, \`CV.Zresidual.coxph.frailty()\`,
-\`CV.Zresidual.survreg()\`
+An object whose structure depends on the underlying method, typically
+tagged with class `"cvzresid"` in addition to method-specific classes.
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-library(survival)
-fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
-out <- CV.Zresidual(fit, nfolds = 5)
+  library(survival)
+  fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
+  out <- CV.Zresidual(fit, nfolds = 5, data = lung)
 } # }
 ```

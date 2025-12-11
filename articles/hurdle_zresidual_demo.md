@@ -196,7 +196,7 @@ fit the model.
 
 In this example, we compute Z-residuals for the HNB model separately
 for, logistic component (zero part) and count component using
-[`Zresidual.hurdle.negbinomial()`](https://tiw150.github.io/Zresidual/reference/Zresidual.hurdle.negbinomial.md).
+[`Zresidual()`](https://tiw150.github.io/Zresidual/reference/Zresidual.md).
 Apart from component-wise Z-residuals, the `Zresidual` package support
 overall model Z-residual calculation. The package take `brms` fit as an
 input and the `type` argument (`"zero", "count" or "hurdle"`) specifies
@@ -212,19 +212,17 @@ Code
 library(matrixStats)
 library(distributions3)
 library(Zresidual)
-zres_hnb_post_zero <- Zresidual.hurdle.negbinomial(fit_hnb, type = "zero", method = "rpost")
-zres_hnb_post_count <- Zresidual.hurdle.negbinomial(fit_hnb, type = "count", method = "rpost")
-zres_hnb_post_hurdle <- Zresidual.hurdle.negbinomial(fit_hnb, type = "hurdle", method = "rpost")
+zres_hnb_post_zero <- Zresidual(fit_hnb, type = "zero", method = "rpost")
+zres_hnb_post_count <- Zresidual(fit_hnb, type = "count", method = "rpost")
+zres_hnb_post_hurdle <- Zresidual(fit_hnb, type = "hurdle", method = "rpost")
 ```
 
 ##### 4.2.0.1 **What the function returns**
 
-The function
-[`Zresidual.hurdle.negbinomial()`](https://tiw150.github.io/Zresidual/reference/Zresidual.hurdle.negbinomial.md)
-(and other Z-residual computing functions) returns a matrix of
-Z-residuals, with additional attributes. The returned object is of class
-`zresid`, which includes metadata useful for diagnostic and plotting
-purposes.
+The function `Zresidual.hurdle.negbinomial()` (and other Z-residual
+computing functions) returns a matrix of Z-residuals, with additional
+attributes. The returned object is of class `zresid`, which includes
+metadata useful for diagnostic and plotting purposes.
 
 **Return Value**
 
@@ -261,7 +259,7 @@ The `Zresidual` package includes built-in plotting functions (QQ Plot,
 Scatter Plot, Boxplot) to help diagnose model fit using Z-residuals.
 These functions are designed to work directly with objects of class
 `zresid` returned by functions like
-[`Zresidual.hurdle.negbinomial()`](https://tiw150.github.io/Zresidual/reference/Zresidual.hurdle.negbinomial.md).
+[`Zresidual()`](https://tiw150.github.io/Zresidual/reference/Zresidual.md).
 These plots help assess:
 
 - Whether residuals are approximately standard normal (via QQ plots),
@@ -446,9 +444,9 @@ the hurdle model).
 Code
 
 ``` r
-zres_hp_post_zero <- Zresidual.hurdle.poisson(fit_hp, type = "zero", method = "rpost")
-zres_hp_post_count <- Zresidual.hurdle.poisson(fit_hp, type = "count", method = "rpost")
-zres_hp_post_hurdle <- Zresidual.hurdle.poisson(fit_hp, type = "hurdle", method = "rpost")
+zres_hp_post_zero <- Zresidual(fit_hp, type = "zero", method = "rpost")
+zres_hp_post_count <- Zresidual(fit_hp, type = "count", method = "rpost")
+zres_hp_post_hurdle <- Zresidual(fit_hp, type = "hurdle", method = "rpost")
 ```
 
 Code

@@ -3,32 +3,28 @@
 ## All functions
 
 - [`CV.Zresidual()`](https://tiw150.github.io/Zresidual/reference/CV.Zresidual.md)
-  : Cross-Validated Z-Residual Diagnostics for Survival Models
-- [`CV.Zresidual.coxph()`](https://tiw150.github.io/Zresidual/reference/CV.Zresidual.coxph.md)
-  : Cross-Validated Z-Residuals for Cox Proportional Hazards Models
-- [`CV.Zresidual.coxph.frailty()`](https://tiw150.github.io/Zresidual/reference/CV.Zresidual.coxph.frailty.md)
-  : Cross-Validated Z-Residuals for Shared Frailty Cox Models
-- [`CV.Zresidual.survreg()`](https://tiw150.github.io/Zresidual/reference/CV.Zresidual.survreg.md)
-  : Cross-Validated Z-Residuals for Parametric Survival Regression
-  Models
+  : Cross-validated Z-residual diagnostics (generic)
+- [`CV.Zresidual(`*`<coxph>`*`)`](https://tiw150.github.io/Zresidual/reference/CV.Zresidual.coxph.md)
+  : Cross-validated Z-residuals for Cox proportional hazards models
+- [`CV.Zresidual(`*`<survreg>`*`)`](https://tiw150.github.io/Zresidual/reference/CV.Zresidual.survreg.md)
+  : Cross-validated Z-residuals for parametric survival regression
+  models
 - [`Zresidual()`](https://tiw150.github.io/Zresidual/reference/Zresidual.md)
-  : Compute Z-Residuals for Survival and Bayesian Regression Models
-- [`Zresidual.bernoulli()`](https://tiw150.github.io/Zresidual/reference/Zresidual.bernoulli.md)
-  : Compute Z-Residuals for a Bernoulli/Logistic Model
-- [`Zresidual.coxph()`](https://tiw150.github.io/Zresidual/reference/Zresidual.coxph.md)
-  : Z-residuals for Cox proportional hazards models
-- [`Zresidual.coxph.frailty()`](https://tiw150.github.io/Zresidual/reference/Zresidual.coxph.frailty.md)
-  : Z-residuals for shared frailty Cox proportional hazards models
-- [`Zresidual.hurdle.negbinomial()`](https://tiw150.github.io/Zresidual/reference/Zresidual.hurdle.negbinomial.md)
-  : Compute Z-Residuals for Hurdle or Count Negative Binomial Models
-- [`Zresidual.hurdle.poisson()`](https://tiw150.github.io/Zresidual/reference/Zresidual.hurdle.poisson.md)
-  : Compute Z-Residuals for Hurdle or Count Poisson Models
-- [`Zresidual.negbinomial()`](https://tiw150.github.io/Zresidual/reference/Zresidual.negbinomial.md)
-  : Compute Z-Residuals for Negative Binomial Models
-- [`Zresidual.poisson()`](https://tiw150.github.io/Zresidual/reference/Zresidual.poisson.md)
-  : Compute Z-Residuals for Poisson Models
-- [`Zresidual.survreg()`](https://tiw150.github.io/Zresidual/reference/Zresidual.survreg.md)
-  : Z-residuals for Accelerated failure time model models
+  : Compute Z-residuals via an S3 generic
+- [`Zresidual(`*`<bernoulli.brms>`*`)`](https://tiw150.github.io/Zresidual/reference/Zresidual.bernoulli.brms.md)
+  : Z-residuals for Bernoulli models fitted with brms
+- [`Zresidual(`*`<coxph.survival>`*`)`](https://tiw150.github.io/Zresidual/reference/Zresidual.coxph.survival.md)
+  : Z-residuals for Cox proportional hazards models (survival package)
+- [`Zresidual(`*`<hurdle_negbinomial.brms>`*`)`](https://tiw150.github.io/Zresidual/reference/Zresidual.hurdle_negbinomial.brms.md)
+  : Z-residuals for hurdle negative binomial models fitted with brms
+- [`Zresidual(`*`<hurdle_poisson.brms>`*`)`](https://tiw150.github.io/Zresidual/reference/Zresidual.hurdle_poisson.brms.md)
+  : Z-residuals for hurdle Poisson models fitted with brms
+- [`Zresidual(`*`<negbinomial.brms>`*`)`](https://tiw150.github.io/Zresidual/reference/Zresidual.negbinomial.brms.md)
+  : Z-residuals for negative binomial models fitted with brms
+- [`Zresidual(`*`<poisson.brms>`*`)`](https://tiw150.github.io/Zresidual/reference/Zresidual.poisson.brms.md)
+  : Z-residuals for Poisson models fitted with brms
+- [`Zresidual(`*`<survreg.survival>`*`)`](https://tiw150.github.io/Zresidual/reference/Zresidual.survreg.survival.md)
+  : Z-residuals for parametric survival regression models (survival)
 - [`aov.test.zresid()`](https://tiw150.github.io/Zresidual/reference/aov.test.zresid.md)
   : A function to calculate ANOVA of Zresidual
 - [`bartlett.test(`*`<zresid>`*`)`](https://tiw150.github.io/Zresidual/reference/bartlett.test.zresid.md)
@@ -107,12 +103,6 @@
 - [`qqnorm(`*`<zresid>`*`)`](https://tiw150.github.io/Zresidual/reference/qqnorm.zresid.md)
   : Normal Q-Q Plot for Z-Residuals with Outlier Detection and Normality
   Diagnostics
-- [`residual.coxph()`](https://tiw150.github.io/Zresidual/reference/residual.coxph.md)
-  : Residuals for Cox proportional hazards models
-- [`residual.coxph.frailty()`](https://tiw150.github.io/Zresidual/reference/residual.coxph.frailty.md)
-  : Residuals for shared frailty Cox proportional hazards models
-- [`residual.survreg()`](https://tiw150.github.io/Zresidual/reference/residual.survreg.md)
-  : Residuals for Accelerated failure time model models
 - [`sf.test.zresid()`](https://tiw150.github.io/Zresidual/reference/sf.test.zresid.md)
   : A function to calculate Shapiro-Francia test of Zresidual
 - [`surv_residuals()`](https://tiw150.github.io/Zresidual/reference/surv_residuals.md)

@@ -1,94 +1,126 @@
-# Compute Z-Residuals for Survival and Bayesian Regression Models
+# Compute Z-residuals via an S3 generic
 
-Computes Z-residuals for a variety of model types, including Cox
+\`Zresidual()\` is an S3 generic for computing Z-residuals for a range
+of survival and regression models. It currently supports Cox
 proportional hazards models (\`coxph\`) with or without frailty terms,
 parametric survival regression models (\`survreg\`), and Bayesian
-regression models fitted using \*\*brms\*\* (\`brmsfit\`) for several
-supported distributions (Poisson, negative binomial, hurdle Poisson,
-hurdle negative binomial, and Bernoulli).
+regression models fitted with \*\*brms\*\* (\`brmsfit\`) for several
+common count and hurdle families.
 
-The function automatically detects the model class and dispatches the
-call to the appropriate Z-residual calculation method.
+The function inspects the fitted object, assigns an internal model– and
+package–specific class (e.g. \`"coxph.survival"\`,
+\`"survreg.survival"\`, \`"poisson.brms"\`, \`"hurdle_poisson.brms"\`),
+and dispatches to the corresponding \`Zresidual.\*()\` method.
 
 ## Usage
 
 ``` r
-Zresidual(fit.object, nrep = 1, data = NULL, type = NULL, method = "iscv")
+Zresidual(object, nrep = 1, data = NULL, type = NULL, method = "iscv", ...)
 ```
 
 ## Arguments
 
-- fit.object:
+- object:
 
-  A fitted model object. Supported classes include: \* \`"coxph"\` - Cox
-  proportional hazards model (from \*\*survival\*\*) \* \`"survreg"\` -
-  Parametric survival regression \* \`"brmsfit"\` - Bayesian regression
-  model from \*\*brms\*\*
+  A fitted model object. Currently supported objects include: \*
+  \`"coxph"\` – Cox proportional hazards model (from \*\*survival\*\*)
+  \* \`"survreg"\` – Parametric survival regression (from
+  \*\*survival\*\*) \* \`"brmsfit"\` – Bayesian regression model (from
+  \*\*brms\*\*) with one of the supported families listed under
+  \*\*Details\*\*.
 
 - nrep:
 
-  Integer. Number of repeated Z-residual samples to compute. Default is
-  1.
+  Integer. Number of replicated Z-residual samples to compute. Default
+  is \`1\`.
 
 - data:
 
-  Optional dataset used for generating new model predictions and
-  residuals. Required for some models, especially when frailty terms are
-  present in \`coxph\`.
+  Optional data frame used for generating model predictions and
+  residuals. For some models (e.g. \`coxph\` with frailty terms) this
+  should match the data used to fit the model.
 
 - type:
 
-  Optional character string. Residual type for \*\*brms\*\* hurdle and
-  count models. The meaning of this argument depends on the chosen model
-  family.
+  Optional character string. Residual type for hurdle and count models
+  (mainly used for \*\*brms\*\* and other Bayesian/count-model
+  interfaces). The interpretation of this argument is model-specific.
 
 - method:
 
-  Character string indicating which predictive p-value method to use for
-  Z-residual computation in \`brmsfit\` models. Options include
-  \`"iscv"\` (importance-sampling cross-validated), \`"loocv"\`, and
-  \`"posterior"\` (default \`"iscv"\`).
+  Character string indicating which predictive p-value scheme to use
+  when computing Z-residuals for Bayesian or simulation-based models.
+  Common options include \`"iscv"\` (importance-sampling
+  cross-validated), \`"loocv"\`, and \`"posterior"\`. The default is
+  \`"iscv"\`.
+
+- ...:
+
+  Further arguments passed on to model-specific methods such as
+  \`Zresidual.coxph.survival()\`, \`Zresidual.survreg.survival()\`,
+  \`Zresidual.poisson.brms()\`, etc.
 
 ## Value
 
-An object of class \`"zresid"\` containing computed Z-residuals and any
-model-specific diagnostic output produced by the underlying Z-residual
-function.
+An object of class \`"zresid"\` with additional class information
+inherited from the model-specific method. The object contains the
+computed Z-residuals and any model-specific diagnostic quantities
+returned by the underlying \`Zresidual.\*()\` implementation.
 
 ## Details
 
-The function performs a class-specific dispatch:
+Internally, \`Zresidual()\` modifies the class of \`object\` to encode
+both the model type and the fitting package, and then uses S3 method
+dispatch:
 
-\* \*\*coxph\*\* - Detects frailty terms using \`attr(fit.object\$terms,
-"specials")\$frailty\` - Calls \`Zresidual.coxph()\` or
-\`Zresidual.coxph.frailty()\`
+\* For \*\*survival\*\* models - \`coxph\` objects receive the class
+\`"coxph.survival"\` and are handled by \`Zresidual.coxph.survival()\`,
+which further distinguishes between models with and without frailty
+terms. - \`survreg\` objects receive the class \`"survreg.survival"\`
+and are handled by \`Zresidual.survreg.survival()\`.
 
-\* \*\*survreg\*\* - Calls \`Zresidual.survreg()\`
-
-\* \*\*brmsfit\*\* - Detects distribution via
-\`family(fit.object)\$family\` - Supported families:
+\* For \*\*brms\*\* models - The family is obtained via
+\`brms::family(object)\$family\`. - Currently supported families include
 \`"hurdle_negbinomial"\`, \`"hurdle_poisson"\`, \`"negbinomial"\`,
-\`"poisson"\`, \`"bernoulli"\` - Dispatches to the corresponding
-Z-residual function
+\`"poisson"\`, and \`"bernoulli"\`. - Each supported family is mapped to
+a class of the form \`"\<family\>.brms"\`, and dispatched to a method
+such as \`Zresidual.hurdle_poisson.brms()\`,
+\`Zresidual.negbinomial.brms()\`, \`Zresidual.poisson.brms()\`, or
+\`Zresidual.bernoulli.brms()\`.
 
-Unsupported model classes or unsupported \*\*brms\*\* families produce
-an error.
+Additional model classes (e.g. \`glmmTMB\` fits) can be supported by
+defining new S3 methods such as \`Zresidual.poisson.glmmTMB()\` and
+ensuring that \`Zresidual()\` assigns the corresponding internal class
+(for example \`"poisson.glmmTMB"\`).
+
+If \`object\` does not match any supported model class, or if a
+\`brmsfit\` object uses an unsupported family, \`Zresidual()\` raises an
+error.
 
 ## See also
 
-\`CV.Zresidual()\`, \`Zresidual.coxph()\`, \`Zresidual.survreg()\`,
-model-specific Z-residual methods for \*\*brmsfit\*\* families.
+Zresidual.coxph.survival(), Zresidual.survreg.survival(),
+Zresidual.hurdle_poisson.brms(), Zresidual.hurdle_negbinomial.brms(),
+Zresidual.negbinomial.brms(), Zresidual.poisson.brms(),
+Zresidual.bernoulli.brms(), and related model-specific methods.
 
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
+## Cox proportional hazards model
 library(survival)
-fit1 <- coxph(Surv(time, status) ~ age + sex, data = lung)
-z1 <- Zresidual(fit1, nrep = 10, data = lung)
+fit_cox <- coxph(Surv(time, status) ~ age + sex, data = lung)
+z_cox <- Zresidual(fit_cox, nrep = 10, data = lung)
 
+## Parametric survival regression
+fit_surv <- survreg(Surv(time, status) ~ age + sex,
+                    data = lung, dist = "weibull")
+z_surv <- Zresidual(fit_surv, nrep = 5, data = lung)
+
+## Bayesian Poisson regression with brms
 library(brms)
-fit2 <- brm(count ~ x, data = df, family = poisson)
-z2 <- Zresidual(fit2, method = "posterior")
+fit_brms <- brm(count ~ x, data = df, family = poisson)
+z_brms <- Zresidual(fit_brms, method = "posterior")
 } # }
 ```
