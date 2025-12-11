@@ -11,13 +11,13 @@ using Shapiro-Wilk, ANOVA, or Bartlett-type tests for Z-residuals.
 ``` r
 # S3 method for class 'zresid'
 boxplot(
-  Zresidual,
+  x,
   irep = 1,
-  X = c("lp", "covariate"),
+  x_axis_var = c("lp", "covariate"),
   num.bin = 10,
   normality.test = c("SW", "AOV", "BL"),
   k.test = 10,
-  main.title = paste("Z-residual Boxplot -", attr(Zresidual, "type")),
+  main.title = paste("Z-residual Boxplot -", attr(x, "type")),
   outlier.return = FALSE,
   outlier.value = 3.5,
   ...
@@ -26,7 +26,7 @@ boxplot(
 
 ## Arguments
 
-- Zresidual:
+- x:
 
   A matrix of Z-residuals with one column per MCMC iteration. Must
   contain attributes:
@@ -52,7 +52,7 @@ boxplot(
   Integer vector indicating which columns of `Zresidual` to plot.
   Default is `1`.
 
-- X:
+- x_axis_var:
 
   Character string specifying the x-axis variable:
 
@@ -125,9 +125,9 @@ Infinite and non-finite residuals are automatically replaced with a
 maximal finite value (with preserved sign), and a warning message is
 displayed.
 
-When `X="covariate"`, users may supply any covariate name available in
-the `"covariates"` attribute. If a covariate contains too few unique
-bins, fitted values are transformed using
+When `x_axis_var="covariate"`, users may supply any covariate name
+available in the `"covariates"` attribute. If a covariate contains too
+few unique bins, fitted values are transformed using
 [`log()`](https://rdrr.io/r/base/Log.html) to stabilize binning, with a
 message provided.
 
@@ -153,7 +153,7 @@ if (FALSE) { # \dontrun{
 boxplot.zresid(zres)
 
 # Plot against a specific covariate
-boxplot.zresid(zres, X = "age")
+boxplot.zresid(zres, x_axis_var = "age")
 
 # Return outliers
 box.out <- boxplot.zresid(zres, outlier.return = TRUE)

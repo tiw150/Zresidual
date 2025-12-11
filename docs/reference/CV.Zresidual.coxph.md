@@ -1,75 +1,74 @@
-# Cross-Validated Z-Residuals for Cox Proportional Hazards Models
+# Cross-validated Z-residuals for Cox proportional hazards models
 
-Computes cross-validated (CV) Z-residuals for a Cox proportional hazards
-model (\`coxph\`), optionally including user-supplied data or performing
-CV using the model's internal model frame. The function performs K-fold
-cross-validation, fits the Cox model on each training subset, and
-computes Z-residuals on the held-out fold.
+S3 method for
+[`CV.Zresidual()`](https://tiw150.github.io/Zresidual/reference/CV.Zresidual.md)
+applied to Cox proportional hazards models fitted with
+[`survival::coxph()`](https://rdrr.io/pkg/survival/man/coxph.html). The
+method automatically detects whether a frailty term is present in the
+model formula and dispatches to internal implementations for standard
+Cox models and shared frailty Cox models.
 
 ## Usage
 
 ``` r
-CV.Zresidual.coxph(fit.coxph, data, nfolds, foldlist, n.rep)
+# S3 method for class 'coxph'
+CV.Zresidual(object, nfolds, foldlist = NULL, data = NULL, nrep = 1, ...)
 ```
 
 ## Arguments
 
-- fit.coxph:
+- object:
 
-  A fitted Cox proportional hazards model from survival, created using
-  \`coxph()\`.
-
-- data:
-
-  Optional data frame used for cross-validation. If \`NULL\`, the model
-  frame of \`fit.coxph\` is used internally.
+  A fitted
+  [`survival::coxph`](https://rdrr.io/pkg/survival/man/coxph.html) model
+  object.
 
 - nfolds:
 
-  Integer. Number of cross-validation folds. If \`NULL\`, a default
-  number of folds is chosen heuristically based on the number of
-  available cores (typically around 10 folds).
+  Integer. Number of folds for cross-validation.
 
 - foldlist:
 
-  Optional list specifying fold indices. If \`NULL\`, folds are created
-  using \`make_fold()\`, stratifying by survival time and censoring
-  status.
+  Optional list specifying custom fold assignments. If `NULL`, folds are
+  generated internally.
 
-- n.rep:
+- data:
 
-  Integer. Number of repeated Z-residual samples per observation.
+  Optional data frame used to refit the model during cross-validation.
+  Required when `foldlist` is supplied or when the original model call
+  does not contain the data explicitly.
+
+- nrep:
+
+  Integer. Number of repeated cross-validations to perform. Default is
+  1.
+
+- ...:
+
+  Further arguments passed to the internal worker functions.
 
 ## Value
 
-A numeric matrix of dimension \\n \times\\ `n.rep`, where \\n\\ is the
-number of rows in `data` (if supplied) or in the internal model frame of
-`fit.coxph`. Columns are named \`"CV.Z-residual 1"\`, \`"CV.Z-residual
-2"\`, …, up to `n.rep`. The matrix has the following attributes:
-
-\* \`type\`: character string \`"survival"\`. \* \`Survival.Prob\`:
-numeric vector of predicted survival probabilities at the observed time
-for each observation. \* \`linear.pred\`: numeric vector of Cox linear
-predictors. \* \`censored.status\`: event indicator (1 = event, 0 =
-censored). \* \`covariates\`: data frame of covariates used in the
-residual computation. \* \`object.model.frame\`: data frame representing
-the model frame underlying the CV residuals.
+An object of class `"cvzresid"` containing cross-validated Z-residual
+diagnostics for the Cox model.
 
 ## Details
 
-The function:
+Depending on the presence of a frailty term such as `frailty(group)` in
+`object$terms`, the method calls:
 
-1\. Extracts covariates and event information from either \`data\` or
-the model frame of \`fit.coxph\`. 2. Creates or uses supplied folds. 3.
-For each fold: - Fits the Cox model to the training subset. - Computes
-Z-residuals on the held-out subset using \`Zresidual.coxph()\`. -
-Handles failed model fits by filling the fold with \`NA\`. 4. Combines
-results into a matrix of dimension \*n × n.rep\*, where \*n\* is the
-number of observations.
+- `CV_Zresidual_coxph_survival()` for standard Cox models;
+
+- `CV_Zresidual_coxph_frailty_survival()` for shared frailty Cox models.
+
+The returned object is tagged with class `"cvzresid"` in addition to any
+classes returned by the internal worker.
 
 ## See also
 
-\`coxph()\`, \`Zresidual.coxph()\`, \`make_fold()\`, \`CV.Zresidual()\`
+`CV_Zresidual_coxph_survival()`,
+`CV_Zresidual_coxph_frailty_survival()`, and the generic
+[`CV.Zresidual()`](https://tiw150.github.io/Zresidual/reference/CV.Zresidual.md).
 
 ## Examples
 
@@ -77,8 +76,6 @@ number of observations.
 if (FALSE) { # \dontrun{
   library(survival)
   fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
-
-  # 5-fold CV Z-residuals
-  cvz <- CV.Zresidual.coxph(fit, data = lung, nfolds = 5, n.rep = 10)
+  cv_out <- CV.Zresidual(fit, nfolds = 5, data = lung)
 } # }
 ```

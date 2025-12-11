@@ -164,32 +164,28 @@ the model.
 ### 4.2 Computing Z-residuals
 
 In this example, we compute Z-residuals for the logistic regression
-using
-[`Zresidual.bernoulli()`](https://tiw150.github.io/Zresidual/reference/Zresidual.bernoulli.md).
-The package take `brms` fit as an input for the
-[`Zresidual.bernoulli()`](https://tiw150.github.io/Zresidual/reference/Zresidual.bernoulli.md)
-function. If the model is Hurdle model, the `type` argument
-(`"zero", "count" or "hurdle"`) specifies which component to use when
-calculating the residuals. By default, Z-residuals are computed using
-the Importance Sampling Cross-Validation (`iscv`) method based on
-randomized predictive p-values (RPP). Alternatively, users can choose
-the standard Posterior RPP method by setting `method = "post"`.
+using `Zresidual.bernoulli()`. The package take `brms` fit as an input
+for the `Zresidual.bernoulli()` function. If the model is Hurdle model,
+the `type` argument (`"zero", "count" or "hurdle"`) specifies which
+component to use when calculating the residuals. By default, Z-residuals
+are computed using the Importance Sampling Cross-Validation (`iscv`)
+method based on randomized predictive p-values (RPP). Alternatively,
+users can choose the standard Posterior RPP method by setting
+`method = "post"`.
 
 Code
 
 ``` r
-zres_logit_iscv <- Zresidual.bernoulli(fit_logit)
-zres_logit_post <- Zresidual.bernoulli(fit_logit, method = "rpost")
+zres_logit_iscv <- Zresidual(fit_logit)
+zres_logit_post <- Zresidual(fit_logit, method = "rpost")
 ```
 
 ##### 4.2.0.1 **What the function returns**
 
-The function
-[`Zresidual.bernoulli()`](https://tiw150.github.io/Zresidual/reference/Zresidual.bernoulli.md)
-(and other Z-residual computing functions) returns a matrix of
-Z-residuals, with additional attributes. The returned object is of class
-`zresid`, which includes metadata useful for diagnostic and plotting
-purposes.
+The function `Zresidual.bernoulli()` (and other Z-residual computing
+functions) returns a matrix of Z-residuals, with additional attributes.
+The returned object is of class `zresid`, which includes metadata useful
+for diagnostic and plotting purposes.
 
 **Return Value**
 
@@ -226,9 +222,8 @@ The returned matrix includes the following attached attributes:
 The `Zresidual` package includes built-in plotting functions (QQ Plot,
 Scatter Plot, Boxplot) to help diagnose model fit using Z-residuals.
 These functions are designed to work directly with objects of class
-`zresid` returned by functions like
-[`Zresidual.bernoulli()`](https://tiw150.github.io/Zresidual/reference/Zresidual.bernoulli.md).
-These plots help assess:
+`zresid` returned by functions like `Zresidual.bernoulli()`. These plots
+help assess:
 
 - Whether residuals are approximately standard normal (via QQ plots),
 - Whether there are patterns in residuals across fitted values (which

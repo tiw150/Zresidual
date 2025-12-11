@@ -49,7 +49,7 @@
       <h1>Z-residual Diagnosis for Logistic Regression</h1>
 
 
-      <p class="date">2025-12-05</p>
+      <p class="date">2025-12-11</p>
 
       <small class="dont-index">Source: <a href="https://github.com/tiw150/Zresidual/blob/HEAD/vignettes/zresidual_logistic_demo.qmd" class="external-link"><code>vignettes/zresidual_logistic_demo.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
@@ -182,18 +182,18 @@ z_i = -\Phi^{-1}(\text{rpp}_i(y_i^\text{obs}|\theta)) \sim N(0, 1)
 </section><section class="level3" data-number="4.2"><h3 data-number="4.2" id="computing-z-residuals">
 <span class="header-section-number">4.2</span> Computing Z-residuals<a class="anchor" aria-label="anchor" href="#computing-z-residuals"></a>
 </h3>
-<p>In this example, we compute Z-residuals for the logistic regression using <code><a href="../reference/Zresidual.bernoulli.html">Zresidual.bernoulli()</a></code>. The package take <code>brms</code> fit as an input for the <code><a href="../reference/Zresidual.bernoulli.html">Zresidual.bernoulli()</a></code> function. If the model is Hurdle model, the <code>type</code> argument (<code>"zero", "count" or "hurdle"</code>) specifies which component to use when calculating the residuals. By default, Z-residuals are computed using the Importance Sampling Cross-Validation (<code>iscv</code>) method based on randomized predictive p-values (<abbr title="Randomized Predictive P-value">RPP</abbr>). Alternatively, users can choose the standard Posterior <abbr title="Randomized Predictive P-value">RPP</abbr> method by setting <code>method = "post"</code>.</p>
+<p>In this example, we compute Z-residuals for the logistic regression using <code>Zresidual.bernoulli()</code>. The package take <code>brms</code> fit as an input for the <code>Zresidual.bernoulli()</code> function. If the model is Hurdle model, the <code>type</code> argument (<code>"zero", "count" or "hurdle"</code>) specifies which component to use when calculating the residuals. By default, Z-residuals are computed using the Importance Sampling Cross-Validation (<code>iscv</code>) method based on randomized predictive p-values (<abbr title="Randomized Predictive P-value">RPP</abbr>). Alternatively, users can choose the standard Posterior <abbr title="Randomized Predictive P-value">RPP</abbr> method by setting <code>method = "post"</code>.</p>
 <div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">zres_logit_iscv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Zresidual.bernoulli.html">Zresidual.bernoulli</a></span><span class="op">(</span><span class="va">fit_logit</span><span class="op">)</span></span>
-<span><span class="va">zres_logit_post</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Zresidual.bernoulli.html">Zresidual.bernoulli</a></span><span class="op">(</span><span class="va">fit_logit</span>, method <span class="op">=</span> <span class="st">"rpost"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">zres_logit_iscv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Zresidual.html">Zresidual</a></span><span class="op">(</span><span class="va">fit_logit</span><span class="op">)</span></span>
+<span><span class="va">zres_logit_post</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Zresidual.html">Zresidual</a></span><span class="op">(</span><span class="va">fit_logit</span>, method <span class="op">=</span> <span class="st">"rpost"</span><span class="op">)</span></span></code></pre></div>
 </details>
 </div>
 <section class="level5" data-number="4.2.0.1"><h5 data-number="4.2.0.1" id="what-the-function-returns">
 <span class="header-section-number">4.2.0.1</span> <strong>What the function returns</strong>
 <a class="anchor" aria-label="anchor" href="#what-the-function-returns"></a>
 </h5>
-<p>The function <code><a href="../reference/Zresidual.bernoulli.html">Zresidual.bernoulli()</a></code> (and other Z-residual computing functions) returns a matrix of Z-residuals, with additional attributes. The returned object is of class <code>zresid</code>, which includes metadata useful for diagnostic and plotting purposes.</p>
+<p>The function <code>Zresidual.bernoulli()</code> (and other Z-residual computing functions) returns a matrix of Z-residuals, with additional attributes. The returned object is of class <code>zresid</code>, which includes metadata useful for diagnostic and plotting purposes.</p>
 <p><strong>Return Value</strong></p>
 <p>A numeric matrix of dimension <code>n × nrep</code>, where <code>n</code> is the number of observations in the data and <code>nrep</code> is the number of randomized replicates of Z-residuals (default is 1). Each column represents a set of Z-residuals computed from a <abbr title="Randomized Predictive P-value">RPP</abbr>, using either posterior (<code>post</code>) or importance sampling cross-validation (<code>iscv</code>) log predictive distributions.</p>
 <p><strong>Matrix Attributes</strong></p>
@@ -223,7 +223,7 @@ The returned matrix includes the following attached attributes:
 <section class="level5" data-number="4.3.0.1"><h5 data-number="4.3.0.1" id="visualizing-z-residuals">
 <span class="header-section-number">4.3.0.1</span> Visualizing Z-residuals<a class="anchor" aria-label="anchor" href="#visualizing-z-residuals"></a>
 </h5>
-The <code>Zresidual</code> package includes built-in plotting functions (QQ Plot, Scatter Plot, Boxplot) to help diagnose model fit using Z-residuals. These functions are designed to work directly with objects of class <code>zresid</code> returned by functions like <code><a href="../reference/Zresidual.bernoulli.html">Zresidual.bernoulli()</a></code>. These plots help assess:
+The <code>Zresidual</code> package includes built-in plotting functions (QQ Plot, Scatter Plot, Boxplot) to help diagnose model fit using Z-residuals. These functions are designed to work directly with objects of class <code>zresid</code> returned by functions like <code>Zresidual.bernoulli()</code>. These plots help assess:
 <ul>
 <li>
 Whether residuals are approximately standard normal (via QQ plots),
