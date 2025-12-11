@@ -75,3 +75,4 @@ with \code{\link[survival]{survreg}}.
                           residual.type = "deviance")
 }
 }
+\keyword{internal}

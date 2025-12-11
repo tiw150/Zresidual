@@ -113,7 +113,7 @@
 #' and resets them at the end.
 #'
 #' @method plot zresid
-#' @export plot.zresid
+#' @export
 plot.zresid <- function(x, irep = 1:ncol(x), ylab = "Z-Residual",
                         normality.test = c("SW", "AOV", "BL"), k.test = 10,
                         x_axis_var = c("index", "covariate", "lp"),

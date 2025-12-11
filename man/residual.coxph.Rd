@@ -73,3 +73,4 @@ martingale, and deviance) for Cox proportional hazards models fitted with
                         residual.type = "deviance")
 }
 }
+\keyword{internal}

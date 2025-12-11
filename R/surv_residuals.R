@@ -75,10 +75,8 @@
 #'                   residual.type = "censored Z-residual")
 #' }
 #' @export surv_residuals
-
-surv_residuals <- function(fit.object,
-                      data,
-                      residual.type = c("censored Z-residual", "Cox-Snell",
+surv_residuals <- function(fit.object,data,
+                           residual.type = c("censored Z-residual", "Cox-Snell",
                                         "martingale", "deviance"))
 {
   # Required packages:
@@ -119,6 +117,6 @@ surv_residuals <- function(fit.object,
     )
   }
 
-  class(resid_fun) <- c("zresid", class(resid_fun))
+  class(resid_fun) <- c("survresid", class(resid_fun))
   resid_fun
 }

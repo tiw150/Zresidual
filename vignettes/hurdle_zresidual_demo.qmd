@@ -241,15 +241,15 @@ The `hu` formula models the hurdle (zero) part, while the main formula models th
 
 ### Computing Z-residuals
 
-In this example, we compute Z-residuals for the `r HNB` model separately for, logistic component (zero part) and count component using `Zresidual.hurdle.negbinomial()`. Apart from component-wise Z-residuals, the `Zresidual` package support overall model Z-residual calculation. The package take `brms` fit as an input and the `type` argument (`"zero", "count" or "hurdle"`) specifies which component to use when calculating the residuals. By default, Z-residuals are computed using the Importance Sampling Cross-Validation (`iscv`) method based on randomized predictive p-values (`r RPP`). Alternatively, users can choose the standard Posterior `r RPP` method by setting `method = "post"`.
+In this example, we compute Z-residuals for the `r HNB` model separately for, logistic component (zero part) and count component using `Zresidual()`. Apart from component-wise Z-residuals, the `Zresidual` package support overall model Z-residual calculation. The package take `brms` fit as an input and the `type` argument (`"zero", "count" or "hurdle"`) specifies which component to use when calculating the residuals. By default, Z-residuals are computed using the Importance Sampling Cross-Validation (`iscv`) method based on randomized predictive p-values (`r RPP`). Alternatively, users can choose the standard Posterior `r RPP` method by setting `method = "post"`.
 
 ```{r}
 library(matrixStats)
 library(distributions3)
 library(Zresidual)
-zres_hnb_post_zero <- Zresidual.hurdle.negbinomial(fit_hnb, type = "zero", method = "rpost")
-zres_hnb_post_count <- Zresidual.hurdle.negbinomial(fit_hnb, type = "count", method = "rpost")
-zres_hnb_post_hurdle <- Zresidual.hurdle.negbinomial(fit_hnb, type = "hurdle", method = "rpost")
+zres_hnb_post_zero <- Zresidual(fit_hnb, type = "zero", method = "rpost")
+zres_hnb_post_count <- Zresidual(fit_hnb, type = "count", method = "rpost")
+zres_hnb_post_hurdle <- Zresidual(fit_hnb, type = "hurdle", method = "rpost")
 ```
 
 
@@ -276,7 +276,7 @@ The returned matrix includes the following attached attributes:
   
 ##### Visualizing Z-residuals
 
-The `Zresidual` package includes built-in plotting functions (QQ Plot, Scatter Plot, Boxplot) to help diagnose model fit using Z-residuals. These functions are designed to work directly with objects of class `zresid` returned by functions like `Zresidual.hurdle.negbinomial()`. These plots help assess:
+The `Zresidual` package includes built-in plotting functions (QQ Plot, Scatter Plot, Boxplot) to help diagnose model fit using Z-residuals. These functions are designed to work directly with objects of class `zresid` returned by functions like `Zresidual()`. These plots help assess:
 <ul>
   <li>Whether residuals are approximately standard normal (via QQ plots),</li>
   <li>Whether there are patterns in residuals across fitted values (which may suggest model misspecification),</li>
@@ -350,9 +350,9 @@ load(here::here("inst/extdata/fit_hp.Rdata"))
 This `prior("normal(1000, 1)", class = "shape")` is a very strong prior, tightly centered around 1000. Its practical effect is to force the shape parameter to be very large, which in turn makes the model behave almost like a Poisson distribution for the positive counts (truncated part of the hurdle model).
 
 ```{r }
-zres_hp_post_zero <- Zresidual.hurdle.poisson(fit_hp, type = "zero", method = "rpost")
-zres_hp_post_count <- Zresidual.hurdle.poisson(fit_hp, type = "count", method = "rpost")
-zres_hp_post_hurdle <- Zresidual.hurdle.poisson(fit_hp, type = "hurdle", method = "rpost")
+zres_hp_post_zero <- Zresidual(fit_hp, type = "zero", method = "rpost")
+zres_hp_post_count <- Zresidual(fit_hp, type = "count", method = "rpost")
+zres_hp_post_hurdle <- Zresidual(fit_hp, type = "hurdle", method = "rpost")
 ```
 
 

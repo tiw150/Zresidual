@@ -199,8 +199,8 @@ In this example, we compute Z-residuals for the logistic regression using `Zresi
 
 ```{r }
 
-zres_logit_iscv <- Zresidual.bernoulli(fit_logit)
-zres_logit_post <- Zresidual.bernoulli(fit_logit, method = "rpost")
+zres_logit_iscv <- Zresidual(fit_logit)
+zres_logit_post <- Zresidual(fit_logit, method = "rpost")
 ```
 
 

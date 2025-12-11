@@ -5,8 +5,6 @@
 #' @param k.bl Number of bins if applicable
 #' @rdname bartlett.test.zresid
 #' @export bartlett.test.zresid
-
-
 bartlett.test.zresid <- function (Zresidual, X = c("lp", "covariate"), k.bl = 10) {
 
   n <- NROW(Zresidual)

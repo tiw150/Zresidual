@@ -4,8 +4,6 @@
 #' @param X Linear predictor or covariate
 #' @param k.anova Number of bins if applicable
 #' @export
-#'
-
 aov.test.zresid <- function (Zresidual, X = c("lp", "covariate"), k.anova = 10) {
 
   n <- NROW(Zresidual)

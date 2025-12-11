@@ -63,10 +63,7 @@
 #'   r_d <- residual.survreg(fit_weib, newdata = lung,
 #'                           residual.type = "deviance")
 #' }
-
-
-
-
+#' @keywords internal
 residual.survreg<-function(survreg_fit,newdata,
                            residual.type=c("censored Z-residual", "Cox-Snell",
                                            "martingale", "deviance"))
