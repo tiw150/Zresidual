@@ -51,13 +51,13 @@ tests for Z-residuals.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for class 'zresid'</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span></span>
-<span>  <span class="va">Zresidual</span>,</span>
+<span>  <span class="va">x</span>,</span>
 <span>  irep <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  X <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lp"</span>, <span class="st">"covariate"</span><span class="op">)</span>,</span>
+<span>  x_axis_var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lp"</span>, <span class="st">"covariate"</span><span class="op">)</span>,</span>
 <span>  num.bin <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  normality.test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SW"</span>, <span class="st">"AOV"</span>, <span class="st">"BL"</span><span class="op">)</span>,</span>
 <span>  k.test <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  main.title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Z-residual Boxplot -"</span>, <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">Zresidual</span>, <span class="st">"type"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  main.title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Z-residual Boxplot -"</span>, <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"type"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  outlier.return <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  outlier.value <span class="op">=</span> <span class="fl">3.5</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -68,7 +68,7 @@ tests for Z-residuals.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-zresidual">Zresidual<a class="anchor" aria-label="anchor" href="#arg-zresidual"></a></dt>
+<dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
 <dd><p>A matrix of Z-residuals with one column per MCMC iteration.
 Must contain attributes:</p><dl><dt><code>"type"</code></dt>
 <dd><p>Model type used to generate residuals (e.g., hurdle, truncated).</p></dd>
@@ -91,7 +91,7 @@ Must contain attributes:</p><dl><dt><code>"type"</code></dt>
 <code>Zresidual</code> to plot. Default is <code>1</code>.</p></dd>
 
 
-<dt id="arg-x">X<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
+<dt id="arg-x-axis-var">x_axis_var<a class="anchor" aria-label="anchor" href="#arg-x-axis-var"></a></dt>
 <dd><p>Character string specifying the x-axis variable:</p><ul><li><p><code>"fitted.value"</code> (default): Bin fitted values.</p></li>
 <li><p><code>"covariate"</code>: Display a list of covariate names.</p></li>
 <li><p>A specific covariate name present in <code>attr(Zresidual, "covariates")</code>.</p></li>
@@ -148,7 +148,7 @@ selected covariate), which helps detect lack of fit, heteroscedasticity,
 and model misspecification.</p>
 <p>Infinite and non-finite residuals are automatically replaced with a maximal
 finite value (with preserved sign), and a warning message is displayed.</p>
-<p>When <code>X="covariate"</code>, users may supply any covariate name available in the
+<p>When <code>x_axis_var="covariate"</code>, users may supply any covariate name available in the
 <code>"covariates"</code> attribute. If a covariate contains too few unique bins,
 fitted values are transformed using <code><a href="https://rdrr.io/r/base/Log.html" class="external-link">log()</a></code> to stabilize binning, with a
 message provided.</p>
@@ -171,7 +171,7 @@ calls:
 <span class="r-in"><span><span class="fu">boxplot.zresid</span><span class="op">(</span><span class="va">zres</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plot against a specific covariate</span></span></span>
-<span class="r-in"><span><span class="fu">boxplot.zresid</span><span class="op">(</span><span class="va">zres</span>, X <span class="op">=</span> <span class="st">"age"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">boxplot.zresid</span><span class="op">(</span><span class="va">zres</span>, x_axis_var <span class="op">=</span> <span class="st">"age"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Return outliers</span></span></span>
 <span class="r-in"><span><span class="va">box.out</span> <span class="op">&lt;-</span> <span class="fu">boxplot.zresid</span><span class="op">(</span><span class="va">zres</span>, outlier.return <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>

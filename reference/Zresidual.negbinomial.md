@@ -53,7 +53,7 @@ The function performs the following steps:
 
 2.  Computes the log-PMF and log-CDF for the negative binomial model
     using
-    [`log.pred.dist.NB`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.NB.md).
+    [`log_pred_dist_NB`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_NB.md).
 
 3.  Generates randomized or posterior predictive p-values according to
     the specified `method`.
@@ -65,7 +65,7 @@ The output is a matrix of Z-residuals with one column per replication.
 
 ## See also
 
-[`log.pred.dist.NB`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.NB.md),
+[`log_pred_dist_NB`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_NB.md),
 [`post_logrpp`](https://tiw150.github.io/Zresidual/reference/post_logrpp.md),
 [`iscv_logrpp`](https://tiw150.github.io/Zresidual/reference/iscv_logrpp.md)
 

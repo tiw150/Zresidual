@@ -62,7 +62,7 @@ The function performs the following steps:
 1.  Extracts the observed response vector from the model data.
 
 2.  Computes the log-PMF and log-CDF for the specified part of the model
-    using the corresponding `log.pred.dist.*` function.
+    using the corresponding `log_pred_dist_*` function.
 
 3.  Generates posterior predictive p-values according to the specified
     `method`.
@@ -74,8 +74,8 @@ The output is a matrix of Z-residuals with one column per replication.
 
 ## See also
 
-[`log.pred.dist.HNB`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.HNB.md),
-[`log.pred.dist.TNB`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.TNB.md),
+[`log_pred_dist_HNB`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_HNB.md),
+[`log_pred_dist_TNB`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_TNB.md),
 [`post_logrpp`](https://tiw150.github.io/Zresidual/reference/post_logrpp.md),
 [`iscv_logrpp`](https://tiw150.github.io/Zresidual/reference/iscv_logrpp.md)
 

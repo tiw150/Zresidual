@@ -17,7 +17,8 @@ parameters.
 ## Usage
 
 ``` r
-plot.zresid(
+# S3 method for class 'zresid'
+plot(
   x,
   irep = 1:ncol(x),
   ylab = "Z-Residual",

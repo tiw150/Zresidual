@@ -52,7 +52,7 @@ The function performs the following steps:
 1.  Extracts the observed response vector from the model data.
 
 2.  Computes the log-PMF and log-CDF for the poisson model using
-    [`log.pred.dist.pois`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.pois.md).
+    [`log_pred_dist_pois`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_pois.md).
 
 3.  Generates randomized or posterior predictive p-values according to
     the specified `method`.
@@ -64,7 +64,7 @@ The output is a matrix of Z-residuals with one column per replication.
 
 ## See also
 
-[`log.pred.dist.pois`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.pois.md),
+[`log_pred_dist_pois`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_pois.md),
 [`post_logrpp`](https://tiw150.github.io/Zresidual/reference/post_logrpp.md),
 [`iscv_logrpp`](https://tiw150.github.io/Zresidual/reference/iscv_logrpp.md)
 
