@@ -4,7 +4,7 @@
 \alias{plot.zresid}
 \title{Plot Z-Residuals for Bayesian and Frequentist Count / Hurdle / Zero / Survival Models}
 \usage{
-plot.zresid(
+\method{plot}{zresid}(
   x,
   irep = 1:ncol(x),
   ylab = "Z-Residual",

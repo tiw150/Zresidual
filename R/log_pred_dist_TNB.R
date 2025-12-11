@@ -28,12 +28,12 @@
 #' \dontrun{
 #' # Example usage:
 #' fit <- brm(bf(y | trunc(lb = 1) ~ x1 + x2), family = negbinomial(), data = mydata)
-#' pred_dist <- log.pred.dist.TNB(fit)
+#' pred_dist <- log_pred_dist_TNB(fit)
 #' str(pred_dist)
 #' }
 #'
 
-log.pred.dist.TNB <- function(fit){
+log_pred_dist_TNB <- function(fit){
 
   chains <- summary(fit)$chains
   iter <- summary(fit)$iter

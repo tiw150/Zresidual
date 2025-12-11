@@ -32,11 +32,11 @@
 #' \dontrun{
 #' # Example usage:
 #' fit <- brm(bf(y ~ x1 + x2, hu ~ x1), family = hurdle_poisson(), data = mydata)
-#' pred_dist <- log.pred.dist.HP(fit)
+#' pred_dist <- log_pred_dist_HP(fit)
 #' str(pred_dist)
 #' }
 #'
-log.pred.dist.HP <- function(fit){
+log_pred_dist_HP <- function(fit){
 
   chains <- summary(fit)$chains
   iter <- summary(fit)$iter

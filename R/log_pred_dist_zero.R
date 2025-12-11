@@ -3,7 +3,7 @@
 #' @param fit A `brm` fit.
 #' @import Rlab
 
-log.pred.dist.zero <- function(fit){
+log_pred_dist_zero <- function(fit){
 
   n <- dim(fit$data)[1]
   chains <- summary(fit)$chains

@@ -21,7 +21,7 @@
 #' \enumerate{
 #'   \item Extracts the observed response vector from the model data.
 #'   \item Computes the log-PMF and log-CDF for the specified part of the model
-#'         using the corresponding \code{log.pred.dist.*} function.
+#'         using the corresponding \code{log_pred_dist_*} function.
 #'   \item Generates posterior predictive p-values according to the
 #'         specified \code{method}.
 #'   \item Converts the p-values to Z-residuals via the negative quantile of the
@@ -51,7 +51,7 @@
 #' }
 #'
 #' @seealso
-#' \code{\link{log.pred.dist.HNB}}, \code{\link{log.pred.dist.TNB}}, \code{\link{post_logrpp}}, \code{\link{iscv_logrpp}}
+#' \code{\link{log_pred_dist_HNB}}, \code{\link{log_pred_dist_TNB}}, \code{\link{post_logrpp}}, \code{\link{iscv_logrpp}}
 #' @export
 Zresidual.hurdle.negbinomial <- function(fit, type , method = "iscv", n.rep = 1){
 
@@ -69,7 +69,7 @@ Zresidual.hurdle.negbinomial <- function(fit, type , method = "iscv", n.rep = 1)
   type_list <- c("zero", "TNB", "HNB")
   names(type_list) <- c("zero", "count", "hurdle")
 
-  ldist <- get(paste0("log.pred.dist.", type_list[type]))(fit)
+  ldist <- get(paste0("log_pred_dist_", type_list[type]))(fit)
   lpmf <- ldist$lpmf_hat
   lcdf <- ldist$lcdf_hat
 

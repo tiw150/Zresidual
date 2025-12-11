@@ -71,6 +71,8 @@ residual.survreg<-function(survreg_fit,newdata,
                            residual.type=c("censored Z-residual", "Cox-Snell",
                                            "martingale", "deviance"))
 {
+  residual.type <- match.arg(residual.type)
+
   distr<-survreg_fit$dist
   parms<- as.numeric(survreg_fit[["parms"]])
   alpha_hat<-1/survreg_fit$scale
@@ -141,6 +143,16 @@ residual.survreg<-function(survreg_fit,newdata,
     object.model.frame=mf
 
   ))
+
+  resid.class <- switch(residual.type,
+                        "Cox-Snell"            = "cs.residual",
+                        "deviance"             = "dev.resid",
+                        "martingale"           = "martg.resid",
+                        "censored Z-residual"  = "cz.resid"
+  )
+
+  class(resid.value) <- resid.class
+
   return(resid.value)
 
 

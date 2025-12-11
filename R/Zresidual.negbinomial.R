@@ -16,7 +16,7 @@
 #' \enumerate{
 #'   \item Extracts the observed response vector from the model data.
 #'   \item Computes the log-PMF and log-CDF for the negative binomial model
-#'         using \code{\link{log.pred.dist.NB}}.
+#'         using \code{\link{log_pred_dist_NB}}.
 #'   \item Generates randomized or posterior predictive p-values according to the
 #'         specified \code{method}.
 #'   \item Converts the p-values to Z-residuals via the negative quantile of the
@@ -45,7 +45,7 @@
 #' }
 #'
 #' @seealso
-#' \code{\link{log.pred.dist.NB}}, \code{\link{post_logrpp}}, \code{\link{iscv_logrpp}}
+#' \code{\link{log_pred_dist_NB}}, \code{\link{post_logrpp}}, \code{\link{iscv_logrpp}}
 #' @export
 Zresidual.negbinomial <- function(fit, method = "iscv", n.rep = 1){
 
@@ -57,7 +57,7 @@ Zresidual.negbinomial <- function(fit, method = "iscv", n.rep = 1){
   sim.y <- as.matrix(model.data[, response])
   n <- length(sim.y)
   zero_id <- which(sim.y == 0)
-  ldist <- log.pred.dist.NB(fit)
+  ldist <- log_pred_dist_NB(fit)
   lpmf <- ldist$lpmf_hat
   lcdf <- ldist$lcdf_hat
 

@@ -53,11 +53,10 @@ The function performs the following steps:
 
 ## See also
 
-[`log.pred.dist.HNB`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.HNB.md),
-[`log.pred.dist.NB`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.NB.md),
-[`log.pred.dist.HP`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.HP.md),
+[`log_pred_dist_HNB`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_HNB.md),
+[`log_pred_dist_NB`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_NB.md),
+[`log_pred_dist_HP`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_HP.md),
 [`posterior_linpred`](https://mc-stan.org/rstantools/reference/posterior_linpred.html)
-(from brms) for comparison.
 
 ## Examples
 

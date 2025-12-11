@@ -27,12 +27,12 @@
 #'
 #' @examples
 #' # Assuming 'fit' is a fitted brms logistic model
-#' # pred_dist <- log.pred.dist.bern(fit)
+#' # pred_dist <- log_pred_dist_bern(fit)
 #' # lpmf_hat <- pred_dist$lpmf_hat
 #' # lcdf_hat <- pred_dist$lcdf_hat
 #'
 
-log.pred.dist.bern <- function(fit){
+log_pred_dist_bern <- function(fit){
 
   n <- dim(fit$data)[1]
   chains <- summary(fit)$chains

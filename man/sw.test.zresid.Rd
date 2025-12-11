@@ -4,7 +4,7 @@
 \alias{sw.test.zresid}
 \title{Shapiro-Wilk Normality Test for Z-Residuals}
 \usage{
-\method{sw}{test.zresid}(Zresidual, ...)
+sw.test.zresid(Zresidual, ...)
 }
 \arguments{
 \item{Zresidual}{A numeric matrix of Z-residuals, where each column represents

@@ -30,12 +30,12 @@
 #' \dontrun{
 #' # Example usage:
 #' fit <- brm(bf(y ~ x1 + x2), family = poisson(), data = mydata)
-#' pred_dist <- log.pred.dist.pois(fit)
+#' pred_dist <- log_pred_dist_pois(fit)
 #' str(pred_dist)
 #' }
 #'
 
-log.pred.dist.pois <- function(fit){
+log_pred_dist_pois <- function(fit){
 
   chains <- summary(fit)$chains
   iter <- summary(fit)$iter

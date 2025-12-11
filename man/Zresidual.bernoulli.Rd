@@ -38,7 +38,7 @@ The function performs the following steps:
 \enumerate{
   \item Extracts the observed response vector from the model data.
   \item Computes the log-PMF and log-CDF for the Bernoulli model using
-        \code{\link{log.pred.dist.bern}}.
+        \code{\link{log_pred_dist_bern}}.
   \item Generates posterior predictive p-values according to the
         specified \code{method}.
   \item Converts the p-values to Z-residuals via the negative quantile of the
@@ -58,5 +58,5 @@ zres_post <- Zresidual.bernoulli(fit, method = "post")
 
 }
 \seealso{
-\code{\link{log.pred.dist.bern}}, \code{\link{post_logrpp}}, \code{\link{iscv_logrpp}}
+\code{\link{log_pred_dist_bern}}, \code{\link{post_logrpp}}, \code{\link{iscv_logrpp}}
 }

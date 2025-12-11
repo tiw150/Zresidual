@@ -6,7 +6,7 @@
 #' and evaluating normality assumptions using Shapiro-Wilk, ANOVA, or Bartlett-type
 #' tests for Z-residuals.
 #'
-#' @param Zresidual A matrix of Z-residuals with one column per MCMC iteration.
+#' @param x A matrix of Z-residuals with one column per MCMC iteration.
 #'   Must contain attributes:
 #'   \describe{
 #'     \item{\code{"type"}}{Model type used to generate residuals (e.g., hurdle, truncated).}
@@ -18,7 +18,7 @@
 #' @param irep Integer vector indicating which columns of
 #'   \code{Zresidual} to plot. Default is \code{1}.
 #'
-#' @param X Character string specifying the x-axis variable:
+#' @param x_axis_var Character string specifying the x-axis variable:
 #'   \itemize{
 #'     \item \code{"fitted.value"} (default): Bin fitted values.
 #'     \item \code{"covariate"}: Display a list of covariate names.
@@ -60,7 +60,7 @@
 #' Infinite and non-finite residuals are automatically replaced with a maximal
 #' finite value (with preserved sign), and a warning message is displayed.
 #'
-#' When \code{X="covariate"}, users may supply any covariate name available in the
+#' When \code{x_axis_var="covariate"}, users may supply any covariate name available in the
 #' \code{"covariates"} attribute. If a covariate contains too few unique bins,
 #' fitted values are transformed using \code{log()} to stabilize binning, with a
 #' message provided.
@@ -83,7 +83,7 @@
 #' boxplot.zresid(zres)
 #'
 #' # Plot against a specific covariate
-#' boxplot.zresid(zres, X = "age")
+#' boxplot.zresid(zres, x_axis_var = "age")
 #'
 #' # Return outliers
 #' box.out <- boxplot.zresid(zres, outlier.return = TRUE)
@@ -93,17 +93,17 @@
 #' \code{\link[graphics]{plot}}, \code{\link[graphics]{boxplot}},
 #' \code{\link[graphics]{legend}},
 #' \code{sw.test.zresid}, \code{aov.test.zresid}, \code{bartlett.test.zresid}
-#'
-#' @export boxplot.zresid
-
-
-boxplot.zresid <- function(Zresidual, irep = 1,
-                           X = c("lp", "covariate"),
+#' @method boxplot zresid
+#' @export
+boxplot.zresid <- function(x, irep = 1,
+                           x_axis_var = c("lp", "covariate"),
                            num.bin = 10,
                            normality.test = c("SW", "AOV", "BL"), k.test = 10,
-                           main.title = paste("Z-residual Boxplot -", attr(Zresidual, "type")),
+                           main.title = paste("Z-residual Boxplot -", attr(x, "type")),
                            outlier.return = FALSE, outlier.value = 3.5,
                            ...) {
+  Zresidual<-x
+  X <- x_axis_var
 
   sign.na <- function(x) {
     sign.x <- sign(x)

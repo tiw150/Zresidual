@@ -82,33 +82,33 @@ Diagnosing Shared Frailty Models. The American Statistician, 79(2),
   : Goodness-of-fit test for censored Z-residuals
 - [`iscv_logrpp()`](https://tiw150.github.io/Zresidual/reference/iscv_logrpp.md)
   : Compute Log Randomized Predictive p-values using ISCV Method
-- [`log(`*`<pred.dist.HNB>`*`)`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.HNB.md)
-  : Compute Log Predictive Distributions for a Hurdle Negative Binomial
-  Model of a 'brms' Fit
-- [`log(`*`<pred.dist.HP>`*`)`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.HP.md)
-  : Compute Log Predictive Distributions for a Hurdle Poisson Model of a
-  'brms' Fit
-- [`log(`*`<pred.dist.NB>`*`)`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.NB.md)
-  : Compute Log Predictive Distributions for a Negative Binomial Model
-  of a 'brms' Fit
-- [`log(`*`<pred.dist.TNB>`*`)`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.TNB.md)
-  : Compute Log Predictive Distributions for a Truncated Negative
-  Binomial Model of a 'brms' Fit
-- [`log(`*`<pred.dist.TP>`*`)`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.TP.md)
-  : Compute Log Predictive Distributions for a Truncated Poisson Model
-  of a 'brms' Fit
-- [`log(`*`<pred.dist.bern>`*`)`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.bern.md)
-  : Compute Log Predictive Distributions for Logistic Regression of a
-  'brms' Fit
-- [`log(`*`<pred.dist.pois>`*`)`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.pois.md)
-  : Compute Log Predictive Distributions for a Poisson Model of a 'brms'
-  Fit
-- [`log(`*`<pred.dist.zero>`*`)`](https://tiw150.github.io/Zresidual/reference/log.pred.dist.zero.md)
-  : A function to calculate log predictive distribution (pmf and cdf) of
-  logistic component of a 'brm' fit
 - [`log_diff_exp()`](https://tiw150.github.io/Zresidual/reference/log_diff_exp.md)
   : A function to compute the logarithm of the difference between the
   exponentials of two log values.
+- [`log_pred_dist_HNB()`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_HNB.md)
+  : Compute Log Predictive Distributions for a Hurdle Negative Binomial
+  Model of a 'brms' Fit
+- [`log_pred_dist_HP()`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_HP.md)
+  : Compute Log Predictive Distributions for a Hurdle Poisson Model of a
+  'brms' Fit
+- [`log_pred_dist_NB()`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_NB.md)
+  : Compute Log Predictive Distributions for a Negative Binomial Model
+  of a 'brms' Fit
+- [`log_pred_dist_TNB()`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_TNB.md)
+  : Compute Log Predictive Distributions for a Truncated Negative
+  Binomial Model of a 'brms' Fit
+- [`log_pred_dist_TP()`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_TP.md)
+  : Compute Log Predictive Distributions for a Truncated Poisson Model
+  of a 'brms' Fit
+- [`log_pred_dist_bern()`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_bern.md)
+  : Compute Log Predictive Distributions for Logistic Regression of a
+  'brms' Fit
+- [`log_pred_dist_pois()`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_pois.md)
+  : Compute Log Predictive Distributions for a Poisson Model of a 'brms'
+  Fit
+- [`log_pred_dist_zero()`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_zero.md)
+  : A function to calculate log predictive distribution (pmf and cdf) of
+  logistic component of a 'brm' fit
 - [`pdf.tnb()`](https://tiw150.github.io/Zresidual/reference/pdf.tnb.md)
   : Probability Mass Function of the Zero-Truncated Negative Binomial
   Distribution
@@ -149,7 +149,7 @@ Diagnosing Shared Frailty Models. The American Statistician, 79(2),
   : A function to calculate Shapiro-Francia test of Zresidual
 - [`surv_residuals()`](https://tiw150.github.io/Zresidual/reference/surv_residuals.md)
   : Residuals for supported survival models
-- [`sw(`*`<test.zresid>`*`)`](https://tiw150.github.io/Zresidual/reference/sw.test.zresid.md)
+- [`sw.test.zresid()`](https://tiw150.github.io/Zresidual/reference/sw.test.zresid.md)
   : Shapiro-Wilk Normality Test for Z-Residuals
 - [`test.var.bartl()`](https://tiw150.github.io/Zresidual/reference/test.var.bartl.md)
   : Bartlett Test for Homogeneity of Variances of Z-Residual

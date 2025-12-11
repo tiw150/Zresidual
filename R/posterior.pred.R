@@ -34,7 +34,7 @@
 #' }
 #'
 #' @seealso
-#' \code{\link{log.pred.dist.HNB}}, \code{\link{log.pred.dist.NB}}, \code{\link{log.pred.dist.HP}},
+#' \code{\link{log_pred_dist_HNB}}, \code{\link{log_pred_dist_NB}}, \code{\link{log_pred_dist_HP}},
 #' \code{\link[brms:posterior_linpred]{posterior_linpred}}
 posterior.pred <- function(fit, dpar, count.only = TRUE){
 

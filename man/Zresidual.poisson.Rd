@@ -37,7 +37,7 @@ The function performs the following steps:
 \enumerate{
   \item Extracts the observed response vector from the model data.
   \item Computes the log-PMF and log-CDF for the poisson model
-        using \code{\link{log.pred.dist.pois}}.
+        using \code{\link{log_pred_dist_pois}}.
   \item Generates randomized or posterior predictive p-values according to the
         specified \code{method}.
   \item Converts the p-values to Z-residuals via the negative quantile of the
@@ -57,5 +57,5 @@ zres_pois_post <- Zresidual.poisson(fit, method = "rpost", n.rep = 2)
 
 }
 \seealso{
-\code{\link{log.pred.dist.pois}}, \code{\link{post_logrpp}}, \code{\link{iscv_logrpp}}
+\code{\link{log_pred_dist_pois}}, \code{\link{post_logrpp}}, \code{\link{iscv_logrpp}}
 }

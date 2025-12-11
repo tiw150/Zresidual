@@ -44,7 +44,7 @@ The function performs the following steps:
 \enumerate{
   \item Extracts the observed response vector from the model data.
   \item Computes the log-PMF and log-CDF for the specified part of the model
-        using the corresponding \code{log.pred.dist.*} function.
+        using the corresponding \code{log_pred_dist_*} function.
   \item Generates posterior predictive p-values according to the
         specified \code{method}.
   \item Converts the p-values to Z-residuals via the negative quantile of the
@@ -64,5 +64,5 @@ zres_hurdle <- Zresidual.hurdle.negbinomial(fit, type = "hurdle", n.rep = 2)
 
 }
 \seealso{
-\code{\link{log.pred.dist.HNB}}, \code{\link{log.pred.dist.TNB}}, \code{\link{post_logrpp}}, \code{\link{iscv_logrpp}}
+\code{\link{log_pred_dist_HNB}}, \code{\link{log_pred_dist_TNB}}, \code{\link{post_logrpp}}, \code{\link{iscv_logrpp}}
 }

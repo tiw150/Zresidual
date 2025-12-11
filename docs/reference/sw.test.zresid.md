@@ -6,8 +6,7 @@ of Z-residuals.
 ## Usage
 
 ``` r
-# S3 method for class 'test.zresid'
-sw(Zresidual, ...)
+sw.test.zresid(Zresidual, ...)
 ```
 
 ## Arguments

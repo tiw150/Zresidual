@@ -83,7 +83,7 @@
 #'  plot(r_d, x_axis_var = "age")
 #' }
 #' @method plot dev.resid
-#' @export
+#' @export plot.dev.resid
 plot.dev.resid <- function(x,ylab = "Deviance Residual",
                            x_axis_var = c("index", "lp", "covariate"),
                            main.title = "Deviance Residual Plot",

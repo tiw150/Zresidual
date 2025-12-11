@@ -11,3 +11,9 @@ pvalue.min(pv)
 ## Arguments
 
 - pv:
+
+  Numeric vector of p-values.
+
+## Value
+
+A single numeric value: the minimum adjusted p-value.

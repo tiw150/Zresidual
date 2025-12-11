@@ -16,7 +16,7 @@
 #' \enumerate{
 #'   \item Extracts the observed response vector from the model data.
 #'   \item Computes the log-PMF and log-CDF for the Bernoulli model using
-#'         \code{\link{log.pred.dist.bern}}.
+#'         \code{\link{log_pred_dist_bern}}.
 #'   \item Generates posterior predictive p-values according to the
 #'         specified \code{method}.
 #'   \item Converts the p-values to Z-residuals via the negative quantile of the
@@ -46,7 +46,7 @@
 #' }
 #'
 #' @seealso
-#' \code{\link{log.pred.dist.bern}}, \code{\link{post_logrpp}}, \code{\link{iscv_logrpp}}
+#' \code{\link{log_pred_dist_bern}}, \code{\link{post_logrpp}}, \code{\link{iscv_logrpp}}
 #' @export
 Zresidual.bernoulli <- function(fit, method = "iscv", n.rep = 1){
 
@@ -65,7 +65,7 @@ Zresidual.bernoulli <- function(fit, method = "iscv", n.rep = 1){
   # type_list <- c("bern")
   # names(type_list) <- c("count")
 
-  ldist <- log.pred.dist.bern(fit)
+  ldist <- log_pred_dist_bern(fit)
   lpmf <- ldist$lpmf_hat
   lcdf <- ldist$lcdf_hat
 

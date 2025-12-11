@@ -31,12 +31,12 @@
 #' \dontrun{
 #' # Example usage:
 #' fit <- brm(bf(y ~ x1 + x2, hu ~ x1), family = hurdle_negbinomial(), data = mydata)
-#' pred_dist <- log.pred.dist.HNB(fit)
+#' pred_dist <- log_pred_dist_HNB(fit)
 #' str(pred_dist)
 #' }
 #'
 
-log.pred.dist.HNB <- function(fit){
+log_pred_dist_HNB <- function(fit){
 
   chains <- summary(fit)$chains
   iter <- summary(fit)$iter

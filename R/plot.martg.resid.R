@@ -84,7 +84,7 @@
 #' plot(r_m, x_axis_var = "age")
 #' }
 #' @method plot martg.resid
-#' @export
+#' @export plot.martg.resid
 plot.martg.resid <- function(x,ylab = "Martingale Residual",
                              x_axis_var = c("index", "lp", "covariate"),
                              main.title = "Martingale Residual Plot",

@@ -89,6 +89,8 @@ residual.coxph.frailty <- function (fit_coxph, traindata, newdata,
                                     residual.type=c("censored Z-residual", "Cox-Snell",
                                                     "martingale", "deviance"))
 {
+  residual.type <- match.arg(residual.type)
+
   form<-(fit_coxph$formula)[[3]]
   group_id_name<-gsub(".*[(]([^.]+)[,].*", "\\1", form)[3]
   if(!is.factor(traindata[[group_id_name]])) stop("The group ID must be factor!")
@@ -221,6 +223,16 @@ residual.coxph.frailty <- function (fit_coxph, traindata, newdata,
     object.model.frame=mf_new
 
   ))
+
+  resid.class <- switch(residual.type,
+                        "Cox-Snell"            = "cs.residual",
+                        "deviance"             = "dev.resid",
+                        "martingale"           = "martg.resid",
+                        "censored Z-residual"  = "cz.resid"
+  )
+
+  class(resid.value) <- resid.class
+
   return(resid.value)
 }
 

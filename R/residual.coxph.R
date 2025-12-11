@@ -66,6 +66,8 @@ residual.coxph<-function (fit_coxph, newdata,
                           residual.type=c("censored Z-residual", "Cox-Snell",
                                           "martingale", "deviance"))
 {
+  residual.type <- match.arg(residual.type)
+
   basecumhaz<-basehaz(fit_coxph,centered = F)
   t<-basecumhaz$time
   H_0<-basecumhaz$hazard
@@ -128,6 +130,16 @@ residual.coxph<-function (fit_coxph, newdata,
     object.model.frame=mf_new
 
   ))
+
+  resid.class <- switch(residual.type,
+                        "Cox-Snell"            = "cs.residual",
+                        "deviance"             = "dev.resid",
+                        "martingale"           = "martg.resid",
+                        "censored Z-residual"  = "cz.resid"
+  )
+
+  class(resid.value) <- resid.class
+
   return(resid.value)
 
 }
