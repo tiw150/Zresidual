@@ -56,7 +56,7 @@ Suggests:
     png,
     pacman,
     magick
-VignetteBuilder: knitr
+VignetteBuilder: knitr,quarto
 LazyData: true
 RoxygenNote: 7.3.3
 Encoding: UTF-8

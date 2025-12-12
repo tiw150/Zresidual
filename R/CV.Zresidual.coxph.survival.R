@@ -7,7 +7,8 @@
 #' whether a frailty term is present in the model formula. It then dispatches
 #' to the appropriate internal implementation for standard Cox models or shared
 #' frailty Cox models. 
-#'
+#' @importFrom parallel detectCores
+#' @importFrom doParallel registerDoParallel
 #' @param object A fitted \code{survival::coxph} model object.
 #' @param nfolds Integer. The number of folds for cross-validation (K in K-fold CV).
 #' @param foldlist Optional list specifying custom fold assignments. If
@@ -35,13 +36,13 @@
 #'
 #' @return
 #' A matrix of class \code{"cvzresid"} (and others inherited from the internal
-#' worker) with dimension $N \times nrep$ (where $N$ is the number of observations).
+#' worker) with dimension \eqn{N \times nrep}{N x nrep} (where $N$ is the number of observations).
 #' The matrix columns contain the cross-validated Z-residuals.
 #'
 #' The object also includes the following diagnostic attributes:
 #' \itemize{
 #'   \item \code{Survival.Prob}: Cross-validated predicted survival probabilities.
-#'   \item \code{linear.pred}: Cross-validated linear predictors ($\mathbf{x}\hat{\mathbf{\beta}}$).
+#'   \item \code{linear.pred}: Cross-validated linear predictors (\eqn{\mathbf{x}\hat{\mathbf{\beta}}}{x * beta-hat}).
 #'   \item \code{censored.status}: The event indicator from the survival object.
 #'   \item \code{covariates}: The covariates used in the model.
 #'   \item \code{object.model.frame}: The model frame of the original data.
@@ -99,6 +100,8 @@ CV.Zresidual.coxph <- function(object,
   cv_obj
 }
 
+#' @title Cross-validated Z-residuals for Standard Cox Models
+#' @name CV_Zresidual_coxph_survival
 #' @keywords internal
 #' @description Internal function to compute cross-validated Z-residuals for
 #' **standard** Cox proportional hazards models (without frailty).
@@ -117,9 +120,9 @@ CV.Zresidual.coxph <- function(object,
 #' calculated on the held-out test data. This approach is for models without
 #' shared frailty terms.
 #'
-#' @return A matrix containing the cross-validated Z-residuals ($N \times nrep$) with
-#'   diagnostic attributes: \code{Survival.Prob}, \code{linear.pred},
-#'   \code{censored.status}, \code{covariates}, and \code{object.model.frame}.
+#' @return A matrix containing the cross-validated Z-residuals (\eqn{N \times nrep}{N x nrep}) with
+#'  diagnostic attributes: \code{Survival.Prob}, \code{linear.pred},
+#'  \code{censored.status}, \code{covariates}, and \code{object.model.frame}.
 CV_Zresidual_coxph_survival <- function(fit.coxph, data, nfolds,foldlist,n.rep, ...)
 {
   if(!is.null(data)){
@@ -272,7 +275,8 @@ CV_Zresidual_coxph_survival <- function(fit.coxph, data, nfolds,foldlist,n.rep, 
   CV.Zresid
 }
 
-
+#' @title Cross-validated Z-residuals for Shared Frailty Cox Models
+#' @name CV_Zresidual_coxph_frailty_survival
 #' @keywords internal
 #' @description Internal function to compute cross-validated Z-residuals for
 #' **shared frailty** Cox proportional hazards models.
@@ -291,9 +295,9 @@ CV_Zresidual_coxph_survival <- function(fit.coxph, data, nfolds,foldlist,n.rep, 
 #' In each fold, the model is refitted on the training data, and the Z-residuals
 #' are calculated on the held-out test data.
 #'
-#' @return A matrix containing the cross-validated Z-residuals ($N \times nrep$) with
-#'   diagnostic attributes: \code{Survival.Prob}, \code{linear.pred},
-#'   \code{censored.status}, \code{covariates}, and \code{object.model.frame}.
+#' @return A matrix containing the cross-validated Z-residuals (\eqn{N \times nrep}{N x nrep}) with
+#'  diagnostic attributes: \code{Survival.Prob}, \code{linear.pred},
+#'  \code{censored.status}, \code{covariates}, and \code{object.model.frame}.
 CV_Zresidual_coxph_frailty_survival<- function( fit.coxph, data, nfolds,foldlist,n.rep, ...)
 {
   if (is.null(data)) {

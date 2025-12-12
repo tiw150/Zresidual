@@ -5,7 +5,8 @@
 #' regression models fitted with \code{\link[survival]{survreg}}. This method
 #' performs K-fold cross-validation to obtain external Z-residuals for model
 #' diagnostics.
-#'
+#' @importFrom parallel detectCores
+#' @importFrom doParallel registerDoParallel
 #' @param object A fitted \code{\link[survival]{survreg}} model object.
 #' @param nfolds Integer. Number of folds for cross-validation.
 #' @param foldlist Optional list specifying custom fold assignments. If
@@ -26,8 +27,8 @@
 #' refitting of the \code{survreg} model on $K-1$ folds and computes the
 #' randomized Z-residuals on the held-out fold. 
 #'
-#' The randomized Z-residual, $Z_{ij}$, for the $j$-th observation in the $i$-th fold
-#' is computed based on the predicted out-of-sample survival probability $\hat{S}_{\text{train}_i}(t_j)$.
+#' The randomized Z-residual, \eqn{Z_{ij}}{Z\_ij}, for the $j$-th observation in the $i$-th fold is defined as:
+#' \deqn{Z_{ij} = ...}{Z\_ij = ...} is computed based on the predicted out-of-sample survival probability \eqn{\hat{S}_{\text{train}_i}(t_j)}{S_hat_i(t_j)}.
 #'
 #' The returned object is tagged with class \code{"cvzresid"} in addition
 #' to any classes returned by the internal worker.
@@ -76,6 +77,8 @@ CV.Zresidual.survreg <- function(object,
   cv_obj
 }
 
+#' @title Cross-validated Z-residuals for Survreg Models
+#' @name CV_Zresidual_survreg_survival
 #' @keywords internal
 #' @description Internal function to compute cross-validated Z-residuals for
 #' **parametric** survival regression models fitted with \code{\link[survival]{survreg}}.
@@ -104,7 +107,7 @@ CV.Zresidual.survreg <- function(object,
 #' on the training subset of each fold. Failed model fits during cross-validation
 #' result in \code{NA} residuals for the corresponding test fold.
 #'
-#' @return A numeric matrix containing the cross-validated Z-residuals ($N \times n.rep$),
+#' @return A numeric matrix containing the cross-validated Z-residuals (\eqn{N \times nrep}{N x nrep}),
 #'   where $N$ is the total number of observations. The matrix carries the following
 #'   diagnostic attributes:
 #' \itemize{

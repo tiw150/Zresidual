@@ -2,14 +2,14 @@
 #'
 #' @description
 #' `Zresidual.coxph.survival()` computes randomized Z-residuals for Cox
-#' proportional hazards models fitted with \code{\link[survival]{coxph()}},
+#' proportional hazards models fitted with \code{\link[survival]{coxph}},
 #' supporting both standard and shared frailty models. This S3 method is
-#' designed to be called via the generic function \code{\link{Zresidual()}}.
+#' designed to be called via the generic function \code{\link{Zresidual}}.
 #'
 #' The function automatically detects the presence of a frailty term (e.g.,
 #' \code{frailty(group)}) and dispatches the calculation to one of two
 #' internal implementations. These residuals are intended for **in-sample**
-#' diagnostics and model assessment. 
+#' diagnostics and model assessment.
 #'
 #' @details
 #' This method dispatches work based on the model formula:
@@ -18,22 +18,22 @@
 #'   \item \strong{Standard Cox models (No Frailty)}:
 #'
 #'   The function calls \code{\link{Zresidual_coxph_survival}} to compute
-#'   Z-residuals using the fixed effects ($\mathbf{x}\mathbf{\hat{\beta}}$) and the
-#'   estimated baseline cumulative hazard function $\hat{H}_0(t)$.
+#'   Z-residuals using the fixed effects (\eqn{\mathbf{x}\hat{\mathbf{\beta}}}{x * beta-hat}) and the
+#'   estimated baseline cumulative hazard function \eqn{\hat{H}_0(t)}{H\_0\_hat(t)}.
 #'
 #'   \item \strong{Shared Frailty Cox models}:
 #'
 #'   The function calls \code{\link{Zresidual_coxph_frailty_survival}}. This
 #'   implementation computes residuals accounting for the cluster-level frailty
-#'   effect ($\hat{z}_{group}$). It requires the data used for fitting
+#'   effect (\eqn{\hat{z}_{\text{group}}}{z\_group\_hat}). It requires the data used for fitting
 #'   (\code{traindata}) to reconstruct the baseline hazard and estimate the
 #'   frailty term.
 #' }
 #'
 #' **Randomization for Censored Observations:**
 #' Since the true survival probability for a censored observation $i$ is known
-#' only to be greater than $S_i(t_i)$, the Z-residual uses a randomized survival
-#' probability: $S_{i, \text{rand}}(t_i) = S_i(t_i) \cdot U$, where $U \sim \text{Unif}(0, 1)$.
+#' only to be greater than \eqn{S_i(t_i)}{S\_i(t\_i)}, the Z-residual uses a randomized survival
+#' probability: \eqn{S_{i, \text{rand}}(t_i) = S_i(t_i) \cdot U}{S\_i\_rand(t\_i) = S\_i(t\_i) \* U}, where \eqn{U \sim \text{Unif}(0, 1)}{U \~ Unif(0, 1)}.
 #' This randomization is repeated \code{nrep} times.
 #'
 #' @importFrom survival Surv
@@ -53,12 +53,12 @@
 #' @param ... Further arguments passed to the underlying implementation
 #'   functions.
 #' @return
-#' A numeric matrix of class \code{"zresid"} with dimension $N \times nrep$.
+#' A numeric matrix of class \code{"zresid"} with dimension \eqn{N \times nrep}{N x nrep}.
 #' Each column is an independent set of Z-residuals. The following diagnostic
 #' attributes are attached:
 #' \itemize{
-#'   \item \code{Survival.Prob}: Vector of predicted survival probabilities $S_i(t_i)$.
-#'   \item \code{linear.pred}: Vector of linear predictors $\eta_i = \mathbf{x}_i \mathbf{\hat{\beta}}$.
+#'   \item \code{Survival.Prob}: Vector of predicted survival probabilities \eqn{S_i(t_i)}{S\_i(t\_i)}.
+#'   \item \code{linear.pred}: Vector of linear predictors \eqn{\eta_i = \mathbf{x}_i \mathbf{\hat{\beta}}}{eta\_i = x\_i * beta-hat}.
 #'   \item \code{covariates}: Data frame of covariates used in the model.
 #'   \item \code{censored.status}: Event indicator (1 = event, 0 = censored).
 #'   \item \code{object.model.frame}: The \code{model.frame} used for computation.
@@ -117,7 +117,8 @@ Zresidual.coxph.survival <- function(object,
   out
 }
 
-
+#' @title Z-residuals for Standard Cox Models (Internal Worker)
+#' @name Zresidual_coxph_survival
 #' @keywords internal
 #' @description Internal function to compute randomized Z-residuals for a **standard**
 #' Cox proportional hazards model (without frailty).
@@ -129,16 +130,19 @@ Zresidual.coxph.survival <- function(object,
 #' @param ... Additional arguments (currently unused).
 #'
 #' @details
-#' The Z-residual for an observation $i$ is calculated as $Z_i = -\Phi^{-1}(\hat{S}_i(t_i, \text{rand}))$,
-#' where $\Phi^{-1}$ is the inverse standard normal CDF, and $\hat{S}_i(t_i, \text{rand})$
-#' is the predicted survival probability at time $t_i$.
+#' The Z-residual for an observation $i$ is calculated as
+#' \deqn{Z_i = -\Phi^{-1}(\hat{S}_i(t_i, \text{rand}))}{Z\_i = -qnorm(S\_hat\_i(t\_i, rand))}
+#' where \eqn{\Phi^{-1}}{Phi-inverse} is the inverse standard normal CDF, and \eqn{\hat{S}_i(t_i, \text{rand})}{S\_hat\_i(t\_i, rand)}
+#' is the predicted survival probability at time \eqn{t_i}{t\_i}.
 #'
-#' For uncensored observations ($t_i$ is an event time), $\hat{S}_i(t_i, \text{rand}) = \hat{S}_i(t_i)$.
-#' For censored observations, $\hat{S}_i(t_i, \text{rand}) = \hat{S}_i(t_i) \cdot U$, where $U \sim \text{Unif}(0, 1)$.
+#' For uncensored observations (\eqn{t_i}{t\_i} is an event time), \eqn{\hat{S}_i(t_i, \text{rand}) = \hat{S}_i(t_i)}{S\_hat\_i(t\_i, rand) = S\_hat\_i(t\_i)}.
+#' For censored observations,
+#' \eqn{\hat{S}_i(t_i, \text{rand}) = \hat{S}_i(t_i) \cdot U}{S\_hat\_i(t\_i, rand) = S\_hat\_i(t\_i) \* U}, where \eqn{U \sim \text{Unif}(0, 1)}{U \~ Unif(0, 1)}.
 #'
-#' The predicted survival is calculated as $\hat{S}_i(t_i) = \exp(-\exp(\mathbf{x}_i \mathbf{\hat{\beta}}) \hat{H}_0(t_i))$.
+#' The predicted survival is calculated as
+#' \deqn{\hat{S}_i(t_i) = \exp(-\exp(\mathbf{x}_i \mathbf{\hat{\beta}}) \hat{H}_0(t_i))}{S\_hat\_i(t\_i) = exp(-exp(x\_i * beta-hat) * H\_0\_hat(t\_i))}.
 #'
-#' @return A matrix containing the Z-residuals ($N \times nrep$) with diagnostic attributes:
+#' @return A matrix containing the Z-residuals (\eqn{N \times nrep}{N x nrep}) with diagnostic attributes:
 #' \code{Survival.Prob}, \code{linear.pred}, \code{covariates}, \code{censored.status},
 #' \code{object.model.frame}, and \code{type = "survival"}.
 Zresidual_coxph_survival<-function (fit_coxph, newdata,n.rep=1, ...)
@@ -207,7 +211,8 @@ Zresidual_coxph_survival<-function (fit_coxph, newdata,n.rep=1, ...)
   return(Zresid.value)
 }
 
-
+#' @title Z-residuals for Standard Cox Models with Frailty terms (Internal Worker)
+#' @name Zresidual_coxph_frailty_survival
 #' @keywords internal
 Zresidual_coxph_frailty_survival <-
   function (fit_coxph, traindata, newdata, n.rep = 1, ...)

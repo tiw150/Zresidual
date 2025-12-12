@@ -45,8 +45,8 @@ This method delegates the actual cross-validation work to
 refitting of the \code{survreg} model on $K-1$ folds and computes the
 randomized Z-residuals on the held-out fold. 
 
-The randomized Z-residual, $Z_{ij}$, for the $j$-th observation in the $i$-th fold
-is computed based on the predicted out-of-sample survival probability $\hat{S}_{\text{train}_i}(t_j)$.
+The randomized Z-residual, \eqn{Z_{ij}}{Z\_ij}, for the $j$-th observation in the $i$-th fold is defined as:
+\deqn{Z_{ij} = ...}{Z\_ij = ...} is computed based on the predicted out-of-sample survival probability \eqn{\hat{S}_{\text{train}_i}(t_j)}{S_hat_i(t_j)}.
 
 The returned object is tagged with class \code{"cvzresid"} in addition
 to any classes returned by the internal worker.

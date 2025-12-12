@@ -26,13 +26,13 @@ Default is 1. Repeating CV provides a more stable estimate of the residuals.}
 }
 \value{
 A matrix of class \code{"cvzresid"} (and others inherited from the internal
-worker) with dimension $N \times nrep$ (where $N$ is the number of observations).
+worker) with dimension \eqn{N \times nrep}{N x nrep} (where $N$ is the number of observations).
 The matrix columns contain the cross-validated Z-residuals.
 
 The object also includes the following diagnostic attributes:
 \itemize{
   \item \code{Survival.Prob}: Cross-validated predicted survival probabilities.
-  \item \code{linear.pred}: Cross-validated linear predictors ($\mathbf{x}\hat{\mathbf{\beta}}$).
+  \item \code{linear.pred}: Cross-validated linear predictors (\eqn{\mathbf{x}\hat{\mathbf{\beta}}}{x * beta-hat}).
   \item \code{censored.status}: The event indicator from the survival object.
   \item \code{covariates}: The covariates used in the model.
   \item \code{object.model.frame}: The model frame of the original data.

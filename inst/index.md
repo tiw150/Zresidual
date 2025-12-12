@@ -1,0 +1,13 @@
+# Articles
+
+### How to use various features of the package.
+
+- [Z-residual diagnostic tool for assessing covariate functional form in
+  shared frailty
+  models](https://tiw150.github.io/Zresidual/articles/zresidual_demo.md):
+- [Cross-validatory Z-Residual for Diagnosing Shared Frailty
+  Models](https://tiw150.github.io/Zresidual/articles/cv_zresidual_demo.md):
+- [Z-residual Diagnosis for Logistic
+  Regression](https://tiw150.github.io/Zresidual/articles/zresidual_logistic_demo.md):
+- [Component-wise Z-residual Diagnosis for Bayesian Hurdle
+  Models](https://tiw150.github.io/Zresidual/articles/hurdle_zresidual_demo.md):
