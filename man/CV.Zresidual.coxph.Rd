@@ -9,53 +9,72 @@
 \arguments{
 \item{object}{A fitted \code{survival::coxph} model object.}
 
-\item{nfolds}{Integer. Number of folds for cross-validation.}
+\item{nfolds}{Integer. The number of folds for cross-validation (K in K-fold CV).}
 
 \item{foldlist}{Optional list specifying custom fold assignments. If
-\code{NULL}, folds are generated internally.}
+\code{NULL}, folds are generated internally, often ensuring a balanced
+distribution of events.}
 
 \item{data}{Optional data frame used to refit the model during
-cross-validation. Required when \code{foldlist} is supplied or when
-the original model call does not contain the data explicitly.}
+cross-validation. It is required if the original model call did not contain
+the data explicitly, or when \code{foldlist} is supplied.}
 
 \item{nrep}{Integer. Number of repeated cross-validations to perform.
-Default is 1.}
+Default is 1. Repeating CV provides a more stable estimate of the residuals.}
 
 \item{...}{Further arguments passed to the internal worker functions.}
 }
 \value{
-An object of class \code{"cvzresid"} containing cross-validated
-Z-residual diagnostics for the Cox model.
+A matrix of class \code{"cvzresid"} (and others inherited from the internal
+worker) with dimension $N \times nrep$ (where $N$ is the number of observations).
+The matrix columns contain the cross-validated Z-residuals.
+
+The object also includes the following diagnostic attributes:
+\itemize{
+  \item \code{Survival.Prob}: Cross-validated predicted survival probabilities.
+  \item \code{linear.pred}: Cross-validated linear predictors ($\mathbf{x}\hat{\mathbf{\beta}}$).
+  \item \code{censored.status}: The event indicator from the survival object.
+  \item \code{covariates}: The covariates used in the model.
+  \item \code{object.model.frame}: The model frame of the original data.
+}
 }
 \description{
-S3 method for \code{CV.Zresidual()} applied to Cox proportional
-hazards models fitted with \code{survival::coxph()}. The method
-automatically detects whether a frailty term is present in the model
-formula and dispatches to internal implementations for standard Cox
-models and shared frailty Cox models.
+S3 method for the generic function \code{CV.Zresidual()} applied to
+Cox proportional hazards models fitted with \code{survival::coxph()}.
+This method computes the cross-validated Z-residuals, automatically detecting
+whether a frailty term is present in the model formula. It then dispatches
+to the appropriate internal implementation for standard Cox models or shared
+frailty Cox models.
 }
 \details{
-Depending on the presence of a frailty term such as
-\code{frailty(group)} in \code{object$terms}, the method calls:
+The method determines the correct worker function by examining
+\code{attr(object$terms, "specials")$frailty}:
 \itemize{
-  \item \code{CV_Zresidual_coxph_survival()} for standard Cox models;
-  \item \code{CV_Zresidual_coxph_frailty_survival()} for shared frailty
-        Cox models.
+  \item **Standard Cox Models**: If no frailty term is found, it calls
+    \code{\link{CV_Zresidual_coxph_survival}}.
+  \item **Shared Frailty Cox Models**: If a frailty term (e.g., \code{frailty(group)})
+    is present, it calls \code{\link{CV_Zresidual_coxph_frailty_survival}}.
 }
 
-The returned object is tagged with class \code{"cvzresid"} in addition
-to any classes returned by the internal worker.
+The returned object is a matrix of Z-residuals with crucial diagnostic
+information stored as attributes.
 }
 \examples{
 \dontrun{
   library(survival)
-  fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
-  cv_out <- CV.Zresidual(fit, nfolds = 5, data = lung)
+  # Example 1: Standard Cox Model
+  fit_std <- coxph(Surv(time, status) ~ age + sex, data = lung)
+  cv_out_std <- CV.Zresidual(fit_std, nfolds = 5, data = lung)
+
+  # Example 2: Shared Frailty Cox Model (assuming the lung data has a group column 'inst')
+  # lung$inst_factor <- as.factor(lung$inst)
+  # fit_frty <- coxph(Surv(time, status) ~ age + sex + frailty(inst_factor), data = lung)
+  # cv_out_frty <- CV.Zresidual(fit_frty, nfolds = 5, data = lung)
 }
 
 }
 \seealso{
-\code{CV_Zresidual_coxph_survival()},
-\code{CV_Zresidual_coxph_frailty_survival()},
-and the generic \code{CV.Zresidual()}.
+\code{\link[survival]{coxph}}, \code{\link{CV_Zresidual_coxph_survival}},
+\code{\link{CV_Zresidual_coxph_frailty_survival}},
+and the generic \code{\link{CV.Zresidual}}.
 }

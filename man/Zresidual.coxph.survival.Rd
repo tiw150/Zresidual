@@ -7,91 +7,74 @@
 \method{Zresidual}{coxph.survival}(object, nrep = 1, data = NULL, type = NULL, method = NULL, ...)
 }
 \arguments{
-\item{object}{A fitted [survival::coxph()] model. The function supports
-both standard Cox models and shared frailty Cox models specified with
-a term such as \code{frailty(group)} in the formula.}
+\item{object}{A fitted \code{\link[survival]{coxph}} model. Supports
+both standard Cox models and shared frailty models.}
 
 \item{nrep}{Integer; number of independent randomized Z-residual
-replicates to generate. Defaults to \code{1}. Each replicate corresponds
-to a different randomization of censored observations.}
+replicates to generate. Defaults to \code{1}.}
 
 \item{data}{Optional \code{data.frame} containing the survival response
-and covariates used in \code{object$terms}. When \code{NULL} (default),
-the model frame is reconstructed from \code{object} and residuals are
-computed on the original data.}
+and covariates. When \code{NULL} (default), the residuals are computed
+on the data used to fit the \code{object}. This parameter is often aliased
+as \code{newdata} in the internal worker functions.}
 
-\item{type}{Optional character string controlling the residual type,
-interpreted by the underlying implementation (if used). For Cox models,
-this is typically set internally to \code{"survival"}.}
+\item{type}{Optional character string controlling the residual type.
+Set internally to \code{"survival"} for Cox models.}
 
-\item{method}{Character string specifying the residual calculation method
-(if applicable to the underlying worker function). Currently unused
-by the Cox PH implementation.}
+\item{method}{Character string specifying the residual calculation method.
+Currently unused.}
 
 \item{...}{Further arguments passed to the underlying implementation
-functions. Currently unused.}
+functions.}
 }
 \value{
-A numeric matrix of dimension \eqn{n \times} \code{nrep}, where \eqn{n} is
-the number of observations in the data set on which residuals are
-evaluated (either \code{data} if supplied, or the original model frame).
-Each column corresponds to one set of Z-residuals. The returned matrix has
-several attributes attached, including:
+A numeric matrix of class \code{"zresid"} with dimension $N \times nrep$.
+Each column is an independent set of Z-residuals. The following diagnostic
+attributes are attached:
 \itemize{
-  \item \code{Survival.Prob}: vector of survival probabilities
-    \eqn{S_i(t_i)} (or \eqn{S_{ij}(t_i)} in the frailty case).
-  \item \code{linear.pred}: vector of linear predictors \eqn{\eta_i}
-    (fixed effects; excluding the frailty term in shared frailty models).
-  \item \code{covariates}: data frame of covariates (model frame without
-    the survival response and grouping factor).
-  \item \code{censored.status}: event indicator (1 = event, 0 = censored).
-  \item \code{object.model.frame}: the \code{model.frame} used to compute
-    the residuals.
-  \item \code{type}: character string, typically \code{"survival"}.
+  \item \code{Survival.Prob}: Vector of predicted survival probabilities $S_i(t_i)$.
+  \item \code{linear.pred}: Vector of linear predictors $\eta_i = \mathbf{x}_i \mathbf{\hat{\beta}}$.
+  \item \code{covariates}: Data frame of covariates used in the model.
+  \item \code{censored.status}: Event indicator (1 = event, 0 = censored).
+  \item \code{object.model.frame}: The \code{model.frame} used for computation.
+  \item \code{type}: Character string, always \code{"survival"}.
 }
 }
 \description{
 `Zresidual.coxph.survival()` computes randomized Z-residuals for Cox
-proportional hazards models fitted with [survival::coxph()], with or
-without shared frailty terms. It is the S3 method for [Zresidual()]
-when the fitted object is internally tagged with the class
-`"coxph.survival"`, and is normally called via [Zresidual()] rather
-than directly.
+proportional hazards models fitted with \code{\link[survival]{coxph()}},
+supporting both standard and shared frailty models. This S3 method is
+designed to be called via the generic function \code{\link{Zresidual()}}.
 
-The function automatically detects whether the model formula contains
-a frailty term (e.g. `frailty(group)`) and dispatches to separate
-internal implementations for standard Cox models and shared frailty
-Cox models. In both cases, Z-residuals are computed for a single
-data set (typically the data used to fit the model) and are intended
-for in-sample diagnostics.
+The function automatically detects the presence of a frailty term (e.g.,
+\code{frailty(group)}) and dispatches the calculation to one of two
+internal implementations. These residuals are intended for **in-sample**
+diagnostics and model assessment.
 }
 \details{
-There are two main usage patterns:
+This method dispatches work based on the model formula:
 
 \itemize{
-  \item \strong{Standard Cox models (no frailty term)}:
+  \item \strong{Standard Cox models (No Frailty)}:
 
-  When the model formula does not contain a frailty term, the method
-  computes Z-residuals for a fitted `coxph` object using the survival
-  response and covariates in \code{data}. If \code{data} is \code{NULL},
-  the model frame is reconstructed from the fitted object and residuals
-  are computed on the original data used to fit the model.
+  The function calls \code{\link{Zresidual_coxph_survival}} to compute
+  Z-residuals using the fixed effects ($\mathbf{x}\mathbf{\hat{\beta}}$) and the
+  estimated baseline cumulative hazard function $\hat{H}_0(t)$.
 
-  Internally, this branch delegates to an implementation function such
-  as \code{Zresidual_coxph_survival()}.
+  \item \strong{Shared Frailty Cox models}:
 
-  \item \strong{Shared frailty Cox models}:
-
-  If the model includes a multiplicative frailty term (e.g.
-  \code{frailty(group)}), the method computes randomized Z-residuals
-  that account for the cluster-level frailty. The same data set
-  (either \code{data} if supplied, or the original model frame) is used
-  both to reconstruct the baseline hazard / frailty effects and to
-  evaluate residuals.
-
-  Internally, this branch calls a dedicated frailty implementation,
-  such as \code{Zresidual_coxph_frailty_survival()}.
+  The function calls \code{\link{Zresidual_coxph_frailty_survival}}. This
+  implementation computes residuals accounting for the cluster-level frailty
+  effect ($\hat{z}_{group}$). It requires the data used for fitting
+  (\code{traindata}) to reconstruct the baseline hazard and estimate the
+  frailty term.
 }
+
+**Randomization for Censored Observations:**
+Since the true survival probability for a censored observation $i$ is known
+only to be greater than $S_i(t_i)$, the Z-residual uses a randomized survival
+probability: $S_{i, \text{rand}}(t_i) = S_i(t_i) \cdot U$, where $U \sim \text{Unif}(0, 1)$.
+This randomization is repeated \code{nrep} times.
 }
 \examples{
 \dontrun{
@@ -99,18 +82,21 @@ There are two main usage patterns:
 
   ## Standard Cox model (no frailty term)
   fit_cox <- coxph(Surv(time, status) ~ age + sex, data = lung)
+  # Note: The internal class 'coxph.survival' is usually added by a wrapper,
+  # but Zresidual() handles dispatch automatically.
   z_cox <- Zresidual(fit_cox, nrep = 10, data = lung)
 
   ## Shared frailty Cox model (in-sample residuals)
-  lung$inst <- factor(lung$inst)
-  fit_frail <- coxph(Surv(time, status) ~ age + sex + frailty(inst),
+  # Note: 'inst' must be a grouping factor.
+  lung$inst_f <- factor(lung$inst)
+  fit_frail <- coxph(Surv(time, status) ~ age + sex + frailty(inst_f),
                      data = lung)
   z_in <- Zresidual(fit_frail, nrep = 5)
 }
 
 }
 \seealso{
-Zresidual(),
-Zresidual_coxph_survival(),
-Zresidual_coxph_frailty_survival()
+\code{\link{Zresidual}},
+\code{\link{Zresidual_coxph_survival}},
+\code{\link{Zresidual_coxph_frailty_survival}}
 }

@@ -7,35 +7,46 @@
 \method{CV.Zresidual}{survreg}(object, nfolds, foldlist = NULL, data = NULL, nrep = 1, ...)
 }
 \arguments{
-\item{object}{A fitted \code{survival::survreg} model object.}
+\item{object}{A fitted \code{\link[survival]{survreg}} model object.}
 
 \item{nfolds}{Integer. Number of folds for cross-validation.}
 
 \item{foldlist}{Optional list specifying custom fold assignments. If
-\code{NULL}, folds are generated internally.}
+\code{NULL}, folds are generated internally, typically stratified by the
+survival response and censoring indicator.}
 
 \item{data}{Optional data frame used to refit the model during
-cross-validation. Required when \code{foldlist} is supplied or when
-the original model call does not contain the data explicitly.}
+cross-validation. It is **highly recommended** to supply the original data
+here to ensure correct model refitting in each fold, especially when the
+original call was complex.}
 
-\item{nrep}{Integer. Number of repeated cross-validations to perform.
-Default is 1.}
+\item{nrep}{Integer. Number of repeated Z-residual samples per observation
+to generate. Defaults to \code{1}. Each replicate involves re-randomizing
+the imputed survival probability for censored observations.}
 
-\item{...}{Further arguments passed to the internal worker function.}
+\item{...}{Further arguments passed to the internal worker function
+\code{\link{CV_Zresidual_survreg_survival}}.}
 }
 \value{
 An object of class \code{"cvzresid"} containing cross-validated
-Z-residual diagnostics for the parametric survival model.
+Z-residual diagnostics for the parametric survival model. It is a numeric
+matrix with $N$ rows and \code{nrep} columns, accompanied by diagnostic attributes
+(see \code{\link{CV_Zresidual_survreg_survival}} for details).
 }
 \description{
-S3 method for \code{CV.Zresidual()} applied to parametric survival
-regression models fitted with \code{survival::survreg()}.
+S3 method for \code{\link{CV.Zresidual}()} applied to parametric survival
+regression models fitted with \code{\link[survival]{survreg}}. This method
+performs K-fold cross-validation to obtain external Z-residuals for model
+diagnostics.
 }
 \details{
 This method delegates the actual cross-validation work to
-\code{CV_Zresidual_survreg_survival()}, which performs fold
-construction, model refitting, and computation of cross-validated
-Z-residuals.
+\code{\link{CV_Zresidual_survreg_survival}}, which handles the iterative
+refitting of the \code{survreg} model on $K-1$ folds and computes the
+randomized Z-residuals on the held-out fold. 
+
+The randomized Z-residual, $Z_{ij}$, for the $j$-th observation in the $i$-th fold
+is computed based on the predicted out-of-sample survival probability $\hat{S}_{\text{train}_i}(t_j)$.
 
 The returned object is tagged with class \code{"cvzresid"} in addition
 to any classes returned by the internal worker.
@@ -43,13 +54,19 @@ to any classes returned by the internal worker.
 \examples{
 \dontrun{
   library(survival)
+  # Fit a Weibull model
   fit_weibull <- survreg(Surv(time, status) ~ age + sex,
                          data = lung, dist = "weibull")
-  cv_out <- CV.Zresidual(fit_weibull, nfolds = 5, data = lung)
+  # Compute 5-fold cross-validated Z-residuals
+  cv_out <- CV.Zresidual(fit_weibull, nfolds = 5, data = lung, nrep = 10)
+
+  # Check the first few cross-validated residuals
+  head(cv_out)
 }
 
 }
 \seealso{
-\code{CV_Zresidual_survreg_survival()} and the generic
-\code{CV.Zresidual()}.
+\code{\link{CV_Zresidual_survreg_survival}}, the generic
+\code{\link{CV.Zresidual}}, and the `survival` fitting function
+\code{\link[survival]{survreg}}.
 }
