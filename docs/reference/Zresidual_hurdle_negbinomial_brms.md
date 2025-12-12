@@ -12,7 +12,7 @@ directly by end users.
 ## Usage
 
 ``` r
-Zresidual_hurdle_negbinomial_brms(fit, type, method = "iscv", n.rep = 1)
+Zresidual_hurdle_negbinomial_brms(fit, type, method = "iscv", n.rep = 1, ...)
 ```
 
 ## Arguments

@@ -4,7 +4,7 @@
 \alias{Zresidual_hurdle_poisson_brms}
 \title{Compute Z-residuals for hurdle or count Poisson brms models}
 \usage{
-Zresidual_hurdle_poisson_brms(fit, type, method = "iscv", n.rep = 1)
+Zresidual_hurdle_poisson_brms(fit, type, method = "iscv", n.rep = 1, ...)
 }
 \arguments{
 \item{fit}{A fitted \pkg{brms} model object for a hurdle or count
@@ -24,8 +24,6 @@ Default is `"iscv"`.}
 
 \item{n.rep}{Integer; the number of replicated Z-residual sets to
 generate. Default is `1`.}
-
-\item{...}{Further arguments passed to lower-level helper functions.}
 }
 \value{
 A numeric matrix of Z-residuals with attributes such as:

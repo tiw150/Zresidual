@@ -15,7 +15,7 @@ In normal use, users should call \[Zresidual()\] directly on the
 
 ``` r
 # S3 method for class 'poisson.brms'
-Zresidual(object, nrep = 1, method = "iscv", ...)
+Zresidual(object, nrep = 1, data, type, method = "iscv", ...)
 ```
 
 ## Arguments
@@ -29,6 +29,17 @@ Zresidual(object, nrep = 1, method = "iscv", ...)
 
   Integer; the number of replicated Z-residual sets to generate. Default
   is \`1\`.
+
+- data:
+
+  Optional data frame used for prediction or residual computation. If
+  `NULL` (default), the data stored inside the `brmsfit` object are
+  used.
+
+- type:
+
+  Optional character string controlling the residual type, interpreted
+  by the underlying implementation (if used).
 
 - method:
 

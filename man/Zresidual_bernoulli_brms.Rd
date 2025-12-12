@@ -4,7 +4,14 @@
 \alias{Zresidual_bernoulli_brms}
 \title{Compute Z-residuals for a Bernoulli/Logistic brms model}
 \usage{
-Zresidual_bernoulli_brms(fit, method = "iscv", n.rep = 1)
+Zresidual_bernoulli_brms(
+  fit,
+  method = "iscv",
+  n.rep = 1,
+  data = NULL,
+  type = NULL,
+  ...
+)
 }
 \arguments{
 \item{fit}{A fitted `brmsfit` model object with Bernoulli family.}

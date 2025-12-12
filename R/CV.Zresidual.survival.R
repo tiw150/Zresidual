@@ -33,7 +33,6 @@ CV.Zresidual <- function(object,
                          nfolds,
                          foldlist = NULL,
                          data     = NULL,
-                         nrep     = 1,
-                         ...) {
+                         nrep     = 1, ...) {
   UseMethod("CV.Zresidual")
 }

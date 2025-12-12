@@ -12,16 +12,21 @@ training subset, and computes Z-residuals on the held-out fold via
 ## Usage
 
 ``` r
-CV_Zresidual_survreg_survival(fit.survreg, data, nfolds, foldlist, n.rep)
+CV_Zresidual_survreg_survival(fit.survreg, data, nfolds, foldlist, n.rep, ...)
 ```
 
 ## Arguments
 
+- fit.survreg:
+
+  A fitted parametric survival regression model from survival, created
+  using [`survreg`](https://rdrr.io/pkg/survival/man/survreg.html).
+
 - data:
 
   Optional `data.frame` used for cross-validation. It must contain the
-  survival response and all covariates appearing in `fit_survreg$terms`.
-  If `NULL`, the model frame of `fit_survreg` (via
+  survival response and all covariates appearing in `fit.survreg$terms`.
+  If `NULL`, the model frame of `fit.survreg` (via
   [`model.frame.survreg()`](https://tiw150.github.io/Zresidual/reference/model.frame.survreg.md))
   is used internally.
 
@@ -44,20 +49,15 @@ CV_Zresidual_survreg_survival(fit.survreg, data, nfolds, foldlist, n.rep)
   fold (i.e. number of Monte Carlo replications for censored
   observations in `Zresidual_survreg_survival()`).
 
-- fit_survreg:
-
-  A fitted parametric survival regression model from survival, created
-  using [`survreg`](https://rdrr.io/pkg/survival/man/survreg.html).
-
 - ...:
 
-  Further arguments passed to lower-level helper functions (if any).
+  Further arguments passed to the internal worker function.
 
 ## Value
 
 A numeric matrix of dimension \\n \times\\ `n.rep`, where \\n\\ is the
 number of rows in `data` (if supplied) or in the internal model frame of
-`fit_survreg`. Columns are typically named `"CV.Z-residual 1"`,
+`fit.survreg`. Columns are typically named `"CV.Z-residual 1"`,
 `"CV.Z-residual 2"`, ..., up to `n.rep`. The matrix usually carries
 attributes such as:
 
@@ -84,13 +84,13 @@ The function works in two modes:
   each fold, the model is refitted on `data[-test, ]` and Z-residuals
   are computed on `data[test, ]`.
 
-- If `data` is `NULL`, the internal model frame of `fit_survreg` is
+- If `data` is `NULL`, the internal model frame of `fit.survreg` is
   used. The function reconstructs explicit time and status columns from
   the `Surv` response before refitting the `survreg` model within each
   fold.
 
 For each fold, \`CV_Zresidual_survreg_survival()\` attempts to refit the
-model using the same formula and distribution as in `fit_survreg`. If
+model using the same formula and distribution as in `fit.survreg`. If
 the model fit fails (due to convergence or other errors/warnings), the
 corresponding fold residuals are filled with `NA`.
 
@@ -118,7 +118,7 @@ if (FALSE) { # \dontrun{
                     data = lung, dist = "weibull")
 
   cvz_wb <- CV_Zresidual_survreg_survival(
-    fit_survreg = fit_wb,
+    fit.survreg = fit_wb,
     data        = lung,
     nfolds      = 5,
     foldlist    = NULL,

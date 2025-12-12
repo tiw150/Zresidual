@@ -4,7 +4,7 @@
 \alias{Zresidual.coxph.survival}
 \title{Z-residuals for Cox proportional hazards models (survival package)}
 \usage{
-\method{Zresidual}{coxph.survival}(object, nrep = 1, data = NULL, ...)
+\method{Zresidual}{coxph.survival}(object, nrep = 1, data = NULL, type = NULL, method = NULL, ...)
 }
 \arguments{
 \item{object}{A fitted [survival::coxph()] model. The function supports
@@ -19,6 +19,14 @@ to a different randomization of censored observations.}
 and covariates used in \code{object$terms}. When \code{NULL} (default),
 the model frame is reconstructed from \code{object} and residuals are
 computed on the original data.}
+
+\item{type}{Optional character string controlling the residual type,
+interpreted by the underlying implementation (if used). For Cox models,
+this is typically set internally to \code{"survival"}.}
+
+\item{method}{Character string specifying the residual calculation method
+(if applicable to the underlying worker function). Currently unused
+by the Cox PH implementation.}
 
 \item{...}{Further arguments passed to the underlying implementation
 functions. Currently unused.}

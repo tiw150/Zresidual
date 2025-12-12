@@ -15,7 +15,7 @@ In normal use, users should call \[Zresidual()\] directly on the
 
 ``` r
 # S3 method for class 'negbinomial.brms'
-Zresidual(object, nrep = 1, method = "iscv", ...)
+Zresidual(object, nrep = 1, data, type, method = "iscv", ...)
 ```
 
 ## Arguments
@@ -30,6 +30,17 @@ Zresidual(object, nrep = 1, method = "iscv", ...)
   Integer; the number of replicated Z-residual sets to generate. Default
   is \`1\`.
 
+- data:
+
+  Optional data frame used for prediction or residual computation. If
+  `NULL` (default), the data stored inside the `brmsfit` object are
+  used.
+
+- type:
+
+  Optional character string controlling the residual type, interpreted
+  by the underlying implementation (if used).
+
 - method:
 
   Character string specifying the residual calculation method:
@@ -40,8 +51,8 @@ Zresidual(object, nrep = 1, method = "iscv", ...)
 
 - ...:
 
-  Further arguments passed from \[Zresidual()\]. They are ignored by
-  this method but are accepted for consistency with the generic.
+  Further arguments passed to the underlying implementation function
+  \[Zresidual_negbinomial_brms()\].
 
 ## Value
 

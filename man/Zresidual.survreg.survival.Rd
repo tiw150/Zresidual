@@ -4,7 +4,7 @@
 \alias{Zresidual.survreg.survival}
 \title{Z-residuals for parametric survival regression models (survival)}
 \usage{
-\method{Zresidual}{survreg.survival}(object, nrep = 1, data = NULL, ...)
+\method{Zresidual}{survreg.survival}(object, nrep = 1, data = NULL, type = NULL, method = NULL, ...)
 }
 \arguments{
 \item{object}{A fitted [survival::survreg()] model.}
@@ -15,7 +15,16 @@ generate. Defaults to `1`.}
 \item{data}{Optional data frame containing the survival response and
 covariates; if `NULL`, the original model frame is used.}
 
-\item{...}{Currently ignored; included for method compatibility.}
+\item{type}{Optional character string controlling the residual type,
+interpreted by the underlying implementation (if used). For `survreg` models,
+this is typically set internally to \code{"survival"}.}
+
+\item{method}{Character string specifying the residual calculation method
+(if applicable to the underlying worker function). Currently unused
+by the default implementation.}
+
+\item{...}{Further arguments passed to the underlying implementation
+functions. Currently unused.}
 }
 \value{
 A numeric matrix of dimension \eqn{n \times} \code{nrep}, with

@@ -11,7 +11,14 @@ not intended to be called directly by end users.
 ## Usage
 
 ``` r
-Zresidual_bernoulli_brms(fit, method = "iscv", n.rep = 1)
+Zresidual_bernoulli_brms(
+  fit,
+  method = "iscv",
+  n.rep = 1,
+  data = NULL,
+  type = NULL,
+  ...
+)
 ```
 
 ## Arguments

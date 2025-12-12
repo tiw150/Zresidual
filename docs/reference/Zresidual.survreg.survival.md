@@ -14,7 +14,7 @@ Users are expected to call \[Zresidual()\] directly rather than calling
 
 ``` r
 # S3 method for class 'survreg.survival'
-Zresidual(object, nrep = 1, data = NULL, ...)
+Zresidual(object, nrep = 1, data = NULL, type = NULL, method = NULL, ...)
 ```
 
 ## Arguments
@@ -33,9 +33,22 @@ Zresidual(object, nrep = 1, data = NULL, ...)
   Optional data frame containing the survival response and covariates;
   if \`NULL\`, the original model frame is used.
 
+- type:
+
+  Optional character string controlling the residual type, interpreted
+  by the underlying implementation (if used). For \`survreg\` models,
+  this is typically set internally to `"survival"`.
+
+- method:
+
+  Character string specifying the residual calculation method (if
+  applicable to the underlying worker function). Currently unused by the
+  default implementation.
+
 - ...:
 
-  Currently ignored; included for method compatibility.
+  Further arguments passed to the underlying implementation functions.
+  Currently unused.
 
 ## Value
 

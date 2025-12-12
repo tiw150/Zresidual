@@ -4,14 +4,17 @@
 \alias{bartlett.test.zresid}
 \title{A function to calculate Bartlett of Zresidual}
 \usage{
-\method{bartlett.test}{zresid}(Zresidual, X = c("lp", "covariate"), k.bl = 10)
+\method{bartlett.test}{zresid}(x, X = c("lp", "covariate"), k.bl = 10, ...)
 }
 \arguments{
-\item{Zresidual}{A Z-residual.}
+\item{x}{A Z-residual object (with class 'zresid').}
 
-\item{X}{Linear predictor or covariate}
+\item{X}{Linear predictor or covariate. Must be (1) a length-n vector,
+(2) 'lp'/'covariate', or (3) a covariate name in attr(x, 'covariates').}
 
-\item{k.bl}{Number of bins if applicable}
+\item{k.bl}{Number of bins if applicable for continuous covariates. Default is 10.}
+
+\item{...}{Further arguments passed to or from other methods.}
 }
 \description{
 A function to calculate Bartlett of Zresidual

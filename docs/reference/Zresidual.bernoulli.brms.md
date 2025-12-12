@@ -50,7 +50,7 @@ Zresidual(object, nrep = 1, data = NULL, type = NULL, method = "iscv", ...)
 
 - ...:
 
-  Further arguments passed to the underlying implementation function.
+  Further arguments passed to the underlying implementation
 
 ## Value
 

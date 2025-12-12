@@ -19,6 +19,10 @@
 #'   (`brms::family(object)$family == "poisson"`).
 #' @param nrep Integer; the number of replicated Z-residual sets to
 #'   generate. Default is `1`.
+#' @param data Optional data frame used for prediction or residual computation.
+#' If \code{NULL} (default), the data stored inside the \code{brmsfit} object are used.
+#' @param type Optional character string controlling the residual type,
+#' interpreted by the underlying implementation (if used).
 #' @param method Character string specifying the residual calculation method:
 #'   `"iscv"` for importance-sampled cross-validated randomized predictive
 #'   p-values, `"rpost"` for posterior predictive p-values, or
@@ -48,15 +52,13 @@
 #' @method Zresidual poisson.brms
 #' @export
 Zresidual.poisson.brms <- function(object,
-                                   nrep   = 1,
-                                   method = "iscv",
-                                   ...) {
+                                   nrep   = 1,data, type,
+                                   method = "iscv", ...) {
 
   out <- Zresidual_poisson_brms(
     fit    = object,
     method = method,
-    n.rep  = nrep,
-    ...
+    n.rep  = nrep, ...
   )
 
   class(out) <- c("zresid", class(out))
@@ -83,7 +85,7 @@ Zresidual.poisson.brms <- function(object,
 #'   \code{"iscv"}.
 #' @param n.rep Integer; the number of replicated Z-residual sets to generate.
 #'   Default is 1.
-#' @param ... Further arguments passed to lower-level helper functions (if any).
+#' @param ... Further arguments passed to lower-level helper functions.
 #'
 #' @details
 #' The function typically performs the following steps:
@@ -132,7 +134,7 @@ Zresidual.poisson.brms <- function(object,
 #' [Zresidual.poisson.brms()].
 #'
 #' @keywords internal
-Zresidual_poisson_brms <- function(fit, method = "iscv", n.rep = 1){
+Zresidual_poisson_brms <- function(fit, method = "iscv", n.rep = 1, ...){
 
   data <- fit$data
   response <- fit$formula$resp

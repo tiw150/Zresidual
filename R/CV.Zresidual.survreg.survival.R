@@ -14,7 +14,6 @@
 #' @param nrep Integer. Number of repeated cross-validations to perform.
 #'   Default is 1.
 #' @param ... Further arguments passed to the internal worker function.
-#'
 #' @details
 #' This method delegates the actual cross-validation work to
 #' \code{CV_Zresidual_survreg_survival()}, which performs fold
@@ -46,16 +45,14 @@ CV.Zresidual.survreg <- function(object,
                                  nfolds,
                                  foldlist = NULL,
                                  data     = NULL,
-                                 nrep     = 1,
-                                 ...) {
+                                 nrep     = 1, ...) {
 
   cv_obj <- CV_Zresidual_survreg_survival(
-    fit_survreg = object,
+    fit.survreg = object,
     data        = data,
     nfolds      = nfolds,
     foldlist    = foldlist,
-    n.rep       = nrep,
-    ...
+    n.rep       = nrep, ...
   )
 
   class(cv_obj) <- c("cvzresid", class(cv_obj))
@@ -76,13 +73,13 @@ CV.Zresidual.survreg <- function(object,
 #' each training subset, and computes Z-residuals on the held-out fold via
 #' \code{Zresidual_survreg_survival()}.
 #'
-#' @param fit_survreg A fitted parametric survival regression model from
+#' @param fit.survreg A fitted parametric survival regression model from
 #'   \pkg{survival}, created using \code{\link[survival]{survreg}}.
 #'
 #' @param data Optional \code{data.frame} used for cross-validation. It must
 #'   contain the survival response and all covariates appearing in
-#'   \code{fit_survreg$terms}. If \code{NULL}, the model frame of
-#'   \code{fit_survreg} (via \code{model.frame.survreg()}) is used internally.
+#'   \code{fit.survreg$terms}. If \code{NULL}, the model frame of
+#'   \code{fit.survreg} (via \code{model.frame.survreg()}) is used internally.
 #'
 #' @param nfolds Integer. Number of cross-validation folds. If \code{NULL},
 #'   the number of folds is chosen heuristically by the caller (e.g. the
@@ -98,8 +95,8 @@ CV.Zresidual.survreg <- function(object,
 #'   in each fold (i.e. number of Monte Carlo replications for censored
 #'   observations in \code{Zresidual_survreg_survival()}).
 #'
-#' @param ... Further arguments passed to lower-level helper functions
-#'   (if any).
+#' @param ... Further arguments passed to the internal worker function.
+#'
 #'
 #' @details
 #' The function works in two modes:
@@ -109,13 +106,13 @@ CV.Zresidual.survreg <- function(object,
 #'         \code{data[-test, ]} and Z-residuals are computed on
 #'         \code{data[test, ]}.
 #'   \item If \code{data} is \code{NULL}, the internal model frame of
-#'         \code{fit_survreg} is used. The function reconstructs explicit
+#'         \code{fit.survreg} is used. The function reconstructs explicit
 #'         time and status columns from the \code{Surv} response before
 #'         refitting the \code{survreg} model within each fold.
 #' }
 #'
 #' For each fold, `CV_Zresidual_survreg_survival()` attempts to refit the model
-#' using the same formula and distribution as in \code{fit_survreg}. If the
+#' using the same formula and distribution as in \code{fit.survreg}. If the
 #' model fit fails (due to convergence or other errors/warnings), the
 #' corresponding fold residuals are filled with \code{NA}.
 #'
@@ -128,7 +125,7 @@ CV.Zresidual.survreg <- function(object,
 #' @return
 #' A numeric matrix of dimension \eqn{n \times} \code{n.rep}, where \eqn{n}
 #' is the number of rows in \code{data} (if supplied) or in the internal
-#' model frame of \code{fit_survreg}. Columns are typically named
+#' model frame of \code{fit.survreg}. Columns are typically named
 #' \code{"CV.Z-residual 1"}, \code{"CV.Z-residual 2"}, ..., up to
 #' \code{n.rep}. The matrix usually carries attributes such as:
 #' \itemize{
@@ -153,7 +150,7 @@ CV.Zresidual.survreg <- function(object,
 #'                     data = lung, dist = "weibull")
 #'
 #'   cvz_wb <- CV_Zresidual_survreg_survival(
-#'     fit_survreg = fit_wb,
+#'     fit.survreg = fit_wb,
 #'     data        = lung,
 #'     nfolds      = 5,
 #'     foldlist    = NULL,
@@ -170,7 +167,10 @@ CV.Zresidual.survreg <- function(object,
 #' @keywords internal
 #' @importFrom parallel detectCores
 #' @importFrom doParallel registerDoParallel
-CV_Zresidual_survreg_survival<- function( fit.survreg,  data, nfolds,foldlist,n.rep)
+CV_Zresidual_survreg_survival<- function( fit.survreg, data ,
+                                          nfolds ,
+                                          foldlist ,
+                                          n.rep, ...)
 {
   if(!is.null(data)){
     mf <- model.frame(fit.survreg$terms, data)

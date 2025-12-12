@@ -70,7 +70,7 @@ log_pred_dist_TP <- function(fit){
   lcdf_hat <- matrix(NA, mc_used, n)
 
   for (i in count.id){
-    lpmf_hat[,i] <- pdf.tp(sim.y[i], lambda = lambda[,i], log = TRUE)
+    lpmf_hat[,i] <- pdf.tp(sim.y[i], lambda = lambda[,i], log.p = TRUE)
     lcdf_hat[,i] <- cdf.tp(sim.y[i], lambda = lambda[,i], lower.tail = FALSE, log.p = TRUE)
   }
 

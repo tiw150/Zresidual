@@ -1,12 +1,16 @@
 #' A function to calculate Bartlett of Zresidual
 #'
-#' @param Zresidual A Z-residual.
-#' @param X Linear predictor or covariate
-#' @param k.bl Number of bins if applicable
-#' @rdname bartlett.test.zresid
+#' @param x A Z-residual object (with class 'zresid').
+#' @param X Linear predictor or covariate. Must be (1) a length-n vector,
+#'   (2) 'lp'/'covariate', or (3) a covariate name in attr(x, 'covariates').
+#' @param k.bl Number of bins if applicable for continuous covariates. Default is 10.
+#' @param ... Further arguments passed to or from other methods.
+#'
+#' @method bartlett.test zresid
 #' @export bartlett.test.zresid
-bartlett.test.zresid <- function (Zresidual, X = c("lp", "covariate"), k.bl = 10) {
+bartlett.test.zresid <- function (x, X = c("lp", "covariate"), k.bl = 10,...) {
 
+  Zresidual <- x
   n <- NROW(Zresidual)
   p <- NCOL(Zresidual)
   keywords <- c("lp", "covariate")

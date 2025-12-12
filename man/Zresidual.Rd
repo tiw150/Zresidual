@@ -64,7 +64,7 @@ model type and the fitting package, and then uses S3 method dispatch:
     by `Zresidual.survreg.survival()`.
 
 * For **brms** models
-  - The family is obtained via `brms::family(object)$family`.
+  - The family is obtained via `family(object)$family`.
   - Currently supported families include
     `"hurdle_negbinomial"`, `"hurdle_poisson"`,
     `"negbinomial"`, `"poisson"`, and `"bernoulli"`.

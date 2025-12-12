@@ -17,9 +17,10 @@ In normal use, users should call \[Zresidual()\] directly on the
 # S3 method for class 'hurdle_poisson.brms'
 Zresidual(
   object,
+  nrep = 1,
+  data,
   type = c("hurdle", "count", "zero"),
   method = "iscv",
-  nrep = 1,
   ...
 )
 ```
@@ -30,6 +31,17 @@ Zresidual(
 
   A \`brmsfit\` object with hurdle Poisson family
   (\`brms::family(object)\$family == "hurdle_poisson"\`).
+
+- nrep:
+
+  Integer; number of replicated Z-residual sets to generate. Default is
+  \`1\`.
+
+- data:
+
+  Optional data frame used for prediction or residual computation. If
+  `NULL` (default), the data stored inside the `brmsfit` object are
+  used.
 
 - type:
 
@@ -51,11 +63,6 @@ Zresidual(
   predictive p-values, \`"rpost"\` for randomized posterior predictive
   p-values, or \`"mpost"\` for middle-value posterior predictive
   p-values. Default is \`"iscv"\`.
-
-- nrep:
-
-  Integer; number of replicated Z-residual sets to generate. Default is
-  \`1\`.
 
 - ...:
 

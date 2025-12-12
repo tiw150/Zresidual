@@ -11,7 +11,7 @@ and is not intended to be called directly by end users.
 ## Usage
 
 ``` r
-Zresidual_hurdle_poisson_brms(fit, type, method = "iscv", n.rep = 1)
+Zresidual_hurdle_poisson_brms(fit, type, method = "iscv", n.rep = 1, ...)
 ```
 
 ## Arguments
@@ -39,10 +39,6 @@ Zresidual_hurdle_poisson_brms(fit, type, method = "iscv", n.rep = 1)
 
   Integer; the number of replicated Z-residual sets to generate. Default
   is \`1\`.
-
-- ...:
-
-  Further arguments passed to lower-level helper functions.
 
 ## Value
 

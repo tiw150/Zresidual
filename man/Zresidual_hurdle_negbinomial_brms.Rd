@@ -4,7 +4,7 @@
 \alias{Zresidual_hurdle_negbinomial_brms}
 \title{Compute Z-residuals for hurdle negative binomial brms models}
 \usage{
-Zresidual_hurdle_negbinomial_brms(fit, type, method = "iscv", n.rep = 1)
+Zresidual_hurdle_negbinomial_brms(fit, type, method = "iscv", n.rep = 1, ...)
 }
 \arguments{
 \item{fit}{A fitted \pkg{brms} model object for a hurdle negative

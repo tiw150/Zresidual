@@ -12,11 +12,11 @@ assumption of Z-residuals obtained from Bayesian predictive model checks
 ``` r
 # S3 method for class 'zresid'
 qqnorm(
-  Zresidual,
+  y,
   irep = 1,
   diagnosis.test = "SW",
-  main.title = ifelse(is.null(attr(Zresidual, "type")), "Normal Q-Q Plot",
-    paste("Normal Q-Q Plot -", attr(Zresidual, "type"))),
+  main.title = ifelse(is.null(attr(y, "type")), "Normal Q-Q Plot",
+    paste("Normal Q-Q Plot -", attr(y, "type"))),
   xlab = "Theoretical Quantiles",
   ylab = "Sample Quantiles",
   outlier.return = TRUE,
@@ -30,7 +30,7 @@ qqnorm(
 
 ## Arguments
 
-- Zresidual:
+- y:
 
   A numeric matrix of Z-residuals where each column corresponds to an
   iteration or predictive draw. The function also uses the attribute
@@ -110,7 +110,7 @@ behavior of Z-residuals in Bayesian predictive checking:
 - Infinite values (`Inf`/`-Inf`) are replaced with large finite values
   and trigger a warning.
 
-- Very large Z-residuals (`|Z| ≥ 6`) are shown using axis breaks to
+- Very large Z-residuals (`|Z| > 6`) are shown using axis breaks to
   avoid plot distortion.
 
 - Outliers (`|Z| > outlier.value`) are highlighted and labeled.
@@ -142,6 +142,7 @@ Rubin, D. B. (2013). *Bayesian Data Analysis*. CRC Press.
 ## Examples
 
 ``` r
+library(Zresidual)
 set.seed(1)
 Z <- matrix(rnorm(200), ncol = 2)
 attr(Z, "type") <- "Example Model"

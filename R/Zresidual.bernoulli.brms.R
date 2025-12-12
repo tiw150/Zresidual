@@ -25,7 +25,6 @@
 #'   `"mpost"` for middle-value posterior predictive p-values. Default is
 #'   `"iscv"`.
 #' @param ... Further arguments passed to the underlying implementation
-#'   function.
 #'
 #' @return
 #' A numeric matrix of Z-residuals with one column per replication, as
@@ -50,16 +49,14 @@ Zresidual.bernoulli.brms <- function(object,
                                      nrep   = 1,
                                      data   = NULL,
                                      type   = NULL,
-                                     method = "iscv",
-                                     ...) {
+                                     method = "iscv", ...) {
 
   out <- Zresidual_bernoulli_brms(
     fit    = object,
     method = method,
     n.rep  = nrep,
     data   = data,
-    type   = type,
-    ...
+    type   = type, ...
   )
 
   class(out) <- c("zresid", class(out))
@@ -123,7 +120,8 @@ Zresidual.bernoulli.brms <- function(object,
 #' and the S3 wrapper [Zresidual.bernoulli.brms()].
 #'
 #' @keywords internal
-Zresidual_bernoulli_brms <- function(fit, method = "iscv", n.rep = 1){
+Zresidual_bernoulli_brms <- function(fit, method = "iscv", n.rep = 1,data = NULL,
+                                     type = NULL, ...){
 
   data <- fit$data
   response <- fit$formula$resp

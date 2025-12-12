@@ -51,7 +51,7 @@
 #'     by `Zresidual.survreg.survival()`.
 #'
 #' * For **brms** models
-#'   - The family is obtained via `brms::family(object)$family`.
+#'   - The family is obtained via `family(object)$family`.
 #'   - Currently supported families include
 #'     `"hurdle_negbinomial"`, `"hurdle_poisson"`,
 #'     `"negbinomial"`, `"poisson"`, and `"bernoulli"`.
@@ -121,7 +121,7 @@ Zresidual <- function(object,
     class(object) <- c("survreg.survival", orig_class)
 
   } else if (inherits(object, "brmsfit")) {
-    fam <- brms::family(object)$family
+    fam <- family(object)$family
     supported_brms <- c("hurdle_negbinomial", "hurdle_poisson",
                         "negbinomial", "poisson", "bernoulli")
     if (fam %in% supported_brms) {
@@ -129,7 +129,7 @@ Zresidual <- function(object,
     }
 
   } else if (inherits(object, "glmmTMB")) {
-    fam <- stats::family(object)$family
+    fam <- family(object)$family
     supported_glmmTMB <- c("gaussian","poisson", "nbinom1", "nbinom2","truncated_poisson", "truncated_nbinom2")
     if (fam %in% supported_glmmTMB) {
       class(object) <- c(paste0(fam, ".glmmTMB"), orig_class)
@@ -140,7 +140,7 @@ Zresidual <- function(object,
 }
 
 #' @export
-Zresidual.default <- function(object, ...) {
+Zresidual.default <- function(object, nrep, data, type, method, ...) {
   stop("Objects of class '",
        paste(class(object), collapse = "', '"),
        "' are not supported by Zresidual().",

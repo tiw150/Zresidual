@@ -6,15 +6,22 @@
 \usage{
 \method{Zresidual}{hurdle_negbinomial.brms}(
   object,
+  nrep = 1,
+  data,
   type = c("hurdle", "count", "zero"),
   method = "iscv",
-  nrep = 1,
   ...
 )
 }
 \arguments{
 \item{object}{A `brmsfit` object with hurdle negative binomial family
 (`brms::family(object)$family == "hurdle_negbinomial"`).}
+
+\item{nrep}{Integer; number of replicated Z-residual sets to generate.
+Default is `1`.}
+
+\item{data}{Optional data frame used for prediction or residual computation.
+If \code{NULL}, the data stored inside the \code{brmsfit} object are used.}
 
 \item{type}{Character string specifying which part of the model to
 compute Z-residuals for:
@@ -30,9 +37,6 @@ The default is `"hurdle"`.}
 p-values, `"rpost"` for randomized posterior predictive p-values,
 or `"mpost"` for middle-value posterior predictive p-values.
 Default is `"iscv"`.}
-
-\item{nrep}{Integer; number of replicated Z-residual sets to generate.
-Default is `1`.}
 
 \item{...}{Further arguments passed to the underlying implementation
 function [Zresidual_hurdle_negbinomial_brms()].}

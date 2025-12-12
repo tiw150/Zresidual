@@ -4,7 +4,7 @@
 \alias{Zresidual_poisson_brms}
 \title{Compute Z-residuals for Poisson brms models}
 \usage{
-Zresidual_poisson_brms(fit, method = "iscv", n.rep = 1)
+Zresidual_poisson_brms(fit, method = "iscv", n.rep = 1, ...)
 }
 \arguments{
 \item{fit}{A fitted \pkg{brms} model object for a Poisson outcome.}
@@ -18,7 +18,7 @@ p-values, \code{"rpost"} for posterior predictive p-values, or
 \item{n.rep}{Integer; the number of replicated Z-residual sets to generate.
 Default is 1.}
 
-\item{...}{Further arguments passed to lower-level helper functions (if any).}
+\item{...}{Further arguments passed to lower-level helper functions.}
 }
 \value{
 A numeric matrix of Z-residuals with attributes such as:

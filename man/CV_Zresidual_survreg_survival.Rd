@@ -5,13 +5,16 @@
 \title{Cross-validated Z-residuals for parametric survival regression models
 (internal worker)}
 \usage{
-CV_Zresidual_survreg_survival(fit.survreg, data, nfolds, foldlist, n.rep)
+CV_Zresidual_survreg_survival(fit.survreg, data, nfolds, foldlist, n.rep, ...)
 }
 \arguments{
+\item{fit.survreg}{A fitted parametric survival regression model from
+\pkg{survival}, created using \code{\link[survival]{survreg}}.}
+
 \item{data}{Optional \code{data.frame} used for cross-validation. It must
 contain the survival response and all covariates appearing in
-\code{fit_survreg$terms}. If \code{NULL}, the model frame of
-\code{fit_survreg} (via \code{model.frame.survreg()}) is used internally.}
+\code{fit.survreg$terms}. If \code{NULL}, the model frame of
+\code{fit.survreg} (via \code{model.frame.survreg()}) is used internally.}
 
 \item{nfolds}{Integer. Number of cross-validation folds. If \code{NULL},
 the number of folds is chosen heuristically by the caller (e.g. the
@@ -27,16 +30,12 @@ indicator.}
 in each fold (i.e. number of Monte Carlo replications for censored
 observations in \code{Zresidual_survreg_survival()}).}
 
-\item{fit_survreg}{A fitted parametric survival regression model from
-\pkg{survival}, created using \code{\link[survival]{survreg}}.}
-
-\item{...}{Further arguments passed to lower-level helper functions
-(if any).}
+\item{...}{Further arguments passed to the internal worker function.}
 }
 \value{
 A numeric matrix of dimension \eqn{n \times} \code{n.rep}, where \eqn{n}
 is the number of rows in \code{data} (if supplied) or in the internal
-model frame of \code{fit_survreg}. Columns are typically named
+model frame of \code{fit.survreg}. Columns are typically named
 \code{"CV.Z-residual 1"}, \code{"CV.Z-residual 2"}, ..., up to
 \code{n.rep}. The matrix usually carries attributes such as:
 \itemize{
@@ -70,13 +69,13 @@ The function works in two modes:
         \code{data[-test, ]} and Z-residuals are computed on
         \code{data[test, ]}.
   \item If \code{data} is \code{NULL}, the internal model frame of
-        \code{fit_survreg} is used. The function reconstructs explicit
+        \code{fit.survreg} is used. The function reconstructs explicit
         time and status columns from the \code{Surv} response before
         refitting the \code{survreg} model within each fold.
 }
 
 For each fold, `CV_Zresidual_survreg_survival()` attempts to refit the model
-using the same formula and distribution as in \code{fit_survreg}. If the
+using the same formula and distribution as in \code{fit.survreg}. If the
 model fit fails (due to convergence or other errors/warnings), the
 corresponding fold residuals are filled with \code{NA}.
 
@@ -95,7 +94,7 @@ original observation order.
                     data = lung, dist = "weibull")
 
   cvz_wb <- CV_Zresidual_survreg_survival(
-    fit_survreg = fit_wb,
+    fit.survreg = fit_wb,
     data        = lung,
     nfolds      = 5,
     foldlist    = NULL,

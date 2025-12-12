@@ -71,7 +71,7 @@ for in-sample diagnostics.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for class 'coxph.survival'</span></span>
-<span><span class="fu"><a href="Zresidual.html">Zresidual</a></span><span class="op">(</span><span class="va">object</span>, nrep <span class="op">=</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="Zresidual.html">Zresidual</a></span><span class="op">(</span><span class="va">object</span>, nrep <span class="op">=</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="cn">NULL</span>, method <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -95,6 +95,18 @@ to a different randomization of censored observations.</p></dd>
 and covariates used in <code>object$terms</code>. When <code>NULL</code> (default),
 the model frame is reconstructed from <code>object</code> and residuals are
 computed on the original data.</p></dd>
+
+
+<dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
+<dd><p>Optional character string controlling the residual type,
+interpreted by the underlying implementation (if used). For Cox models,
+this is typically set internally to <code>"survival"</code>.</p></dd>
+
+
+<dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
+<dd><p>Character string specifying the residual calculation method
+(if applicable to the underlying worker function). Currently unused
+by the Cox PH implementation.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

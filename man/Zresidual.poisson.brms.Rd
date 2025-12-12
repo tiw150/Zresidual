@@ -4,7 +4,7 @@
 \alias{Zresidual.poisson.brms}
 \title{Z-residuals for Poisson models fitted with brms}
 \usage{
-\method{Zresidual}{poisson.brms}(object, nrep = 1, method = "iscv", ...)
+\method{Zresidual}{poisson.brms}(object, nrep = 1, data, type, method = "iscv", ...)
 }
 \arguments{
 \item{object}{A `brmsfit` object with Poisson family
@@ -12,6 +12,12 @@
 
 \item{nrep}{Integer; the number of replicated Z-residual sets to
 generate. Default is `1`.}
+
+\item{data}{Optional data frame used for prediction or residual computation.
+If \code{NULL} (default), the data stored inside the \code{brmsfit} object are used.}
+
+\item{type}{Optional character string controlling the residual type,
+interpreted by the underlying implementation (if used).}
 
 \item{method}{Character string specifying the residual calculation method:
 `"iscv"` for importance-sampled cross-validated randomized predictive

@@ -24,6 +24,12 @@ editor_options:
   chunk_output_type: console
 bibliography: ref.bib
 link-citations: true      # for HTML
+
+vignette: >
+  %\VignetteIndexEntry{Z-residual Diagnosis for Bayesian Hurdle Models}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+
 ---
 
 ```{r setup, include=FALSE}

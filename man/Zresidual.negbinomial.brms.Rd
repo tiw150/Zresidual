@@ -4,7 +4,7 @@
 \alias{Zresidual.negbinomial.brms}
 \title{Z-residuals for negative binomial models fitted with brms}
 \usage{
-\method{Zresidual}{negbinomial.brms}(object, nrep = 1, method = "iscv", ...)
+\method{Zresidual}{negbinomial.brms}(object, nrep = 1, data, type, method = "iscv", ...)
 }
 \arguments{
 \item{object}{A `brmsfit` object with negative binomial family
@@ -13,14 +13,20 @@
 \item{nrep}{Integer; the number of replicated Z-residual sets to
 generate. Default is `1`.}
 
+\item{data}{Optional data frame used for prediction or residual computation.
+If \code{NULL} (default), the data stored inside the \code{brmsfit} object are used.}
+
+\item{type}{Optional character string controlling the residual type,
+interpreted by the underlying implementation (if used).}
+
 \item{method}{Character string specifying the residual calculation method:
 `"iscv"` for importance-sampled cross-validated randomized predictive
 p-values, `"rpost"` for posterior predictive p-values, or
 `"mpost"` for marginal posterior predictive p-values. Default is
 `"iscv"`.}
 
-\item{...}{Further arguments passed from [Zresidual()]. They are ignored
-by this method but are accepted for consistency with the generic.}
+\item{...}{Further arguments passed to the underlying implementation
+function [Zresidual_negbinomial_brms()].}
 }
 \value{
 A numeric matrix of Z-residuals (one column per replication) as returned

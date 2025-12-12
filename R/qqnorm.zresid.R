@@ -6,7 +6,7 @@
 #' This diagnostic is designed for checking the normality assumption of Z-residuals
 #' obtained from Bayesian predictive model checks (posterior, LOOCV, ISCV, etc.).
 #'
-#' @param Zresidual A numeric matrix of Z-residuals where each column corresponds
+#' @param y A numeric matrix of Z-residuals where each column corresponds
 #'   to an iteration or predictive draw. The function also uses the attribute
 #'   \code{"type"} (optional model name) to construct default titles.
 #' @param irep Integer or vector of integers indicating which column(s) of
@@ -38,7 +38,7 @@
 #' \itemize{
 #'   \item Infinite values (\code{Inf}/\code{-Inf}) are replaced with large finite
 #'         values and trigger a warning.
-#'   \item Very large Z-residuals (\code{|Z| ≥ 6}) are shown using axis breaks to
+#'   \item Very large Z-residuals (\code{|Z| > 6}) are shown using axis breaks to
 #'         avoid plot distortion.
 #'   \item Outliers (\code{|Z| > outlier.value}) are highlighted and labeled.
 #'   \item Column-wise Shapiro–Wilk tests assess normality.
@@ -73,6 +73,7 @@
 #'   \code{\link[graphics]{plot}}.
 #'
 #' @examples
+#' library(Zresidual)
 #' set.seed(1)
 #' Z <- matrix(rnorm(200), ncol = 2)
 #' attr(Z, "type") <- "Example Model"
@@ -86,19 +87,20 @@
 #' # Modify legend settings
 #' qqnorm.zresid(Z, legend.settings = list(cex = 0.8))
 #'
+#' @method qqnorm zresid
 #' @export qqnorm.zresid
-#'
-qqnorm.zresid <- function (Zresidual, irep=1, diagnosis.test = "SW",
+qqnorm.zresid <- function (y, irep=1, diagnosis.test = "SW",
                            #X.anova = c("lp", "covariate"),k.anova=10,
-                           main.title = ifelse(is.null(attr(Zresidual, "type")),
+                           main.title = ifelse(is.null(attr(y, "type")),
                                                "Normal Q-Q Plot",
-                                               paste("Normal Q-Q Plot -", attr(Zresidual, "type"))),
+                                               paste("Normal Q-Q Plot -", attr(y, "type"))),
                            xlab = "Theoretical Quantiles", ylab = "Sample Quantiles",
                            outlier.return=TRUE, outlier.value = 3.5, outlier.set = list(),
                            my.mar = c(5, 4, 4, 6) + 0.1,legend.settings = list(), ...)
 {
   #i<-index
 
+  Zresidual <- y
   if(missing(diagnosis.test)) diagnosis.test <- "SW"
 #  if(missing(X.anova) && diagnosis.test == "ANOVA") X.anova <- "lp"
   # test <- list("SW" = shapiro.test,

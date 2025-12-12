@@ -11,7 +11,7 @@ is not intended to be called directly by end users.
 ## Usage
 
 ``` r
-Zresidual_negbinomial_brms(fit, method = "iscv", n.rep = 1)
+Zresidual_negbinomial_brms(fit, method = "iscv", n.rep = 1, ...)
 ```
 
 ## Arguments
@@ -34,7 +34,7 @@ Zresidual_negbinomial_brms(fit, method = "iscv", n.rep = 1)
 
 - ...:
 
-  Further arguments passed to lower-level helper functions (if any).
+  Further arguments passed to lower-level helper functions.
 
 ## Value
 

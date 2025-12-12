@@ -80,7 +80,7 @@ terms. - \`survreg\` objects receive the class \`"survreg.survival"\`
 and are handled by \`Zresidual.survreg.survival()\`.
 
 \* For \*\*brms\*\* models - The family is obtained via
-\`brms::family(object)\$family\`. - Currently supported families include
+\`family(object)\$family\`. - Currently supported families include
 \`"hurdle_negbinomial"\`, \`"hurdle_poisson"\`, \`"negbinomial"\`,
 \`"poisson"\`, and \`"bernoulli"\`. - Each supported family is mapped to
 a class of the form \`"\<family\>.brms"\`, and dispatched to a method

@@ -15,8 +15,14 @@
 #'   generate. Defaults to `1`.
 #' @param data Optional data frame containing the survival response and
 #'   covariates; if `NULL`, the original model frame is used.
-#' @param ... Currently ignored; included for method compatibility.
-#'
+#' @param type Optional character string controlling the residual type,
+#'   interpreted by the underlying implementation (if used). For `survreg` models,
+#'   this is typically set internally to \code{"survival"}.
+#' @param method Character string specifying the residual calculation method
+#'   (if applicable to the underlying worker function). Currently unused
+#'   by the default implementation.
+#' @param ... Further arguments passed to the underlying implementation
+#'   functions. Currently unused.
 #' @return
 #' A numeric matrix of dimension \eqn{n \times} \code{nrep}, with
 #' additional attributes as produced by `Zresidual_survreg_survival()`. The
@@ -33,15 +39,14 @@
 #'
 #' @method Zresidual survreg.survival
 #' @export
-Zresidual.survreg.survival <- function(object,
-                                       nrep = 1,
-                                       data = NULL,
+Zresidual.survreg.survival <- function(object,nrep = 1,data = NULL,type = NULL, method=NULL,
                                        ...) {
 
   out <- Zresidual_survreg_survival(
     fit_survreg = object,
     newdata     = data,
-    n.rep       = nrep
+    n.rep       = nrep,
+    ...
   )
 
   class(out) <- c("zresid", class(out))
@@ -50,7 +55,7 @@ Zresidual.survreg.survival <- function(object,
 
 
 #' @keywords internal
-Zresidual_survreg_survival<-function(fit_survreg,newdata,n.rep=1)
+Zresidual_survreg_survival<-function(fit_survreg,newdata,n.rep=1, ...)
 {
   if(is.null(newdata)){
     mf<-model.frame.survreg(fit_survreg)

@@ -56,7 +56,7 @@ to the core function and then adds the `"zresid"` class.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for class 'survreg.survival'</span></span>
-<span><span class="fu"><a href="Zresidual.html">Zresidual</a></span><span class="op">(</span><span class="va">object</span>, nrep <span class="op">=</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="Zresidual.html">Zresidual</a></span><span class="op">(</span><span class="va">object</span>, nrep <span class="op">=</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="cn">NULL</span>, method <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -77,8 +77,21 @@ generate. Defaults to `1`.</p></dd>
 covariates; if `NULL`, the original model frame is used.</p></dd>
 
 
+<dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
+<dd><p>Optional character string controlling the residual type,
+interpreted by the underlying implementation (if used). For `survreg` models,
+this is typically set internally to <code>"survival"</code>.</p></dd>
+
+
+<dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
+<dd><p>Character string specifying the residual calculation method
+(if applicable to the underlying worker function). Currently unused
+by the default implementation.</p></dd>
+
+
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Currently ignored; included for method compatibility.</p></dd>
+<dd><p>Further arguments passed to the underlying implementation
+functions. Currently unused.</p></dd>
 
 </dl></div>
     <div class="section level2">

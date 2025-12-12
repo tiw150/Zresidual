@@ -5,11 +5,11 @@
 \title{Normal Q-Q Plot for Z-Residuals with Outlier Detection and Normality Diagnostics}
 \usage{
 \method{qqnorm}{zresid}(
-  Zresidual,
+  y,
   irep = 1,
   diagnosis.test = "SW",
-  main.title = ifelse(is.null(attr(Zresidual, "type")), "Normal Q-Q Plot",
-    paste("Normal Q-Q Plot -", attr(Zresidual, "type"))),
+  main.title = ifelse(is.null(attr(y, "type")), "Normal Q-Q Plot",
+    paste("Normal Q-Q Plot -", attr(y, "type"))),
   xlab = "Theoretical Quantiles",
   ylab = "Sample Quantiles",
   outlier.return = TRUE,
@@ -21,7 +21,7 @@
 )
 }
 \arguments{
-\item{Zresidual}{A numeric matrix of Z-residuals where each column corresponds
+\item{y}{A numeric matrix of Z-residuals where each column corresponds
 to an iteration or predictive draw. The function also uses the attribute
 \code{"type"} (optional model name) to construct default titles.}
 
@@ -79,7 +79,7 @@ of Z-residuals in Bayesian predictive checking:
 \itemize{
   \item Infinite values (\code{Inf}/\code{-Inf}) are replaced with large finite
         values and trigger a warning.
-  \item Very large Z-residuals (\code{|Z| ≥ 6}) are shown using axis breaks to
+  \item Very large Z-residuals (\code{|Z| > 6}) are shown using axis breaks to
         avoid plot distortion.
   \item Outliers (\code{|Z| > outlier.value}) are highlighted and labeled.
   \item Column-wise Shapiro–Wilk tests assess normality.
@@ -91,6 +91,7 @@ residuals, posterior predictive Z-residuals, LOOCV/ISCV Z-residuals, and
 residuals from hurdle or zero-inflated Bayesian models.
 }
 \examples{
+library(Zresidual)
 set.seed(1)
 Z <- matrix(rnorm(200), ncol = 2)
 attr(Z, "type") <- "Example Model"

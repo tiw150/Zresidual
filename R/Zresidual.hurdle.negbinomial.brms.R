@@ -30,6 +30,8 @@
 #'   Default is `"iscv"`.
 #' @param nrep Integer; number of replicated Z-residual sets to generate.
 #'   Default is `1`.
+#' @param data Optional data frame used for prediction or residual computation.
+#'  If \code{NULL}, the data stored inside the \code{brmsfit} object are used.
 #' @param ... Further arguments passed to the underlying implementation
 #'   function [Zresidual_hurdle_negbinomial_brms()].
 #'
@@ -53,11 +55,10 @@
 #'
 #' @method Zresidual hurdle_negbinomial.brms
 #' @export
-Zresidual.hurdle_negbinomial.brms <- function(object,
+Zresidual.hurdle_negbinomial.brms <- function(object,nrep = 1,data,
                                               type   = c("hurdle", "count", "zero"),
                                               method = "iscv",
-                                              nrep   = 1,
-                                              ...) {
+                                               ...) {
 
   type <- match.arg(type)
 
@@ -65,8 +66,7 @@ Zresidual.hurdle_negbinomial.brms <- function(object,
     fit    = object,
     type   = type,
     method = method,
-    n.rep  = nrep,
-    ...
+    n.rep  = nrep, ...
   )
 
   class(out) <- c("zresid", class(out))
@@ -144,7 +144,7 @@ Zresidual.hurdle_negbinomial.brms <- function(object,
 #' and the S3 wrapper [Zresidual.hurdle_negbinomial.brms()].
 #'
 #' @keywords internal
-Zresidual_hurdle_negbinomial_brms <- function(fit, type , method = "iscv", n.rep = 1){
+Zresidual_hurdle_negbinomial_brms <- function(fit, type , method = "iscv", n.rep = 1, ...){
 
   data <- fit$data
   response <- fit$formula$resp

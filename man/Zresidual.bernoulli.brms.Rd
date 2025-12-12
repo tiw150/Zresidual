@@ -24,8 +24,7 @@ p-values, `"rpost"` for randomized posterior predictive p-values, or
 `"mpost"` for middle-value posterior predictive p-values. Default is
 `"iscv"`.}
 
-\item{...}{Further arguments passed to the underlying implementation
-function.}
+\item{...}{Further arguments passed to the underlying implementation}
 }
 \value{
 A numeric matrix of Z-residuals with one column per replication, as

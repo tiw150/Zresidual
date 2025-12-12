@@ -18,7 +18,7 @@ in-sample diagnostics.
 
 ``` r
 # S3 method for class 'coxph.survival'
-Zresidual(object, nrep = 1, data = NULL, ...)
+Zresidual(object, nrep = 1, data = NULL, type = NULL, method = NULL, ...)
 ```
 
 ## Arguments
@@ -41,6 +41,18 @@ Zresidual(object, nrep = 1, data = NULL, ...)
   used in `object$terms`. When `NULL` (default), the model frame is
   reconstructed from `object` and residuals are computed on the original
   data.
+
+- type:
+
+  Optional character string controlling the residual type, interpreted
+  by the underlying implementation (if used). For Cox models, this is
+  typically set internally to `"survival"`.
+
+- method:
+
+  Character string specifying the residual calculation method (if
+  applicable to the underlying worker function). Currently unused by the
+  Cox PH implementation.
 
 - ...:
 

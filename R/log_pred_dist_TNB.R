@@ -72,7 +72,7 @@ log_pred_dist_TNB <- function(fit){
   lcdf_hat <- matrix(NA, mc_used, n)
 
   for (i in count.id){
-    lpmf_hat[,i] <- pdf.tnb(sim.y[i], mu = mu[,i], size = shape[,i], log = TRUE)
+    lpmf_hat[,i] <- pdf.tnb(sim.y[i], mu = mu[,i], size = shape[,i], log.p = TRUE)
     lcdf_hat[,i] <- cdf.tnb(sim.y[i], mu = mu[,i], size = shape[,i], lower.tail = FALSE, log.p = TRUE)
   }
 

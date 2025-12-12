@@ -52,8 +52,7 @@ CV.Zresidual.coxph <- function(object,
                                nfolds,
                                foldlist = NULL,
                                data     = NULL,
-                               nrep     = 1,
-                               ...) {
+                               nrep     = 1, ...) {
 
   frailty_terms <- attr(object$terms, "specials")$frailty
 
@@ -64,8 +63,7 @@ CV.Zresidual.coxph <- function(object,
       data      = data,
       nfolds    = nfolds,
       foldlist  = foldlist,
-      n.rep     = nrep,
-      ...
+      n.rep     = nrep, ...
     )
   } else {
     ## standard Cox model (no frailty)
@@ -74,8 +72,7 @@ CV.Zresidual.coxph <- function(object,
       data      = data,
       nfolds    = nfolds,
       foldlist  = foldlist,
-      n.rep     = nrep,
-      ...
+      n.rep     = nrep, ...
     )
   }
 
@@ -84,7 +81,7 @@ CV.Zresidual.coxph <- function(object,
 }
 
 #' @keywords internal
-CV_Zresidual_coxph_survival <- function(fit.coxph, data, nfolds,foldlist,n.rep)
+CV_Zresidual_coxph_survival <- function(fit.coxph, data, nfolds,foldlist,n.rep, ...)
 {
   if(!is.null(data)){
     mf <- model.frame(fit.coxph$formula, data)
@@ -238,7 +235,7 @@ CV_Zresidual_coxph_survival <- function(fit.coxph, data, nfolds,foldlist,n.rep)
 
 
 #' @keywords internal
-CV_Zresidual_coxph_frailty_survival<- function( fit.coxph, data, nfolds,foldlist,n.rep)
+CV_Zresidual_coxph_frailty_survival<- function( fit.coxph, data, nfolds,foldlist,n.rep, ...)
 {
   if (is.null(data)) {
     mf <- model.frame.coxph(fit.coxph)

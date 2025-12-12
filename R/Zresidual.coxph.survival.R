@@ -46,18 +46,23 @@
 #' @importFrom survival Surv
 #'
 #' @param object A fitted [survival::coxph()] model. The function supports
-#'   both standard Cox models and shared frailty Cox models specified with
-#'   a term such as \code{frailty(group)} in the formula.
+#'  both standard Cox models and shared frailty Cox models specified with
+#'  a term such as \code{frailty(group)} in the formula.
 #' @param data Optional \code{data.frame} containing the survival response
-#'   and covariates used in \code{object$terms}. When \code{NULL} (default),
-#'   the model frame is reconstructed from \code{object} and residuals are
-#'   computed on the original data.
+#'  and covariates used in \code{object$terms}. When \code{NULL} (default),
+#'  the model frame is reconstructed from \code{object} and residuals are
+#'  computed on the original data.
 #' @param nrep Integer; number of independent randomized Z-residual
-#'   replicates to generate. Defaults to \code{1}. Each replicate corresponds
-#'   to a different randomization of censored observations.
+#'  replicates to generate. Defaults to \code{1}. Each replicate corresponds
+#'  to a different randomization of censored observations.
+#' @param type Optional character string controlling the residual type,
+#'   interpreted by the underlying implementation (if used). For Cox models,
+#'   this is typically set internally to \code{"survival"}.
+#' @param method Character string specifying the residual calculation method
+#'   (if applicable to the underlying worker function). Currently unused
+#'   by the Cox PH implementation.
 #' @param ... Further arguments passed to the underlying implementation
-#'   functions. Currently unused.
-#'
+#'  functions. Currently unused.
 #' @return
 #' A numeric matrix of dimension \eqn{n \times} \code{nrep}, where \eqn{n} is
 #' the number of observations in the data set on which residuals are
@@ -102,7 +107,8 @@
 Zresidual.coxph.survival <- function(object,
                                      nrep = 1,
                                      data = NULL,
-                                     ...) {
+                                     type   = NULL,
+                                     method = NULL,...) {
 
   frailty_terms <- attr(object$terms, "specials")$frailty
 
@@ -111,13 +117,13 @@ Zresidual.coxph.survival <- function(object,
       fit_coxph = object,
       traindata = data,
       newdata   = data,
-      n.rep     = nrep
+      n.rep     = nrep, ...
     )
   } else {
     out <- Zresidual_coxph_survival(
       fit_coxph = object,
       newdata   = data,
-      n.rep     = nrep
+      n.rep     = nrep, ...
     )
   }
 
@@ -127,7 +133,7 @@ Zresidual.coxph.survival <- function(object,
 
 
 #' @keywords internal
-Zresidual_coxph_survival<-function (fit_coxph, newdata,n.rep=1)
+Zresidual_coxph_survival<-function (fit_coxph, newdata,n.rep=1, ...)
 {
   if(is.null(newdata)){
     mf_new<-model.frame.coxph(fit_coxph)
@@ -196,7 +202,7 @@ Zresidual_coxph_survival<-function (fit_coxph, newdata,n.rep=1)
 
 #' @keywords internal
 Zresidual_coxph_frailty_survival <-
-  function (fit_coxph, traindata, newdata, n.rep = 1)
+  function (fit_coxph, traindata, newdata, n.rep = 1, ...)
   {
     if (is.null(traindata) & is.null(newdata)) {
       mf <- model.frame.coxph(fit_coxph)
