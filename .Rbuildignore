@@ -19,6 +19,7 @@
 ^vignettes/.*\.js$
 ^vignettes/.*\.html$
 
+
 ^data-raw$
 ^\\.github$
 ^\\.github/
@@ -38,3 +39,7 @@
 ^vignettes/mystyles\.css$
 ^vignettes/pagetoc\.js$
 ^vignettes/ref\.bib$
+
+
+
+
