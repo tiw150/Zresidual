@@ -54,48 +54,38 @@ form of covariates for shared frailty models.
 
 We use Z-residual to diagnose shared frailty models in a Cox
 proportional hazard setting with a baseline function unspecified.
-Suppose there are $`g`$ groups of individuals, with each group
-containing $`n_i`$ individuals, indexed as $`i`$ = 1, 2, , $`g`$ in the
-case of clustered failure survival data. Let $`y_{ij}`$ be a possibly
-right-censored observation for the $`j`$th individual from the $`i`$th
-group, and $`\delta_{ij}`$ be the indicator for being uncensored. The
-normalized randomized survival probabilities (RSPs) for $`y_{ij}`$ in
-the shared frailty model is defined as:
-``` math
-\begin{equation}
-S_{ij}^{R}(y_{ij}, \delta_{ij}, U_{ij}) =
-\left\{
-\begin{array}{rl}
-S_{ij}(y_{ij}), & \text{if $y_{ij}$ is uncensored, i.e., $\delta_{ij}=1$,}\\
-U_{ij}\,S_{ij}(y_{ij}), & \text{if $y_{ij}$ is censored, i.e., $\delta_{ij}=0$,}
-\end{array}
-\right. \label{rsp}
-\end{equation}
-```
-where $`U_{ij}`$ is a uniform random number on $`(0, 1)`$, and
-$`S_{ij}(\cdot)`$ is the postulated survival function for $`t_{ij}`$
-given $`x_{ij}`$. $`S_{ij}^{R}(y_{ij}, \delta_{ij}, U_{ij})`$ is a
-random number between $`0`$ and $`S_{ij}(y_{ij})`$ when $`y_{ij}`$ is
-censored. It is proved that the RSPs are uniformly distributed on
-$`(0,1)`$ given $`x_{i}`$ under the true model . Therefore, the RSPs can
-be transformed into residuals with any desired distribution. We prefer
-to transform them with the normal quantile:
-``` math
-\begin{equation}
-r_{ij}^{Z}(y_{ij}, \delta_{ij}, U_{ij})=-\Phi^{-1} (S_{ij}^R(y_{ij}, \delta_{ij}, U_{ij})),\label{zresid}
-\end{equation}
-```
-which is normally distributed under the true model, so that we can
-conduct model diagnostics with Z-residuals for censored data in the same
-way as conducting model diagnostics for a normal regression model. There
-are a few advantages of transforming RSPs into Z-residuals. First, the
-diagnostics methods for checking normal regression are rich in the
-literature. Second, transforming RSPs into normal deviates facilitates
-the identification of extremely small and large RSPs. The frequency of
-such small RSPs may be too small to be highlighted by the plots of RSPs.
-However, the presence of such extreme SPs, even very few, is indicative
-of model misspecification. Normal transformation can highlight such
-extreme RSPs.
+Suppose there are \\g\\ groups of individuals, with each group
+containing \\n_i\\ individuals, indexed as \\i\\ = 1, 2, , \\g\\ in the
+case of clustered failure survival data. Let \\y\_{ij}\\ be a possibly
+right-censored observation for the \\j\\th individual from the \\i\\th
+group, and \\\delta\_{ij}\\ be the indicator for being uncensored. The
+normalized randomized survival probabilities (RSPs) for \\y\_{ij}\\ in
+the shared frailty model is defined as: \\\begin{equation}
+S\_{ij}^{R}(y\_{ij}, \delta\_{ij}, U\_{ij}) = \left\\ \begin{array}{rl}
+S\_{ij}(y\_{ij}), & \text{if \$y\_{ij}\$ is uncensored, i.e.,
+\$\delta\_{ij}=1\$,}\\ U\_{ij}\\S\_{ij}(y\_{ij}), & \text{if \$y\_{ij}\$
+is censored, i.e., \$\delta\_{ij}=0\$,} \end{array} \right. \label{rsp}
+\end{equation}\\ where \\U\_{ij}\\ is a uniform random number on \\(0,
+1)\\, and \\S\_{ij}(\cdot)\\ is the postulated survival function for
+\\t\_{ij}\\ given \\x\_{ij}\\. \\S\_{ij}^{R}(y\_{ij}, \delta\_{ij},
+U\_{ij})\\ is a random number between \\0\\ and \\S\_{ij}(y\_{ij})\\
+when \\y\_{ij}\\ is censored. It is proved that the RSPs are uniformly
+distributed on \\(0,1)\\ given \\x\_{i}\\ under the true model .
+Therefore, the RSPs can be transformed into residuals with any desired
+distribution. We prefer to transform them with the normal quantile:
+\\\begin{equation} r\_{ij}^{Z}(y\_{ij}, \delta\_{ij},
+U\_{ij})=-\Phi^{-1} (S\_{ij}^R(y\_{ij}, \delta\_{ij},
+U\_{ij})),\label{zresid} \end{equation}\\ which is normally distributed
+under the true model, so that we can conduct model diagnostics with
+Z-residuals for censored data in the same way as conducting model
+diagnostics for a normal regression model. There are a few advantages of
+transforming RSPs into Z-residuals. First, the diagnostics methods for
+checking normal regression are rich in the literature. Second,
+transforming RSPs into normal deviates facilitates the identification of
+extremely small and large RSPs. The frequency of such small RSPs may be
+too small to be highlighted by the plots of RSPs. However, the presence
+of such extreme SPs, even very few, is indicative of model
+misspecification. Normal transformation can highlight such extreme RSPs.
 
 ## 5 Examples for Illustration and Demonstration
 
@@ -168,7 +158,7 @@ A QQ plot based on Z-residuals can be used to graphically assess the
 model’s overall GOF, and Shapiro-Wilk (SW) or Shapiro-Francia (SF)
 normality tests applied to Z-residuals can be used to numerically test
 the overall GOF of the model. We can see that the QQ plots of
-Z-residuals of these two models align well with the 45 $`^\circ`$
+Z-residuals of these two models align well with the 45 \\^\circ\\
 diagonal line. The Z-SW tests also give large p-values for two models,
 where Z-SW is the test method that the normality of Z-residuals is
 tested with the SW test.
@@ -193,9 +183,9 @@ Figure 1: QQ plots of Z-residuals for the wbc (left panels) and lwbc
 (right panels) models fitted to the survival data of acute myeloid
 leukemia patients
 
-The Z-residuals can be divided into $`k`$ groups by cutting the linear
+The Z-residuals can be divided into \\k\\ groups by cutting the linear
 predictors or covariates into equally-spaced intervals. Then we can
-check whether the Z-residuals of the $`k`$ groups are homogeneously
+check whether the Z-residuals of the \\k\\ groups are homogeneously
 distributed. A quantitative method to assess the homogeneity of such
 grouped Z-residuals is to test the equality of group means or variances
 of the Z-residuals. We employ the F-test in ANOVA to assess the equality
@@ -337,7 +327,7 @@ sf.lwbc<-sf.test.zresid(Zresid.LeukSurv.logwbc)
 gof_tests<-data.frame(sw.wbc,sw.lwbc,sf.wbc,sf.lwbc)
 ```
 
-The Z-residuals can be divided into $`k`$ groups by cutting the
+The Z-residuals can be divided into \\k\\ groups by cutting the
 covariates or linear predictors into equally-spaced intervals. To
 quantitatively evaluate the homogeneity of grouped Z-residuals, we
 propose testing the equality of group means and group variances. For
@@ -382,10 +372,10 @@ homogeneity_tests<-data.frame(aov.wbc.lp,aov.lwbc.lp,bl.wbc.lp,bl.lwbc.lp,aov.wb
 
 The histograms of 1000 replicated Z-residual test p-values for the wbc
 and lwbc models. The red vertical lines in these histograms show the
-upper bound summaries of these replicated p-values, $`p_{min}`$. These
+upper bound summaries of these replicated p-values, \\p\_{min}\\. These
 histograms show that the Z-SW, Z-SF, and Z-AOV with LP tests for both
 models give a large proportion of p-values greater than 0.05, and the
-large p-values result in large $`p_{min}`$ values. In contrast, the
+large p-values result in large \\p\_{min}\\ values. In contrast, the
 replicated Z-AOV with log(wbc) p-values for the lwbc model are almost
 all smaller than 0.001. The consistently small Z-AOV with log(wbc)
 p-values further confirm that the log transformation of wbc is
@@ -466,7 +456,7 @@ abline(v = pmin.aov.lwbc.LeukSurv, col = "red")
 Figure 3: Figure 5: The histograms of 1000 replicated Z-SW, Z-SF,
 Z-AOV-LP and Z-AOV-log(wbc) p-values for the wbc model (left panels) and
 the lwbc model (right panels) fitted with the survival times of acute
-myeloid leukemia patients. The vertical red lines indicate $`p_{min}`$
+myeloid leukemia patients. The vertical red lines indicate \\p\_{min}\\
 for 1000 replicated p-values. Note that the upper limit of the x-axis
 for Z-AOV-log(wbc) p-values for the lwbc model is 0.005, not 1 for
 others.
@@ -506,7 +496,7 @@ gof.censored.zresidual(censored.Zresidual=censored.Zresid.LeukSurv.logwbc)
 The overall GOF tests and graphical checking with Cox-Snell residuals
 show that both the wbc and lwbc models provide adequate fits to the
 dataset. The estimated CHFs of the CS residuals of both of the wbc and
-lwbc models align closely along the $`45^{\circ}`$ diagonal line.
+lwbc models align closely along the \\45^{\circ}\\ diagonal line.
 
 Code
 
