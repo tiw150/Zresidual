@@ -13,4 +13,4 @@ log_pred_dist_zero(fit)
 
 - fit:
 
-  A \`brm\` fit.
+  A `brm` fit.

@@ -26,16 +26,19 @@ Default is 1. Repeating CV provides a more stable estimate of the residuals.}
 }
 \value{
 A matrix of class \code{"cvzresid"} (and others inherited from the internal
-worker) with dimension \eqn{N \times nrep}{N x nrep} (where $N$ is the number of observations).
+worker) with dimension \eqn{N \times nrep}{N x nrep}
+(where \eqn{N}{N} is the number of observations).
 The matrix columns contain the cross-validated Z-residuals.
 
 The object also includes the following diagnostic attributes:
 \itemize{
-  \item \code{Survival.Prob}: Cross-validated predicted survival probabilities.
-  \item \code{linear.pred}: Cross-validated linear predictors (\eqn{\mathbf{x}\hat{\mathbf{\beta}}}{x * beta-hat}).
-  \item \code{censored.status}: The event indicator from the survival object.
-  \item \code{covariates}: The covariates used in the model.
-  \item \code{object.model.frame}: The model frame of the original data.
+\item \code{Survival.Prob}: Cross-validated predicted survival probabilities
+\eqn{\hat S_i(t_i)}{S_hat_i(t_i)}.
+\item \code{linear.pred}: Cross-validated linear predictors
+\eqn{\eta_i = \mathbf{x}_i^\top \hat{\boldsymbol{\beta}}}{eta_i = x_i^T beta_hat}.
+\item \code{censored.status}: The event indicator from the survival object.
+\item \code{covariates}: The covariates used in the model.
+\item \code{object.model.frame}: The model frame of the original data.
 }
 }
 \description{
@@ -50,10 +53,10 @@ frailty Cox models.
 The method determines the correct worker function by examining
 \code{attr(object$terms, "specials")$frailty}:
 \itemize{
-  \item **Standard Cox Models**: If no frailty term is found, it calls
-    \code{\link{CV_Zresidual_coxph_survival}}.
-  \item **Shared Frailty Cox Models**: If a frailty term (e.g., \code{frailty(group)})
-    is present, it calls \code{\link{CV_Zresidual_coxph_frailty_survival}}.
+\item \strong{Standard Cox Models}: If no frailty term is found, it calls
+\code{\link{CV_Zresidual_coxph_survival}}.
+\item \strong{Shared Frailty Cox Models}: If a frailty term (e.g., \code{frailty(group)})
+is present, it calls \code{\link{CV_Zresidual_coxph_frailty_survival}}.
 }
 
 The returned object is a matrix of Z-residuals with crucial diagnostic

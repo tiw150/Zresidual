@@ -22,7 +22,7 @@ A matrix containing the Z-residuals (\eqn{N \times nrep}{N x nrep}) with diagnos
 \code{object.model.frame}, and \code{type = "survival"}.
 }
 \description{
-Internal function to compute randomized Z-residuals for a **standard**
+Internal function to compute randomized Z-residuals for a \strong{standard}
 Cox proportional hazards model (without frailty).
 }
 \details{

@@ -1,7 +1,7 @@
 # Cross-validated Z-residuals for Survreg Models
 
 Internal function to compute cross-validated Z-residuals for
-\*\*parametric\*\* survival regression models fitted with
+**parametric** survival regression models fitted with
 [`survreg`](https://rdrr.io/pkg/survival/man/survreg.html).
 
 ## Usage
@@ -25,7 +25,7 @@ CV_Zresidual_survreg_survival(fit.survreg, data, nfolds, foldlist, n.rep, ...)
 
 - nfolds:
 
-  Integer. Number of folds for cross-validation (\$K\$ in K-fold CV).
+  Integer. Number of folds for cross-validation (\\K\\ in K-fold CV).
 
 - foldlist:
 
@@ -45,7 +45,7 @@ CV_Zresidual_survreg_survival(fit.survreg, data, nfolds, foldlist, n.rep, ...)
 ## Value
 
 A numeric matrix containing the cross-validated Z-residuals (\\N \times
-nrep\\), where \$N\$ is the total number of observations. The matrix
+nrep\\), where \\N\\ is the total number of observations. The matrix
 carries the following diagnostic attributes:
 
 - `Survival.Prob`: Out-of-sample predicted survival probabilities.
@@ -70,9 +70,9 @@ distribution, e.g., Weibull) is refitted on the training data. The
 out-of-sample randomized Z-residuals are then calculated on the held-out
 test data.
 
-\*\*Data Handling Note:\*\* If `data` is `NULL`, the internal model
-frame must be manually reconstructed into a standard data frame
-(un-packing the `Surv` object) before the `survreg` model can be
-successfully refitted on the training subset of each fold. Failed model
-fits during cross-validation result in `NA` residuals for the
-corresponding test fold.
+**Data Handling Note:** If `data` is `NULL`, the internal model frame
+must be manually reconstructed into a standard data frame (un-packing
+the `Surv` object) before the `survreg` model can be successfully
+refitted on the training subset of each fold. Failed model fits during
+cross-validation result in `NA` residuals for the corresponding test
+fold.

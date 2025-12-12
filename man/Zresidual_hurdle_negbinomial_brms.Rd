@@ -12,55 +12,55 @@ binomial outcome.}
 
 \item{type}{Character string specifying which part of the model to
 calculate Z-residuals for:
-`"zero"` for the hurdle/zero portion,
-`"count"` for the truncated negative binomial counts,
-`"hurdle"` for the full hurdle-negative binomial model.}
+\code{"zero"} for the hurdle/zero portion,
+\code{"count"} for the truncated negative binomial counts,
+\code{"hurdle"} for the full hurdle-negative binomial model.}
 
 \item{method}{Character string specifying the residual calculation method:
-`"iscv"` for importance-sampled cross-validated randomized
-predictive p-values, `"rpost"` for randomized posterior predictive
-p-values, or `"mpost"` for middle-value posterior predictive
-p-values. Default is `"iscv"`.}
+\code{"iscv"} for importance-sampled cross-validated randomized
+predictive p-values, \code{"rpost"} for randomized posterior predictive
+p-values, or \code{"mpost"} for middle-value posterior predictive
+p-values. Default is \code{"iscv"}.}
 
 \item{n.rep}{Integer; the number of replicated Z-residual sets to
-generate. Default is `1`.}
+generate. Default is \code{1}.}
 
 \item{...}{Further arguments passed to lower-level helper functions.}
 }
 \value{
 A numeric matrix of Z-residuals with attributes such as:
 \itemize{
-  \item \code{type}: The requested model component.
-  \item \code{zero_id}: Indices of zero outcomes.
-  \item \code{log_pmf}: Log-probability mass function values.
-  \item \code{log_cdf}: Log-cumulative distribution function values.
-  \item \code{covariates}: Model covariates.
-  \item \code{linear.pred}: Linear predictor values from the fitted model.
+\item \code{type}: The requested model component.
+\item \code{zero_id}: Indices of zero outcomes.
+\item \code{log_pmf}: Log-probability mass function values.
+\item \code{log_cdf}: Log-cumulative distribution function values.
+\item \code{covariates}: Model covariates.
+\item \code{linear.pred}: Linear predictor values from the fitted model.
 }
-The S3 wrapper [Zresidual.hurdle_negbinomial.brms()] will additionally
+The S3 wrapper \code{\link[=Zresidual.hurdle_negbinomial.brms]{Zresidual.hurdle_negbinomial.brms()}} will additionally
 attach the class \code{"zresid"} to the returned object.
 }
 \description{
 Computes Z-residuals for fitted Bayesian hurdle negative binomial
-models using a \pkg{brms} model with `family = hurdle_negbinomial()`.
+models using a \pkg{brms} model with \code{family = hurdle_negbinomial()}.
 Z-residuals can be calculated for zeros, counts, or the overall hurdle
 distribution, and can be used for model diagnostics.
 
-This is an internal workhorse for [Zresidual.hurdle_negbinomial.brms()]
+This is an internal workhorse for \code{\link[=Zresidual.hurdle_negbinomial.brms]{Zresidual.hurdle_negbinomial.brms()}}
 and is not intended to be called directly by end users.
 }
 \details{
 A typical implementation:
 \enumerate{
-  \item Extracts the observed response vector from the model data.
-  \item Computes the log-PMF and log-CDF for the specified part of the
-        model using the corresponding \code{log_pred_dist_*} function,
-        such as \code{\link{log_pred_dist_HNB}} or
-        \code{\link{log_pred_dist_TNB}}.
-  \item Generates posterior predictive p-values according to the
-        specified \code{method}.
-  \item Converts the p-values to Z-residuals via the negative quantile
-        of the standard normal distribution.
+\item Extracts the observed response vector from the model data.
+\item Computes the log-PMF and log-CDF for the specified part of the
+model using the corresponding \code{log_pred_dist_*} function,
+such as \code{\link{log_pred_dist_HNB}} or
+\code{\link{log_pred_dist_TNB}}.
+\item Generates posterior predictive p-values according to the
+specified \code{method}.
+\item Converts the p-values to Z-residuals via the negative quantile
+of the standard normal distribution.
 }
 
 The output is a matrix of Z-residuals with one column per replication.
@@ -78,6 +78,6 @@ The output is a matrix of Z-residuals with one column per replication.
 \seealso{
 \code{\link{log_pred_dist_HNB}}, \code{\link{log_pred_dist_TNB}},
 \code{\link{post_logrpp}}, \code{\link{iscv_logrpp}},
-and the S3 wrapper [Zresidual.hurdle_negbinomial.brms()].
+and the S3 wrapper \code{\link[=Zresidual.hurdle_negbinomial.brms]{Zresidual.hurdle_negbinomial.brms()}}.
 }
 \keyword{internal}

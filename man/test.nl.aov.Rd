@@ -24,10 +24,10 @@ are discretized into bins. Small or empty bins are removed before testing.
 \details{
 The function handles covariates as follows:
 \itemize{
-  \item If \code{fitted.value} is a factor or has fewer than \code{k.anova} unique values, it is treated as categorical.
-  \item Otherwise, numeric covariates are binned into \code{k.anova} bins using \code{\link{cut}}.
-  \item Bins with fewer than 3 observations are removed.
-  \item If insufficient bins remain, the covariate is log-transformed and binned again.
+\item If \code{fitted.value} is a factor or has fewer than \code{k.anova} unique values, it is treated as categorical.
+\item Otherwise, numeric covariates are binned into \code{k.anova} bins using \code{\link{cut}}.
+\item Bins with fewer than 3 observations are removed.
+\item If insufficient bins remain, the covariate is log-transformed and binned again.
 }
 ANOVA is then performed with \code{lm(Zresidual ~ binned_covariate)} and the p-value for the first term is returned.
 }

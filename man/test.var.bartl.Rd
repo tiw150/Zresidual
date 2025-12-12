@@ -24,10 +24,10 @@ values are binned, and small or empty bins are removed before testing.
 \details{
 The function handles covariates as follows:
 \itemize{
-  \item If \code{fitted.value} is a factor or has fewer than \code{k.bl} unique values, it is treated as categorical.
-  \item Otherwise, numeric covariates are binned into \code{k.bl} bins.
-  \item Bins with fewer than 3 observations are removed.
-  \item If insufficient bins remain, the covariate is log-transformed and binned again.
+\item If \code{fitted.value} is a factor or has fewer than \code{k.bl} unique values, it is treated as categorical.
+\item Otherwise, numeric covariates are binned into \code{k.bl} bins.
+\item Bins with fewer than 3 observations are removed.
+\item If insufficient bins remain, the covariate is log-transformed and binned again.
 }
 Bartlett's test is then applied to the Z-residuals grouped by the factor or binned covariate.
 }

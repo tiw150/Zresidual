@@ -57,7 +57,6 @@ functions in this package (e.g., \code{residual.coxph()},
 \code{residual.coxph.frailty()}, or \code{residual.survreg()}) with
 \code{residual.type = "Cox-Snell"}.
 
-
 Non-finite Cox–Snell residuals are detected and truncated to lie slightly
 beyond the largest finite residual, with a message printed to alert the
 user that there may be problems with the model fit. The cumulative hazard

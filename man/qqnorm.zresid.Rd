@@ -59,7 +59,7 @@ and \code{\link[graphics]{plot}}.}
 \value{
 Invisibly returns a list with:
 \describe{
-  \item{outliers}{An integer vector containing the indices of detected outliers.}
+\item{outliers}{An integer vector containing the indices of detected outliers.}
 }
 If no outliers are detected, an empty integer vector is returned.
 
@@ -77,13 +77,13 @@ This function extends the base R Q-Q plot to better handle typical behavior
 of Z-residuals in Bayesian predictive checking:
 
 \itemize{
-  \item Infinite values (\code{Inf}/\code{-Inf}) are replaced with large finite
-        values and trigger a warning.
-  \item Very large Z-residuals (\code{|Z| > 6}) are shown using axis breaks to
-        avoid plot distortion.
-  \item Outliers (\code{|Z| > outlier.value}) are highlighted and labeled.
-  \item Column-wise Shapiro–Wilk tests assess normality.
-  \item Legends summarize model type, selected Q-Q lines, and diagnostic results.
+\item Infinite values (\code{Inf}/\code{-Inf}) are replaced with large finite
+values and trigger a warning.
+\item Very large Z-residuals (\code{|Z| > 6}) are shown using axis breaks to
+avoid plot distortion.
+\item Outliers (\code{|Z| > outlier.value}) are highlighted and labeled.
+\item Column-wise Shapiro–Wilk tests assess normality.
+\item Legends summarize model type, selected Q-Q lines, and diagnostic results.
 }
 
 This diagnostic is suitable for Z-residuals such as randomized quantile
@@ -116,7 +116,7 @@ Vehtari, A., & Rubin, D. B. (2013).
 }
 \seealso{
 \code{\link{boxplot.zresid}},
-  \code{\link[stats]{qqnorm}},
-  \code{\link[stats]{qqline}},
-  \code{\link[graphics]{plot}}.
+\code{\link[stats]{qqnorm}},
+\code{\link[stats]{qqline}},
+\code{\link[graphics]{plot}}.
 }

@@ -14,10 +14,10 @@ the hurdle probability \code{zero}.}
 \value{
 A list with the following components:
 \describe{
-  \item{\code{lpmf_hat}}{A matrix of log-PMF values (posterior samples × observations).}
-  \item{\code{lcdf_hat}}{A matrix of log-CCDF values (posterior samples × observations).}
-  \item{\code{zero_id}}{Indices of observations with zero counts.}
-  \item{\code{count_id}}{Indices of observations with positive counts.}
+\item{\code{lpmf_hat}}{A matrix of log-PMF values (posterior samples × observations).}
+\item{\code{lcdf_hat}}{A matrix of log-CCDF values (posterior samples × observations).}
+\item{\code{zero_id}}{Indices of observations with zero counts.}
+\item{\code{count_id}}{Indices of observations with positive counts.}
 }
 }
 \description{
@@ -30,9 +30,9 @@ the predictive distributions across all posterior draws.
 \details{
 For each posterior draw and each observation, the function computes:
 \itemize{
-  \item \code{lpmf_hat}: Log predictive mass function values using \code{dhurdle.nb()}.
-  \item \code{lcdf_hat}: Log cumulative distribution function values
-  using \code{phurdle.nb()} with \code{lower.tail = FALSE}.
+\item \code{lpmf_hat}: Log predictive mass function values using \code{dhurdle.nb()}.
+\item \code{lcdf_hat}: Log cumulative distribution function values
+using \code{phurdle.nb()} with \code{lower.tail = FALSE}.
 }
 }
 \examples{

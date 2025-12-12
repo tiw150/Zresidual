@@ -1,12 +1,14 @@
 # Compute Z-residuals for a Bernoulli/Logistic brms model
 
 Computes Z-residuals for a fitted Bayesian Bernoulli/Logistic (binary)
-model fitted with \[brms::brm()\] and \`family = bernoulli()\`.
-Z-residuals are calculated using posterior predictive methods and can be
-used for model diagnostics.
+model fitted with
+[`brms::brm()`](https://paulbuerkner.com/brms/reference/brm.html) and
+`family = bernoulli()`. Z-residuals are calculated using posterior
+predictive methods and can be used for model diagnostics.
 
-This is an internal workhorse for \[Zresidual.bernoulli.brms()\] and is
-not intended to be called directly by end users.
+This is an internal workhorse for
+[`Zresidual.bernoulli.brms()`](https://tiw150.github.io/Zresidual/reference/Zresidual.bernoulli.brms.md)
+and is not intended to be called directly by end users.
 
 ## Usage
 
@@ -25,26 +27,25 @@ Zresidual_bernoulli_brms(
 
 - fit:
 
-  A fitted \`brmsfit\` model object with Bernoulli family.
+  A fitted `brmsfit` model object with Bernoulli family.
 
 - method:
 
-  Character string specifying the residual calculation method:
-  \`"iscv"\` for importance-sampled cross-validated randomized
-  predictive p-values, \`"rpost"\` for randomized posterior predictive
-  p-values, or \`"mpost"\` for middle-value posterior predictive
-  p-values. Default is \`"iscv"\`.
+  Character string specifying the residual calculation method: `"iscv"`
+  for importance-sampled cross-validated randomized predictive p-values,
+  `"rpost"` for randomized posterior predictive p-values, or `"mpost"`
+  for middle-value posterior predictive p-values. Default is `"iscv"`.
 
 - n.rep:
 
   Integer; the number of replicated Z-residual sets to generate. Default
-  is \`1\`.
+  is `1`.
 
 - data:
 
-  Optional data frame used to override the data stored inside \`fit\`
-  for prediction and diagnostic calculation. If \`NULL\`, the data
-  embedded in \`fit\` are used.
+  Optional data frame used to override the data stored inside `fit` for
+  prediction and diagnostic calculation. If `NULL`, the data embedded in
+  `fit` are used.
 
 - type:
 
@@ -93,4 +94,5 @@ The output is a matrix of Z-residuals with one column per replication.
 [`log_pred_dist_bern`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_bern.md),
 [`post_logrpp`](https://tiw150.github.io/Zresidual/reference/post_logrpp.md),
 [`iscv_logrpp`](https://tiw150.github.io/Zresidual/reference/iscv_logrpp.md),
-and the S3 wrapper \[Zresidual.bernoulli.brms()\].
+and the S3 wrapper
+[`Zresidual.bernoulli.brms()`](https://tiw150.github.io/Zresidual/reference/Zresidual.bernoulli.brms.md).

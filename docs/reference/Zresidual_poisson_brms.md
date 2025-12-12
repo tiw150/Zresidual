@@ -5,8 +5,9 @@ useful for model diagnostics, including checking fit and overdispersion,
 and can be calculated using posterior or cross-validated predictive
 p-values.
 
-This is an internal workhorse for \[Zresidual.poisson.brms()\] and is
-not intended to be called directly by end users.
+This is an internal workhorse for
+[`Zresidual.poisson.brms()`](https://tiw150.github.io/Zresidual/reference/Zresidual.poisson.brms.md)
+and is not intended to be called directly by end users.
 
 ## Usage
 
@@ -50,8 +51,9 @@ A numeric matrix of Z-residuals with attributes such as:
 
 - `linear.pred`: Linear predictor values from the fitted model.
 
-The S3 wrapper \[Zresidual.poisson.brms()\] will additionally attach the
-class `"zresid"` to the returned object.
+The S3 wrapper
+[`Zresidual.poisson.brms()`](https://tiw150.github.io/Zresidual/reference/Zresidual.poisson.brms.md)
+will additionally attach the class `"zresid"` to the returned object.
 
 ## Details
 
@@ -75,7 +77,8 @@ The output is a matrix of Z-residuals with one column per replication.
 [`log_pred_dist_pois`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_pois.md),
 [`post_logrpp`](https://tiw150.github.io/Zresidual/reference/post_logrpp.md),
 [`iscv_logrpp`](https://tiw150.github.io/Zresidual/reference/iscv_logrpp.md),
-and the S3 wrapper \[Zresidual.poisson.brms()\].
+and the S3 wrapper
+[`Zresidual.poisson.brms()`](https://tiw150.github.io/Zresidual/reference/Zresidual.poisson.brms.md).
 
 ## Examples
 

@@ -53,82 +53,81 @@ two parts:
 - A **count component** modeling positive counts using a zero-truncated
   distribution.
 
-Let \\C_i \in \\0, 1\\\\, where \\C_i = 1\\ indicates a non-zero value,
-and \\C_i = 0\\ indicates a zero value for the \\i^\th\\ observations.
-If \\C_i=1\\, the corresponding count model then operates on \\y_i^+ \in
-\\1, 2, \dots\\\\, i.e., the positive counts only.
+Let C_i \in \\0, 1\\, where C_i = 1 indicates a non-zero value, and C_i
+= 0 indicates a zero value for the i^\th observations. If C_i=1, the
+corresponding count model then operates on y_i^+ \in \\1, 2, \dots\\,
+i.e., the positive counts only.
 
-Using Bayesian estimation (e.g., via the `brms` package), we draw \\T\\
-samples from the posterior distribution. Let \\\theta^{(t)}\\ denote the
-\\t^\th\\ posterior draw, including component-specific parameters like:
+Using Bayesian estimation (e.g., via the `brms` package), we draw T
+samples from the posterior distribution. Let \theta^{(t)} denote the
+t^\th posterior draw, including component-specific parameters like:
 
-- \\\pi^o_i\\ : the zero porbability,
-- \\\mu_i^{(t)}, \phi^{(t)}\\ : parameters for the count component.
+- \pi^o_i : the zero porbability,
+- \mu_i^{(t)}, \phi^{(t)} : parameters for the count component.
 
-For a given observation \\y_i^\text{obs}\\, the component-wise posterior
+For a given observation y_i^\text{obs}, the component-wise posterior
 predictive PMF and survival functions are defined below.
 
 #### 3.0.1 **Hurdle Model:**
 
-\\\begin{equation} p_i^{\text{post}, \pi^o_irdle}(y_i^\text{obs}) =
+\begin{equation} p_i^{\text{post}, \pi^o_irdle}(y_i^\text{obs}) =
 \frac{1}{T} \sum\_{t=1}^T \begin{cases} {\pi^o_i}^{(t)} & \text{if }
 y_i^\text{obs} = 0, \\ (1 - {\pi^o_i}^{(t)})
 \cdot\frac{p_i^\text{UT}(y_i^\text{obs} \| \theta^{(t)})}{1 -
 p_i^\text{UT}(0 \| \theta^{(t)})} & \text{if } y_i^\text{obs} =1, 2,
-\ldots,\\ 0 & \text{otherwise.} \end{cases} \end{equation}\\
-\\\begin{equation} S_i^{\text{post}, \pi^o_irdle}(y_i^\text{obs}) =
+\ldots,\\ 0 & \text{otherwise.} \end{cases} \end{equation}
+\begin{equation} S_i^{\text{post}, \pi^o_irdle}(y_i^\text{obs}) =
 \frac{1}{T} \sum\_{t=1}^T \begin{cases} 1 & \text{if } y_i^\text{obs} \<
 0, \\ 1-{\pi^o_i}^{(t)} & \text{if } 0 \le y_i^\text{obs} \< 1, \\ (1 -
 {\pi^o_i}^{(t)}) \cdot \frac{S_i^\text{UT}(y_i^\text{obs} \mid
 \theta^{(t)})}{1-p_i^\text{UT}(0 \mid \theta^{(t)})} & \text{if }
-y_i^\text{obs} \ge 1. \end{cases} \end{equation}\\
+y_i^\text{obs} \ge 1. \end{cases} \end{equation}
 
 #### 3.0.2 **Logistic Component:**
 
-\\\begin{equation} \label{componentwise_logistic_pmf} p_i^{\text{post},
+\begin{equation} \label{componentwise_logistic_pmf} p_i^{\text{post},
 \text{logit}}(c_i^\text{obs}) = \frac{1}{T} \sum\_{t=1}^T \begin{cases}
 {\pi^o_i}^{(t)} & \text{if } c_i^\text{obs} = 0, \\ 1 - {\pi^o_i}^{(t)}
 & \text{if } c_i^\text{obs} = 1,\\ 0 & \text{otherwise.} \end{cases}
-\end{equation}\\
+\end{equation}
 
-\\\begin{equation} \label{componentwise_logistic_survival}
+\begin{equation} \label{componentwise_logistic_survival}
 S_i^{\text{post}, \text{logit}}(c_i^\text{obs}) = \frac{1}{T}
 \sum\_{t=1}^T \begin{cases} 1 & \text{if } c_i^\text{obs} \< 0, \\
 1-{\pi^o_i}^{(t)} & \text{if } 0 \le c_i^\text{obs} \< 1, \\ 0, &
-\text{if } c_i^\text{obs} \ge 1. \end{cases} \end{equation}\\
+\text{if } c_i^\text{obs} \ge 1. \end{cases} \end{equation}
 
 #### 3.0.3 **Count Compoenent:**
 
-\\\begin{equation} \label{componentwise_count_pmf}
+\begin{equation} \label{componentwise_count_pmf}
 p_i^{\text{post},\text{count}}({y_i^+}^\text{obs}) = \frac{1}{T}
 \sum\_{t=1}^T \begin{cases} \frac{p_i^\text{UT}({y_i^+}^\text{obs} \mid
 \theta^{(t)})}{1 - p_i^\text{UT}(0 \mid \theta^{(t)})}, & \text{ for }
 {y_i^{+}}^\text{obs} = 1,2,\ldots,\\ 0 & \text{ otherwise.} \end{cases}
-\end{equation}\\
+\end{equation}
 
-\\\begin{equation} \label{componentwise_count_survival}
-S_i^{\text{post}, \text{count}}({y_i^+}^\text{obs}) = \frac{1}{T}
-\sum\_{t=1}^T \begin{cases} 1 & \text{ if } {y_i^+}^\text{obs} \< 1 \\
+\begin{equation} \label{componentwise_count_survival} S_i^{\text{post},
+\text{count}}({y_i^+}^\text{obs}) = \frac{1}{T} \sum\_{t=1}^T
+\begin{cases} 1 & \text{ if } {y_i^+}^\text{obs} \< 1 \\
 \frac{S_i^\text{UT}({y_i^+}^\text{obs} \mid
 \theta^{(t)})}{1-p_i^\text{UT}(0 \mid \theta^{(t)})}, & \text{ if }
-{y_i^+}^\text{obs} \ge 1 \end{cases} \end{equation}\\
+{y_i^+}^\text{obs} \ge 1 \end{cases} \end{equation}
 
-where \\p_i^\text{UT}(. \mid \theta^{(t)})\\ and \\S_i^\text{UT}(. \mid
-\theta^{(t)})\\ denote the PMF and survival function of the untruncated
+where p_i^\text{UT}(. \mid \theta^{(t)}) and S_i^\text{UT}(. \mid
+\theta^{(t)}) denote the PMF and survival function of the untruncated
 count distribution, given the component-specific posterior parameters
-\\\theta^{(t)}\\.
+\theta^{(t)}.
 
-For any observed value \\y_i^\text{obs}\\, we define: \\\begin{equation}
+For any observed value y_i^\text{obs}, we define: \begin{equation}
 \label{eq:post_rpp}\text{rpp}\_i(y_i^\text{obs} \| \theta^{(t)}) =
 S_i(y_i^\text{obs} \| \theta^{(t)}) + U_i \times p_i(y_i^\text{obs} \|
-\theta^{(t)}) \end{equation}\\ where \\U_i \sim \text{Uniform}(0,1)\\.
-Here, \\y_i^\text{obs}\\ is the observed value, which can refer to
-either the binary response \\C_i\\ or the positive count
-\\{y_i^+}^\text{obs}\\, depending on the component being evaluated.
-Then, the Z-residual of a discrete response variable is,
-\\\begin{equation} \label{eq:z_residual} z_i =
+\theta^{(t)}) \end{equation} where U_i \sim \text{Uniform}(0,1). Here,
+y_i^\text{obs} is the observed value, which can refer to either the
+binary response C_i or the positive count {y_i^+}^\text{obs}, depending
+on the component being evaluated. Then, the Z-residual of a discrete
+response variable is, \begin{equation} \label{eq:z_residual} z_i =
 -\Phi^{-1}(\text{rpp}\_i(y_i^\text{obs}\|\theta)) \sim N(0, 1)
-\end{equation}\\ where (^{-1}(.)) is the quantile function of standard
+\end{equation} where (^{-1}(.)) is the quantile function of standard
 normal distribution.
 
 ## 4 A Simulation Example

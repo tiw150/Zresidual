@@ -7,7 +7,7 @@
 log_pred_dist_zero(fit)
 }
 \arguments{
-\item{fit}{A `brm` fit.}
+\item{fit}{A \code{brm} fit.}
 }
 \description{
 A function to calculate log predictive distribution (pmf and cdf) of logistic component of a 'brm' fit

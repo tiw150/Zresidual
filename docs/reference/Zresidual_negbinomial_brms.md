@@ -5,8 +5,9 @@ Z-residuals are useful for model diagnostics, including checking fit and
 overdispersion, and can be calculated using posterior or cross-validated
 predictive p-values.
 
-This is an internal workhorse for \[Zresidual.negbinomial.brms()\] and
-is not intended to be called directly by end users.
+This is an internal workhorse for
+[`Zresidual.negbinomial.brms()`](https://tiw150.github.io/Zresidual/reference/Zresidual.negbinomial.brms.md)
+and is not intended to be called directly by end users.
 
 ## Usage
 
@@ -50,8 +51,9 @@ A numeric matrix of Z-residuals with attributes such as:
 
 - `linear.pred`: Linear predictor values from the fitted model.
 
-The S3 wrapper \[Zresidual.negbinomial.brms()\] will additionally attach
-the class `"zresid"` to the returned object.
+The S3 wrapper
+[`Zresidual.negbinomial.brms()`](https://tiw150.github.io/Zresidual/reference/Zresidual.negbinomial.brms.md)
+will additionally attach the class `"zresid"` to the returned object.
 
 ## Details
 
@@ -76,7 +78,8 @@ The output is a matrix of Z-residuals with one column per replication.
 [`log_pred_dist_NB`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_NB.md),
 [`post_logrpp`](https://tiw150.github.io/Zresidual/reference/post_logrpp.md),
 [`iscv_logrpp`](https://tiw150.github.io/Zresidual/reference/iscv_logrpp.md),
-and the S3 wrapper \[Zresidual.negbinomial.brms()\].
+and the S3 wrapper
+[`Zresidual.negbinomial.brms()`](https://tiw150.github.io/Zresidual/reference/Zresidual.negbinomial.brms.md).
 
 ## Examples
 

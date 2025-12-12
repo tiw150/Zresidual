@@ -24,8 +24,8 @@ predictive samples.
 \details{
 The function computes a stabilized version of the posterior predictive p-values:
 \enumerate{
-  \item It sums the log-CDF and log-PMF across posterior samples using log-sum-exp for numerical stability.
-  \item Probabilities exactly equal to 0 or 1 are replaced with small bounds (\eqn{10^{-5}} and \eqn{9 \cdot 10^{-5}}) to avoid numerical issues in further computations.
+\item It sums the log-CDF and log-PMF across posterior samples using log-sum-exp for numerical stability.
+\item Probabilities exactly equal to 0 or 1 are replaced with small bounds (\eqn{10^{-5}} and \eqn{9 \cdot 10^{-5}}) to avoid numerical issues in further computations.
 }
 }
 \examples{

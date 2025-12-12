@@ -24,23 +24,23 @@ covariates. Residuals are evaluated for the observations in \code{newdata}.}
 compute. Must be one of \code{"censored Z-residual"},
 \code{"Cox-Snell"}, \code{"martingale"}, or \code{"deviance"}. The
 default is the full vector \code{c("censored Z-residual", "Cox-Snell",
-"martingale", "deviance")}, but in typical use a single value should be
+  "martingale", "deviance")}, but in typical use a single value should be
 supplied.}
 }
 \value{
 A numeric matrix of dimension \eqn{n \times 1}, where \eqn{n} is
-  the number of observations in \code{newdata}. The single column is named
-  according to \code{residual.type}. Several attributes are attached:
-  \itemize{
-    \item \code{Survival.Prob}: vector of survival probabilities
-      \eqn{S_i(t_i)}.
-    \item \code{linear.pred}: vector of linear predictors \eqn{\eta_i}.
-    \item \code{covariates}: model matrix of covariates (columns used in
-      the linear predictor).
-    \item \code{censored.status}: event indicator (1 = event, 0 = censored).
-    \item \code{object.model.frame}: the \code{model.frame} constructed
-      from \code{fit_coxph$formula} and \code{newdata}.
-  }
+the number of observations in \code{newdata}. The single column is named
+according to \code{residual.type}. Several attributes are attached:
+\itemize{
+\item \code{Survival.Prob}: vector of survival probabilities
+\eqn{S_i(t_i)}.
+\item \code{linear.pred}: vector of linear predictors \eqn{\eta_i}.
+\item \code{covariates}: model matrix of covariates (columns used in
+the linear predictor).
+\item \code{censored.status}: event indicator (1 = event, 0 = censored).
+\item \code{object.model.frame}: the \code{model.frame} constructed
+from \code{fit_coxph$formula} and \code{newdata}.
+}
 }
 \description{
 Compute several types of residuals (censored Z-residuals, Cox–Snell,

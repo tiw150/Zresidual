@@ -38,9 +38,9 @@ log scale for numerical stability.
 
 Internally, this function:
 \itemize{
-  \item Generates uniform random values \eqn{u_i} for each observation.
-  \item Computes \eqn{\log(u_i)} and adds it to \eqn{\log(\text{PMF})}.
-  \item Applies numerically stable log-sum-exp operations column-wise.
+\item Generates uniform random values \eqn{u_i} for each observation.
+\item Computes \eqn{\log(u_i)} and adds it to \eqn{\log(\text{PMF})}.
+\item Applies numerically stable log-sum-exp operations column-wise.
 }
 
 Values numerically equal to 0 or 1 are replaced by \eqn{\log(1e-5)} and

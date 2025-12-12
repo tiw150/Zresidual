@@ -7,11 +7,11 @@
 \method{Zresidual}{negbinomial.brms}(object, nrep = 1, data, type, method = "iscv", ...)
 }
 \arguments{
-\item{object}{A `brmsfit` object with negative binomial family
-(`brms::family(object)$family == "negbinomial"`).}
+\item{object}{A \code{brmsfit} object with negative binomial family
+(\code{brms::family(object)$family == "negbinomial"}).}
 
 \item{nrep}{Integer; the number of replicated Z-residual sets to
-generate. Default is `1`.}
+generate. Default is \code{1}.}
 
 \item{data}{Optional data frame used for prediction or residual computation.
 If \code{NULL} (default), the data stored inside the \code{brmsfit} object are used.}
@@ -20,31 +20,31 @@ If \code{NULL} (default), the data stored inside the \code{brmsfit} object are u
 interpreted by the underlying implementation (if used).}
 
 \item{method}{Character string specifying the residual calculation method:
-`"iscv"` for importance-sampled cross-validated randomized predictive
-p-values, `"rpost"` for posterior predictive p-values, or
-`"mpost"` for marginal posterior predictive p-values. Default is
-`"iscv"`.}
+\code{"iscv"} for importance-sampled cross-validated randomized predictive
+p-values, \code{"rpost"} for posterior predictive p-values, or
+\code{"mpost"} for marginal posterior predictive p-values. Default is
+\code{"iscv"}.}
 
 \item{...}{Further arguments passed to the underlying implementation
-function [Zresidual_negbinomial_brms()].}
+function \code{\link[=Zresidual_negbinomial_brms]{Zresidual_negbinomial_brms()}}.}
 }
 \value{
 A numeric matrix of Z-residuals (one column per replication) as returned
-by [Zresidual_negbinomial_brms()], with the class `"zresid"` added to
+by \code{\link[=Zresidual_negbinomial_brms]{Zresidual_negbinomial_brms()}}, with the class \code{"zresid"} added to
 its class vector.
 }
 \description{
-`Zresidual.negbinomial.brms()` is the S3 method for [Zresidual()]
-when applied to negative binomial models fitted with [brms::brm()]
-and `family = negbinomial()`. Objects are dispatched here when
-the fitted object is a `"brmsfit"` with
-`brms::family(object)$family == "negbinomial"` and has been
-internally tagged with the class `"negbinomial.brms"` by
-[Zresidual()].
+\code{Zresidual.negbinomial.brms()} is the S3 method for \code{\link[=Zresidual]{Zresidual()}}
+when applied to negative binomial models fitted with \code{\link[brms:brm]{brms::brm()}}
+and \code{family = negbinomial()}. Objects are dispatched here when
+the fitted object is a \code{"brmsfit"} with
+\code{brms::family(object)$family == "negbinomial"} and has been
+internally tagged with the class \code{"negbinomial.brms"} by
+\code{\link[=Zresidual]{Zresidual()}}.
 
-In normal use, users should call [Zresidual()] directly on the
-`brmsfit` object (for example `Zresidual(fit)`), rather than calling
-`Zresidual.negbinomial.brms()` explicitly.
+In normal use, users should call \code{\link[=Zresidual]{Zresidual()}} directly on the
+\code{brmsfit} object (for example \code{Zresidual(fit)}), rather than calling
+\code{Zresidual.negbinomial.brms()} explicitly.
 }
 \examples{
 \dontrun{

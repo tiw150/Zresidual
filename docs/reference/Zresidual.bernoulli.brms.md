@@ -1,15 +1,18 @@
 # Z-residuals for Bernoulli models fitted with brms
 
-\`Zresidual.bernoulli.brms()\` is the S3 method for \[Zresidual()\] when
-applied to Bernoulli (binary) regression models fitted with
-\[brms::brm()\] and \`family = bernoulli()\`. Objects are dispatched
-here when the fitted object is a \`"brmsfit"\` with family
-\`"bernoulli"\` and has been internally tagged with the class
-\`"bernoulli.brms"\` by \[Zresidual()\].
+`Zresidual.bernoulli.brms()` is the S3 method for
+[`Zresidual()`](https://tiw150.github.io/Zresidual/reference/Zresidual.md)
+when applied to Bernoulli (binary) regression models fitted with
+[`brms::brm()`](https://paulbuerkner.com/brms/reference/brm.html) and
+`family = bernoulli()`. Objects are dispatched here when the fitted
+object is a `"brmsfit"` with family `"bernoulli"` and has been
+internally tagged with the class `"bernoulli.brms"` by
+[`Zresidual()`](https://tiw150.github.io/Zresidual/reference/Zresidual.md).
 
-In most cases users should call \[Zresidual()\] directly on the
-\`brmsfit\` object, e.g. \`Zresidual(fit)\`, rather than calling
-\`Zresidual.bernoulli.brms()\` explicitly.
+In most cases users should call
+[`Zresidual()`](https://tiw150.github.io/Zresidual/reference/Zresidual.md)
+directly on the `brmsfit` object, e.g. `Zresidual(fit)`, rather than
+calling `Zresidual.bernoulli.brms()` explicitly.
 
 ## Usage
 
@@ -22,18 +25,17 @@ Zresidual(object, nrep = 1, data = NULL, type = NULL, method = "iscv", ...)
 
 - object:
 
-  A \`brmsfit\` object with \`brms::family(object)\$family ==
-  "bernoulli"\`.
+  A `brmsfit` object with `brms::family(object)$family == "bernoulli"`.
 
 - nrep:
 
   Integer; number of replicated Z-residual sets to generate. Defaults to
-  \`1\`.
+  `1`.
 
 - data:
 
-  Optional data frame used for prediction. If \`NULL\`, the data stored
-  inside the \`brmsfit\` object are used.
+  Optional data frame used for prediction. If `NULL`, the data stored
+  inside the `brmsfit` object are used.
 
 - type:
 
@@ -42,11 +44,10 @@ Zresidual(object, nrep = 1, data = NULL, type = NULL, method = "iscv", ...)
 
 - method:
 
-  Character string specifying the residual calculation method:
-  \`"iscv"\` for importance-sampled cross-validated randomized
-  predictive p-values, \`"rpost"\` for randomized posterior predictive
-  p-values, or \`"mpost"\` for middle-value posterior predictive
-  p-values. Default is \`"iscv"\`.
+  Character string specifying the residual calculation method: `"iscv"`
+  for importance-sampled cross-validated randomized predictive p-values,
+  `"rpost"` for randomized posterior predictive p-values, or `"mpost"`
+  for middle-value posterior predictive p-values. Default is `"iscv"`.
 
 - ...:
 
@@ -55,8 +56,9 @@ Zresidual(object, nrep = 1, data = NULL, type = NULL, method = "iscv", ...)
 ## Value
 
 A numeric matrix of Z-residuals with one column per replication, as
-returned by \[Zresidual_bernoulli_brms()\], but with the class
-\`"zresid"\` added to its class vector.
+returned by
+[`Zresidual_bernoulli_brms()`](https://tiw150.github.io/Zresidual/reference/Zresidual_bernoulli_brms.md),
+but with the class `"zresid"` added to its class vector.
 
 ## Examples
 

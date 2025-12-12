@@ -13,7 +13,7 @@ CV_Zresidual_survreg_survival(fit.survreg, data, nfolds, foldlist, n.rep, ...)
 recommended if the original model was fit without specifying the \code{data}
 argument or if \code{foldlist} is supplied.}
 
-\item{nfolds}{Integer. Number of folds for cross-validation ($K$ in K-fold CV).}
+\item{nfolds}{Integer. Number of folds for cross-validation (\eqn{K}{K} in K-fold CV).}
 
 \item{foldlist}{Optional list specifying custom fold assignments. If \code{NULL},
 folds are generated internally, typically stratified by the survival response.}
@@ -26,28 +26,28 @@ observation (Monte Carlo replications for censored observations).}
 }
 \value{
 A numeric matrix containing the cross-validated Z-residuals (\eqn{N \times nrep}{N x nrep}),
-  where $N$ is the total number of observations. The matrix carries the following
-  diagnostic attributes:
+where \eqn{N}{N} is the total number of observations. The matrix carries the following
+diagnostic attributes:
 \itemize{
-  \item \code{Survival.Prob}: Out-of-sample predicted survival probabilities.
-  \item \code{linear.pred}: Out-of-sample linear predictors (on the \code{survreg} scale).
-  \item \code{censored.status}: Event indicator (1 = event, 0 = censored).
-  \item \code{covariates}: Data frame of covariates used.
-  \item \code{object.model.frame}: The full model frame used for CV residual calculation.
-  \item \code{type}: Character string, typically \code{"survival"}.
+\item \code{Survival.Prob}: Out-of-sample predicted survival probabilities.
+\item \code{linear.pred}: Out-of-sample linear predictors (on the \code{survreg} scale).
+\item \code{censored.status}: Event indicator (1 = event, 0 = censored).
+\item \code{covariates}: Data frame of covariates used.
+\item \code{object.model.frame}: The full model frame used for CV residual calculation.
+\item \code{type}: Character string, typically \code{"survival"}.
 }
 }
 \description{
 Internal function to compute cross-validated Z-residuals for
-**parametric** survival regression models fitted with \code{\link[survival]{survreg}}.
+\strong{parametric} survival regression models fitted with \code{\link[survival]{survreg}}.
 }
 \details{
 This function implements the K-fold cross-validation procedure. In each fold,
 the parametric survival model (preserving the original distribution, e.g., Weibull)
 is refitted on the training data. The out-of-sample randomized Z-residuals
-are then calculated on the held-out test data. 
+are then calculated on the held-out test data.
 
-**Data Handling Note:** If \code{data} is \code{NULL}, the internal model frame
+\strong{Data Handling Note:} If \code{data} is \code{NULL}, the internal model frame
 must be manually reconstructed into a standard data frame (un-packing the
 \code{Surv} object) before the \code{survreg} model can be successfully refitted
 on the training subset of each fold. Failed model fits during cross-validation

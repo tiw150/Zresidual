@@ -62,18 +62,17 @@ The input \code{x} is typically obtained from
 
 The \code{x_axis_var} argument controls the x-axis:
 \itemize{
- \item \code{"index"}: plot martingale residuals against observation index.
- \item \code{"lp"}: plot martingale residuals against the linear predictor
- (attribute \code{"linear.pred"}).
- \item \code{"covariate"}: prompt the user and print the available
- covariate names to the console.
- \item a character string matching one of the covariate names in
- \code{attr(x, "covariates")}: plot martingale residuals against that covariate.
+\item \code{"index"}: plot martingale residuals against observation index.
+\item \code{"lp"}: plot martingale residuals against the linear predictor
+(attribute \code{"linear.pred"}).
+\item \code{"covariate"}: prompt the user and print the available
+covariate names to the console.
+\item a character string matching one of the covariate names in
+\code{attr(x, "covariates")}: plot martingale residuals against that covariate.
 }
 
 In the \code{"lp"} and covariate cases, a LOWESS smooth is added to the
 plot to highlight systematic patterns in the residuals.
-
 
 Non-finite martingale residuals are detected and truncated to lie slightly
 beyond the largest finite residual, with a warning message printed to alert

@@ -1,6 +1,6 @@
 # Z-residuals for Cox proportional hazards models (survival package)
 
-\`Zresidual.coxph.survival()\` computes randomized Z-residuals for Cox
+`Zresidual.coxph.survival()` computes randomized Z-residuals for Cox
 proportional hazards models fitted with
 [`coxph`](https://rdrr.io/pkg/survival/man/coxph.html), supporting both
 standard and shared frailty models. This S3 method is designed to be
@@ -9,7 +9,7 @@ called via the generic function
 
 The function automatically detects the presence of a frailty term (e.g.,
 `frailty(group)`) and dispatches the calculation to one of two internal
-implementations. These residuals are intended for \*\*in-sample\*\*
+implementations. These residuals are intended for **in-sample**
 diagnostics and model assessment.
 
 ## Usage
@@ -93,7 +93,7 @@ This method dispatches work based on the model formula:
   requires the data used for fitting (`traindata`) to reconstruct the
   baseline hazard and estimate the frailty term.
 
-\*\*Randomization for Censored Observations:\*\* Since the true survival
+**Randomization for Censored Observations:** Since the true survival
 probability for a censored observation \$i\$ is known only to be greater
 than \\S_i(t_i)\\, the Z-residual uses a randomized survival
 probability: \\S\_{i, \text{rand}}(t_i) = S_i(t_i) \cdot U\\, where \\U

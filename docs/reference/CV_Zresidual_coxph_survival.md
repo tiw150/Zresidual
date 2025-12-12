@@ -1,7 +1,7 @@
 # Cross-validated Z-residuals for Standard Cox Models
 
 Internal function to compute cross-validated Z-residuals for
-\*\*standard\*\* Cox proportional hazards models (without frailty).
+**standard** Cox proportional hazards models (without frailty).
 
 ## Usage
 

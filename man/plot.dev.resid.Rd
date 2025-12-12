@@ -62,13 +62,13 @@ The input \code{x} is typically obtained from
 
 The \code{x_axis_var} argument controls the x-axis:
 \itemize{
- \item \code{"index"}: plot deviance residuals against observation index.
- \item \code{"lp"}: plot deviance residuals against the linear predictor
- (attribute \code{"linear.pred"}).
- \item \code{"covariate"}: prompt the user and print the available
- covariate names to the console.
- \item a character string matching one of the covariate names in
- \code{attr(x, "covariates")}: plot deviance residuals against that covariate.
+\item \code{"index"}: plot deviance residuals against observation index.
+\item \code{"lp"}: plot deviance residuals against the linear predictor
+(attribute \code{"linear.pred"}).
+\item \code{"covariate"}: prompt the user and print the available
+covariate names to the console.
+\item a character string matching one of the covariate names in
+\code{attr(x, "covariates")}: plot deviance residuals against that covariate.
 }
 
 In the \code{"lp"} and covariate cases, a LOWESS smooth is added to the

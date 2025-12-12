@@ -7,41 +7,41 @@
 \method{Zresidual}{bernoulli.brms}(object, nrep = 1, data = NULL, type = NULL, method = "iscv", ...)
 }
 \arguments{
-\item{object}{A `brmsfit` object with `brms::family(object)$family == "bernoulli"`.}
+\item{object}{A \code{brmsfit} object with \code{brms::family(object)$family == "bernoulli"}.}
 
 \item{nrep}{Integer; number of replicated Z-residual sets to generate.
-Defaults to `1`.}
+Defaults to \code{1}.}
 
-\item{data}{Optional data frame used for prediction. If `NULL`, the
-data stored inside the `brmsfit` object are used.}
+\item{data}{Optional data frame used for prediction. If \code{NULL}, the
+data stored inside the \code{brmsfit} object are used.}
 
 \item{type}{Optional character string controlling the residual type,
 interpreted by the underlying implementation (if used).}
 
 \item{method}{Character string specifying the residual calculation method:
-`"iscv"` for importance-sampled cross-validated randomized predictive
-p-values, `"rpost"` for randomized posterior predictive p-values, or
-`"mpost"` for middle-value posterior predictive p-values. Default is
-`"iscv"`.}
+\code{"iscv"} for importance-sampled cross-validated randomized predictive
+p-values, \code{"rpost"} for randomized posterior predictive p-values, or
+\code{"mpost"} for middle-value posterior predictive p-values. Default is
+\code{"iscv"}.}
 
 \item{...}{Further arguments passed to the underlying implementation}
 }
 \value{
 A numeric matrix of Z-residuals with one column per replication, as
-returned by [Zresidual_bernoulli_brms()], but with the class `"zresid"`
+returned by \code{\link[=Zresidual_bernoulli_brms]{Zresidual_bernoulli_brms()}}, but with the class \code{"zresid"}
 added to its class vector.
 }
 \description{
-`Zresidual.bernoulli.brms()` is the S3 method for [Zresidual()] when
+\code{Zresidual.bernoulli.brms()} is the S3 method for \code{\link[=Zresidual]{Zresidual()}} when
 applied to Bernoulli (binary) regression models fitted with
-[brms::brm()] and `family = bernoulli()`. Objects are dispatched here
-when the fitted object is a `"brmsfit"` with family `"bernoulli"` and
-has been internally tagged with the class `"bernoulli.brms"` by
-[Zresidual()].
+\code{\link[brms:brm]{brms::brm()}} and \code{family = bernoulli()}. Objects are dispatched here
+when the fitted object is a \code{"brmsfit"} with family \code{"bernoulli"} and
+has been internally tagged with the class \code{"bernoulli.brms"} by
+\code{\link[=Zresidual]{Zresidual()}}.
 
-In most cases users should call [Zresidual()] directly on the
-`brmsfit` object, e.g. `Zresidual(fit)`, rather than calling
-`Zresidual.bernoulli.brms()` explicitly.
+In most cases users should call \code{\link[=Zresidual]{Zresidual()}} directly on the
+\code{brmsfit} object, e.g. \code{Zresidual(fit)}, rather than calling
+\code{Zresidual.bernoulli.brms()} explicitly.
 }
 \examples{
 \dontrun{

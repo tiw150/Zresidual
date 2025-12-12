@@ -1,14 +1,17 @@
 # Z-residuals for parametric survival regression models (survival)
 
-S3 method for \[Zresidual()\] when the fitted model is a
-\[survival::survreg()\] object (internally tagged as
-\`"survreg.survival"\`). This is a thin wrapper around the existing
-\`Zresidual.survreg()\` core implementation: it simply passes the fitted
-object and optional \`data\` to the core function and then adds the
-\`"zresid"\` class.
+S3 method for
+[`Zresidual()`](https://tiw150.github.io/Zresidual/reference/Zresidual.md)
+when the fitted model is a
+[`survival::survreg()`](https://rdrr.io/pkg/survival/man/survreg.html)
+object (internally tagged as `"survreg.survival"`). This is a thin
+wrapper around the existing `Zresidual.survreg()` core implementation:
+it simply passes the fitted object and optional `data` to the core
+function and then adds the `"zresid"` class.
 
-Users are expected to call \[Zresidual()\] directly rather than calling
-\`Zresidual.survreg.survival()\`.
+Users are expected to call
+[`Zresidual()`](https://tiw150.github.io/Zresidual/reference/Zresidual.md)
+directly rather than calling `Zresidual.survreg.survival()`.
 
 ## Usage
 
@@ -21,23 +24,25 @@ Zresidual(object, nrep = 1, data = NULL, type = NULL, method = NULL, ...)
 
 - object:
 
-  A fitted \[survival::survreg()\] model.
+  A fitted
+  [`survival::survreg()`](https://rdrr.io/pkg/survival/man/survreg.html)
+  model.
 
 - nrep:
 
   Integer; number of randomized Z-residual replicates to generate.
-  Defaults to \`1\`.
+  Defaults to `1`.
 
 - data:
 
   Optional data frame containing the survival response and covariates;
-  if \`NULL\`, the original model frame is used.
+  if `NULL`, the original model frame is used.
 
 - type:
 
   Optional character string controlling the residual type, interpreted
-  by the underlying implementation (if used). For \`survreg\` models,
-  this is typically set internally to `"survival"`.
+  by the underlying implementation (if used). For `survreg` models, this
+  is typically set internally to `"survival"`.
 
 - method:
 
@@ -53,8 +58,8 @@ Zresidual(object, nrep = 1, data = NULL, type = NULL, method = NULL, ...)
 ## Value
 
 A numeric matrix of dimension \\n \times\\ `nrep`, with additional
-attributes as produced by \`Zresidual_survreg_survival()\`. The returned
-object is given class \`"zresid"\` in addition to any existing classes.
+attributes as produced by `Zresidual_survreg_survival()`. The returned
+object is given class `"zresid"` in addition to any existing classes.
 
 ## Examples
 

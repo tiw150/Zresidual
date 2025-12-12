@@ -14,8 +14,8 @@ and \code{shape} (dispersion parameter).}
 \value{
 A list with the following components:
 \describe{
-  \item{\code{lpmf_hat}}{A matrix of log-PMF values (posterior samples × observations).}
-  \item{\code{lcdf_hat}}{A matrix of log-CDF values (posterior samples × observations).}
+\item{\code{lpmf_hat}}{A matrix of log-PMF values (posterior samples × observations).}
+\item{\code{lcdf_hat}}{A matrix of log-CDF values (posterior samples × observations).}
 }
 }
 \description{
@@ -28,9 +28,9 @@ and evaluates the predictive distributions across all posterior draws.
 \details{
 For each posterior draw and observation, the function computes:
 \itemize{
-  \item \code{lpmf_hat}: Log predictive mass function values using \code{pdf.tnb()}.
-  \item \code{lcdf_hat}: Log cumulative distribution function values
-  using \code{cdf.tnb()} with \code{lower.tail = FALSE}.
+\item \code{lpmf_hat}: Log predictive mass function values using \code{pdf.tnb()}.
+\item \code{lcdf_hat}: Log cumulative distribution function values
+using \code{cdf.tnb()} with \code{lower.tail = FALSE}.
 }
 }
 \examples{

@@ -1,7 +1,7 @@
 # Z-residuals for Standard Cox Models (Internal Worker)
 
-Internal function to compute randomized Z-residuals for a
-\*\*standard\*\* Cox proportional hazards model (without frailty).
+Internal function to compute randomized Z-residuals for a **standard**
+Cox proportional hazards model (without frailty).
 
 ## Usage
 

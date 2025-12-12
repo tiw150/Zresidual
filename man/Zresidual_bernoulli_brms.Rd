@@ -14,20 +14,20 @@ Zresidual_bernoulli_brms(
 )
 }
 \arguments{
-\item{fit}{A fitted `brmsfit` model object with Bernoulli family.}
+\item{fit}{A fitted \code{brmsfit} model object with Bernoulli family.}
 
 \item{method}{Character string specifying the residual calculation method:
-`"iscv"` for importance-sampled cross-validated randomized predictive
-p-values, `"rpost"` for randomized posterior predictive p-values, or
-`"mpost"` for middle-value posterior predictive p-values. Default is
-`"iscv"`.}
+\code{"iscv"} for importance-sampled cross-validated randomized predictive
+p-values, \code{"rpost"} for randomized posterior predictive p-values, or
+\code{"mpost"} for middle-value posterior predictive p-values. Default is
+\code{"iscv"}.}
 
 \item{n.rep}{Integer; the number of replicated Z-residual sets to
-generate. Default is `1`.}
+generate. Default is \code{1}.}
 
 \item{data}{Optional data frame used to override the data stored inside
-`fit` for prediction and diagnostic calculation. If `NULL`, the data
-embedded in `fit` are used.}
+\code{fit} for prediction and diagnostic calculation. If \code{NULL}, the data
+embedded in \code{fit} are used.}
 
 \item{type}{Optional character string controlling the residual type; the
 meaning is determined by the underlying implementation (if used).}
@@ -37,33 +37,33 @@ meaning is determined by the underlying implementation (if used).}
 \value{
 A numeric matrix of Z-residuals with attributes:
 \itemize{
-  \item \code{type}: Type of outcome (Bernoulli).
-  \item \code{zero_id}: Indices of zero outcomes.
-  \item \code{log_pmf}: Log-probability mass function values.
-  \item \code{log_cdf}: Log-cumulative distribution function values.
-  \item \code{covariates}: Model covariates.
-  \item \code{linear.pred}: Linear predictor values from the fitted model.
+\item \code{type}: Type of outcome (Bernoulli).
+\item \code{zero_id}: Indices of zero outcomes.
+\item \code{log_pmf}: Log-probability mass function values.
+\item \code{log_cdf}: Log-cumulative distribution function values.
+\item \code{covariates}: Model covariates.
+\item \code{linear.pred}: Linear predictor values from the fitted model.
 }
 }
 \description{
 Computes Z-residuals for a fitted Bayesian Bernoulli/Logistic (binary)
-model fitted with [brms::brm()] and `family = bernoulli()`. Z-residuals
+model fitted with \code{\link[brms:brm]{brms::brm()}} and \code{family = bernoulli()}. Z-residuals
 are calculated using posterior predictive methods and can be used for
 model diagnostics.
 
-This is an internal workhorse for [Zresidual.bernoulli.brms()] and is
+This is an internal workhorse for \code{\link[=Zresidual.bernoulli.brms]{Zresidual.bernoulli.brms()}} and is
 not intended to be called directly by end users.
 }
 \details{
 The function typically performs the following steps:
 \enumerate{
-  \item Extracts the observed response vector from the model data.
-  \item Computes the log-PMF and log-CDF for the Bernoulli model using
-        \code{\link{log_pred_dist_bern}}.
-  \item Generates posterior predictive p-values according to the
-        specified \code{method}.
-  \item Converts the p-values to Z-residuals via the negative quantile
-        of the standard normal distribution.
+\item Extracts the observed response vector from the model data.
+\item Computes the log-PMF and log-CDF for the Bernoulli model using
+\code{\link{log_pred_dist_bern}}.
+\item Generates posterior predictive p-values according to the
+specified \code{method}.
+\item Converts the p-values to Z-residuals via the negative quantile
+of the standard normal distribution.
 }
 
 The output is a matrix of Z-residuals with one column per replication.
@@ -71,6 +71,6 @@ The output is a matrix of Z-residuals with one column per replication.
 \seealso{
 \code{\link{log_pred_dist_bern}}, \code{\link{post_logrpp}},
 \code{\link{iscv_logrpp}},
-and the S3 wrapper [Zresidual.bernoulli.brms()].
+and the S3 wrapper \code{\link[=Zresidual.bernoulli.brms]{Zresidual.bernoulli.brms()}}.
 }
 \keyword{internal}

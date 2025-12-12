@@ -46,35 +46,35 @@ This section demonstrates the definitions of posterior predictive
 quantities including the posterior predictive PMF, survival function,
 and RPP for Logistic Regression.
 
-Let \\y_i \in \\0, 1\\\\, where \\y_i = 1\\ indicates a success, and
-\\y_i = 0\\ indicates a failure for the \\i^th\\ observations.
+Let y_i \in \\0, 1\\, where y_i = 1 indicates a success, and y_i = 0
+indicates a failure for the i^th observations.
 
-Using Bayesian estimation (e.g., via the `brms` package), we draw \\T\\
-samples from the posterior distribution. Let \\\theta^{(t)}\\ denote the
-\\t^{th}\\ posterior draw.
+Using Bayesian estimation (e.g., via the `brms` package), we draw T
+samples from the posterior distribution. Let \theta^{(t)} denote the
+t^{th} posterior draw.
 
-For a given observation \\y_i^\text{obs}\\, the posterior predictive PMF
-and survival functions are defined below.
+For a given observation y_i^\text{obs}, the posterior predictive PMF and
+survival functions are defined below.
 
-\\\begin{equation} p_i^{\text{post}, \text{logit}}(y_i^\text{obs}) =
+\begin{equation} p_i^{\text{post}, \text{logit}}(y_i^\text{obs}) =
 \frac{1}{T} \sum\_{t=1}^T \begin{cases} {\pi^o_i}^{(t)} & \text{if }
 y_i^\text{obs} = 1, \\ 1 - {\pi^o_i}^{(t)} & \text{if } y_i^\text{obs} =
-0,\\ 0 & \text{otherwise.} \end{cases} \end{equation}\\
+0,\\ 0 & \text{otherwise.} \end{cases} \end{equation}
 
-\\\begin{equation} S_i^{\text{post}, \text{logit}}(y_i^\text{obs}) =
+\begin{equation} S_i^{\text{post}, \text{logit}}(y_i^\text{obs}) =
 \frac{1}{T} \sum\_{t=1}^T \begin{cases} 1 & \text{if } y_i^\text{obs} \<
 0, \\ 1-{\pi^o_i}^{(t)} & \text{if } 0 \le y_i^\text{obs} \< 1, \\ 0, &
-\text{if } y_i^\text{obs} \ge 1. \end{cases} \end{equation}\\
+\text{if } y_i^\text{obs} \ge 1. \end{cases} \end{equation}
 
-For any observed value \\y_i^\text{obs}\\, we define: \\\begin{equation}
+For any observed value y_i^\text{obs}, we define: \begin{equation}
 \label{eq:post_rpp}\text{rpp}\_i(y_i^\text{obs} \| \theta^{(t)}) =
 S_i(y_i^\text{obs} \| \theta^{(t)}) + U_i \times p_i(y_i^\text{obs} \|
-\theta^{(t)}) \end{equation}\\ where \\U_i \sim \text{Uniform}(0,1)\\.
-Here, \\y_i^\text{obs}\\ is the observed value, which can refer to
-either success or failure. Then, the Z-residual of the response variable
-is, \\\begin{equation} \label{eq:z_residual} z_i =
+\theta^{(t)}) \end{equation} where U_i \sim \text{Uniform}(0,1). Here,
+y_i^\text{obs} is the observed value, which can refer to either success
+or failure. Then, the Z-residual of the response variable is,
+\begin{equation} \label{eq:z_residual} z_i =
 -\Phi^{-1}(\text{rpp}\_i(y_i^\text{obs}\|\theta)) \sim N(0, 1)
-\end{equation}\\ where (^{-1}(.)) is the quantile function of standard
+\end{equation} where (^{-1}(.)) is the quantile function of standard
 normal distribution.
 
 ## 4 A Simulation Example

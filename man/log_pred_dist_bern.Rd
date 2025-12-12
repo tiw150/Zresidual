@@ -12,8 +12,8 @@ log_pred_dist_bern(fit)
 \value{
 A list containing:
 \itemize{
-  \item \code{lpmf_hat}: numeric matrix of log-PMF values (posterior draws × observations).
-  \item \code{lcdf_hat}: numeric matrix of log-CDF values (posterior draws × observations).
+\item \code{lpmf_hat}: numeric matrix of log-PMF values (posterior draws × observations).
+\item \code{lcdf_hat}: numeric matrix of log-CDF values (posterior draws × observations).
 }
 }
 \description{
@@ -27,8 +27,8 @@ The function extracts the posterior predictions of the Bernoulli component
 
 For each observation:
 \itemize{
-  \item Computes the log-PMF of the observed binary outcome.
-  \item Computes the log-CDF (upper-tail probability) of the observed outcome.
+\item Computes the log-PMF of the observed binary outcome.
+\item Computes the log-CDF (upper-tail probability) of the observed outcome.
 }
 This produces matrices of size \eqn{M \times N}, where \eqn{M} is the number of posterior draws
 and \eqn{N} is the number of observations.

@@ -34,7 +34,7 @@ CV.Zresidual(object, nfolds, foldlist = NULL, data = NULL, nrep = 1, ...)
 - data:
 
   Optional data frame used to refit the model during cross-validation.
-  It is \*\*highly recommended\*\* to supply the original data here to
+  It is **highly recommended** to supply the original data here to
   ensure correct model refitting in each fold, especially when the
   original call was complex.
 
@@ -53,7 +53,7 @@ CV.Zresidual(object, nfolds, foldlist = NULL, data = NULL, nrep = 1, ...)
 
 An object of class `"cvzresid"` containing cross-validated Z-residual
 diagnostics for the parametric survival model. It is a numeric matrix
-with \$N\$ rows and `nrep` columns, accompanied by diagnostic attributes
+with \\N\\ rows and `nrep` columns, accompanied by diagnostic attributes
 (see
 [`CV_Zresidual_survreg_survival`](https://tiw150.github.io/Zresidual/reference/CV_Zresidual_survreg_survival.md)
 for details).
@@ -62,11 +62,11 @@ for details).
 
 This method delegates the actual cross-validation work to
 [`CV_Zresidual_survreg_survival`](https://tiw150.github.io/Zresidual/reference/CV_Zresidual_survreg_survival.md),
-which handles the iterative refitting of the `survreg` model on \$K-1\$
+which handles the iterative refitting of the `survreg` model on \\K-1\\
 folds and computes the randomized Z-residuals on the held-out fold.
 
-The randomized Z-residual, \\Z\_{ij}\\, for the \$j\$-th observation in
-the \$i\$-th fold is defined as: \$\$Z\_{ij} = ...\$\$ is computed based
+The randomized Z-residual, \\Z\_{ij}\\, for the \\j\\-th observation in
+the \\i\\-th fold is defined as: \$\$Z\_{ij} = ...\$\$ is computed based
 on the predicted out-of-sample survival probability
 \\\hat{S}\_{\text{train}\_i}(t_j)\\.
 
@@ -78,7 +78,7 @@ classes returned by the internal worker.
 [`CV_Zresidual_survreg_survival`](https://tiw150.github.io/Zresidual/reference/CV_Zresidual_survreg_survival.md),
 the generic
 [`CV.Zresidual`](https://tiw150.github.io/Zresidual/reference/CV.Zresidual.md),
-and the \`survival\` fitting function
+and the `survival` fitting function
 [`survreg`](https://rdrr.io/pkg/survival/man/survreg.html).
 
 ## Examples

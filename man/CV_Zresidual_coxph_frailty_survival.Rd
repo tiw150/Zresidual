@@ -29,12 +29,12 @@ model was fit without specifying the \code{data} argument or if \code{foldlist} 
 }
 \value{
 A matrix containing the cross-validated Z-residuals (\eqn{N \times nrep}{N x nrep}) with
- diagnostic attributes: \code{Survival.Prob}, \code{linear.pred},
- \code{censored.status}, \code{covariates}, and \code{object.model.frame}.
+diagnostic attributes: \code{Survival.Prob}, \code{linear.pred},
+\code{censored.status}, \code{covariates}, and \code{object.model.frame}.
 }
 \description{
 Internal function to compute cross-validated Z-residuals for
-**shared frailty** Cox proportional hazards models.
+\strong{shared frailty} Cox proportional hazards models.
 }
 \details{
 This function implements the K-fold cross-validation procedure specifically

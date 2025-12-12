@@ -2,7 +2,7 @@ url: https://tiw150.github.io/Zresidual/
 template:
   bootstrap: 5
   bootswatch: flatly
-  math-rendering: mathjax 
+  math-rendering: katex 
 articles:
   - title: "How to use various features of the package."
     contents:

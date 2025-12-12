@@ -17,7 +17,7 @@ only for positive counts (\code{y > 0}); otherwise, includes all observations.}
 }
 \value{
 A numeric matrix of predicted parameter values for each observation (columns)
-  and posterior draw (rows).
+and posterior draw (rows).
 }
 \description{
 Computes posterior predicted values for a specified distributional parameter
@@ -27,11 +27,11 @@ The function supports extracting parameters for positive counts only or for all 
 \details{
 The function performs the following steps:
 \enumerate{
-  \item Builds the model matrix for the chosen parameter and observation subset.
-  \item Extracts the corresponding posterior MCMC draws from the fitted model.
-  \item Computes the linear predictor via matrix multiplication of draws and model matrix.
-  \item Applies the link function associated with the parameter (e.g., logit, log) to obtain
-        the predicted parameter values on their natural scale.
+\item Builds the model matrix for the chosen parameter and observation subset.
+\item Extracts the corresponding posterior MCMC draws from the fitted model.
+\item Computes the linear predictor via matrix multiplication of draws and model matrix.
+\item Applies the link function associated with the parameter (e.g., logit, log) to obtain
+the predicted parameter values on their natural scale.
 }
 }
 \examples{

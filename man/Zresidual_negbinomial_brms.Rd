@@ -24,13 +24,13 @@ Default is 1.}
 \value{
 A numeric matrix of Z-residuals with attributes such as:
 \itemize{
-  \item \code{zero_id}: Indices of zero outcomes.
-  \item \code{log_pmf}: Log-probability mass function values.
-  \item \code{log_cdf}: Log-cumulative distribution function values.
-  \item \code{covariates}: Model covariates.
-  \item \code{linear.pred}: Linear predictor values from the fitted model.
+\item \code{zero_id}: Indices of zero outcomes.
+\item \code{log_pmf}: Log-probability mass function values.
+\item \code{log_cdf}: Log-cumulative distribution function values.
+\item \code{covariates}: Model covariates.
+\item \code{linear.pred}: Linear predictor values from the fitted model.
 }
-The S3 wrapper [Zresidual.negbinomial.brms()] will additionally attach
+The S3 wrapper \code{\link[=Zresidual.negbinomial.brms]{Zresidual.negbinomial.brms()}} will additionally attach
 the class \code{"zresid"} to the returned object.
 }
 \description{
@@ -39,19 +39,19 @@ Z-residuals are useful for model diagnostics, including checking fit and
 overdispersion, and can be calculated using posterior or cross-validated
 predictive p-values.
 
-This is an internal workhorse for [Zresidual.negbinomial.brms()] and
+This is an internal workhorse for \code{\link[=Zresidual.negbinomial.brms]{Zresidual.negbinomial.brms()}} and
 is not intended to be called directly by end users.
 }
 \details{
 The function typically performs the following steps:
 \enumerate{
-  \item Extracts the observed response vector from the model data.
-  \item Computes the log-PMF and log-CDF for the negative binomial model
-        using \code{\link{log_pred_dist_NB}}.
-  \item Generates randomized or posterior predictive p-values according to the
-        specified \code{method}.
-  \item Converts the p-values to Z-residuals via the negative quantile of the
-        standard normal distribution.
+\item Extracts the observed response vector from the model data.
+\item Computes the log-PMF and log-CDF for the negative binomial model
+using \code{\link{log_pred_dist_NB}}.
+\item Generates randomized or posterior predictive p-values according to the
+specified \code{method}.
+\item Converts the p-values to Z-residuals via the negative quantile of the
+standard normal distribution.
 }
 
 The output is a matrix of Z-residuals with one column per replication.
@@ -76,6 +76,6 @@ The output is a matrix of Z-residuals with one column per replication.
 \seealso{
 \code{\link{log_pred_dist_NB}}, \code{\link{post_logrpp}},
 \code{\link{iscv_logrpp}}, and the S3 wrapper
-[Zresidual.negbinomial.brms()].
+\code{\link[=Zresidual.negbinomial.brms]{Zresidual.negbinomial.brms()}}.
 }
 \keyword{internal}

@@ -6,13 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Z-residual Diagnosis for Logistic Regression • Zresidual</title>
-<!-- mathjax math --><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script><script>
-  window.MathJax = {
-    chtml: {
-      fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
-    }
-  };
-</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- katex math --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script><script src="../katex-auto.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -107,31 +102,31 @@
 <span class="header-section-number">3</span> Definitions of Z-residuals for Logistic Regression<a class="anchor" aria-label="anchor" href="#definitions-of-z-residuals-for-logistic-regression"></a>
 </h2>
 <p>This section demonstrates the definitions of posterior predictive quantities including the posterior predictive <abbr title="Probability Mass Function">PMF</abbr>, survival function, and <abbr title="Randomized Predictive P-value">RPP</abbr> for Logistic Regression.</p>
-<p>Let <span class="math inline">\(y_i \in \{0, 1\}\)</span>, where <span class="math inline">\(y_i = 1\)</span> indicates a success, and <span class="math inline">\(y_i = 0\)</span> indicates a failure for the <span class="math inline">\(i^th\)</span> observations.</p>
-<p>Using Bayesian estimation (e.g., via the <code>brms</code> package), we draw <span class="math inline">\(T\)</span> samples from the posterior distribution. Let <span class="math inline">\(\theta^{(t)}\)</span> denote the <span class="math inline">\(t^{th}\)</span> posterior draw.</p>
-<p>For a given observation <span class="math inline">\(y_i^\text{obs}\)</span>, the posterior predictive <abbr title="Probability Mass Function">PMF</abbr> and survival functions are defined below.</p>
-<p><span class="math display">\[\begin{equation}
+<p>Let <span class="math inline">y_i \in \{0, 1\}</span>, where <span class="math inline">y_i = 1</span> indicates a success, and <span class="math inline">y_i = 0</span> indicates a failure for the <span class="math inline">i^th</span> observations.</p>
+<p>Using Bayesian estimation (e.g., via the <code>brms</code> package), we draw <span class="math inline">T</span> samples from the posterior distribution. Let <span class="math inline">\theta^{(t)}</span> denote the <span class="math inline">t^{th}</span> posterior draw.</p>
+<p>For a given observation <span class="math inline">y_i^\text{obs}</span>, the posterior predictive <abbr title="Probability Mass Function">PMF</abbr> and survival functions are defined below.</p>
+<p><span class="math display">\begin{equation}
 p_i^{\text{post}, \text{logit}}(y_i^\text{obs}) = \frac{1}{T} \sum_{t=1}^T
 \begin{cases}
 {\pi^o_i}^{(t)} &amp; \text{if } y_i^\text{obs} = 1, \\
 1 - {\pi^o_i}^{(t)} &amp; \text{if } y_i^\text{obs} = 0,\\
 0 &amp; \text{otherwise.}
 \end{cases}
-\end{equation}\]</span></p>
-<p><span class="math display">\[\begin{equation}
+\end{equation}</span></p>
+<p><span class="math display">\begin{equation}
 S_i^{\text{post}, \text{logit}}(y_i^\text{obs}) = \frac{1}{T} \sum_{t=1}^T
 \begin{cases}
 1 &amp; \text{if } y_i^\text{obs} &lt; 0, \\
 1-{\pi^o_i}^{(t)} &amp; \text{if } 0 \le y_i^\text{obs} &lt; 1, \\
 0, &amp; \text{if } y_i^\text{obs} \ge 1.
 \end{cases}
-\end{equation}\]</span></p>
-<p>For any observed value <span class="math inline">\(y_i^\text{obs}\)</span>, we define: <span class="math display">\[\begin{equation}
+\end{equation}</span></p>
+<p>For any observed value <span class="math inline">y_i^\text{obs}</span>, we define: <span class="math display">\begin{equation}
 \label{eq:post_rpp}\text{rpp}_i(y_i^\text{obs} | \theta^{(t)}) = S_i(y_i^\text{obs} | \theta^{(t)}) + U_i \times p_i(y_i^\text{obs} | \theta^{(t)})
-\end{equation}\]</span> where <span class="math inline">\(U_i \sim \text{Uniform}(0,1)\)</span>. Here, <span class="math inline">\(y_i^\text{obs}\)</span> is the observed value, which can refer to either success or failure. Then, the Z-residual of the response variable is, <span class="math display">\[\begin{equation}
+\end{equation}</span> where <span class="math inline">U_i \sim \text{Uniform}(0,1)</span>. Here, <span class="math inline">y_i^\text{obs}</span> is the observed value, which can refer to either success or failure. Then, the Z-residual of the response variable is, <span class="math display">\begin{equation}
 \label{eq:z_residual}
 z_i = -\Phi^{-1}(\text{rpp}_i(y_i^\text{obs}|\theta)) \sim N(0, 1)
-\end{equation}\]</span> where (^{-1}(.)) is the quantile function of standard normal distribution.</p>
+\end{equation}</span> where (^{-1}(.)) is the quantile function of standard normal distribution.</p>
 </section><section class="level2" data-number="4"><h2 data-number="4" id="a-simulation-example">
 <span class="header-section-number">4</span> A Simulation Example<a class="anchor" aria-label="anchor" href="#a-simulation-example"></a>
 </h2>

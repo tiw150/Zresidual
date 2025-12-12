@@ -24,10 +24,10 @@
 #' @details
 #' This method delegates the actual cross-validation work to
 #' \code{\link{CV_Zresidual_survreg_survival}}, which handles the iterative
-#' refitting of the \code{survreg} model on $K-1$ folds and computes the
+#' refitting of the \code{survreg} model on \eqn{K-1}{K-1} folds and computes the
 #' randomized Z-residuals on the held-out fold. 
 #'
-#' The randomized Z-residual, \eqn{Z_{ij}}{Z\_ij}, for the $j$-th observation in the $i$-th fold is defined as:
+#' The randomized Z-residual, \eqn{Z_{ij}}{Z\_ij}, for the \eqn{j}{j}-th observation in the \eqn{i}{i}-th fold is defined as:
 #' \deqn{Z_{ij} = ...}{Z\_ij = ...} is computed based on the predicted out-of-sample survival probability \eqn{\hat{S}_{\text{train}_i}(t_j)}{S_hat_i(t_j)}.
 #'
 #' The returned object is tagged with class \code{"cvzresid"} in addition
@@ -36,7 +36,7 @@
 #' @return
 #' An object of class \code{"cvzresid"} containing cross-validated
 #' Z-residual diagnostics for the parametric survival model. It is a numeric
-#' matrix with $N$ rows and \code{nrep} columns, accompanied by diagnostic attributes
+#' matrix with \eqn{N}{N} rows and \code{nrep} columns, accompanied by diagnostic attributes
 #' (see \code{\link{CV_Zresidual_survreg_survival}} for details).
 #'
 #' @seealso
@@ -87,7 +87,7 @@ CV.Zresidual.survreg <- function(object,
 #' @param data Optional \code{data.frame} used for cross-validation. Highly
 #'   recommended if the original model was fit without specifying the \code{data}
 #'   argument or if \code{foldlist} is supplied.
-#' @param nfolds Integer. Number of folds for cross-validation ($K$ in K-fold CV).
+#' @param nfolds Integer. Number of folds for cross-validation (\eqn{K}{K} in K-fold CV).
 #' @param foldlist Optional list specifying custom fold assignments. If \code{NULL},
 #'   folds are generated internally, typically stratified by the survival response.
 #' @param n.rep Integer. Number of repeated Z-residual samples to generate per
@@ -108,7 +108,7 @@ CV.Zresidual.survreg <- function(object,
 #' result in \code{NA} residuals for the corresponding test fold.
 #'
 #' @return A numeric matrix containing the cross-validated Z-residuals (\eqn{N \times nrep}{N x nrep}),
-#'   where $N$ is the total number of observations. The matrix carries the following
+#'   where \eqn{N}{N} is the total number of observations. The matrix carries the following
 #'   diagnostic attributes:
 #' \itemize{
 #'   \item \code{Survival.Prob}: Out-of-sample predicted survival probabilities.

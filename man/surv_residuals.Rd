@@ -27,16 +27,16 @@ function, but for Cox models typically include:
 \code{"censored Z-residual"}, \code{"Cox-Snell"},
 \code{"martingale"}, and \code{"deviance"}. The default is the full
 vector \code{c("censored Z-residual", "Cox-Snell", "martingale",
-"deviance")}, which is typically resolved via \code{match.arg()} in the
+  "deviance")}, which is typically resolved via \code{match.arg()} in the
 underlying residual functions.}
 }
 \value{
 An object containing residuals, as returned by the corresponding
 lower-level function:
 \itemize{
-  \item \code{residual.coxph()} or \code{residual.coxph.frailty()} for
-        Cox / shared frailty Cox models, or
-  \item \code{residual.survreg()} for parametric survival models.
+\item \code{residual.coxph()} or \code{residual.coxph.frailty()} for
+Cox / shared frailty Cox models, or
+\item \code{residual.survreg()} for parametric survival models.
 }
 The basic structure (numeric vector or matrix) and attributes are preserved
 from the underlying function, but the returned object is assigned an
@@ -47,10 +47,10 @@ High-level wrapper to compute residuals for supported survival models,
 with a unified interface. Depending on the model type and presence of a
 shared frailty term, this function dispatches to:
 \itemize{
-  \item \code{residual.coxph()} for standard Cox proportional hazards models,
-  \item \code{residual.coxph.frailty()} for shared frailty Cox models, and
-  \item \code{residual.survreg()} for parametric survival models fitted
-        with \code{\link[survival]{survreg}}.
+\item \code{residual.coxph()} for standard Cox proportional hazards models,
+\item \code{residual.coxph.frailty()} for shared frailty Cox models, and
+\item \code{residual.survreg()} for parametric survival models fitted
+with \code{\link[survival]{survreg}}.
 }
 }
 \details{

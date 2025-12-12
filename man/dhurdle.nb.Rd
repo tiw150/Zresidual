@@ -20,8 +20,8 @@ dhurdle.nb(y, mu, size, pi, log = FALSE)
 \value{
 A numeric vector of:
 \itemize{
-  \item Probabilities \eqn{P(Y = y)} if \code{log = FALSE}.
-  \item Log-probabilities \eqn{\log P(Y = y)} if \code{log = TRUE}.
+\item Probabilities \eqn{P(Y = y)} if \code{log = FALSE}.
+\item Log-probabilities \eqn{\log P(Y = y)} if \code{log = TRUE}.
 }
 }
 \description{

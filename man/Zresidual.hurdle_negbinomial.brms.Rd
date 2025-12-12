@@ -14,11 +14,11 @@
 )
 }
 \arguments{
-\item{object}{A `brmsfit` object with hurdle negative binomial family
-(`brms::family(object)$family == "hurdle_negbinomial"`).}
+\item{object}{A \code{brmsfit} object with hurdle negative binomial family
+(\code{brms::family(object)$family == "hurdle_negbinomial"}).}
 
 \item{nrep}{Integer; number of replicated Z-residual sets to generate.
-Default is `1`.}
+Default is \code{1}.}
 
 \item{data}{Optional data frame used for prediction or residual computation.
 If \code{NULL}, the data stored inside the \code{brmsfit} object are used.}
@@ -26,38 +26,38 @@ If \code{NULL}, the data stored inside the \code{brmsfit} object are used.}
 \item{type}{Character string specifying which part of the model to
 compute Z-residuals for:
 \itemize{
-  \item `"zero"`   — the hurdle/zero part;
-  \item `"count"`  — the truncated negative binomial count part;
-  \item `"hurdle"` — the full hurdle negative binomial model.
+\item \code{"zero"}   — the hurdle/zero part;
+\item \code{"count"}  — the truncated negative binomial count part;
+\item \code{"hurdle"} — the full hurdle negative binomial model.
 }
-The default is `"hurdle"`.}
+The default is \code{"hurdle"}.}
 
 \item{method}{Character string specifying the residual calculation method:
-`"iscv"` for importance-sampled cross-validated randomized predictive
-p-values, `"rpost"` for randomized posterior predictive p-values,
-or `"mpost"` for middle-value posterior predictive p-values.
-Default is `"iscv"`.}
+\code{"iscv"} for importance-sampled cross-validated randomized predictive
+p-values, \code{"rpost"} for randomized posterior predictive p-values,
+or \code{"mpost"} for middle-value posterior predictive p-values.
+Default is \code{"iscv"}.}
 
 \item{...}{Further arguments passed to the underlying implementation
-function [Zresidual_hurdle_negbinomial_brms()].}
+function \code{\link[=Zresidual_hurdle_negbinomial_brms]{Zresidual_hurdle_negbinomial_brms()}}.}
 }
 \value{
 A numeric matrix of Z-residuals (one column per replication) as returned
-by [Zresidual_hurdle_negbinomial_brms()], with the class `"zresid"`
+by \code{\link[=Zresidual_hurdle_negbinomial_brms]{Zresidual_hurdle_negbinomial_brms()}}, with the class \code{"zresid"}
 added to its class vector.
 }
 \description{
-`Zresidual.hurdle_negbinomial.brms()` is the S3 method for [Zresidual()]
-when applied to hurdle negative binomial models fitted with [brms::brm()]
-and `family = hurdle_negbinomial()`. Objects are dispatched here when
-the fitted object is a `"brmsfit"` with
-`brms::family(object)$family == "hurdle_negbinomial"` and has been
-internally tagged with the class `"hurdle_negbinomial.brms"` by
-[Zresidual()].
+\code{Zresidual.hurdle_negbinomial.brms()} is the S3 method for \code{\link[=Zresidual]{Zresidual()}}
+when applied to hurdle negative binomial models fitted with \code{\link[brms:brm]{brms::brm()}}
+and \code{family = hurdle_negbinomial()}. Objects are dispatched here when
+the fitted object is a \code{"brmsfit"} with
+\code{brms::family(object)$family == "hurdle_negbinomial"} and has been
+internally tagged with the class \code{"hurdle_negbinomial.brms"} by
+\code{\link[=Zresidual]{Zresidual()}}.
 
-In normal use, users should call [Zresidual()] directly on the
-`brmsfit` object (for example `Zresidual(fit)`), rather than calling
-`Zresidual.hurdle_negbinomial.brms()` explicitly.
+In normal use, users should call \code{\link[=Zresidual]{Zresidual()}} directly on the
+\code{brmsfit} object (for example \code{Zresidual(fit)}), rather than calling
+\code{Zresidual.hurdle_negbinomial.brms()} explicitly.
 }
 \examples{
 \dontrun{

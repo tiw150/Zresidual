@@ -24,82 +24,92 @@
 )
 }
 \arguments{
-\item{x}{A numeric matrix of Z-residuals (dimensions: *n* × *m*) of class `"zresid"`.
-Attributes used by the function include: `"type"`, `"zero_id"`, `"censored.status"`,
-`"covariates"`, and `"linear.pred"`.}
+\item{x}{A numeric matrix of Z-residuals (dimensions: \emph{n} × \emph{m}) of class \code{"zresid"}.
+Attributes used by the function include: \code{"type"}, \code{"zero_id"}, \code{"censored.status"},
+\code{"covariates"}, and \code{"linear.pred"}.}
 
 \item{irep}{A vector specifying the residual column(s) (iterations) to plot. Defaults to
-all columns of **`x`**.}
+all columns of \strong{\code{x}}.}
 
 \item{ylab}{Label for the y-axis.}
 
-\item{normality.test}{A character vector specifying normality tests applied per iteration: `"SW"`,
-`"AOV"`, or `"BL"`. Helper functions (e.g., `sw.test.zresid`) must exist and
-accept inputs (`x`, `x_axis_var`, `k.test`).}
+\item{normality.test}{A character vector specifying normality tests applied per iteration: \code{"SW"},
+\code{"AOV"}, or \code{"BL"}. Helper functions (e.g., \code{sw.test.zresid}) must exist and
+accept inputs (\code{x}, \code{x_axis_var}, \code{k.test}).}
 
 \item{k.test}{Bin size for normality tests (used for grouping continuous predictors).}
 
-\item{x_axis_var}{Specifies the x-axis values. Options include: `"index"`, `"covariate"`, `"lp"`,
-a covariate name present in `attr(x, "covariates")`, or a numeric vector of length *n*.}
+\item{x_axis_var}{Specifies the x-axis values. Options include: \code{"index"}, \code{"covariate"}, \code{"lp"},
+a covariate name present in \code{attr(x, "covariates")}, or a numeric vector of length \emph{n}.}
 
 \item{main.title}{Title of the plot. Defaults to a type-based informative title.}
 
-\item{outlier.return}{If `TRUE`, outliers are printed to console and returned invisibly.}
+\item{outlier.return}{If \code{TRUE}, outliers are printed to console and returned invisibly.}
 
-\item{outlier.value}{Threshold above which a residual is flagged as an outlier. Defaults to `3.5`.}
+\item{outlier.value}{Threshold above which a residual is flagged as an outlier. Defaults to \code{3.5}.}
 
-\item{category}{Optional vector categorizing observations (length *n*). Used for coloring and
+\item{category}{Optional vector categorizing observations (length \emph{n}). Used for coloring and
 shaping points in scatterplots.}
 
-\item{outlier.set}{A named list of arguments passed to `symbols()` and `text()` for marking and
+\item{outlier.set}{A named list of arguments passed to \code{symbols()} and \code{text()} for marking and
 labeling outliers. Overrides defaults.}
 
-\item{xlab}{Label for the x-axis. May include LaTeX syntax using the form `tex("...")`,
-which will be interpreted via **latex2exp** (if installed).}
+\item{xlab}{Label for the x-axis. May include LaTeX syntax using the form \code{tex("...")},
+which will be interpreted via \strong{latex2exp} (if installed).}
 
-\item{my.mar}{A numeric vector passed to `par(mar=...)` to adjust plot margins.}
+\item{my.mar}{A numeric vector passed to \code{par(mar=...)} to adjust plot margins.}
 
-\item{...}{Additional graphical arguments passed to `plot()`, `legend()`, `symbols()`,
-and `text()`.}
+\item{...}{Additional graphical arguments passed to \code{plot()}, \code{legend()}, \code{symbols()},
+and \code{text()}.}
 }
 \value{
-Invisibly returns (when `outlier.return = TRUE`) a list:
+Invisibly returns (when \code{outlier.return = TRUE}) a list:
 \item{outliers}{Vector of outlier indices}
-Otherwise returns `NULL`. Always produces a scatterplot as its primary output.
+Otherwise returns \code{NULL}. Always produces a scatterplot as its primary output.
 }
 \description{
 Produces diagnostic scatterplots of Z-residuals for a wide range of model
 types, including hurdle models, zero models, count models, and survival models.
 This function is designed to be compatible with Z-residual matrices generated
-from Bayesian models (e.g., **brms**, Stan-based models) as well as classical models.
+from Bayesian models (e.g., \strong{brms}, Stan-based models) as well as classical models.
 
 The function supports:
-- Plotting residuals against index, covariates, linear predictors, or user-specified vectors.
-- Visual outlier detection with customizable coloring, emphasis, and labels.
-- Automatic handling of censored/un-censored and hurdle count/zero classifications.
-- Multiple normality tests (Shapiro-Wilk, ANOVA, Bartlett) with per-iteration reporting.
-- Extensive customization through graphical parameters.
+\itemize{
+\item Plotting residuals against index, covariates, linear predictors, or user-specified vectors.
+\item Visual outlier detection with customizable coloring, emphasis, and labels.
+\item Automatic handling of censored/un-censored and hurdle count/zero classifications.
+\item Multiple normality tests (Shapiro-Wilk, ANOVA, Bartlett) with per-iteration reporting.
+\item Extensive customization through graphical parameters.
+}
 }
 \details{
-This function employs S3 method dispatch. The input `x` must be an object of
-class `"zresid"`.
+This function employs S3 method dispatch. The input \code{x} must be an object of
+class \code{"zresid"}.
+\subsection{\strong{Model-Type-Specific Behavior}}{
+\subsection{\strong{Hurdle models}}{
+\itemize{
+\item Zeros and counts are colored differently (\code{red} vs \code{blue}).
+}
+}
 
-## **Model-Type-Specific Behavior**
+\subsection{\strong{Survival models}}{
+\itemize{
+\item Censored and uncensored observations are visually separated.
+}
+}
 
-### **Hurdle models**
-- Zeros and counts are colored differently (`red` vs `blue`).
+}
 
-### **Survival models**
-- Censored and uncensored observations are visually separated.
+\subsection{\strong{Outlier Detection}}{
 
-## **Outlier Detection**
 Outliers are defined as:
 
 \deqn{|Z| > \mbox{outlier.value} \hspace{1em} \mbox{or non-finite values}}
 
-They are marked, labeled, and returned to the user if `outlier.return = TRUE`.
+They are marked, labeled, and returned to the user if \code{outlier.return = TRUE}.
+}
 }
 \note{
-This function modifies graphical parameters (`par(mar=...)`) during execution
+This function modifies graphical parameters (\code{par(mar=...)}) during execution
 and resets them at the end.
 }

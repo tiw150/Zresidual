@@ -13,10 +13,10 @@ the censoring indicator (1 = event, 0 = censored) for each observation.}
 }
 \value{
 A single numeric value: the p-value from
-  \code{EnvStats::gofTestCensored} using the Shapiro–Francia test
-  (\code{test = "sf"}) for a right-censored normal distribution
-  (\code{distribution = "norm"}). Larger p-values indicate no strong
-  evidence against normality of the censored Z-residuals.
+\code{EnvStats::gofTestCensored} using the Shapiro–Francia test
+(\code{test = "sf"}) for a right-censored normal distribution
+(\code{distribution = "norm"}). Larger p-values indicate no strong
+evidence against normality of the censored Z-residuals.
 }
 \description{
 Perform a normality goodness-of-fit test for censored Z-residuals using

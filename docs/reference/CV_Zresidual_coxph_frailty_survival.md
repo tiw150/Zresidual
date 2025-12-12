@@ -1,7 +1,7 @@
 # Cross-validated Z-residuals for Shared Frailty Cox Models
 
-Internal function to compute cross-validated Z-residuals for \*\*shared
-frailty\*\* Cox proportional hazards models.
+Internal function to compute cross-validated Z-residuals for **shared
+frailty** Cox proportional hazards models.
 
 ## Usage
 

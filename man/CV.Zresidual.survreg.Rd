@@ -16,7 +16,7 @@
 survival response and censoring indicator.}
 
 \item{data}{Optional data frame used to refit the model during
-cross-validation. It is **highly recommended** to supply the original data
+cross-validation. It is \strong{highly recommended} to supply the original data
 here to ensure correct model refitting in each fold, especially when the
 original call was complex.}
 
@@ -30,7 +30,7 @@ the imputed survival probability for censored observations.}
 \value{
 An object of class \code{"cvzresid"} containing cross-validated
 Z-residual diagnostics for the parametric survival model. It is a numeric
-matrix with $N$ rows and \code{nrep} columns, accompanied by diagnostic attributes
+matrix with \eqn{N}{N} rows and \code{nrep} columns, accompanied by diagnostic attributes
 (see \code{\link{CV_Zresidual_survreg_survival}} for details).
 }
 \description{
@@ -42,10 +42,10 @@ diagnostics.
 \details{
 This method delegates the actual cross-validation work to
 \code{\link{CV_Zresidual_survreg_survival}}, which handles the iterative
-refitting of the \code{survreg} model on $K-1$ folds and computes the
-randomized Z-residuals on the held-out fold. 
+refitting of the \code{survreg} model on \eqn{K-1}{K-1} folds and computes the
+randomized Z-residuals on the held-out fold.
 
-The randomized Z-residual, \eqn{Z_{ij}}{Z\_ij}, for the $j$-th observation in the $i$-th fold is defined as:
+The randomized Z-residual, \eqn{Z_{ij}}{Z\_ij}, for the \eqn{j}{j}-th observation in the \eqn{i}{i}-th fold is defined as:
 \deqn{Z_{ij} = ...}{Z\_ij = ...} is computed based on the predicted out-of-sample survival probability \eqn{\hat{S}_{\text{train}_i}(t_j)}{S_hat_i(t_j)}.
 
 The returned object is tagged with class \code{"cvzresid"} in addition
@@ -67,6 +67,6 @@ to any classes returned by the internal worker.
 }
 \seealso{
 \code{\link{CV_Zresidual_survreg_survival}}, the generic
-\code{\link{CV.Zresidual}}, and the `survival` fitting function
+\code{\link{CV.Zresidual}}, and the \code{survival} fitting function
 \code{\link[survival]{survreg}}.
 }

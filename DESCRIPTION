@@ -59,4 +59,5 @@ Suggests:
 VignetteBuilder: knitr,quarto
 LazyData: true
 RoxygenNote: 7.3.3
+Roxygen: list(markdown = TRUE)
 Encoding: UTF-8

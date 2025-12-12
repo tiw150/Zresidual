@@ -8,80 +8,86 @@ Zresidual(object, nrep = 1, data = NULL, type = NULL, method = "iscv", ...)
 }
 \arguments{
 \item{object}{A fitted model object. Currently supported objects include:
-* `"coxph"` – Cox proportional hazards model (from **survival**)
-* `"survreg"` – Parametric survival regression (from **survival**)
-* `"brmsfit"` – Bayesian regression model (from **brms**) with one of the
-  supported families listed under **Details**.}
+\itemize{
+\item \code{"coxph"} – Cox proportional hazards model (from \strong{survival})
+\item \code{"survreg"} – Parametric survival regression (from \strong{survival})
+\item \code{"brmsfit"} – Bayesian regression model (from \strong{brms}) with one of the
+supported families listed under \strong{Details}.
+}}
 
 \item{nrep}{Integer. Number of replicated Z-residual samples to compute.
-Default is `1`.}
+Default is \code{1}.}
 
 \item{data}{Optional data frame used for generating model predictions and
-residuals. For some models (e.g. `coxph` with frailty terms) this should
+residuals. For some models (e.g. \code{coxph} with frailty terms) this should
 match the data used to fit the model.}
 
 \item{type}{Optional character string. Residual type for hurdle and count
-models (mainly used for **brms** and other Bayesian/count-model
+models (mainly used for \strong{brms} and other Bayesian/count-model
 interfaces). The interpretation of this argument is model-specific.}
 
 \item{method}{Character string indicating which predictive p-value
 scheme to use when computing Z-residuals for Bayesian or simulation-based
-models. Common options include `"iscv"` (importance-sampling
-cross-validated), `"loocv"`, and `"posterior"`. The default is `"iscv"`.}
+models. Common options include \code{"iscv"} (importance-sampling
+cross-validated), \code{"loocv"}, and \code{"posterior"}. The default is \code{"iscv"}.}
 
 \item{...}{Further arguments passed on to model-specific methods
-such as `Zresidual.coxph.survival()`,
-`Zresidual.survreg.survival()`,
-`Zresidual.poisson.brms()`, etc.}
+such as \code{Zresidual.coxph.survival()},
+\code{Zresidual.survreg.survival()},
+\code{Zresidual.poisson.brms()}, etc.}
 }
 \value{
-An object of class `"zresid"` with additional class information inherited
+An object of class \code{"zresid"} with additional class information inherited
 from the model-specific method. The object contains the computed Z-residuals
 and any model-specific diagnostic quantities returned by the underlying
-`Zresidual.*()` implementation.
+\verb{Zresidual.*()} implementation.
 }
 \description{
-`Zresidual()` is an S3 generic for computing Z-residuals for a range of
+\code{Zresidual()} is an S3 generic for computing Z-residuals for a range of
 survival and regression models. It currently supports Cox proportional
-hazards models (`coxph`) with or without frailty terms, parametric survival
-regression models (`survreg`), and Bayesian regression models fitted with
-**brms** (`brmsfit`) for several common count and hurdle families.
+hazards models (\code{coxph}) with or without frailty terms, parametric survival
+regression models (\code{survreg}), and Bayesian regression models fitted with
+\strong{brms} (\code{brmsfit}) for several common count and hurdle families.
 
 The function inspects the fitted object, assigns an internal
-model– and package–specific class (e.g. `"coxph.survival"`,
-`"survreg.survival"`, `"poisson.brms"`, `"hurdle_poisson.brms"`),
-and dispatches to the corresponding `Zresidual.*()` method.
+model– and package–specific class (e.g. \code{"coxph.survival"},
+\code{"survreg.survival"}, \code{"poisson.brms"}, \code{"hurdle_poisson.brms"}),
+and dispatches to the corresponding \verb{Zresidual.*()} method.
 }
 \details{
-Internally, `Zresidual()` modifies the class of `object` to encode both the
+Internally, \code{Zresidual()} modifies the class of \code{object} to encode both the
 model type and the fitting package, and then uses S3 method dispatch:
+\itemize{
+\item For \strong{survival} models
+\itemize{
+\item \code{coxph} objects receive the class \code{"coxph.survival"} and are handled by
+\code{Zresidual.coxph.survival()}, which further distinguishes between models
+with and without frailty terms.
+\item \code{survreg} objects receive the class \code{"survreg.survival"} and are handled
+by \code{Zresidual.survreg.survival()}.
+}
+\item For \strong{brms} models
+\itemize{
+\item The family is obtained via \code{family(object)$family}.
+\item Currently supported families include
+\code{"hurdle_negbinomial"}, \code{"hurdle_poisson"},
+\code{"negbinomial"}, \code{"poisson"}, and \code{"bernoulli"}.
+\item Each supported family is mapped to a class of the form
+\code{"<family>.brms"}, and dispatched to a method such as
+\code{Zresidual.hurdle_poisson.brms()},
+\code{Zresidual.negbinomial.brms()},
+\code{Zresidual.poisson.brms()},
+or \code{Zresidual.bernoulli.brms()}.
+}
+}
 
-* For **survival** models
-  - `coxph` objects receive the class `"coxph.survival"` and are handled by
-    `Zresidual.coxph.survival()`, which further distinguishes between models
-    with and without frailty terms.
-  - `survreg` objects receive the class `"survreg.survival"` and are handled
-    by `Zresidual.survreg.survival()`.
+Additional model classes (e.g. \code{glmmTMB} fits) can be supported by defining
+new S3 methods such as \code{Zresidual.poisson.glmmTMB()} and ensuring that
+\code{Zresidual()} assigns the corresponding internal class
+(for example \code{"poisson.glmmTMB"}).
 
-* For **brms** models
-  - The family is obtained via `family(object)$family`.
-  - Currently supported families include
-    `"hurdle_negbinomial"`, `"hurdle_poisson"`,
-    `"negbinomial"`, `"poisson"`, and `"bernoulli"`.
-  - Each supported family is mapped to a class of the form
-    `"<family>.brms"`, and dispatched to a method such as
-    `Zresidual.hurdle_poisson.brms()`,
-    `Zresidual.negbinomial.brms()`,
-    `Zresidual.poisson.brms()`,
-    or `Zresidual.bernoulli.brms()`.
-
-Additional model classes (e.g. `glmmTMB` fits) can be supported by defining
-new S3 methods such as `Zresidual.poisson.glmmTMB()` and ensuring that
-`Zresidual()` assigns the corresponding internal class
-(for example `"poisson.glmmTMB"`).
-
-If `object` does not match any supported model class, or if a `brmsfit`
-object uses an unsupported family, `Zresidual()` raises an error.
+If \code{object} does not match any supported model class, or if a \code{brmsfit}
+object uses an unsupported family, \code{Zresidual()} raises an error.
 }
 \examples{
 \dontrun{

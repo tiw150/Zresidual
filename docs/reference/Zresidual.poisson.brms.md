@@ -1,15 +1,18 @@
 # Z-residuals for Poisson models fitted with brms
 
-\`Zresidual.poisson.brms()\` is the S3 method for \[Zresidual()\] when
-applied to Poisson models fitted with \[brms::brm()\] and \`family =
-poisson()\`. Objects are dispatched here when the fitted object is a
-\`"brmsfit"\` with \`brms::family(object)\$family == "poisson"\` and has
-been internally tagged with the class \`"poisson.brms"\` by
-\[Zresidual()\].
+`Zresidual.poisson.brms()` is the S3 method for
+[`Zresidual()`](https://tiw150.github.io/Zresidual/reference/Zresidual.md)
+when applied to Poisson models fitted with
+[`brms::brm()`](https://paulbuerkner.com/brms/reference/brm.html) and
+`family = poisson()`. Objects are dispatched here when the fitted object
+is a `"brmsfit"` with `brms::family(object)$family == "poisson"` and has
+been internally tagged with the class `"poisson.brms"` by
+[`Zresidual()`](https://tiw150.github.io/Zresidual/reference/Zresidual.md).
 
-In normal use, users should call \[Zresidual()\] directly on the
-\`brmsfit\` object (for example \`Zresidual(fit)\`), rather than calling
-\`Zresidual.poisson.brms()\` explicitly.
+In normal use, users should call
+[`Zresidual()`](https://tiw150.github.io/Zresidual/reference/Zresidual.md)
+directly on the `brmsfit` object (for example `Zresidual(fit)`), rather
+than calling `Zresidual.poisson.brms()` explicitly.
 
 ## Usage
 
@@ -22,13 +25,13 @@ Zresidual(object, nrep = 1, data, type, method = "iscv", ...)
 
 - object:
 
-  A \`brmsfit\` object with Poisson family
-  (\`brms::family(object)\$family == "poisson"\`).
+  A `brmsfit` object with Poisson family
+  (`brms::family(object)$family == "poisson"`).
 
 - nrep:
 
   Integer; the number of replicated Z-residual sets to generate. Default
-  is \`1\`.
+  is `1`.
 
 - data:
 
@@ -43,22 +46,24 @@ Zresidual(object, nrep = 1, data, type, method = "iscv", ...)
 
 - method:
 
-  Character string specifying the residual calculation method:
-  \`"iscv"\` for importance-sampled cross-validated randomized
-  predictive p-values, \`"rpost"\` for posterior predictive p-values, or
-  \`"mpost"\` for marginal posterior predictive p-values. Default is
-  \`"iscv"\`.
+  Character string specifying the residual calculation method: `"iscv"`
+  for importance-sampled cross-validated randomized predictive p-values,
+  `"rpost"` for posterior predictive p-values, or `"mpost"` for marginal
+  posterior predictive p-values. Default is `"iscv"`.
 
 - ...:
 
-  Further arguments passed from \[Zresidual()\]. They are ignored by
-  this method but are accepted for consistency with the generic.
+  Further arguments passed from
+  [`Zresidual()`](https://tiw150.github.io/Zresidual/reference/Zresidual.md).
+  They are ignored by this method but are accepted for consistency with
+  the generic.
 
 ## Value
 
 A numeric matrix of Z-residuals (one column per replication) as returned
-by \[Zresidual_poisson_brms()\], with the class \`"zresid"\` added to
-its class vector.
+by
+[`Zresidual_poisson_brms()`](https://tiw150.github.io/Zresidual/reference/Zresidual_poisson_brms.md),
+with the class `"zresid"` added to its class vector.
 
 ## Examples
 

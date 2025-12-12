@@ -19,9 +19,9 @@ If \code{FALSE}, probabilities are \eqn{P(Y > y)}.}
 \value{
 A numeric vector of the same length as the input, containing:
 \itemize{
-  \item CDF values (\eqn{P(Y \le y \mid Y > 0)}) if \code{lower.tail = TRUE}.
-  \item Upper-tail probabilities (\eqn{P(Y > y \mid Y > 0)}) if \code{lower.tail = FALSE}.
-  \item Log-probabilities if \code{log.p = TRUE}.
+\item CDF values (\eqn{P(Y \le y \mid Y > 0)}) if \code{lower.tail = TRUE}.
+\item Upper-tail probabilities (\eqn{P(Y > y \mid Y > 0)}) if \code{lower.tail = FALSE}.
+\item Log-probabilities if \code{log.p = TRUE}.
 }
 }
 \description{

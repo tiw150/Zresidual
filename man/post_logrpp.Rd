@@ -23,8 +23,8 @@ of observations given the log-PMF and log-CDF matrices from posterior predictive
 \details{
 The function computes a randomized posterior predictive p-values as follows:
 \enumerate{
-  \item A uniform random number is generated for each observation to randomize the probability for zero counts.
-  \item Probabilities exactly equal to 0 or 1 are replaced with small bounds (\eqn{10^{-5}} and \eqn{9 \cdot 10^{-5}}) to avoid numerical issues.
+\item A uniform random number is generated for each observation to randomize the probability for zero counts.
+\item Probabilities exactly equal to 0 or 1 are replaced with small bounds (\eqn{10^{-5}} and \eqn{9 \cdot 10^{-5}}) to avoid numerical issues.
 }
 }
 \examples{

@@ -7,16 +7,16 @@
 \method{Zresidual}{survreg.survival}(object, nrep = 1, data = NULL, type = NULL, method = NULL, ...)
 }
 \arguments{
-\item{object}{A fitted [survival::survreg()] model.}
+\item{object}{A fitted \code{\link[survival:survreg]{survival::survreg()}} model.}
 
 \item{nrep}{Integer; number of randomized Z-residual replicates to
-generate. Defaults to `1`.}
+generate. Defaults to \code{1}.}
 
 \item{data}{Optional data frame containing the survival response and
-covariates; if `NULL`, the original model frame is used.}
+covariates; if \code{NULL}, the original model frame is used.}
 
 \item{type}{Optional character string controlling the residual type,
-interpreted by the underlying implementation (if used). For `survreg` models,
+interpreted by the underlying implementation (if used). For \code{survreg} models,
 this is typically set internally to \code{"survival"}.}
 
 \item{method}{Character string specifying the residual calculation method
@@ -28,19 +28,19 @@ functions. Currently unused.}
 }
 \value{
 A numeric matrix of dimension \eqn{n \times} \code{nrep}, with
-additional attributes as produced by `Zresidual_survreg_survival()`. The
-returned object is given class `"zresid"` in addition to any
+additional attributes as produced by \code{Zresidual_survreg_survival()}. The
+returned object is given class \code{"zresid"} in addition to any
 existing classes.
 }
 \description{
-S3 method for [Zresidual()] when the fitted model is a
-[survival::survreg()] object (internally tagged as `"survreg.survival"`).
-This is a thin wrapper around the existing `Zresidual.survreg()` core
-implementation: it simply passes the fitted object and optional `data`
-to the core function and then adds the `"zresid"` class.
+S3 method for \code{\link[=Zresidual]{Zresidual()}} when the fitted model is a
+\code{\link[survival:survreg]{survival::survreg()}} object (internally tagged as \code{"survreg.survival"}).
+This is a thin wrapper around the existing \code{Zresidual.survreg()} core
+implementation: it simply passes the fitted object and optional \code{data}
+to the core function and then adds the \code{"zresid"} class.
 
-Users are expected to call [Zresidual()] directly rather than calling
-`Zresidual.survreg.survival()`.
+Users are expected to call \code{\link[=Zresidual]{Zresidual()}} directly rather than calling
+\code{Zresidual.survreg.survival()}.
 }
 \examples{
 \dontrun{

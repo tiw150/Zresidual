@@ -52,16 +52,17 @@ CV.Zresidual(object, nfolds, foldlist = NULL, data = NULL, nrep = 1, ...)
 ## Value
 
 A matrix of class `"cvzresid"` (and others inherited from the internal
-worker) with dimension \\N \times nrep\\ (where \$N\$ is the number of
+worker) with dimension \\N \times nrep\\ (where \\N\\ is the number of
 observations). The matrix columns contain the cross-validated
 Z-residuals.
 
 The object also includes the following diagnostic attributes:
 
-- `Survival.Prob`: Cross-validated predicted survival probabilities.
+- `Survival.Prob`: Cross-validated predicted survival probabilities
+  \\\hat S_i(t_i)\\.
 
-- `linear.pred`: Cross-validated linear predictors
-  (\\\mathbf{x}\hat{\mathbf{\beta}}\\).
+- `linear.pred`: Cross-validated linear predictors \\\eta_i =
+  \mathbf{x}\_i^\top \hat{\boldsymbol{\beta}}\\.
 
 - `censored.status`: The event indicator from the survival object.
 
@@ -74,10 +75,10 @@ The object also includes the following diagnostic attributes:
 The method determines the correct worker function by examining
 `attr(object$terms, "specials")$frailty`:
 
-- \*\*Standard Cox Models\*\*: If no frailty term is found, it calls
+- **Standard Cox Models**: If no frailty term is found, it calls
   [`CV_Zresidual_coxph_survival`](https://tiw150.github.io/Zresidual/reference/CV_Zresidual_coxph_survival.md).
 
-- \*\*Shared Frailty Cox Models\*\*: If a frailty term (e.g.,
+- **Shared Frailty Cox Models**: If a frailty term (e.g.,
   `frailty(group)`) is present, it calls
   [`CV_Zresidual_coxph_frailty_survival`](https://tiw150.github.io/Zresidual/reference/CV_Zresidual_coxph_frailty_survival.md).
 

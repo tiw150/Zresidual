@@ -35,19 +35,19 @@ but in typical use a single value should be supplied.}
 }
 \value{
 A numeric matrix of dimension \eqn{n \times 1}, where \eqn{n} is
-  the number of observations in \code{newdata}. The single column is named
-  according to \code{residual.type}. Several attributes are attached:
-  \itemize{
-    \item \code{Survival.Prob}: vector of survival probabilities
-      \eqn{S_{ij}(t_i)} for each observation in \code{newdata}.
-    \item \code{linear.pred}: vector of fixed-effect linear predictors
-      \eqn{\eta_{ij}} (excluding the frailty term).
-    \item \code{covariates}: model matrix of fixed-effect covariates
-      used in the linear predictor.
-    \item \code{censored.status}: event indicator (1 = event, 0 = censored).
-    \item \code{object.model.frame}: the \code{model.frame} constructed
-      from \code{fit_coxph$formula} and \code{newdata}.
-  }
+the number of observations in \code{newdata}. The single column is named
+according to \code{residual.type}. Several attributes are attached:
+\itemize{
+\item \code{Survival.Prob}: vector of survival probabilities
+\eqn{S_{ij}(t_i)} for each observation in \code{newdata}.
+\item \code{linear.pred}: vector of fixed-effect linear predictors
+\eqn{\eta_{ij}} (excluding the frailty term).
+\item \code{covariates}: model matrix of fixed-effect covariates
+used in the linear predictor.
+\item \code{censored.status}: event indicator (1 = event, 0 = censored).
+\item \code{object.model.frame}: the \code{model.frame} constructed
+from \code{fit_coxph$formula} and \code{newdata}.
+}
 }
 \description{
 Compute several types of residuals (censored Z-residuals, Cox–Snell,
@@ -58,9 +58,9 @@ frailty term (e.g., \code{frailty(group)}).
 \details{
 The function is designed for an out-of-sample / cross-validation setting:
 \itemize{
-  \item \code{traindata} is used to reconstruct the baseline cumulative
-        hazard and the relationship between covariates and shared frailty.
-  \item \code{newdata} is the dataset for which residuals are computed.
+\item \code{traindata} is used to reconstruct the baseline cumulative
+hazard and the relationship between covariates and shared frailty.
+\item \code{newdata} is the dataset for which residuals are computed.
 }
 Both datasets must contain the survival response, all fixed-effect
 covariates, and the same frailty grouping factor (with compatible factor

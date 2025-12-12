@@ -21,10 +21,10 @@
 \item{x}{A matrix of Z-residuals with one column per MCMC iteration.
 Must contain attributes:
 \describe{
-  \item{\code{"type"}}{Model type used to generate residuals (e.g., hurdle, truncated).}
-  \item{\code{"fitted.value"}}{Vector of fitted values for the model.}
-  \item{\code{"covariates"}}{Optional data frame of covariates.}
-  \item{\code{"zero_id"}}{Indices of zero observations (if applicable).}
+\item{\code{"type"}}{Model type used to generate residuals (e.g., hurdle, truncated).}
+\item{\code{"fitted.value"}}{Vector of fitted values for the model.}
+\item{\code{"covariates"}}{Optional data frame of covariates.}
+\item{\code{"zero_id"}}{Indices of zero observations (if applicable).}
 }}
 
 \item{irep}{Integer vector indicating which columns of
@@ -32,9 +32,9 @@ Must contain attributes:
 
 \item{x_axis_var}{Character string specifying the x-axis variable:
 \itemize{
-  \item \code{"fitted.value"} (default): Bin fitted values.
-  \item \code{"covariate"}: Display a list of covariate names.
-  \item A specific covariate name present in \code{attr(Zresidual, "covariates")}.
+\item \code{"fitted.value"} (default): Bin fitted values.
+\item \code{"covariate"}: Display a list of covariate names.
+\item A specific covariate name present in \code{attr(Zresidual, "covariates")}.
 }}
 
 \item{num.bin}{Integer. Number of bins for grouping fitted values or selected
@@ -42,9 +42,9 @@ covariate. Defaults to \code{10}.}
 
 \item{normality.test}{Character vector specifying which normality tests to report:
 \itemize{
-  \item \code{"SW"} - Shapiro-Wilk test for Z-residuals.
-  \item \code{"AOV"} - ANOVA-based test for variance/mean structure.
-  \item \code{"BL"} - Bartlett-type test for variance homogeneity.
+\item \code{"SW"} - Shapiro-Wilk test for Z-residuals.
+\item \code{"AOV"} - ANOVA-based test for variance/mean structure.
+\item \code{"BL"} - Bartlett-type test for variance homogeneity.
 }
 Defaults to \code{c("SW","AOV","BL")}.}
 
@@ -67,7 +67,7 @@ or \code{\link[graphics]{legend}}.}
 \value{
 If \code{outlier.return = TRUE}, returns a list containing:
 \itemize{
-  \item \code{outliers} - vector of indices where \code{|Zresidual| > outlier.value}.
+\item \code{outliers} - vector of indices where \code{|Zresidual| > outlier.value}.
 }
 Otherwise, the function returns \code{NULL} (invisible) and produces a diagnostic plot.
 }
