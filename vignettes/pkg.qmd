@@ -1,0 +1,89 @@
+---
+title: "Problems"
+format: html
+---
+
+
+-----
+
+### 1\. `checking files in ‘vignettes’ ... WARNING`
+
+**The Issue:** When you use Quarto (`.qmd` files) to create vignettes, the R package build process expects the *rendered HTML or PDF output* and the supporting files to be placed in the `inst/doc` directory. However, Quarto renders the output right next to the source `.qmd` files in the `vignettes` directory by default.
+
+**The Fix:**
+
+You need to tell R to *ignore* the source `.qmd` files and Quarto-related supporting files (`.css`, `.js`, `.bib`) in the `vignettes` folder when building the package, and instead, let the Quarto/RStudio workflow handle placing the *rendered* output into `inst/doc`.
+
+1.  **Create a `.Rbuildignore` file:** If you don't have one in your package's top-level directory, create a file named `.Rbuildignore`.
+
+2.  **Add Quarto and support files to `.Rbuildignore`:** Add the following patterns to this file. This tells the R build process to ignore all Quarto source files and their supporting assets.
+
+    ```
+    ^vignettes/.*\.qmd$
+    ^vignettes/.*\.bib$
+    ^vignettes/.*\.css$
+    ^vignettes/.*\.js$
+    ```
+
+    (Note: You might need to add other files/patterns if your vignettes use them, like images or data files specific to the vignette.)
+
+3.  **Ensure Quarto Renders to `inst/doc`:** Make sure your workflow (typically running `devtools::document()` or `devtools::build()`) is set up to render the `.qmd` files and place the output into `inst/doc`. This often happens automatically when you use a modern R package setup that supports Quarto.
+
+-----
+
+### 2\. `checking for hidden files and directories ... NOTE`
+
+**The Issue:** The `vignettes/.quarto` directory is a hidden folder created by Quarto to store configuration, cache, and intermediate build files. R package checks look for hidden files and generally flag them as they are not standard package components.
+
+**The Fix:**
+
+Add the hidden Quarto directory to the `.Rbuildignore` file as well:
+
+```
+^vignettes/.quarto$
+```
+
+-----
+
+### 3\. `checking top-level files ... NOTE`
+
+**The Issue:** The package check is noting that `Zresidual.Rproj` and `_pkgdown.yml` are present in the top-level directory, but they are not standard R package files (like `DESCRIPTION`, `NAMESPACE`, `R`, etc.).
+
+  * `Zresidual.Rproj` is an **RStudio Project** file, essential for working on your package in RStudio.
+  * `_pkgdown.yml` is the configuration file for the **pkgdown** package, used to build documentation websites for your package.
+
+**The Fix:**
+
+These files are essential for your development environment but shouldn't be included in the final package bundle. Add them to your `.Rbuildignore` file:
+
+```
+^Zresidual.Rproj$
+^_pkgdown.yml$
+```
+
+-----
+
+### Summary of `.Rbuildignore`
+
+After making all the necessary changes, your top-level `.Rbuildignore` file should contain at least these lines:
+
+```
+# Vignette source and support files (for Quarto)
+^vignettes/.*\.qmd$
+^vignettes/.*\.bib$
+^vignettes/.*\.css$
+^vignettes/.*\.js$
+
+# Quarto cache/config directory
+^vignettes/.quarto$
+
+# RStudio project file
+^Zresidual.Rproj$
+
+# pkgdown configuration
+^_pkgdown.yml$
+```
+
+After updating `.Rbuildignore`, run `devtools::check()` again, and these warnings/notes should disappear\!
+
+Would you like me to look up the specific section in the 'Writing R Extensions' manual regarding package structure?
