@@ -17,6 +17,10 @@
 ^vignettes/.+_files$
 ^vignettes/.+_freeze$
 
+^vignettes/.*\.qmd$
+^vignettes/.*\.bib$
+^vignettes/.*\.css$
+^vignettes/.*\.js$
 
 ^vignettes/\\.quarto/
 ^\.Rproj\.user$
