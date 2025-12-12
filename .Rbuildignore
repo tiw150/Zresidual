@@ -24,3 +24,5 @@
 
 ^vignettes/\\.quarto/
 ^\.Rproj\.user$
+
+^dev/
