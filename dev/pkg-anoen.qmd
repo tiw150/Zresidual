@@ -1,0 +1,72 @@
+---
+title: "Building and Installing ANOEN Package"
+author: "Longhai Li"
+format: html
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+# This forces knitr to use the Project Root directory
+knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
+```
+# Install the updated package
+
+```{r, eval=FALSE}
+remove.packages("Zresidual")
+devtools::document()
+suppressWarnings(unloadNamespace("Zresidual"))
+devtools::install(upgrade = "never", build = FALSE, args = c("--no-byte-compile", "--no-test-load"))
+
+
+
+```
+
+# Build the package site
+
+## Build the whole Site
+```{r}
+devtools::document()
+
+pkgdown::clean_site()
+unlink("docs", recursive = TRUE)
+# 3. Build fresh
+pkgdown::build_site(
+    lazy=FALSE,
+    preview=TRUE,
+    devel=TRUE, 
+    install=TRUE)
+```
+
+## Re-build a particular vignette
+
+```{r}
+quarto::quarto_render("vignettes/intro_r_squared.qmd", quiet = FALSE)
+```
+
+```{r}
+quarto::quarto_render("vignettes/lr-example.qmd", quiet = FALSE)
+```
+
+```{r}
+quarto::quarto_render("vignettes/intro_r_squared.qmd", quiet = FALSE)
+```
+
+
+
+```{r}
+quarto::quarto_render("README.qmd")
+pkgdown::build_home()
+```
+
+
+# Preview the package site
+```{r, include=FALSE, eval=FALSE}
+servr::httd("docs")
+```
+
+# Find the path of ANOEN
+```{r, eval=FALSE}
+find.package("ANOEN")
+```
+
