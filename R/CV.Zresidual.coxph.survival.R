@@ -82,7 +82,7 @@ CV.Zresidual.coxph <- function(object,
   if (!is.null(frailty_terms)) {
     ## shared frailty Cox model
     cv_obj <- CV_Zresidual_coxph_frailty_survival(
-      fit_coxph = object,
+      fit.coxph = object,
       data      = data,
       nfolds    = nfolds,
       foldlist  = foldlist,
@@ -91,7 +91,7 @@ CV.Zresidual.coxph <- function(object,
   } else {
     ## standard Cox model (no frailty)
     cv_obj <- CV_Zresidual_coxph_survival(
-      fit_coxph = object,
+      fit.coxph = object,
       data      = data,
       nfolds    = nfolds,
       foldlist  = foldlist,
@@ -161,39 +161,68 @@ CV_Zresidual_coxph_survival <- function(fit.coxph, data, nfolds,foldlist,n.rep, 
       }
     }
 
-    CV.Zresid<-matrix (0, nrow(data) , n.rep)
+    # CV.Zresid<-matrix (0, nrow(data) , n.rep)
+    # 
+    # for(fid in 1:length (foldlist)) {
+    #   testcases <- foldlist[[fid]]
+    #   CV.Zresid[testcases,]<-res_fold[[fid]]
+    # }
+    # col_name <- rep(0, n.rep)
+    # for (i in 1:n.rep) {
+    #   col_name[i] <- paste("CV.Z-residual ", i, sep = "")
+    # }
+    # colnames(CV.Zresid) <- col_name
+    # attr(CV.Zresid,"type")<- "survival"
+    # attr(CV.Zresid, "Survival.Prob") <- rep(0, nrow(data))
+    # attr(CV.Zresid, "linear.pred")<- rep(0, nrow(data))
+    # attr(CV.Zresid,"censored.status")<- rep(0, nrow(data))
+    # for(fid in 1:length (foldlist)) {
+    #   testcases <- foldlist[[fid]]
+    #   attr(CV.Zresid, "Survival.Prob")[testcases] <- attr(res_fold[[fid]],"Survival.Prob")
+    #   attr(CV.Zresid, "linear.pred")[testcases] <- attr(res_fold[[fid]],"linear.pred")
+    #   attr(CV.Zresid, "censored.status")[testcases] <- attr(res_fold[[fid]],"censored.status")
+    # }
+    # 
+    # attr(CV.Zresid,"covariates")<- matrix(0,nrow(data),ncol(mf)-1)
+    # attr(CV.Zresid,"object.model.frame")<- matrix(0,nrow(mf),ncol(mf))
+    # for(fid in 1:length (foldlist)) {
+    #   attr(CV.Zresid, "covariates")[foldlist[[fid]],] <- as.matrix(attr(res_fold[[fid]],"covariates"))
+    #   attr(CV.Zresid, "object.model.frame")[foldlist[[fid]],] <- as.matrix(attr(res_fold[[fid]],"object.model.frame"))
+    # }
+    # attr(CV.Zresid,"covariates")<-as.data.frame(attr(CV.Zresid, "covariates"))
+    # colnames( attr(CV.Zresid,"covariates"))<- colnames(mf[,-1])
+    # attr(CV.Zresid,"object.model.frame")<-as.data.frame(attr(CV.Zresid, "object.model.frame"))
+    # colnames( attr(CV.Zresid,"object.model.frame"))<- colnames(mf)
 
-    for(fid in 1:length (foldlist)) {
+    CV.Zresid <- matrix(0, nrow(data), n.rep)
+    temp_sp <- rep(0, nrow(data))
+    temp_lp <- rep(0, nrow(data))
+    temp_cs <- rep(0, nrow(data))
+    temp_cov <- matrix(0, nrow(data), ncol(mf) - 1)
+    temp_mf <- matrix(0, nrow(data), ncol(mf))
+    
+    for (fid in 1:length(foldlist)) {
       testcases <- foldlist[[fid]]
-      CV.Zresid[testcases,]<-res_fold[[fid]]
+      CV.Zresid[testcases, ] <- as.matrix(res_fold[[fid]])
+      temp_sp[testcases] <- attr(res_fold[[fid]], "Survival.Prob")
+      temp_lp[testcases] <- attr(res_fold[[fid]], "linear.pred")
+      temp_cs[testcases] <- attr(res_fold[[fid]], "censored.status")
+      temp_cov[testcases, ] <- as.matrix(attr(res_fold[[fid]], "covariates"))
+      temp_mf[testcases, ] <- as.matrix(attr(res_fold[[fid]], "object.model.frame"))
     }
-    col_name <- rep(0, n.rep)
-    for (i in 1:n.rep) {
-      col_name[i] <- paste("CV.Z-residual ", i, sep = "")
-    }
-    colnames(CV.Zresid) <- col_name
-    attr(CV.Zresid,"type")<- "survival"
-    attr(CV.Zresid, "Survival.Prob") <- rep(0, nrow(data))
-    attr(CV.Zresid, "linear.pred")<- rep(0, nrow(data))
-    attr(CV.Zresid,"censored.status")<- rep(0, nrow(data))
-    for(fid in 1:length (foldlist)) {
-      testcases <- foldlist[[fid]]
-      attr(CV.Zresid, "Survival.Prob")[testcases] <- attr(res_fold[[fid]],"Survival.Prob")
-      attr(CV.Zresid, "linear.pred")[testcases] <- attr(res_fold[[fid]],"linear.pred")
-      attr(CV.Zresid, "censored.status")[testcases] <- attr(res_fold[[fid]],"censored.status")
-    }
-
-    attr(CV.Zresid,"covariates")<- matrix(0,nrow(data),ncol(mf)-1)
-    attr(CV.Zresid,"object.model.frame")<- matrix(0,nrow(mf),ncol(mf))
-    for(fid in 1:length (foldlist)) {
-      attr(CV.Zresid, "covariates")[foldlist[[fid]],] <- as.matrix(attr(res_fold[[fid]],"covariates"))
-      attr(CV.Zresid, "object.model.frame")[foldlist[[fid]],] <- as.matrix(attr(res_fold[[fid]],"object.model.frame"))
-    }
-    attr(CV.Zresid,"covariates")<-as.data.frame(attr(CV.Zresid, "covariates"))
-    colnames( attr(CV.Zresid,"covariates"))<- colnames(mf[,-1])
-    attr(CV.Zresid,"object.model.frame")<-as.data.frame(attr(CV.Zresid, "object.model.frame"))
-    colnames( attr(CV.Zresid,"object.model.frame"))<- colnames(mf)
-
+    
+    colnames(CV.Zresid) <- paste("CV.Z-residual ", 1:n.rep, sep = "")
+    
+    attributes(CV.Zresid) <- c(attributes(CV.Zresid), list(
+      type = "survival",
+      Survival.Prob = temp_sp,
+      linear.pred = temp_lp,
+      censored.status = temp_cs,
+      covariates = as.data.frame(temp_cov),
+      object.model.frame = as.data.frame(temp_mf)
+    ))
+    colnames(attr(CV.Zresid, "covariates")) <- colnames(mf[, -1])
+    colnames(attr(CV.Zresid, "object.model.frame")) <- colnames(mf)
   }
 
   if(is.null(data)){
@@ -241,41 +270,69 @@ CV_Zresidual_coxph_survival <- function(fit.coxph, data, nfolds,foldlist,n.rep, 
       }
     }
 
-    CV.Zresid<-matrix (0, nrow(mf) , n.rep)
-
-    for(fid in 1:length (foldlist)) {
+    # CV.Zresid<-matrix (0, nrow(mf) , n.rep)
+    # 
+    # for(fid in 1:length (foldlist)) {
+    #   testcases <- foldlist[[fid]]
+    #   CV.Zresid[testcases,]<-res_fold[[fid]]
+    # }
+    # col_name <- rep(0, n.rep)
+    # for (i in 1:n.rep) {
+    #   col_name[i] <- paste("CV.Z-residual ", i, sep = "")
+    # }
+    # colnames(CV.Zresid) <- col_name
+    # 
+    # attr(CV.Zresid, "Survival.Prob") <- rep(0, nrow(mf))
+    # attr(CV.Zresid, "linear.pred")<- rep(0, nrow(mf))
+    # attr(CV.Zresid,"censored.status")<- rep(0, nrow(mf))
+    # for(fid in 1:length (foldlist)) {
+    #   testcases <- foldlist[[fid]]
+    #   attr(CV.Zresid, "Survival.Prob")[testcases] <- attr(res_fold[[fid]],"Survival.Prob")
+    #   attr(CV.Zresid, "linear.pred")[testcases] <- attr(res_fold[[fid]],"linear.pred")
+    #   attr(CV.Zresid, "censored.status")[testcases] <- attr(res_fold[[fid]],"censored.status")
+    # }
+    # 
+    # attr(CV.Zresid,"covariates")<- matrix(0,nrow(mf),ncol(mf)-1)
+    # attr(CV.Zresid,"object.model.frame")<- matrix(0,nrow(mf),ncol(mf))
+    # for(fid in 1:length (foldlist)) {
+    #   attr(CV.Zresid, "covariates")[foldlist[[fid]],] <- as.matrix(attr(res_fold[[fid]],"covariates"))
+    #   attr(CV.Zresid, "object.model.frame")[foldlist[[fid]],] <- as.matrix(attr(res_fold[[fid]],"object.model.frame"))
+    # }
+    # attr(CV.Zresid,"covariates")<-as.data.frame(attr(CV.Zresid, "covariates"))
+    # colnames( attr(CV.Zresid,"covariates"))<- colnames(mf[,-1])
+    # attr(CV.Zresid,"object.model.frame")<-as.data.frame(attr(CV.Zresid, "object.model.frame"))
+    # colnames( attr(CV.Zresid,"object.model.frame"))<- colnames(mf)
+    CV.Zresid <- matrix(0, nrow(mf), n.rep)
+    temp_sp <- rep(0, nrow(mf))
+    temp_lp <- rep(0, nrow(mf))
+    temp_cs <- rep(0, nrow(mf))
+    temp_cov <- matrix(0, nrow(mf), ncol(mf) - 1)
+    temp_mf <- matrix(0, nrow(mf), ncol(mf))
+    
+    for (fid in 1:length(foldlist)) {
       testcases <- foldlist[[fid]]
-      CV.Zresid[testcases,]<-res_fold[[fid]]
+      CV.Zresid[testcases, ] <- as.matrix(res_fold[[fid]])
+      temp_sp[testcases] <- attr(res_fold[[fid]], "Survival.Prob")
+      temp_lp[testcases] <- attr(res_fold[[fid]], "linear.pred")
+      temp_cs[testcases] <- attr(res_fold[[fid]], "censored.status")
+      temp_cov[testcases, ] <- as.matrix(attr(res_fold[[fid]], "covariates"))
+      temp_mf[testcases, ] <- as.matrix(attr(res_fold[[fid]], "object.model.frame"))
     }
-    col_name <- rep(0, n.rep)
-    for (i in 1:n.rep) {
-      col_name[i] <- paste("CV.Z-residual ", i, sep = "")
-    }
-    colnames(CV.Zresid) <- col_name
-
-    attr(CV.Zresid, "Survival.Prob") <- rep(0, nrow(mf))
-    attr(CV.Zresid, "linear.pred")<- rep(0, nrow(mf))
-    attr(CV.Zresid,"censored.status")<- rep(0, nrow(mf))
-    for(fid in 1:length (foldlist)) {
-      testcases <- foldlist[[fid]]
-      attr(CV.Zresid, "Survival.Prob")[testcases] <- attr(res_fold[[fid]],"Survival.Prob")
-      attr(CV.Zresid, "linear.pred")[testcases] <- attr(res_fold[[fid]],"linear.pred")
-      attr(CV.Zresid, "censored.status")[testcases] <- attr(res_fold[[fid]],"censored.status")
-    }
-
-    attr(CV.Zresid,"covariates")<- matrix(0,nrow(mf),ncol(mf)-1)
-    attr(CV.Zresid,"object.model.frame")<- matrix(0,nrow(mf),ncol(mf))
-    for(fid in 1:length (foldlist)) {
-      attr(CV.Zresid, "covariates")[foldlist[[fid]],] <- as.matrix(attr(res_fold[[fid]],"covariates"))
-      attr(CV.Zresid, "object.model.frame")[foldlist[[fid]],] <- as.matrix(attr(res_fold[[fid]],"object.model.frame"))
-    }
-    attr(CV.Zresid,"covariates")<-as.data.frame(attr(CV.Zresid, "covariates"))
-    colnames( attr(CV.Zresid,"covariates"))<- colnames(mf[,-1])
-    attr(CV.Zresid,"object.model.frame")<-as.data.frame(attr(CV.Zresid, "object.model.frame"))
-    colnames( attr(CV.Zresid,"object.model.frame"))<- colnames(mf)
-
+    
+    colnames(CV.Zresid) <- paste("CV.Z-residual ", 1:n.rep, sep = "")
+    
+    attributes(CV.Zresid) <- c(attributes(CV.Zresid), list(
+      type = "survival",
+      Survival.Prob = temp_sp,
+      linear.pred = temp_lp,
+      censored.status = temp_cs,
+      covariates = as.data.frame(temp_cov),
+      object.model.frame = as.data.frame(temp_mf)
+    ))
+    colnames(attr(CV.Zresid, "covariates")) <- colnames(mf[, -1])
+    colnames(attr(CV.Zresid, "object.model.frame")) <- colnames(mf)
   }
-  CV.Zresid
+  return(CV.Zresid)
 }
 
 #' @title Cross-validated Z-residuals for Shared Frailty Cox Models
@@ -368,7 +425,7 @@ CV_Zresidual_coxph_frailty_survival<- function( fit.coxph, data, nfolds,foldlist
       }
 
       if (any(!is.na(fit_traindata))) {
-        res_fold[[fid]] <- Zresidual.coxph.frailty(
+        res_fold[[fid]] <- Zresidual_coxph_frailty_survival(
           fit_coxph = fit_traindata,
           traindata = data.train,
           newdata = data.test,
@@ -377,39 +434,59 @@ CV_Zresidual_coxph_frailty_survival<- function( fit.coxph, data, nfolds,foldlist
       }
     }
 
-    CV.Zresid<-matrix (0, nrow(mf) , n.rep)
+    CV.Zresid <- matrix(0, nrow(mf), n.rep)
+    for (fid in 1:length(foldlist)) { CV.Zresid[foldlist[[fid]], ] <- res_fold[[fid]] }
+    colnames(CV.Zresid) <- paste("CV.Z-residual ", 1:n.rep, sep = "")
+    
+  #  attr(CV.Zresid,"type")<- "survival"
+  #  attr(CV.Zresid, "Survival.Prob") <- rep(0, nrow(mf))
+  #  attr(CV.Zresid, "linear.pred")<- rep(0, nrow(mf))
+  #  attr(CV.Zresid,"censored.status")<- rep(0, nrow(mf))
+  
+  #   for(fid in 1:length (foldlist)) {
+  #     testcases <- foldlist[[fid]]
+  #     attr(CV.Zresid, "Survival.Prob")[testcases] <- attr(res_fold[[fid]],"Survival.Prob")
+  #     attr(CV.Zresid, "linear.pred")[testcases] <- attr(res_fold[[fid]],"linear.pred")
+  #     attr(CV.Zresid, "censored.status")[testcases] <- attr(res_fold[[fid]],"censored.status")
+  #   }
+  # 
+  #   attr(CV.Zresid,"covariates")<- matrix(0,nrow(mf),ncol(mm)-1)
+  #   attr(CV.Zresid,"object.model.frame")<- matrix(0,nrow(mf),ncol(mf))
+  #   for(fid in 1:length (foldlist)) {
+  #     attr(CV.Zresid, "covariates")[foldlist[[fid]],] <- attr(res_fold[[fid]],"covariates")
+  #     attr(CV.Zresid, "object.model.frame")[foldlist[[fid]],] <- as.matrix(attr(res_fold[[fid]],"object.model.frame"))
+  #   }
+  #   attr(CV.Zresid,"object.model.frame")<-as.data.frame(attr(CV.Zresid, "object.model.frame"))
+  #   colnames( attr(CV.Zresid,"object.model.frame"))<- colnames(mf)
+  # }
 
-    for(fid in 1:length (foldlist)) {
-      testcases <- foldlist[[fid]]
-      CV.Zresid[testcases,]<-res_fold[[fid]]
-    }
-    col_name <- rep(0, n.rep)
-    for (i in 1:n.rep) {
-      col_name[i] <- paste("CV.Z-residual ", i, sep = "")
-    }
-    colnames(CV.Zresid) <- col_name
-
-    attr(CV.Zresid,"type")<- "survival"
-    attr(CV.Zresid, "Survival.Prob") <- rep(0, nrow(mf))
-    attr(CV.Zresid, "linear.pred")<- rep(0, nrow(mf))
-    attr(CV.Zresid,"censored.status")<- rep(0, nrow(mf))
-    for(fid in 1:length (foldlist)) {
-      testcases <- foldlist[[fid]]
-      attr(CV.Zresid, "Survival.Prob")[testcases] <- attr(res_fold[[fid]],"Survival.Prob")
-      attr(CV.Zresid, "linear.pred")[testcases] <- attr(res_fold[[fid]],"linear.pred")
-      attr(CV.Zresid, "censored.status")[testcases] <- attr(res_fold[[fid]],"censored.status")
-    }
-
-    attr(CV.Zresid,"covariates")<- matrix(0,nrow(mf),ncol(mm)-1)
-    attr(CV.Zresid,"object.model.frame")<- matrix(0,nrow(mf),ncol(mf))
-    for(fid in 1:length (foldlist)) {
-      attr(CV.Zresid, "covariates")[foldlist[[fid]],] <- attr(res_fold[[fid]],"covariates")
-      attr(CV.Zresid, "object.model.frame")[foldlist[[fid]],] <- as.matrix(attr(res_fold[[fid]],"object.model.frame"))
-    }
-    attr(CV.Zresid,"object.model.frame")<-as.data.frame(attr(CV.Zresid, "object.model.frame"))
-    colnames( attr(CV.Zresid,"object.model.frame"))<- colnames(mf)
+  temp_sp <- rep(0, nrow(mf))
+  temp_lp <- rep(0, nrow(mf))
+  temp_cs <- rep(0, nrow(mf))
+  temp_cov <- matrix(0, nrow(mf), ncol(mf))
+  temp_mf <- matrix(0, nrow(mf), ncol(mf))
+  
+  for (fid in 1:length(foldlist)) {
+    testcases <- foldlist[[fid]]
+    temp_sp[testcases] <- attr(res_fold[[fid]], "Survival.Prob")
+    temp_lp[testcases] <- attr(res_fold[[fid]], "linear.pred")
+    temp_cs[testcases] <- attr(res_fold[[fid]], "censored.status")
+    temp_cov[testcases, ] <- attr(res_fold[[fid]], "covariates")
+    temp_mf[testcases, ] <- as.matrix(attr(res_fold[[fid]], "object.model.frame"))
   }
-
+  
+  
+  attributes(CV.Zresid) <- c(attributes(CV.Zresid), list(
+    type = "survival",
+    Survival.Prob = temp_sp,
+    linear.pred = temp_lp,
+    censored.status = temp_cs,
+    covariates = temp_cov,
+    object.model.frame = as.data.frame(temp_mf)
+  ))
+  colnames(attr(CV.Zresid, "object.model.frame")) <- colnames(mf)
+  }
+  
 
   if (!is.null(data)){
     mf <- model.frame(fit.coxph$formula, data)
@@ -449,39 +526,72 @@ CV_Zresidual_coxph_frailty_survival<- function( fit.coxph, data, nfolds,foldlist
       }
     }
 
-    CV.Zresid<-matrix (0, nrow(data) , n.rep)
-
-    for(fid in 1:length (foldlist)) {
+  #   CV.Zresid<-matrix (0, nrow(data) , n.rep)
+  # 
+  #   for(fid in 1:length (foldlist)) {
+  #     testcases <- foldlist[[fid]]
+  #     CV.Zresid[testcases,]<-res_fold[[fid]]
+  #   }
+  #   col_name <- rep(0, n.rep)
+  #   for (i in 1:n.rep) {
+  #     col_name[i] <- paste("CV.Z-residual ", i, sep = "")
+  #   }
+  #   colnames(CV.Zresid) <- col_name
+  # 
+  #   attr(CV.Zresid, "Survival.Prob") <- rep(0, nrow(data))
+  #   attr(CV.Zresid, "linear.pred")<- rep(0, nrow(data))
+  #   attr(CV.Zresid,"censored.status")<- rep(0, nrow(data))
+  #   for(fid in 1:length (foldlist)) {
+  #     testcases <- foldlist[[fid]]
+  #     attr(CV.Zresid, "Survival.Prob")[testcases] <- attr(res_fold[[fid]],"Survival.Prob")
+  #     attr(CV.Zresid, "linear.pred")[testcases] <- attr(res_fold[[fid]],"linear.pred")
+  #     attr(CV.Zresid, "censored.status")[testcases] <- attr(res_fold[[fid]],"censored.status")
+  #   }
+  # 
+  #   attr(CV.Zresid,"covariates")<- matrix(0,nrow(mf),ncol(mf))
+  #   attr(CV.Zresid,"object.model.frame")<- matrix(0,nrow(mf),ncol(mf))
+  #   for(fid in 1:length (foldlist)) {
+  #     attr(CV.Zresid, "covariates")[foldlist[[fid]],] <- attr(res_fold[[fid]],"covariates")
+  #     attr(CV.Zresid, "object.model.frame")[foldlist[[fid]],] <- as.matrix(attr(res_fold[[fid]],"object.model.frame"))
+  #   }
+  #   attr(CV.Zresid,"object.model.frame")<-as.data.frame(attr(CV.Zresid, "object.model.frame"))
+  #   colnames( attr(CV.Zresid,"object.model.frame"))<- colnames(mf)
+  # 
+  # }
+  # CV.Zresid
+    CV.Zresid <- matrix(0, nrow(data), n.rep)
+    for (fid in 1:length(foldlist)) { CV.Zresid[foldlist[[fid]], ] <- res_fold[[fid]] }
+    colnames(CV.Zresid) <- paste("CV.Z-residual ", 1:n.rep, sep = "")
+    
+    temp_sp <- rep(0, nrow(data))
+    temp_lp <- rep(0, nrow(data))
+    temp_cs <- rep(0, nrow(data))
+    temp_cov <- matrix(0, nrow(mf), ncol(mf))
+    temp_mf <- matrix(0, nrow(mf), ncol(mf))
+    
+    for (fid in 1:length(foldlist)) {
       testcases <- foldlist[[fid]]
-      CV.Zresid[testcases,]<-res_fold[[fid]]
+      temp_sp[testcases] <- attr(res_fold[[fid]], "Survival.Prob")
+      temp_lp[testcases] <- attr(res_fold[[fid]], "linear.pred")
+      temp_cs[testcases] <- attr(res_fold[[fid]], "censored.status")
+      temp_cov[testcases, ] <- as.matrix(attr(res_fold[[fid]], "covariates"))
+      temp_mf[testcases, ] <- as.matrix(attr(res_fold[[fid]], "object.model.frame"))
     }
-    col_name <- rep(0, n.rep)
-    for (i in 1:n.rep) {
-      col_name[i] <- paste("CV.Z-residual ", i, sep = "")
-    }
-    colnames(CV.Zresid) <- col_name
-
-    attr(CV.Zresid, "Survival.Prob") <- rep(0, nrow(data))
-    attr(CV.Zresid, "linear.pred")<- rep(0, nrow(data))
-    attr(CV.Zresid,"censored.status")<- rep(0, nrow(data))
-    for(fid in 1:length (foldlist)) {
-      testcases <- foldlist[[fid]]
-      attr(CV.Zresid, "Survival.Prob")[testcases] <- attr(res_fold[[fid]],"Survival.Prob")
-      attr(CV.Zresid, "linear.pred")[testcases] <- attr(res_fold[[fid]],"linear.pred")
-      attr(CV.Zresid, "censored.status")[testcases] <- attr(res_fold[[fid]],"censored.status")
-    }
-
-    attr(CV.Zresid,"covariates")<- matrix(0,nrow(mf),ncol(mf))
-    attr(CV.Zresid,"object.model.frame")<- matrix(0,nrow(mf),ncol(mf))
-    for(fid in 1:length (foldlist)) {
-      attr(CV.Zresid, "covariates")[foldlist[[fid]],] <- attr(res_fold[[fid]],"covariates")
-      attr(CV.Zresid, "object.model.frame")[foldlist[[fid]],] <- as.matrix(attr(res_fold[[fid]],"object.model.frame"))
-    }
-    attr(CV.Zresid,"object.model.frame")<-as.data.frame(attr(CV.Zresid, "object.model.frame"))
-    colnames( attr(CV.Zresid,"object.model.frame"))<- colnames(mf)
-
+    
+    attributes(CV.Zresid) <- c(attributes(CV.Zresid), list(
+      type = "survival",
+      Survival.Prob = temp_sp,
+      linear.pred = temp_lp,
+      censored.status = temp_cs,
+      covariates = temp_cov,
+      object.model.frame = as.data.frame(temp_mf)
+    ))
+    colnames(attr(CV.Zresid, "object.model.frame")) <- colnames(mf)
   }
-  CV.Zresid
+  
+  return(CV.Zresid)
+    
+    
 }
 
 

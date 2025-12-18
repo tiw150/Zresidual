@@ -50,7 +50,7 @@
       <h1>Z-residual Diagnosis for Logistic Regression</h1>
 
 
-      <p class="date">2025-12-12</p>
+      <p class="date">2025-12-17</p>
 
       <small class="dont-index">Source: <a href="https://github.com/tiw150/Zresidual/blob/HEAD/vignettes/zresidual_logistic_demo.qmd" class="external-link"><code>vignettes/zresidual_logistic_demo.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
@@ -67,31 +67,43 @@
 <section class="level3" data-number="1.1"><h3 data-number="1.1" id="installing-z-residua-from-the-source">
 <span class="header-section-number">1.1</span> Installing Z-residua from the source<a class="anchor" aria-label="anchor" href="#installing-z-residua-from-the-source"></a>
 </h3>
+<div class="cell">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"Zresidual"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"remotes"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"tiw150/Zresidual"</span>,</span>
+<span>                          upgrade <span class="op">=</span> <span class="st">"never"</span>,</span>
+<span>                          dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tiw150.github.io/Zresidual">Zresidual</a></span><span class="op">)</span></span></code></pre></div>
+</details>
+</div>
 </section><section class="level3" data-number="1.2"><h3 data-number="1.2" id="intalling-and-loading-r-packages-used-in-this-demo">
 <span class="header-section-number">1.2</span> Intalling and Loading R Packages used in this Demo<a class="anchor" aria-label="anchor" href="#intalling-and-loading-r-packages-used-in-this-demo"></a>
 </h3>
 <div class="cell">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Vector of required packages</span></span>
 <span><span class="va">pkgs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>  <span class="st">"survival"</span>,<span class="st">"EnvStats"</span>,<span class="st">"foreach"</span>, <span class="st">"statip"</span>, <span class="st">"VGAM"</span>, <span class="st">"plotrix"</span>, <span class="st">"actuar"</span>,</span>
+<span>  <span class="st">"brms"</span>,<span class="st">"EnvStats"</span>,<span class="st">"foreach"</span>, <span class="st">"statip"</span>, <span class="st">"VGAM"</span>, <span class="st">"plotrix"</span>, <span class="st">"actuar"</span>,</span>
 <span>  <span class="st">"stringr"</span>, <span class="st">"Rlab"</span>, <span class="st">"dplyr"</span>, <span class="st">"rlang"</span>, <span class="st">"tidyr"</span>,</span>
 <span>  <span class="st">"matrixStats"</span>, <span class="st">"timeDate"</span>, <span class="st">"katex"</span>, <span class="st">"gt"</span>,<span class="st">"loo"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Check for missing packages and install if needed</span></span>
-<span><span class="va">missing_pkgs</span> <span class="op">&lt;-</span> <span class="va">pkgs</span><span class="op">[</span><span class="op">!</span><span class="va">pkgs</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html" class="external-link">installed.packages</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span>, <span class="st">"Package"</span><span class="op">]</span><span class="op">]</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">missing_pkgs</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span><span class="va">missing_pkgs</span> <span class="op">&lt;-</span> <span class="va">pkgs</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">pkgs</span>, <span class="va">requireNamespace</span>, <span class="fu"><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">missing_pkgs</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"Installing missing packages: "</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">missing_pkgs</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="va">missing_pkgs</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">"All required packages are already installed."</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="co"># Load all packages</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">pkgs</span>, <span class="va">library</span>, character.only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">pkgs</span>, <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">p</span>, character.only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">detectCores</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">nc</span> <span class="op">&lt;-</span> <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">detectCores</a></span><span class="op">(</span>logical <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">nc</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="va">nc</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="va">nc</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 </details>
 </div>
 </section></section><section class="level2" data-number="2"><h2 data-number="2" id="introduction">
@@ -136,7 +148,7 @@ z_i = -\Phi^{-1}(\text{rpp}_i(y_i^\text{obs}|\theta)) \sim N(0, 1)
 </h3>
 <p>To demonstrate how <code>Zresidual</code> works with hurdle models, we first simulate data from a <abbr title="Hurdle Negative Binomial">HNB</abbr> model. This simulated dataset allows us to evaluate how well the model and residual diagnostics perform when the true data-generating process is known.</p>
 <div class="cell">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Simulation parameters</span></span>
 <span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">100</span></span>
 <span><span class="va">beta0</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">1</span></span>
@@ -169,7 +181,7 @@ z_i = -\Phi^{-1}(\text{rpp}_i(y_i^\text{obs}|\theta)) \sim N(0, 1)
 <p>This dataset includes a continuous predictor <code>x1</code>, binary variable <code>x2</code>, and five random error variables <code>z1, z2, z3, z4, z5</code> and the outcome <code>y</code> is generated from a Bernoulli process. Note that the error variables are not included in generating the <code>y</code> outcome variable.</p>
 <p>Now, we use the <code>brms</code> package to fit a logistic regression model to the simulated data.</p>
 <div class="cell">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb3"><pre class="downlit sourceCode r">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/HenrikBengtsson/matrixStats" class="external-link">matrixStats</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tiw150.github.io/Zresidual">Zresidual</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span></span>
@@ -185,9 +197,9 @@ z_i = -\Phi^{-1}(\text{rpp}_i(y_i^\text{obs}|\theta)) \sim N(0, 1)
 </h3>
 <p>In this example, we compute Z-residuals for the logistic regression using <code>Zresidual.bernoulli()</code>. The package take <code>brms</code> fit as an input for the <code>Zresidual.bernoulli()</code> function. If the model is Hurdle model, the <code>type</code> argument (<code>"zero", "count" or "hurdle"</code>) specifies which component to use when calculating the residuals. By default, Z-residuals are computed using the Importance Sampling Cross-Validation (<code>iscv</code>) method based on randomized predictive p-values (<abbr title="Randomized Predictive P-value">RPP</abbr>). Alternatively, users can choose the standard Posterior <abbr title="Randomized Predictive P-value">RPP</abbr> method by setting <code>method = "post"</code>.</p>
 <div class="cell">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">zres_logit_iscv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Zresidual.html">Zresidual</a></span><span class="op">(</span><span class="va">fit_logit</span><span class="op">)</span></span>
-<span><span class="va">zres_logit_post</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Zresidual.html">Zresidual</a></span><span class="op">(</span><span class="va">fit_logit</span>, method <span class="op">=</span> <span class="st">"rpost"</span><span class="op">)</span></span></code></pre></div>
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">zres_logit_iscv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Zresidual.html">Zresidual</a></span><span class="op">(</span><span class="va">fit_logit</span>,nrep<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
+<span><span class="va">zres_logit_post</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Zresidual.html">Zresidual</a></span><span class="op">(</span><span class="va">fit_logit</span>, method <span class="op">=</span> <span class="st">"rpost"</span>,nrep<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 </details>
 </div>
 <section class="level5" data-number="4.2.0.1"><h5 data-number="4.2.0.1" id="what-the-function-returns">
@@ -236,29 +248,33 @@ Whether there are patterns in residuals across fitted values (which may suggest 
 Whether residuals differ across covariates (optional extensions).
 </li>
 </ul>
-<div class="cell">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/qqnorm.zresid.html">qqnorm.zresid</a></span><span class="op">(</span><span class="va">zres_logit_iscv</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/plot.zresid.html">plot.zresid</a></span><span class="op">(</span><span class="va">zres_logit_iscv</span>, X<span class="op">=</span><span class="st">"x2"</span>, outlier.return <span class="op">=</span> <span class="cn">TRUE</span>,categor<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/boxplot.zresid.html">boxplot.zresid</a></span><span class="op">(</span><span class="va">zres_logit_iscv</span>, X<span class="op">=</span><span class="st">"lp"</span><span class="op">)</span></span></code></pre></div>
-</details><div class="cell-output-display">
-<div>
-<figure><p><img src="zresidual_logistic_demo_files/figure-html/unnamed-chunk-4-1.png" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
+<div class="cell" data-layout-align="center">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/qqnorm.zresid.html">qqnorm.zresid</a></span><span class="op">(</span><span class="va">zres_logit_post</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/plot.zresid.html">plot.zresid</a></span><span class="op">(</span><span class="va">zres_logit_post</span>, X<span class="op">=</span><span class="st">"x2"</span>, outlier.return <span class="op">=</span> <span class="cn">TRUE</span>,categor<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/boxplot.zresid.html">boxplot.zresid</a></span><span class="op">(</span><span class="va">zres_logit_post</span>, X<span class="op">=</span><span class="st">"lp"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span> <span class="op">{</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/qqnorm.zresid.html">qqnorm.zresid</a></span><span class="op">(</span><span class="va">zres_logit_iscv</span>,irep<span class="op">=</span><span class="va">i</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plot.zresid.html">plot.zresid</a></span><span class="op">(</span><span class="va">zres_logit_iscv</span>, x_axis_var<span class="op">=</span><span class="st">"x2"</span>, outlier.return <span class="op">=</span> <span class="cn">TRUE</span>,categor<span class="op">=</span><span class="cn">TRUE</span>,irep<span class="op">=</span><span class="va">i</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">zres_logit_iscv</span>, x_axis_var<span class="op">=</span><span class="st">"lp"</span>,irep<span class="op">=</span><span class="va">i</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
 </details><div class="cell-output-display">
-<div>
-<figure><p><img src="zresidual_logistic_demo_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
-</figure>
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="zresidual_logistic_demo_files/figure-html/plot-zresid-.gif" width="960"></p>
+<figcaption>Figure 1: Scatterplots and QQ plots of No-CV and LOOCV Z-residuals of the fitted shared frailty models based on the original kidney infection dataset.</figcaption></figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span> <span class="op">{</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/qqnorm.zresid.html">qqnorm.zresid</a></span><span class="op">(</span><span class="va">zres_logit_post</span>,irep<span class="op">=</span><span class="va">i</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plot.zresid.html">plot.zresid</a></span><span class="op">(</span><span class="va">zres_logit_post</span>, x_axis_var<span class="op">=</span><span class="st">"x2"</span>, outlier.return <span class="op">=</span> <span class="cn">TRUE</span>,categor<span class="op">=</span><span class="cn">TRUE</span>,irep<span class="op">=</span><span class="va">i</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">zres_logit_post</span>, x_axis_var<span class="op">=</span><span class="st">"lp"</span>,irep<span class="op">=</span><span class="va">i</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+</details><div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="zresidual_logistic_demo_files/figure-html/plot-zresid2-.gif" width="960"></p>
+<figcaption>Figure 1: Scatterplots and QQ plots of No-CV and LOOCV Z-residuals of the fitted shared frailty models based on the original kidney infection dataset.</figcaption></figure>
 </div>
 </div>
 </div>
@@ -268,43 +284,627 @@ Whether residuals differ across covariates (optional extensions).
 <span class="header-section-number">4.3.0.2</span> Statistical Tests<a class="anchor" aria-label="anchor" href="#statistical-tests"></a>
 </h5>
 <p>In addition to visual diagnostics, the package offers formal statistical tests to quantify deviations from normality or homogeneity of variance in Z-residuals by taking an <code>zresid</code> class object as an input.</p>
-<p><strong>Shapiro-Wilk Test for Normality (<abbr title="Shapiro-Wilk">SW</abbr>)</strong></p>
 <div class="cell">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/sw.test.zresid.html">sw.test.zresid</a></span><span class="op">(</span><span class="va">zres_logit_iscv</span><span class="op">)</span></span></code></pre></div>
-</details><div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.18219</code></pre>
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gt.rstudio.com" class="external-link">gt</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">res_sw_iscv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="../reference/sw.test.zresid.html">sw.test.zresid</a></span><span class="op">(</span><span class="va">zres_logit_iscv</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">res_sw_post</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="../reference/sw.test.zresid.html">sw.test.zresid</a></span><span class="op">(</span><span class="va">zres_logit_post</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">res_aov_iscv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="../reference/aov.test.zresid.html">aov.test.zresid</a></span><span class="op">(</span><span class="va">zres_logit_iscv</span>, X<span class="op">=</span><span class="st">"lp"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">res_aov_post</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="../reference/aov.test.zresid.html">aov.test.zresid</a></span><span class="op">(</span><span class="va">zres_logit_post</span>, X<span class="op">=</span><span class="st">"lp"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">res_bl_iscv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="../reference/bartlett.test.zresid.html">bartlett.test.zresid</a></span><span class="op">(</span><span class="va">zres_logit_iscv</span>, X<span class="op">=</span><span class="st">"lp"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">res_bl_post</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="../reference/bartlett.test.zresid.html">bartlett.test.zresid</a></span><span class="op">(</span><span class="va">zres_logit_post</span>, X<span class="op">=</span><span class="st">"lp"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">gof_wide</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  Residual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"CV.Z-residual "</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span>,</span>
+<span>  SW_ISCV <span class="op">=</span> <span class="va">res_sw_iscv</span>, SW_Post <span class="op">=</span> <span class="va">res_sw_post</span>,</span>
+<span>  AOV_ISCV <span class="op">=</span> <span class="va">res_aov_iscv</span>, AOV_Post <span class="op">=</span> <span class="va">res_aov_post</span>,</span>
+<span>  BL_ISCV <span class="op">=</span> <span class="va">res_bl_iscv</span>, BL_Post <span class="op">=</span> <span class="va">res_bl_post</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">gof_table</span> <span class="op">&lt;-</span> <span class="va">gof_wide</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://gt.rstudio.com/reference/tab_spanner.html" class="external-link">tab_spanner</a></span><span class="op">(</span>label <span class="op">=</span> <span class="st">"Shapiro-Wilk"</span>, columns <span class="op">=</span> <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"SW_"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://gt.rstudio.com/reference/tab_spanner.html" class="external-link">tab_spanner</a></span><span class="op">(</span>label <span class="op">=</span> <span class="st">"ANOVA"</span>, columns <span class="op">=</span> <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"AOV_"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://gt.rstudio.com/reference/tab_spanner.html" class="external-link">tab_spanner</a></span><span class="op">(</span>label <span class="op">=</span> <span class="st">"Bartlett"</span>, columns <span class="op">=</span> <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"BL_"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://gt.rstudio.com/reference/cols_label.html" class="external-link">cols_label</a></span><span class="op">(</span></span>
+<span>    SW_ISCV <span class="op">=</span> <span class="st">"ISCV"</span>, SW_Post <span class="op">=</span> <span class="st">"Post"</span>,</span>
+<span>    AOV_ISCV <span class="op">=</span> <span class="st">"ISCV"</span>, AOV_Post <span class="op">=</span> <span class="st">"Post"</span>,</span>
+<span>    BL_ISCV <span class="op">=</span> <span class="st">"ISCV"</span>, BL_Post <span class="op">=</span> <span class="st">"Post"</span></span>
+<span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://gt.rstudio.com/reference/fmt_number.html" class="external-link">fmt_number</a></span><span class="op">(</span>columns <span class="op">=</span> <span class="op">-</span><span class="va">Residual</span>, decimals <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://gt.rstudio.com/reference/cols_align.html" class="external-link">cols_align</a></span><span class="op">(</span>align <span class="op">=</span> <span class="st">"center"</span>, columns <span class="op">=</span> <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://gt.rstudio.com/reference/tab_options.html" class="external-link">tab_options</a></span><span class="op">(</span></span>
+<span>    column_labels.font.weight <span class="op">=</span> <span class="st">"bold"</span>,</span>
+<span>    table.width <span class="op">=</span> <span class="fu"><a href="https://gt.rstudio.com/reference/pct.html" class="external-link">pct</a></span><span class="op">(</span><span class="fl">100</span><span class="op">)</span>,</span>
+<span>    table.font.size <span class="op">=</span> <span class="fu"><a href="https://gt.rstudio.com/reference/px.html" class="external-link">px</a></span><span class="op">(</span><span class="fl">12</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://gt.rstudio.com/reference/tab_style.html" class="external-link">tab_style</a></span><span class="op">(</span></span>
+<span>    style <span class="op">=</span> <span class="fu"><a href="https://gt.rstudio.com/reference/cell_fill.html" class="external-link">cell_fill</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#f9f9f9"</span><span class="op">)</span>,</span>
+<span>    locations <span class="op">=</span> <span class="fu"><a href="https://gt.rstudio.com/reference/cells_body.html" class="external-link">cells_body</a></span><span class="op">(</span>columns <span class="op">=</span> <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"AOV_"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">gof_table</span></span></code></pre></div>
+</details><div class="cell-output-display">
+<div id="jfshxvtllz" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#jfshxvtllz table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#jfshxvtllz thead, #jfshxvtllz tbody, #jfshxvtllz tfoot, #jfshxvtllz tr, #jfshxvtllz td, #jfshxvtllz th {
+  border-style: none;
+}
+
+#jfshxvtllz p {
+  margin: 0;
+  padding: 0;
+}
+
+#jfshxvtllz .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 12px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: 100%;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#jfshxvtllz .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#jfshxvtllz .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#jfshxvtllz .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#jfshxvtllz .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#jfshxvtllz .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#jfshxvtllz .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#jfshxvtllz .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: bold;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#jfshxvtllz .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: bold;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#jfshxvtllz .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#jfshxvtllz .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#jfshxvtllz .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#jfshxvtllz .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#jfshxvtllz .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#jfshxvtllz .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#jfshxvtllz .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#jfshxvtllz .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#jfshxvtllz .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#jfshxvtllz .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jfshxvtllz .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#jfshxvtllz .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#jfshxvtllz .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#jfshxvtllz .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jfshxvtllz .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#jfshxvtllz .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#jfshxvtllz .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#jfshxvtllz .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jfshxvtllz .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#jfshxvtllz .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#jfshxvtllz .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#jfshxvtllz .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#jfshxvtllz .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#jfshxvtllz .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jfshxvtllz .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#jfshxvtllz .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jfshxvtllz .gt_left {
+  text-align: left;
+}
+
+#jfshxvtllz .gt_center {
+  text-align: center;
+}
+
+#jfshxvtllz .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#jfshxvtllz .gt_font_normal {
+  font-weight: normal;
+}
+
+#jfshxvtllz .gt_font_bold {
+  font-weight: bold;
+}
+
+#jfshxvtllz .gt_font_italic {
+  font-style: italic;
+}
+
+#jfshxvtllz .gt_super {
+  font-size: 65%;
+}
+
+#jfshxvtllz .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#jfshxvtllz .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#jfshxvtllz .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#jfshxvtllz .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#jfshxvtllz .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#jfshxvtllz .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#jfshxvtllz .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#jfshxvtllz .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#jfshxvtllz div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+<table class="table gt_table caption-top" style="width:100%;" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="gt_col_headings gt_spanner_row header">
+<th rowspan="2" id="Residual" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">Residual</th>
+<th colspan="2" id="Shapiro-Wilk" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+Shapiro-Wilk
+</div></th>
+<th colspan="2" id="ANOVA" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+ANOVA
+</div></th>
+<th colspan="2" id="Bartlett" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="colgroup"><div class="gt_column_spanner">
+Bartlett
+</div></th>
+</tr>
+<tr class="gt_col_headings even">
+<th id="SW_ISCV" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">ISCV</th>
+<th id="SW_Post" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">Post</th>
+<th id="AOV_ISCV" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">ISCV</th>
+<th id="AOV_Post" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">Post</th>
+<th id="BL_ISCV" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">ISCV</th>
+<th id="BL_Post" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">Post</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_center" headers="Residual">CV.Z-residual 1</td>
+<td class="gt_row gt_center" headers="SW_ISCV">0.1822</td>
+<td class="gt_row gt_center" headers="SW_Post">0.8573</td>
+<td class="gt_row gt_center" headers="AOV_ISCV" style="background-color: #F9F9F9">0.6288</td>
+<td class="gt_row gt_center" headers="AOV_Post" style="background-color: #F9F9F9">0.5732</td>
+<td class="gt_row gt_center" headers="BL_ISCV">0.3795</td>
+<td class="gt_row gt_center" headers="BL_Post">0.5086</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="Residual">CV.Z-residual 2</td>
+<td class="gt_row gt_center" headers="SW_ISCV">0.2379</td>
+<td class="gt_row gt_center" headers="SW_Post">0.8419</td>
+<td class="gt_row gt_center" headers="AOV_ISCV" style="background-color: #F9F9F9">0.2125</td>
+<td class="gt_row gt_center" headers="AOV_Post" style="background-color: #F9F9F9">0.3225</td>
+<td class="gt_row gt_center" headers="BL_ISCV">0.3000</td>
+<td class="gt_row gt_center" headers="BL_Post">0.4068</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_center" headers="Residual">CV.Z-residual 3</td>
+<td class="gt_row gt_center" headers="SW_ISCV">0.0947</td>
+<td class="gt_row gt_center" headers="SW_Post">0.7128</td>
+<td class="gt_row gt_center" headers="AOV_ISCV" style="background-color: #F9F9F9">0.6562</td>
+<td class="gt_row gt_center" headers="AOV_Post" style="background-color: #F9F9F9">0.6390</td>
+<td class="gt_row gt_center" headers="BL_ISCV">0.9665</td>
+<td class="gt_row gt_center" headers="BL_Post">0.0998</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="Residual">CV.Z-residual 4</td>
+<td class="gt_row gt_center" headers="SW_ISCV">0.8699</td>
+<td class="gt_row gt_center" headers="SW_Post">0.5655</td>
+<td class="gt_row gt_center" headers="AOV_ISCV" style="background-color: #F9F9F9">0.6961</td>
+<td class="gt_row gt_center" headers="AOV_Post" style="background-color: #F9F9F9">0.4548</td>
+<td class="gt_row gt_center" headers="BL_ISCV">0.9827</td>
+<td class="gt_row gt_center" headers="BL_Post">0.6714</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_center" headers="Residual">CV.Z-residual 5</td>
+<td class="gt_row gt_center" headers="SW_ISCV">0.8645</td>
+<td class="gt_row gt_center" headers="SW_Post">0.4877</td>
+<td class="gt_row gt_center" headers="AOV_ISCV" style="background-color: #F9F9F9">0.3356</td>
+<td class="gt_row gt_center" headers="AOV_Post" style="background-color: #F9F9F9">0.1896</td>
+<td class="gt_row gt_center" headers="BL_ISCV">0.8203</td>
+<td class="gt_row gt_center" headers="BL_Post">0.9200</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="Residual">CV.Z-residual 6</td>
+<td class="gt_row gt_center" headers="SW_ISCV">0.6917</td>
+<td class="gt_row gt_center" headers="SW_Post">0.7320</td>
+<td class="gt_row gt_center" headers="AOV_ISCV" style="background-color: #F9F9F9">0.5831</td>
+<td class="gt_row gt_center" headers="AOV_Post" style="background-color: #F9F9F9">0.3560</td>
+<td class="gt_row gt_center" headers="BL_ISCV">0.4532</td>
+<td class="gt_row gt_center" headers="BL_Post">0.8448</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_center" headers="Residual">CV.Z-residual 7</td>
+<td class="gt_row gt_center" headers="SW_ISCV">0.0811</td>
+<td class="gt_row gt_center" headers="SW_Post">0.1798</td>
+<td class="gt_row gt_center" headers="AOV_ISCV" style="background-color: #F9F9F9">0.0931</td>
+<td class="gt_row gt_center" headers="AOV_Post" style="background-color: #F9F9F9">0.6362</td>
+<td class="gt_row gt_center" headers="BL_ISCV">0.8567</td>
+<td class="gt_row gt_center" headers="BL_Post">0.9580</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="Residual">CV.Z-residual 8</td>
+<td class="gt_row gt_center" headers="SW_ISCV">0.6802</td>
+<td class="gt_row gt_center" headers="SW_Post">0.2121</td>
+<td class="gt_row gt_center" headers="AOV_ISCV" style="background-color: #F9F9F9">0.6865</td>
+<td class="gt_row gt_center" headers="AOV_Post" style="background-color: #F9F9F9">0.4813</td>
+<td class="gt_row gt_center" headers="BL_ISCV">0.4585</td>
+<td class="gt_row gt_center" headers="BL_Post">0.5883</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_center" headers="Residual">CV.Z-residual 9</td>
+<td class="gt_row gt_center" headers="SW_ISCV">0.8228</td>
+<td class="gt_row gt_center" headers="SW_Post">0.3662</td>
+<td class="gt_row gt_center" headers="AOV_ISCV" style="background-color: #F9F9F9">0.5565</td>
+<td class="gt_row gt_center" headers="AOV_Post" style="background-color: #F9F9F9">0.2711</td>
+<td class="gt_row gt_center" headers="BL_ISCV">0.6565</td>
+<td class="gt_row gt_center" headers="BL_Post">0.6191</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_center" headers="Residual">CV.Z-residual 10</td>
+<td class="gt_row gt_center" headers="SW_ISCV">0.0500</td>
+<td class="gt_row gt_center" headers="SW_Post">0.6579</td>
+<td class="gt_row gt_center" headers="AOV_ISCV" style="background-color: #F9F9F9">0.7249</td>
+<td class="gt_row gt_center" headers="AOV_Post" style="background-color: #F9F9F9">0.1689</td>
+<td class="gt_row gt_center" headers="BL_ISCV">0.7528</td>
+<td class="gt_row gt_center" headers="BL_Post">0.1492</td>
+</tr>
+</tbody>
+</table>
 </div>
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/sw.test.zresid.html">sw.test.zresid</a></span><span class="op">(</span><span class="va">zres_logit_post</span><span class="op">)</span></span></code></pre></div>
-</details><div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.497763</code></pre>
-</div>
-</div>
-<p><strong>Analysis of Variance (<abbr title="Analysis of Variance">ANOVA</abbr>)</strong></p>
-<div class="cell">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/aov.test.zresid.html">aov.test.zresid</a></span><span class="op">(</span><span class="va">zres_logit_iscv</span>, X<span class="op">=</span><span class="st">"lp"</span><span class="op">)</span></span></code></pre></div>
-</details><div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.6287762</code></pre>
-</div>
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/aov.test.zresid.html">aov.test.zresid</a></span><span class="op">(</span><span class="va">zres_logit_post</span>, X<span class="op">=</span><span class="st">"lp"</span><span class="op">)</span></span></code></pre></div>
-</details><div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.20119</code></pre>
-</div>
-</div>
-<p><strong>Bartlett Test (<abbr title="Bartlett's">BL</abbr>)</strong></p>
-<div class="cell">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/bartlett.test.zresid.html">bartlett.test.zresid</a></span><span class="op">(</span><span class="va">zres_logit_iscv</span>, X<span class="op">=</span><span class="st">"lp"</span><span class="op">)</span></span></code></pre></div>
-</details><div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.3795297</code></pre>
-</div>
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/bartlett.test.zresid.html">bartlett.test.zresid</a></span><span class="op">(</span><span class="va">zres_logit_post</span>, X<span class="op">=</span><span class="st">"lp"</span><span class="op">)</span></span></code></pre></div>
-</details><div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.1328637</code></pre>
 </div>
 </div>
 <p>These tests return standard <code>htest</code> or <code>aov</code> objects, making them easy to report, summarize, or integrate into automated workflows. One advantage of the visualization functions provided by the <code>Zresidual</code> package is that they allow users to diagnose the model both visually and using statistical tests simultaneously.</p>

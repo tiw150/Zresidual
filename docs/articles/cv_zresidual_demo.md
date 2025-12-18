@@ -4,40 +4,46 @@
 
 ### 1.1 Installing Z-residua from the source
 
+Code
+
+``` r
+if (!requireNamespace("Zresidual", quietly = TRUE)) {
+  if (!requireNamespace("remotes", quietly = TRUE)) {
+    install.packages("remotes")
+  }
+  remotes::install_github("tiw150/Zresidual",
+                          upgrade = "never",
+                          dependencies = TRUE)
+}
+library(Zresidual)
+```
+
 ### 1.2 Intalling and Loading R Packages used in this Demo
 
 Code
 
 ``` r
-# Vector of required packages
 pkgs <- c(
-  "survival","EnvStats","foreach", "statip", "VGAM", "plotrix", "actuar",
-  "stringr", "Rlab", "dplyr", "rlang", "tidyr",
-  "matrixStats", "timeDate", "katex", "gt","loo"
+  "survival","EnvStats","foreach","statip","VGAM","plotrix","actuar",
+  "stringr","Rlab","dplyr","rlang","tidyr",
+  "matrixStats","timeDate","katex","gt","loo"
 )
 
-# Check for missing packages and install if needed
-missing_pkgs <- pkgs[!pkgs %in% installed.packages()[, "Package"]]
-if (length(missing_pkgs) > 0) {
+missing_pkgs <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]
+if (length(missing_pkgs)) {
   message("Installing missing packages: ", paste(missing_pkgs, collapse = ", "))
   install.packages(missing_pkgs, dependencies = TRUE)
-} else {
-  message("All required packages are already installed.")
 }
 
-# Load all packages
-invisible(lapply(pkgs, library, character.only = TRUE))
+invisible(lapply(pkgs, function(p) {
+  suppressPackageStartupMessages(library(p, character.only = TRUE))
+}))
 
-options(mc.cores = parallel::detectCores())
+nc <- parallel::detectCores(logical = FALSE)
+if (!is.na(nc) && nc > 1) options(mc.cores = nc - 1)
 ```
 
-## 2 References
-
-Wu, T., Feng, C., & Li, L. (2024). Cross-Validatory Z-Residual for
-Diagnosing Shared Frailty Models. The American Statistician, 79(2),
-198–211. https://doi.org/10.1080/00031305.2024.2421370
-
-## 3 Introduction
+## 2 Introduction
 
 This vignette explains how to use the Zresidual package to calculate
 cross-validatory (CV) Z-residuals based on the output of the coxph
@@ -48,7 +54,7 @@ the detailed definitions and the example data analysis results, please
 refer to the original paper titled “Cross-validatory Z-Residual for
 Diagnosing Shared Frailty Models”.
 
-## 4 Definition of Cross-validatory Z-residual
+## 3 Definition of Cross-validatory Z-residual
 
 We use Z-residual to diagnose shared frailty models in a Cox
 proportional hazard setting with a baseline function unspecified.
@@ -115,9 +121,9 @@ dataset, and similar requirements are imposed on categorical covariates.
 As such, cross-validatory Z-residuals for these observations are
 designated as NA in the implementation.
 
-## 5 Examples for Illustration and Demonstration
+## 4 Examples for Illustration and Demonstration
 
-### 5.1 Load the real Dataset
+### 4.1 Load the real Dataset
 
 This example demonstrates the practical application of cross-validatory
 Z-residuals in identifying outliers within a study on kidney infections.
@@ -136,13 +142,14 @@ frequently employed to exemplify shared frailty models.
 Code
 
 ``` r
-load(here::here("inst/extdata/kidney.rda"))
+data_path <- system.file("extdata", "kidney.rda", package = "Zresidual")
+load(data_path)
 kidney$sex <- ifelse(kidney$sex == 1, "male", "female")
 kidney$sex<-as.factor(kidney$sex)
 kidney$id<-as.factor(kidney$id)
 ```
 
-### 5.2 Fitting Models
+### 4.2 Fitting Models
 
 We fit a shared gamma frailty model with three covariates: covariates:
 age in years, gender (male or female), and four disease types (0=GN,
@@ -154,7 +161,7 @@ Code
 fit_kidney <-coxph(Surv(time, status) ~ age + sex + disease+frailty(id, distribution="gamma"), data= kidney)
 ```
 
-### 5.3 Z-residual and LOOCV Z-residual calculation
+### 4.3 Z-residual and LOOCV Z-residual calculation
 
 We computed Z-residuals using the No-CV and LOOCV methods for the kidney
 infection dataset. Given the similarity in performance between the
@@ -165,13 +172,12 @@ method.
 Code
 
 ``` r
-library(Zresidual)
-Zresid.kidney<-Zresidual(fit.object = fit_kidney,nrep=10)
-CVZresid.kidney<-CV.Zresidual(fit.object = fit_kidney,nrep=10,nfolds = nrow(kidney))
-CVZresid.kidney<-CVZresid.kidney[-57,]
+Zresid.kidney<-Zresidual(fit_kidney,nrep=10)
+CVZresid.kidney<-CV.Zresidual(fit_kidney,nrep=10,nfolds = nrow(kidney))
+CVZresid.kidney_new <- CVZresid.kidney [-57, ]
 ```
 
-### 5.4 Inspecting the Normality of Z-Residuals for Checking Overall GOF
+### 4.4 Inspecting the Normality of Z-Residuals for Checking Overall GOF
 
 The first and second columns of Figure 1 display scatterplots against
 the index and QQ plots of the Z-residuals calculated with the No-CV and
@@ -196,23 +202,15 @@ model.
 Code
 
 ``` r
+for (i in 1:10) {
 par(mfrow = c(2, 2), mar = c(4, 4, 2, 2))
-plot.zresid(Zresid.kidney,X="index", main.title = "Z-residual Scatterplot",
-            outlier.return = TRUE)
-```
-
-Code
-
-``` r
-plot.zresid(CVZresid.kidney,X="index", main.title = "LOOCV Z-residual Scatterplot",
-            outlier.return = TRUE)
-```
-
-Code
-
-``` r
-qqnorm.zresid(Zresid.kidney, main.title = "Z-residual QQ plot")
-qqnorm.zresid(CVZresid.kidney, main.title = "LOOCV Z-residual QQ plot")
+plot.zresid(Zresid.kidney,x_axis_var="index", main.title = "Z-residual Scatterplot",
+     outlier.return = TRUE,irep=i)
+plot.zresid(CVZresid.kidney_new,x_axis_var="index", main.title = "LOOCV Z-residual Scatterplot",
+     outlier.return = TRUE,irep=i)
+qqnorm.zresid(Zresid.kidney, main.title = "Z-residual QQ plot",irep=i)
+qqnorm.zresid(CVZresid.kidney_new, main.title = "LOOCV Z-residual QQ plot",irep=i)
+}
 ```
 
 ![](cv_zresidual_demo_files/figure-html/qqplot-zresid-.gif)
@@ -221,7 +219,7 @@ Figure 1: Scatterplots and QQ plots of No-CV and LOOCV Z-residuals of
 the fitted shared frailty models based on the original kidney infection
 dataset.
 
-### 5.5 Diagnostic Tests with Z-residuals
+### 4.5 Diagnostic Tests with Z-residuals
 
 The Shapiro-Wilk (SW) or Shapiro-Francia (SF) normality tests applied to
 Z-residuals can be used to numerically test the overall GOF of the
@@ -230,12 +228,38 @@ model.
 Code
 
 ``` r
+library(gt)
+library(tibble)
+library(dplyr)
 sw.kidney<-sw.test.zresid(Zresid.kidney)
 sw.kidney.cv<-sw.test.zresid(CVZresid.kidney)
 sf.kidney<-sf.test.zresid(Zresid.kidney)
 sf.kidney.cv<-sf.test.zresid(CVZresid.kidney)
 gof_tests<-data.frame(sw.kidney,sw.kidney.cv,sf.kidney,sf.kidney.cv)
+gof_tests_table <- gof_tests %>%
+  rownames_to_column(var = "Metric") %>%
+  gt() %>%
+  tab_spanner(
+    label = "Shapiro-Wilk",
+    columns = c(sw.kidney, sw.kidney.cv)
+  ) %>%
+  tab_spanner(
+    label = "Shapiro-Francia",
+    columns = c(sf.kidney, sf.kidney.cv)
+  ) %>%
+  fmt_number(
+    columns = -Metric,
+    decimals = 4
+  ) %>%
+  cols_align(align = "center", columns = everything()) %>%
+  tab_options(
+    column_labels.font.weight = "bold"
+  )
+
+gof_tests_table
 ```
+
+[TABLE]
 
 There exists randomness in the Z-residuals of censored observations,
 meaning that different sets of Z-residuals can be generated for the same
@@ -249,6 +273,8 @@ This consistency across numerous replications confirms that the
 evaluation of the misspecification of the shared frailty model is not
 incidental to a specific set of LOOCV Z-residuals but a recurring
 conclusion supported by extensive Z-residual replications.
+
+[TABLE]
 
 Code
 
@@ -270,3 +296,9 @@ abline(v=pmin.sf.kidney.cv,col="red")
 ```
 
 ![](cv_zresidual_demo_files/figure-html/unnamed-chunk-5-1.png)
+
+## 5 References
+
+Wu, T., Feng, C., & Li, L. (2024). Cross-Validatory Z-Residual for
+Diagnosing Shared Frailty Models. The American Statistician, 79(2),
+198–211. https://doi.org/10.1080/00031305.2024.2421370

@@ -45,20 +45,18 @@ set.seed(123)
 ### Installing Z-residua from the source
 
 ```{r}
-#| label: install-zresidual
-#| echo: true
-#| include: false
-#| message: false
+#| label: install-and-load-zresidual
+#| eval: false
 if (!requireNamespace("Zresidual", quietly = TRUE)) {
-  if (!requireNamespace("devtools", quietly = TRUE)) {
-    install.packages("devtools")
+  if (!requireNamespace("remotes", quietly = TRUE)) {
+    install.packages("remotes")
   }
-  devtools::install_github("tiw150/Zresidual")
+  remotes::install_github("tiw150/Zresidual",
+                          upgrade = "never",
+                          dependencies = TRUE)
 }
 library(Zresidual)
-
 ```
-
 ### Intalling and Loading R Packages used in this Demo
 
 ```{r loading-packages}
@@ -70,19 +68,19 @@ pkgs <- c(
   "matrixStats", "timeDate", "katex", "gt","loo"
 )
 
-# Check for missing packages and install if needed
-missing_pkgs <- pkgs[!pkgs %in% installed.packages()[, "Package"]]
-if (length(missing_pkgs) > 0) {
+missing_pkgs <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]
+if (length(missing_pkgs)) {
   message("Installing missing packages: ", paste(missing_pkgs, collapse = ", "))
   install.packages(missing_pkgs, dependencies = TRUE)
-} else {
-  message("All required packages are already installed.")
 }
 
-# Load all packages
-invisible(lapply(pkgs, library, character.only = TRUE))
+invisible(lapply(pkgs, function(p) {
+  suppressPackageStartupMessages(library(p, character.only = TRUE))
+}))
 
-options(mc.cores = parallel::detectCores())
+nc <- parallel::detectCores(logical = FALSE)
+if (!is.na(nc) && nc > 1) options(mc.cores = nc - 1)
+
 ```
 
 ```{r, echo=FALSE}
@@ -253,9 +251,9 @@ In this example, we compute Z-residuals for the `r HNB` model separately for, lo
 library(matrixStats)
 library(distributions3)
 library(Zresidual)
-zres_hnb_post_zero <- Zresidual(fit_hnb, type = "zero", method = "rpost")
-zres_hnb_post_count <- Zresidual(fit_hnb, type = "count", method = "rpost")
-zres_hnb_post_hurdle <- Zresidual(fit_hnb, type = "hurdle", method = "rpost")
+zres_hnb_post_zero <- Zresidual(fit_hnb, type = "zero", method = "rpost",nrep=10)
+zres_hnb_post_count <- Zresidual(fit_hnb, type = "count", method = "rpost",nrep=10)
+zres_hnb_post_hurdle <- Zresidual(fit_hnb, type = "hurdle", method = "rpost",nrep=10)
 ```
 
 
@@ -291,24 +289,66 @@ The `Zresidual` package includes built-in plotting functions (QQ Plot, Scatter P
 
 
 ```{r }
+#| label: qqplot-zresid
+#| fig-show: animate
+#| animation.hook: "gifski"
+#| interval: 1
+#| aniopts: "controls,loop"
+#| cache: true
+#| fig-width: 10
+#| fig-height: 3.5
+#| echo: true
+#| results: hide
+#| fig-align: center
+#| fig-cap: "Figure 1: QQ plots "
+for (i in 1:10) {
 par(mfrow = c(1,3))
-qqnorm.zresid(zres_hnb_post_zero)
-qqnorm.zresid(zres_hnb_post_count)
-qqnorm.zresid(zres_hnb_post_hurdle)
+qqnorm.zresid(zres_hnb_post_zero,irep=i)
+qqnorm.zresid(zres_hnb_post_count,irep=i)
+qqnorm.zresid(zres_hnb_post_hurdle,irep=i)
+}
 ```
 
 ```{r }
+#| label: plot-zresid
+#| fig-show: animate
+#| animation.hook: "gifski"
+#| interval: 1
+#| aniopts: "controls,loop"
+#| cache: true
+#| fig-width: 10
+#| fig-height: 3.5
+#| echo: true
+#| results: hide
+#| fig-align: center
+#| fig-cap: "Figure 2: Scatter plots "
+for (i in 1:10) {
 par(mfrow = c(1,3))
-plot.zresid(zres_hnb_post_zero, X="lp", outlier.return = TRUE)
-plot.zresid(zres_hnb_post_count, X="lp", outlier.return = TRUE, log = "x")
-plot.zresid(zres_hnb_post_hurdle, X="lp", outlier.return = TRUE, log = "x")
+plot.zresid(zres_hnb_post_zero, x_axis_var="lp", outlier.return = TRUE,irep=i)
+plot.zresid(zres_hnb_post_count, x_axis_var="lp", outlier.return = TRUE, log = "x",irep=i)
+plot.zresid(zres_hnb_post_hurdle, x_axis_var="lp", outlier.return = TRUE, log = "x",irep=i)
+}
 ```
 
 ```{r }
+#| label: boxplot-zresid
+#| fig-show: animate
+#| animation.hook: "gifski"
+#| interval: 1
+#| aniopts: "controls,loop"
+#| cache: true
+#| fig-width: 10
+#| fig-height: 3.5
+#| echo: true
+#| results: hide
+#| fig-align: center
+#| fig-cap: "Figure 3: boxplots "
+for (i in 1:10) {
 par(mfrow = c(1,3))
-boxplot.zresid(zres_hnb_post_zero, X="lp")
-boxplot.zresid(zres_hnb_post_count, X="lp")
-boxplot.zresid(zres_hnb_post_hurdle, X="lp")
+boxplot(zres_hnb_post_zero, x_axis_var="lp",irep=i)
+boxplot(zres_hnb_post_count, x_axis_var="lp",irep=i)
+boxplot(zres_hnb_post_hurdle, x_axis_var="lp",irep=i)
+}
 ```
 
 The diagnostic evaluations for the true model—comprising scatter plots, Q-Q plots, and boxplots of Z-residuals—demonstrate that the model adequately captures the data structure. Across the logistic, count, and hurdle components, Z-residuals are evenly scattered around zero and mostly fall within the range of -3 to 3, indicating no visible model misfit. Complementary statistical tests, including the `r SW` test for normality, `r ANOVA` for mean equality, and `r BL` test for variance homogeneity, all return p-values above the 0.05 threshold. This suggests that the residuals follow a normal distribution and exhibit equal means and variances across fitted value intervals. The Q-Q plots further support normality through close alignment with the 45-degree reference line, while the boxplots confirm consistent residual means across partitions. Collectively, these diagnostics validate that the true model satisfies key distributional assumptions and that the proposed Z-residual methods are effective in detecting model adequacy.
@@ -319,27 +359,57 @@ The plotting functions in the Zresidual package are designed to be flexible and 
 
 In addition to visual diagnostics, the package offers formal statistical tests to quantify deviations from normality or homogeneity of variance in Z-residuals by taking an `zresid` class object as an input.
 
-**Shapiro-Wilk Test for Normality (`r SW`)**
 ```{r}
-sw.test.zresid(zres_hnb_post_zero)
-sw.test.zresid(zres_hnb_post_count)
-sw.test.zresid(zres_hnb_post_hurdle)
+library(gt)
+library(tibble)
+library(dplyr)
+
+zero_sw <- as.numeric(sw.test.zresid(zres_hnb_post_zero))
+count_sw <- as.numeric(sw.test.zresid(zres_hnb_post_count))
+hurdle_sw <- as.numeric(sw.test.zresid(zres_hnb_post_hurdle))
+
+zero_aov <- as.numeric(aov.test.zresid(zres_hnb_post_zero))
+count_aov <- as.numeric(aov.test.zresid(zres_hnb_post_count))
+hurdle_aov <- as.numeric(aov.test.zresid(zres_hnb_post_hurdle))
+
+zero_bl <- as.numeric(bartlett.test.zresid(zres_hnb_post_zero))
+count_bl <- as.numeric(bartlett.test.zresid(zres_hnb_post_count))
+hurdle_bl <- as.numeric(bartlett.test.zresid(zres_hnb_post_hurdle))
+
+gof_wide <- data.frame(
+  Residual = paste0("CV.Z-residual ", 1:10),
+  SW_Zero = zero_sw, SW_Count = count_sw, SW_Hurdle = hurdle_sw,
+  AOV_Zero = zero_aov, AOV_Count = count_aov, AOV_Hurdle = hurdle_aov,
+  BL_Zero = zero_bl, BL_Count = count_bl, BL_Hurdle = hurdle_bl
+)
+
+gof_table <- gof_wide %>%
+  gt() %>%
+  tab_spanner(label = "Shapiro-Wilk", columns = starts_with("SW_")) %>%
+  tab_spanner(label = "ANOVA", columns = starts_with("AOV_")) %>%
+  tab_spanner(label = "Bartlett", columns = starts_with("BL_")) %>%
+  cols_label(
+    SW_Zero = "Zero", SW_Count = "Count", SW_Hurdle = "Hurdle",
+    AOV_Zero = "Zero", AOV_Count = "Count", AOV_Hurdle = "Hurdle",
+    BL_Zero = "Zero", BL_Count = "Count", BL_Hurdle = "Hurdle"
+  ) %>%
+  fmt_number(columns = -Residual, decimals = 4) %>%
+  cols_align(align = "center", columns = everything()) %>%
+  tab_options(
+    column_labels.font.weight = "bold",
+    table.width = pct(100),
+    table.font.size = px(12)
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#f9f9f9"),
+    locations = cells_body(columns = starts_with("AOV_"))
+  )
+
+gof_table
 ```
 
 
-**Analysis of Variance (`r ANOVA`)**
-```{r}
-aov.test.zresid(zres_hnb_post_zero)
-aov.test.zresid(zres_hnb_post_count)
-aov.test.zresid(zres_hnb_post_hurdle)
-```
 
-**Bartlett Test (`r BL`)**
-```{r}
-bartlett.test.zresid(zres_hnb_post_zero)
-bartlett.test.zresid(zres_hnb_post_count)
-bartlett.test.zresid(zres_hnb_post_hurdle)
-```
 
 These tests return standard `htest` or `aov` objects, making them easy to report, summarize, or integrate into automated workflows. One advantage of the visualization functions provided by the `Zresidual` package is that they allow users to diagnose the model both visually and using statistical tests simultaneously.
 
@@ -356,31 +426,73 @@ load(here::here("inst/extdata/fit_hp.Rdata"))
 This `prior("normal(1000, 1)", class = "shape")` is a very strong prior, tightly centered around 1000. Its practical effect is to force the shape parameter to be very large, which in turn makes the model behave almost like a Poisson distribution for the positive counts (truncated part of the hurdle model).
 
 ```{r }
-zres_hp_post_zero <- Zresidual(fit_hp, type = "zero", method = "rpost")
-zres_hp_post_count <- Zresidual(fit_hp, type = "count", method = "rpost")
-zres_hp_post_hurdle <- Zresidual(fit_hp, type = "hurdle", method = "rpost")
+zres_hp_post_zero <- Zresidual(fit_hp, type = "zero", method = "rpost",nrep=10)
+zres_hp_post_count <- Zresidual(fit_hp, type = "count", method = "rpost",nrep=10)
+zres_hp_post_hurdle <- Zresidual(fit_hp, type = "hurdle", method = "rpost",nrep=10)
 ```
 
 
 ```{r}
+#| label: QQ-zresid2
+#| fig-show: animate
+#| animation.hook: "gifski"
+#| interval: 1
+#| aniopts: "controls,loop"
+#| cache: true
+#| fig-width: 10
+#| fig-height: 3.5
+#| echo: true
+#| results: hide
+#| fig-align: center
+#| fig-cap: "Figure 4: qqplots "
+for (i in 1:10) {
 par(mfrow = c(1,3))
-qqnorm.zresid(zres_hp_post_zero)
-qqnorm.zresid(zres_hp_post_count)
-qqnorm.zresid(zres_hp_post_hurdle)
+qqnorm.zresid(zres_hp_post_zero,irep=i)
+qqnorm.zresid(zres_hp_post_count,irep=i)
+qqnorm.zresid(zres_hp_post_hurdle,irep=i)
+}
 ```
 
 ```{r }
+#| label: plot-zresid2
+#| fig-show: animate
+#| animation.hook: "gifski"
+#| interval: 1
+#| aniopts: "controls,loop"
+#| cache: true
+#| fig-width: 10
+#| fig-height: 3.5
+#| echo: true
+#| results: hide
+#| fig-align: center
+#| fig-cap: "Figure 5: plots "
+for (i in 1:10) {
 par(mfrow = c(1,3))
-plot.zresid(zres_hp_post_zero, X="lp", outlier.return = TRUE)
-plot.zresid(zres_hp_post_count, X="lp", outlier.return = TRUE, log = "x")
-plot.zresid(zres_hp_post_hurdle, X="lp", outlier.return = TRUE, log = "x")
+plot.zresid(zres_hp_post_zero, x_axis_var="lp", outlier.return = TRUE,irep=i)
+plot.zresid(zres_hp_post_count, x_axis_var="lp", outlier.return = TRUE, log = "x",irep=i)
+plot.zresid(zres_hp_post_hurdle, x_axis_var="lp", outlier.return = TRUE, log = "x",irep=i)
+}
 ```
 
 ```{r }
+#| label: boxplot-zresid2
+#| fig-show: animate
+#| animation.hook: "gifski"
+#| interval: 1
+#| aniopts: "controls,loop"
+#| cache: true
+#| fig-width: 10
+#| fig-height: 3.5
+#| echo: true
+#| results: hide
+#| fig-align: center
+#| fig-cap: "Figure 6: qqplots "
+for (i in 1:10) {
 par(mfrow = c(1,3))
-boxplot.zresid(zres_hp_post_zero, X="lp")
-boxplot.zresid(zres_hp_post_count, X="lp")
-boxplot.zresid(zres_hp_post_hurdle, X="lp")
+boxplot(zres_hp_post_zero, x_axis_var="lp",irep=i)
+boxplot(zres_hp_post_count, x_axis_var="lp",irep=i)
+boxplot(zres_hp_post_hurdle, x_axis_var="lp",irep=i)
+}
 ```
 
 While the logistic component shows randomly scattered residuals and normal Q-Q alignment, supported by non-significant p-values, the count and hurdle components display clear signs of misspecification. These include banded residual patterns, heavy tails, Q-Q deviations, and significant p-values from the `r SW`, `r ANOVA`, and `r BL` tests. The overall hurdle model diagnostics reflect similar issues but cannot isolate the source of misfit. This highlights a key advantage of component-wise residual analysis: it reveals that the logistic sub-model is correctly specified, while the count component is not. Such separation enables more precise identification and correction of modeling issues.

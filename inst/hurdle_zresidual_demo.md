@@ -4,6 +4,20 @@
 
 ### 1.1 Installing Z-residua from the source
 
+Code
+
+``` r
+if (!requireNamespace("Zresidual", quietly = TRUE)) {
+  if (!requireNamespace("remotes", quietly = TRUE)) {
+    install.packages("remotes")
+  }
+  remotes::install_github("tiw150/Zresidual",
+                          upgrade = "never",
+                          dependencies = TRUE)
+}
+library(Zresidual)
+```
+
 ### 1.2 Intalling and Loading R Packages used in this Demo
 
 Code
@@ -16,19 +30,18 @@ pkgs <- c(
   "matrixStats", "timeDate", "katex", "gt","loo"
 )
 
-# Check for missing packages and install if needed
-missing_pkgs <- pkgs[!pkgs %in% installed.packages()[, "Package"]]
-if (length(missing_pkgs) > 0) {
+missing_pkgs <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]
+if (length(missing_pkgs)) {
   message("Installing missing packages: ", paste(missing_pkgs, collapse = ", "))
   install.packages(missing_pkgs, dependencies = TRUE)
-} else {
-  message("All required packages are already installed.")
 }
 
-# Load all packages
-invisible(lapply(pkgs, library, character.only = TRUE))
+invisible(lapply(pkgs, function(p) {
+  suppressPackageStartupMessages(library(p, character.only = TRUE))
+}))
 
-options(mc.cores = parallel::detectCores())
+nc <- parallel::detectCores(logical = FALSE)
+if (!is.na(nc) && nc > 1) options(mc.cores = nc - 1)
 ```
 
 ## 2 Introduction
@@ -53,118 +66,82 @@ two parts:
 - A **count component** modeling positive counts using a zero-truncated
   distribution.
 
-Let $`C_i \in \{0, 1\}`$, where $`C_i = 1`$ indicates a non-zero value,
-and $`C_i = 0`$ indicates a zero value for the \$i^\th\$ observations.
-If $`C_i=1`$, the corresponding count model then operates on
-$`y_i^+ \in \{1, 2, \dots\}`$, i.e., the positive counts only.
+Let C_i \in \\0, 1\\, where C_i = 1 indicates a non-zero value, and C_i
+= 0 indicates a zero value for the i^\th observations. If C_i=1, the
+corresponding count model then operates on y_i^+ \in \\1, 2, \dots\\,
+i.e., the positive counts only.
 
-Using Bayesian estimation (e.g., via the `brms` package), we draw $`T`$
-samples from the posterior distribution. Let $`\theta^{(t)}`$ denote the
-\$t^\th\$ posterior draw, including component-specific parameters like:
+Using Bayesian estimation (e.g., via the `brms` package), we draw T
+samples from the posterior distribution. Let \theta^{(t)} denote the
+t^\th posterior draw, including component-specific parameters like:
 
-- $`\pi^o_i`$ : the zero porbability,
-- $`\mu_i^{(t)}, \phi^{(t)}`$ : parameters for the count component.
+- \pi^o_i : the zero porbability,
+- \mu_i^{(t)}, \phi^{(t)} : parameters for the count component.
 
-For a given observation $`y_i^\text{obs}`$, the component-wise posterior
+For a given observation y_i^\text{obs}, the component-wise posterior
 predictive PMF and survival functions are defined below.
 
 #### 3.0.1 **Hurdle Model:**
 
-``` math
-\begin{equation}
-p_i^{\text{post}, \pi^o_irdle}(y_i^\text{obs}) = \frac{1}{T} \sum_{t=1}^T
-\begin{cases}
-{\pi^o_i}^{(t)} & \text{if } y_i^\text{obs} = 0, \\
-(1 - {\pi^o_i}^{(t)}) \cdot\frac{p_i^\text{UT}(y_i^\text{obs} | \theta^{(t)})}{1 - p_i^\text{UT}(0 | \theta^{(t)})} & \text{if } y_i^\text{obs} =1, 2, \ldots,\\
-0 & \text{otherwise.}
-\end{cases}
-\end{equation}
-```
-``` math
-\begin{equation}
-S_i^{\text{post}, \pi^o_irdle}(y_i^\text{obs}) = \frac{1}{T} \sum_{t=1}^T
-\begin{cases}
-1 & \text{if } y_i^\text{obs} < 0, \\
-1-{\pi^o_i}^{(t)} & \text{if } 0 \le y_i^\text{obs} < 1, \\
-(1 - {\pi^o_i}^{(t)}) \cdot \frac{S_i^\text{UT}(y_i^\text{obs} \mid \theta^{(t)})}{1-p_i^\text{UT}(0 \mid \theta^{(t)})} & \text{if } y_i^\text{obs} \ge 1.
-\end{cases}
-\end{equation}
-```
+\begin{equation} p_i^{\text{post}, \pi^o_irdle}(y_i^\text{obs}) =
+\frac{1}{T} \sum\_{t=1}^T \begin{cases} {\pi^o_i}^{(t)} & \text{if }
+y_i^\text{obs} = 0, \\ (1 - {\pi^o_i}^{(t)})
+\cdot\frac{p_i^\text{UT}(y_i^\text{obs} \| \theta^{(t)})}{1 -
+p_i^\text{UT}(0 \| \theta^{(t)})} & \text{if } y_i^\text{obs} =1, 2,
+\ldots,\\ 0 & \text{otherwise.} \end{cases} \end{equation}
+\begin{equation} S_i^{\text{post}, \pi^o_irdle}(y_i^\text{obs}) =
+\frac{1}{T} \sum\_{t=1}^T \begin{cases} 1 & \text{if } y_i^\text{obs} \<
+0, \\ 1-{\pi^o_i}^{(t)} & \text{if } 0 \le y_i^\text{obs} \< 1, \\ (1 -
+{\pi^o_i}^{(t)}) \cdot \frac{S_i^\text{UT}(y_i^\text{obs} \mid
+\theta^{(t)})}{1-p_i^\text{UT}(0 \mid \theta^{(t)})} & \text{if }
+y_i^\text{obs} \ge 1. \end{cases} \end{equation}
 
 #### 3.0.2 **Logistic Component:**
 
-``` math
-\begin{equation}
-\label{componentwise_logistic_pmf}
-p_i^{\text{post}, \text{logit}}(c_i^\text{obs}) = \frac{1}{T} \sum_{t=1}^T
-\begin{cases}
-{\pi^o_i}^{(t)} & \text{if } c_i^\text{obs} = 0, \\
-1 - {\pi^o_i}^{(t)} & \text{if } c_i^\text{obs} = 1,\\
-0 & \text{otherwise.}
-\end{cases}
+\begin{equation} \label{componentwise_logistic_pmf} p_i^{\text{post},
+\text{logit}}(c_i^\text{obs}) = \frac{1}{T} \sum\_{t=1}^T \begin{cases}
+{\pi^o_i}^{(t)} & \text{if } c_i^\text{obs} = 0, \\ 1 - {\pi^o_i}^{(t)}
+& \text{if } c_i^\text{obs} = 1,\\ 0 & \text{otherwise.} \end{cases}
 \end{equation}
-```
 
-``` math
-\begin{equation}
-\label{componentwise_logistic_survival}
-S_i^{\text{post}, \text{logit}}(c_i^\text{obs}) = \frac{1}{T} \sum_{t=1}^T
-\begin{cases}
-1 & \text{if } c_i^\text{obs} < 0, \\
-1-{\pi^o_i}^{(t)} & \text{if } 0 \le c_i^\text{obs} < 1, \\
-0, & \text{if } c_i^\text{obs} \ge 1.
-\end{cases}
-\end{equation}
-```
+\begin{equation} \label{componentwise_logistic_survival}
+S_i^{\text{post}, \text{logit}}(c_i^\text{obs}) = \frac{1}{T}
+\sum\_{t=1}^T \begin{cases} 1 & \text{if } c_i^\text{obs} \< 0, \\
+1-{\pi^o_i}^{(t)} & \text{if } 0 \le c_i^\text{obs} \< 1, \\ 0, &
+\text{if } c_i^\text{obs} \ge 1. \end{cases} \end{equation}
 
 #### 3.0.3 **Count Compoenent:**
 
-``` math
-\begin{equation}
-\label{componentwise_count_pmf}
-p_i^{\text{post},\text{count}}({y_i^+}^\text{obs}) = \frac{1}{T} \sum_{t=1}^T
-\begin{cases}
-    \frac{p_i^\text{UT}({y_i^+}^\text{obs} \mid \theta^{(t)})}{1 - p_i^\text{UT}(0 \mid \theta^{(t)})}, & \text{ for } {y_i^{+}}^\text{obs} = 1,2,\ldots,\\
-    0 & \text{ otherwise.}
-\end{cases}
+\begin{equation} \label{componentwise_count_pmf}
+p_i^{\text{post},\text{count}}({y_i^+}^\text{obs}) = \frac{1}{T}
+\sum\_{t=1}^T \begin{cases} \frac{p_i^\text{UT}({y_i^+}^\text{obs} \mid
+\theta^{(t)})}{1 - p_i^\text{UT}(0 \mid \theta^{(t)})}, & \text{ for }
+{y_i^{+}}^\text{obs} = 1,2,\ldots,\\ 0 & \text{ otherwise.} \end{cases}
 \end{equation}
-```
 
-``` math
-\begin{equation}
-\label{componentwise_count_survival}
-S_i^{\text{post}, \text{count}}({y_i^+}^\text{obs}) = \frac{1}{T} \sum_{t=1}^T
-\begin{cases}
-    1 & \text{ if } {y_i^+}^\text{obs} < 1 \\
-    \frac{S_i^\text{UT}({y_i^+}^\text{obs} \mid \theta^{(t)})}{1-p_i^\text{UT}(0 \mid \theta^{(t)})}, & \text{ if } {y_i^+}^\text{obs} \ge 1
-\end{cases}
-\end{equation}
-```
+\begin{equation} \label{componentwise_count_survival} S_i^{\text{post},
+\text{count}}({y_i^+}^\text{obs}) = \frac{1}{T} \sum\_{t=1}^T
+\begin{cases} 1 & \text{ if } {y_i^+}^\text{obs} \< 1 \\
+\frac{S_i^\text{UT}({y_i^+}^\text{obs} \mid
+\theta^{(t)})}{1-p_i^\text{UT}(0 \mid \theta^{(t)})}, & \text{ if }
+{y_i^+}^\text{obs} \ge 1 \end{cases} \end{equation}
 
-where $`p_i^\text{UT}(. \mid \theta^{(t)})`$ and
-$`S_i^\text{UT}(. \mid \theta^{(t)})`$ denote the PMF and survival
-function of the untruncated count distribution, given the
-component-specific posterior parameters $`\theta^{(t)}`$.
+where p_i^\text{UT}(. \mid \theta^{(t)}) and S_i^\text{UT}(. \mid
+\theta^{(t)}) denote the PMF and survival function of the untruncated
+count distribution, given the component-specific posterior parameters
+\theta^{(t)}.
 
-For any observed value $`y_i^\text{obs}`$, we define:
-``` math
-\begin{equation}
-\label{eq:post_rpp}\text{rpp}_i(y_i^\text{obs} | \theta^{(t)}) = S_i(y_i^\text{obs} | \theta^{(t)}) + U_i \times p_i(y_i^\text{obs} | \theta^{(t)})
-\end{equation}
-```
-where $`U_i \sim \text{Uniform}(0,1)`$. Here, $`y_i^\text{obs}`$ is the
-observed value, which can refer to either the binary response $`C_i`$ or
-the positive count $`{y_i^+}^\text{obs}`$, depending on the component
-being evaluated. Then, the Z-residual of a discrete response variable
-is,
-``` math
-\begin{equation}
-\label{eq:z_residual}
-z_i = -\Phi^{-1}(\text{rpp}_i(y_i^\text{obs}|\theta)) \sim N(0, 1)
-\end{equation}
-```
-where (^{-1}(.)) is the quantile function of standard normal
-distribution.
+For any observed value y_i^\text{obs}, we define: \begin{equation}
+\label{eq:post_rpp}\text{rpp}\_i(y_i^\text{obs} \| \theta^{(t)}) =
+S_i(y_i^\text{obs} \| \theta^{(t)}) + U_i \times p_i(y_i^\text{obs} \|
+\theta^{(t)}) \end{equation} where U_i \sim \text{Uniform}(0,1). Here,
+y_i^\text{obs} is the observed value, which can refer to either the
+binary response C_i or the positive count {y_i^+}^\text{obs}, depending
+on the component being evaluated. Then, the Z-residual of a discrete
+response variable is, \begin{equation} \label{eq:z_residual} z_i =
+-\Phi^{-1}(\text{rpp}\_i(y_i^\text{obs}\|\theta)) \sim N(0, 1)
+\end{equation} where (^{-1}(.)) is the quantile function of standard
+normal distribution.
 
 ## 4 A Simulation Example
 
@@ -256,9 +233,9 @@ Code
 library(matrixStats)
 library(distributions3)
 library(Zresidual)
-zres_hnb_post_zero <- Zresidual(fit_hnb, type = "zero", method = "rpost")
-zres_hnb_post_count <- Zresidual(fit_hnb, type = "count", method = "rpost")
-zres_hnb_post_hurdle <- Zresidual(fit_hnb, type = "hurdle", method = "rpost")
+zres_hnb_post_zero <- Zresidual(fit_hnb, type = "zero", method = "rpost",nrep=10)
+zres_hnb_post_count <- Zresidual(fit_hnb, type = "count", method = "rpost",nrep=10)
+zres_hnb_post_hurdle <- Zresidual(fit_hnb, type = "hurdle", method = "rpost",nrep=10)
 ```
 
 ##### 4.2.0.1 **What the function returns**
@@ -314,35 +291,47 @@ These plots help assess:
 Code
 
 ``` r
+for (i in 1:10) {
 par(mfrow = c(1,3))
-qqnorm.zresid(zres_hnb_post_zero)
-qqnorm.zresid(zres_hnb_post_count)
-qqnorm.zresid(zres_hnb_post_hurdle)
+qqnorm.zresid(zres_hnb_post_zero,irep=i)
+qqnorm.zresid(zres_hnb_post_count,irep=i)
+qqnorm.zresid(zres_hnb_post_hurdle,irep=i)
+}
 ```
 
-![](hurdle_zresidual_demo_files/figure-html/unnamed-chunk-4-1.png)
+![](hurdle_zresidual_demo_files/figure-html/qqplot-zresid-.gif)
+
+Figure 1: QQ plots
 
 Code
 
 ``` r
+for (i in 1:10) {
 par(mfrow = c(1,3))
-plot.zresid(zres_hnb_post_zero, X="lp", outlier.return = TRUE)
-plot.zresid(zres_hnb_post_count, X="lp", outlier.return = TRUE, log = "x")
-plot.zresid(zres_hnb_post_hurdle, X="lp", outlier.return = TRUE, log = "x")
+plot.zresid(zres_hnb_post_zero, x_axis_var="lp", outlier.return = TRUE,irep=i)
+plot.zresid(zres_hnb_post_count, x_axis_var="lp", outlier.return = TRUE, log = "x",irep=i)
+plot.zresid(zres_hnb_post_hurdle, x_axis_var="lp", outlier.return = TRUE, log = "x",irep=i)
+}
 ```
 
-![](hurdle_zresidual_demo_files/figure-html/unnamed-chunk-5-1.png)
+![](hurdle_zresidual_demo_files/figure-html/plot-zresid-.gif)
+
+Figure 2: Scatter plots
 
 Code
 
 ``` r
+for (i in 1:10) {
 par(mfrow = c(1,3))
-boxplot.zresid(zres_hnb_post_zero, X="lp")
-boxplot.zresid(zres_hnb_post_count, X="lp")
-boxplot.zresid(zres_hnb_post_hurdle, X="lp")
+boxplot(zres_hnb_post_zero, x_axis_var="lp",irep=i)
+boxplot(zres_hnb_post_count, x_axis_var="lp",irep=i)
+boxplot(zres_hnb_post_hurdle, x_axis_var="lp",irep=i)
+}
 ```
 
-![](hurdle_zresidual_demo_files/figure-html/unnamed-chunk-6-1.png)
+![](hurdle_zresidual_demo_files/figure-html/boxplot-zresid-.gif)
+
+Figure 3: boxplots
 
 The diagnostic evaluations for the true model—comprising scatter plots,
 Q-Q plots, and boxplots of Z-residuals—demonstrate that the model
@@ -382,83 +371,58 @@ In addition to visual diagnostics, the package offers formal statistical
 tests to quantify deviations from normality or homogeneity of variance
 in Z-residuals by taking an `zresid` class object as an input.
 
-**Shapiro-Wilk Test for Normality (SW)**
-
 Code
 
 ``` r
-sw.test.zresid(zres_hnb_post_zero)
+library(gt)
+library(tibble)
+library(dplyr)
+
+zero_sw <- as.numeric(sw.test.zresid(zres_hnb_post_zero))
+count_sw <- as.numeric(sw.test.zresid(zres_hnb_post_count))
+hurdle_sw <- as.numeric(sw.test.zresid(zres_hnb_post_hurdle))
+
+zero_aov <- as.numeric(aov.test.zresid(zres_hnb_post_zero))
+count_aov <- as.numeric(aov.test.zresid(zres_hnb_post_count))
+hurdle_aov <- as.numeric(aov.test.zresid(zres_hnb_post_hurdle))
+
+zero_bl <- as.numeric(bartlett.test.zresid(zres_hnb_post_zero))
+count_bl <- as.numeric(bartlett.test.zresid(zres_hnb_post_count))
+hurdle_bl <- as.numeric(bartlett.test.zresid(zres_hnb_post_hurdle))
+
+gof_wide <- data.frame(
+  Residual = paste0("CV.Z-residual ", 1:10),
+  SW_Zero = zero_sw, SW_Count = count_sw, SW_Hurdle = hurdle_sw,
+  AOV_Zero = zero_aov, AOV_Count = count_aov, AOV_Hurdle = hurdle_aov,
+  BL_Zero = zero_bl, BL_Count = count_bl, BL_Hurdle = hurdle_bl
+)
+
+gof_table <- gof_wide %>%
+  gt() %>%
+  tab_spanner(label = "Shapiro-Wilk", columns = starts_with("SW_")) %>%
+  tab_spanner(label = "ANOVA", columns = starts_with("AOV_")) %>%
+  tab_spanner(label = "Bartlett", columns = starts_with("BL_")) %>%
+  cols_label(
+    SW_Zero = "Zero", SW_Count = "Count", SW_Hurdle = "Hurdle",
+    AOV_Zero = "Zero", AOV_Count = "Count", AOV_Hurdle = "Hurdle",
+    BL_Zero = "Zero", BL_Count = "Count", BL_Hurdle = "Hurdle"
+  ) %>%
+  fmt_number(columns = -Residual, decimals = 4) %>%
+  cols_align(align = "center", columns = everything()) %>%
+  tab_options(
+    column_labels.font.weight = "bold",
+    table.width = pct(100),
+    table.font.size = px(12)
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#f9f9f9"),
+    locations = cells_body(columns = starts_with("AOV_"))
+  )
+
+gof_table
 ```
 
-    [1] 0.852581
-
-Code
-
-``` r
-sw.test.zresid(zres_hnb_post_count)
-```
-
-    [1] 0.8239379
-
-Code
-
-``` r
-sw.test.zresid(zres_hnb_post_hurdle)
-```
-
-    [1] 0.3817335
-
-**Analysis of Variance (ANOVA)**
-
-Code
-
-``` r
-aov.test.zresid(zres_hnb_post_zero)
-```
-
-    [1] 0.3215278
-
-Code
-
-``` r
-aov.test.zresid(zres_hnb_post_count)
-```
-
-    [1] 0.5749422
-
-Code
-
-``` r
-aov.test.zresid(zres_hnb_post_hurdle)
-```
-
-    [1] 0.3600551
-
-**Bartlett Test (BL)**
-
-Code
-
-``` r
-bartlett.test.zresid(zres_hnb_post_zero)
-```
-
-    [1] 0.9599654
-
-Code
-
-``` r
-bartlett.test.zresid(zres_hnb_post_count)
-```
-
-    [1] 0.8784607
-
-Code
-
-``` r
-bartlett.test.zresid(zres_hnb_post_hurdle)
-```
-
-    [1] 0.8842395
+[TABLE]
 
 These tests return standard `htest` or `aov` objects, making them easy
 to report, summarize, or integrate into automated workflows. One
@@ -488,61 +452,55 @@ the hurdle model).
 Code
 
 ``` r
-zres_hp_post_zero <- Zresidual(fit_hp, type = "zero", method = "rpost")
-zres_hp_post_count <- Zresidual(fit_hp, type = "count", method = "rpost")
-zres_hp_post_hurdle <- Zresidual(fit_hp, type = "hurdle", method = "rpost")
+zres_hp_post_zero <- Zresidual(fit_hp, type = "zero", method = "rpost",nrep=10)
+zres_hp_post_count <- Zresidual(fit_hp, type = "count", method = "rpost",nrep=10)
+zres_hp_post_hurdle <- Zresidual(fit_hp, type = "hurdle", method = "rpost",nrep=10)
 ```
 
 Code
 
 ``` r
+for (i in 1:10) {
 par(mfrow = c(1,3))
-qqnorm.zresid(zres_hp_post_zero)
-qqnorm.zresid(zres_hp_post_count)
+qqnorm.zresid(zres_hp_post_zero,irep=i)
+qqnorm.zresid(zres_hp_post_count,irep=i)
+qqnorm.zresid(zres_hp_post_hurdle,irep=i)
+}
 ```
 
-    Outlier Indices : 2 4 5 7 8 10 14 16 17 20 24 25 26 28 32 40 42 43 44 47 48 51 74 76 83 94 96 99 
+![](hurdle_zresidual_demo_files/figure-html/QQ-zresid2-.gif)
+
+Figure 4: qqplots
 
 Code
 
 ``` r
-qqnorm.zresid(zres_hp_post_hurdle)
-```
-
-![](hurdle_zresidual_demo_files/figure-html/unnamed-chunk-12-1.png)
-
-    Outlier Indices : 2 4 14 20 24 25 26 42 83 94 
-
-Code
-
-``` r
+for (i in 1:10) {
 par(mfrow = c(1,3))
-plot.zresid(zres_hp_post_zero, X="lp", outlier.return = TRUE)
-plot.zresid(zres_hp_post_count, X="lp", outlier.return = TRUE, log = "x")
+plot.zresid(zres_hp_post_zero, x_axis_var="lp", outlier.return = TRUE,irep=i)
+plot.zresid(zres_hp_post_count, x_axis_var="lp", outlier.return = TRUE, log = "x",irep=i)
+plot.zresid(zres_hp_post_hurdle, x_axis_var="lp", outlier.return = TRUE, log = "x",irep=i)
+}
 ```
 
-    Outlier Indices( count ): 2 4 5 7 8 10 14 16 17 20 24 25 26 28 32 40 42 43 44 47 48 51 74 76 83 94 96 99 
+![](hurdle_zresidual_demo_files/figure-html/plot-zresid2-.gif)
+
+Figure 5: plots
 
 Code
 
 ``` r
-plot.zresid(zres_hp_post_hurdle, X="lp", outlier.return = TRUE, log = "x")
-```
-
-![](hurdle_zresidual_demo_files/figure-html/unnamed-chunk-13-1.png)
-
-    Outlier Indices( hurdle ): 2 4 14 20 24 25 26 42 83 94 
-
-Code
-
-``` r
+for (i in 1:10) {
 par(mfrow = c(1,3))
-boxplot.zresid(zres_hp_post_zero, X="lp")
-boxplot.zresid(zres_hp_post_count, X="lp")
-boxplot.zresid(zres_hp_post_hurdle, X="lp")
+boxplot(zres_hp_post_zero, x_axis_var="lp",irep=i)
+boxplot(zres_hp_post_count, x_axis_var="lp",irep=i)
+boxplot(zres_hp_post_hurdle, x_axis_var="lp",irep=i)
+}
 ```
 
-![](hurdle_zresidual_demo_files/figure-html/unnamed-chunk-14-1.png)
+![](hurdle_zresidual_demo_files/figure-html/boxplot-zresid2-.gif)
+
+Figure 6: qqplots
 
 While the logistic component shows randomly scattered residuals and
 normal Q-Q alignment, supported by non-significant p-values, the count

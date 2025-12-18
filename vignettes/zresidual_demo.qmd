@@ -45,48 +45,44 @@ set.seed(123)
 ### Installing Z-residua from the source
 
 ```{r}
-#| label: install-zresidual
-#| echo: true
-#| include: false
-#| message: false
+#| label: install-and-load-zresidual
+#| eval: false
 if (!requireNamespace("Zresidual", quietly = TRUE)) {
-  if (!requireNamespace("devtools", quietly = TRUE)) {
-    install.packages("devtools")
+  if (!requireNamespace("remotes", quietly = TRUE)) {
+    install.packages("remotes")
   }
-  devtools::install_github("tiw150/Zresidual")
+  remotes::install_github("tiw150/Zresidual",
+                          upgrade = "never",
+                          dependencies = TRUE)
 }
 library(Zresidual)
-
 ```
 
 ### Intalling and Loading R Packages used in this Demo
 
 ```{r loading-packages}
-
-# Vector of required packages
+#| label: loading-packages
 pkgs <- c(
-  "survival","EnvStats","foreach", "statip", "VGAM", "plotrix", "actuar",
-  "stringr", "Rlab", "dplyr", "rlang", "tidyr",
-  "matrixStats", "timeDate", "katex", "gt","loo"
+  "survival","EnvStats","foreach","statip","VGAM","plotrix","actuar",
+  "stringr","Rlab","dplyr","rlang","tidyr",
+  "matrixStats","timeDate","katex","gt","loo"
 )
 
-# Check for missing packages and install if needed
-missing_pkgs <- pkgs[!pkgs %in% installed.packages()[, "Package"]]
-if (length(missing_pkgs) > 0) {
+missing_pkgs <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]
+if (length(missing_pkgs)) {
   message("Installing missing packages: ", paste(missing_pkgs, collapse = ", "))
   install.packages(missing_pkgs, dependencies = TRUE)
-} else {
-  message("All required packages are already installed.")
 }
 
-# Load all packages
-invisible(lapply(pkgs, library, character.only = TRUE))
+invisible(lapply(pkgs, function(p) {
+  suppressPackageStartupMessages(library(p, character.only = TRUE))
+}))
 
-options(mc.cores = parallel::detectCores())
+nc <- parallel::detectCores(logical = FALSE)
+if (!is.na(nc) && nc > 1) options(mc.cores = nc - 1)
+
 ```
 
-## References
-Wu, T., Li, L., & Feng, C. (2024). Z-residual diagnostic tool for assessing covariate functional form in shared frailty models. Journal of Applied Statistics, 52(1), 28–58. https://doi.org/10.1080/02664763.2024.2355551
 
 ## Introduction
 
@@ -118,15 +114,19 @@ This example provides a fundamental illustration of using the Z-residuals for di
 The dataset employed in our analysis contains 411 patients who were recorded at the M. D. Anderson Cancer Center between 1980 and 1996. These patients were under the age of 60 and hailed from 24 administrative districts. The data collected information on the survival time for acute myeloid leukemia and prognostic factors, including  age, sex, white blood cell count (wbc) at diagnosis, and the townsend score (tpi) for which higher values indicate less affluent areas. The censoring rate is 29.2%. The response variable of interest is the survival time in days, which is the time from entry to the study or death. The preliminary study showed that the wbc is highly right-skewed. Logarithm transformation is often used to reduce the impact of extremely large values of the covariate on the response variable, such as the wbc variable in this application. However, a logarithm transformation may mask the impact of extremely large values of the covariate on the outcome variable.
 
 ```{r data-read}
-load(here::here("inst/extdata/LeukSurv.rda"))
-LeukSurv$district<-as.factor(LeukSurv$district)
-LeukSurv$sex<-as.factor(LeukSurv$sex)
-LeukSurv$logwbc<- log(LeukSurv$wbc+0.001)
-LeukSurv<-LeukSurv[LeukSurv$age<60,]
+
+data_path <- system.file("extdata", "LeukSurv.rda", package = "Zresidual")
+load(data_path)
+
+LeukSurv <- transform(LeukSurv,
+  district = as.factor(district),
+  sex      = as.factor(sex),
+  logwbc   = log(wbc + 0.001)
+)
+
+LeukSurv <- LeukSurv[LeukSurv$age < 60, ]
 
 ```
-
-
 
 ### Fitting Models
 
@@ -144,9 +144,8 @@ Once the model is fitted, we can calculate Z-residuals for two models.
 
 
 ```{r zresiduals-linear, cache=TRUE}
-library(Zresidual)
-Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,nrep=10)
-Zresid.LeukSurv.logwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,nrep=10)
+Zresid.LeukSurv.wbc<-Zresidual(object = fit_LeukSurv_wbc,nrep=10)
+Zresid.LeukSurv.logwbc<-Zresidual(object = fit_LeukSurv_logwbc,nrep=10)
 
 ```
 
@@ -158,7 +157,7 @@ Diagnosing the overall goodness-of-fit (GOF) using Z-residuals as follows:
 A QQ plot based on Z-residuals can be used to graphically assess the model's overall GOF, and Shapiro-Wilk (SW) or Shapiro-Francia (SF) normality tests applied to Z-residuals can be used to numerically test the overall GOF of the model. We can see that the QQ plots of Z-residuals of these two models align well with the 45 $^\circ$ diagonal line. The Z-SW tests also give large p-values for two models, where Z-SW is the test method that the normality of Z-residuals is tested with the SW test.
 
 ```{r}
-#| label: qqplot-zresid
+#| label: qqplot-zresid-anim
 #| fig-show: animate
 #| animation.hook: "gifski"
 #| interval: 1
@@ -171,15 +170,11 @@ A QQ plot based on Z-residuals can be used to graphically assess the model's ove
 #| fig-align: center
 #| fig-cap: "Figure 1: QQ plots of Z-residuals for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients"
 
+for (i in 1:10) {
   par(mfrow = c(1, 2), mar = c(4, 4, 2, 2))
-  qqnorm.zresid(
-    Zresid.LeukSurv.wbc,
-    main.title = "Z-residual QQ plot of wbc model"
-  )
-  qqnorm.zresid(
-    Zresid.LeukSurv.logwbc,
-    main.title = "Z-residual QQ plot of lwbc model"
-  )
+   qqnorm.zresid(Zresid.LeukSurv.wbc,irep=i)
+   qqnorm.zresid(Zresid.LeukSurv.logwbc, irep=i)
+}
 
 ```
 
@@ -200,26 +195,30 @@ The scatterplots of Z-residuals against the linear predictor don't exhibit visib
 #| results: hide
 #| fig-align: center
 #| fig-cap: "Figure 2: Scatter plots and box plots of Z-residuals against LP for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients"
-
+for (i in 1:10) {
 par(mfrow = c(2, 2), mar = c(4, 4, 1.5, 2))
-plot.zresid(
-    Zresid.LeukSurv.wbc,X="index",
-    main.title = "Z-residual Scatterplot of wbc model"
+plot(
+    Zresid.LeukSurv.wbc,x_axis_var="index",
+    main.title = "Z-residual Scatterplot of wbc model",
+    irep=i
   )
-plot.zresid(
-    Zresid.LeukSurv.logwbc,X="index",
-    main.title = "Z-residual Scatterplot of lwbc model"
-  )
-
-boxplot.zresid(
-    Zresid.LeukSurv.wbc,X = "lp",
-    main.title = "Z-residual Boxplot of wbc model"
-  )
-boxplot.zresid(
-    Zresid.LeukSurv.logwbc,X = "lp",
-    main.title = "Z-residual Boxplot of lwbc model"
+plot(
+    Zresid.LeukSurv.logwbc,x_axis_var="index",
+    main.title = "Z-residual Scatterplot of lwbc model",
+    irep=i
   )
 
+boxplot(
+    Zresid.LeukSurv.wbc,x_axis_var = "lp",
+    main.title = "Z-residual Boxplot of wbc model",
+    irep=i
+  )
+boxplot(
+    Zresid.LeukSurv.logwbc,x_axis_var = "lp",
+    main.title = "Z-residual Boxplot of lwbc model",
+    irep=i
+  )
+}
 
 ```
 
@@ -240,31 +239,35 @@ The above diagnostics results reveal no serious misspecification in  these two m
 #| results: hide
 #| fig-align: center
 #| fig-cap: "Figure 3: Scatter plots and box plots of Z-residuals against covariate (wbc) for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients"
-
+for (i in 1:10) {
   par(mfrow = c(2, 2), mar = c(4, 4, 1.5, 2))
 
-  plot.zresid(
+  plot(
     Zresid.LeukSurv.wbc,
-    X = "wbc",
-    main.title = "Z-residual Scatterplot of wbc model"
+    x_axis_var = "wbc",
+    main.title = "Z-residual Scatterplot of wbc model",
+    irep=i
   )
-  plot.zresid(
+  plot(
     Zresid.LeukSurv.logwbc,
-    X = "logwbc",
-    main.title = "Z-residual Scatterplot of lwbc model"
+    x_axis_var = "logwbc",
+    main.title = "Z-residual Scatterplot of lwbc model",
+    irep=i
   )
 
-  boxplot.zresid(
+  boxplot(
     Zresid.LeukSurv.wbc,
-    X = "wbc",
-    main.title = "Z-residual Boxplot of wbc model"
+    x_axis_var = "wbc",
+    main.title = "Z-residual Boxplot of wbc model",
+    irep=i
   )
-  boxplot.zresid(
+  boxplot(
     Zresid.LeukSurv.logwbc,
-    X = "logwbc",
-    main.title = "Z-residual Boxplot of lwbc model"
+    x_axis_var = "logwbc",
+    main.title = "Z-residual Boxplot of lwbc model",
+    irep=i
   )
-
+}
 ```
 
 
@@ -309,8 +312,18 @@ aov.lwbc<-aov.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.anova=10)
 bl.wbc<-bartlett.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.bl=10)
 bl.lwbc<-bartlett.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.bl=10)
 
-homogeneity_tests<-data.frame(aov.wbc.lp,aov.lwbc.lp,bl.wbc.lp,bl.lwbc.lp,aov.wbc,aov.lwbc,bl.wbc,bl.lwbc)
+homogeneity_tests<-data.frame(aov.wbc.lp,aov.lwbc.lp,bl.wbc.lp,bl.lwbc.lp,
+                              aov.wbc,aov.lwbc,bl.wbc,bl.lwbc)
 
+homogeneity_tests %>%
+  gt() %>%
+  tab_header(
+    title = "Summary of Residual Homogeneity Tests"
+  ) %>%
+  fmt_number(
+    columns = everything(),
+    decimals = 4 
+  )
 
 ```
 
@@ -327,6 +340,61 @@ pmin.sw.LeukSurv.lwbc<-pvalue.min(pv=sw.lwbc)
 pmin.sf.LeukSurv.lwbc<-pvalue.min(pv=sf.lwbc)
 pmin.aov.lp.LeukSurv.lwbc<-pvalue.min(pv=aov.lwbc.lp)
 pmin.aov.lwbc.LeukSurv<-pvalue.min(pv=aov.lwbc)
+
+pmin_wide <- data.frame(
+  Test = c("Shapiro-Wilk", "Shapiro-Francia", "ANOVA (lp)", "ANOVA (Variable)"),
+  WBC_Val = c(pmin.sw.LeukSurv.wbc, pmin.sf.LeukSurv.wbc, pmin.aov.lp.LeukSurv.wbc, pmin.aov.wbc.LeukSurv),
+  LWBC_Val = c(pmin.sw.LeukSurv.lwbc, pmin.sf.LeukSurv.lwbc, pmin.aov.lp.LeukSurv.lwbc, pmin.aov.lwbc.LeukSurv)
+)
+
+pmin_table <- pmin_wide %>%
+  gt() %>%
+  tab_header(
+    title = md("**Summary of Minimum P-values**"),
+    subtitle = "Diagnostic test results for LeukSurv models"
+  ) %>%
+  tab_spanner(
+    label = "WBC Model",
+    columns = c(WBC_Val)
+  ) %>%
+  tab_spanner(
+    label = "Log-WBC Model",
+    columns = c(LWBC_Val)
+  ) %>%
+  cols_label(
+    Test = "Statistical Test",
+    WBC_Val = "Min P-value",
+    LWBC_Val = "Min P-value"
+  ) %>%
+  fmt_number(
+    columns = c(WBC_Val, LWBC_Val),
+    decimals = 4
+  ) %>%
+  fmt_scientific(
+    columns = c(WBC_Val, LWBC_Val),
+    rows = WBC_Val < 0.001 | LWBC_Val < 0.001
+  ) %>%
+  tab_style(
+    style = cell_text(color = "red", weight = "bold"),
+    locations = cells_body(
+      columns = WBC_Val,
+      rows = WBC_Val < 0.05
+    )
+  ) %>%
+  tab_style(
+    style = cell_text(color = "red", weight = "bold"),
+    locations = cells_body(
+      columns = LWBC_Val,
+      rows = LWBC_Val < 0.05
+    )
+  ) %>%
+  tab_options(
+    column_labels.font.weight = "bold",
+    table.width = pct(90),
+    data_row.padding = px(5)
+  )
+
+pmin_table
 ```
 
 ```{r}
@@ -409,6 +477,7 @@ abline(v = pmin.aov.lwbc.LeukSurv, col = "red")
 The normality of censored Z-residuals is tested by an extended SF method for censored observations, which is implemented with gofTestCensored in the R package EnvStats.
 
 ```{r}
+
 censored.Zresid.LeukSurv.wbc<-surv_residuals(fit.object = fit_LeukSurv_wbc,
                                       data=LeukSurv,
                                       residual.type="censored Z-residual")
@@ -428,10 +497,14 @@ The overall GOF tests and graphical checking with Cox-Snell residuals show that 
 ##unmodified CS residuals
 ucs.LeukSurv.wbc<-surv_residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type = "Cox-Snell" )
 ucs.LeukSurv.logwbc<-surv_residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "Cox-Snell" )
+```
 
-par(mfrow = c(1,2))
-plot.cs.residual(cs.residual=ucs.LeukSurv.wbc,main.title = "CS Residuals of wbc model")
-plot.cs.residual(cs.residual=ucs.LeukSurv.logwbc,main.title = "CS Residuals of lwbc model")
+
+```{r fig.width=14, fig.height=6, out.width="100%", fig.align="center", dpi=300}
+##unmodified CS residuals
+par(mfrow = c(1, 2), mar = c(4, 4, 3, 2))
+plot.cs.residual(ucs.LeukSurv.wbc,main.title = "CS Residuals of wbc model")
+plot.cs.residual(ucs.LeukSurv.logwbc,main.title = "CS Residuals of lwbc model")
 ```
 
 ### Martingale residual
@@ -440,10 +513,12 @@ The martingale residuals are mostly within the interval (-3, 1) for those two mo
 ```{r}
 martg.LeukSurv.wbc<-surv_residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type = "martingale")
 martg.LeukSurv.logwbc<-surv_residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "martingale" )
+```
 
+```{r fig.width=14, fig.height=6, out.width="100%", fig.align="center", dpi=300}
 par(mfrow = c(1,2))
-plot.martg.resid(martg.LeukSurv.wbc,X="wbc",main.title = "Martingale Residuals of wbc Model")
-plot.martg.resid(martg.LeukSurv.logwbc,X="logwbc",main.title = "Martingale Residuals of lwbc Model")
+plot.martg.resid(martg.LeukSurv.wbc,x_axis_var="wbc",main.title = "Martingale Residuals of wbc Model")
+plot.martg.resid(martg.LeukSurv.logwbc,x_axis_var="logwbc",main.title = "Martingale Residuals of lwbc Model")
 ```
 
 ### Deviance residual
@@ -453,13 +528,16 @@ The deviance residuals are more symmetrically distributed than martingale residu
 #Deviance residuals
 dev.LeukSurv.wbc<-surv_residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type = "deviance" )
 dev.LeukSurv.logwbc<-surv_residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "deviance" )
+```
 
+```{r fig.width=14, fig.height=6, out.width="100%", fig.align="center", dpi=300}
 par(mfrow = c(1,2))
-plot.dev.resid(dev.LeukSurv.wbc,X="wbc",main.title = "Deviance Residuals of wbc Model")
-plot.dev.resid(dev.LeukSurv.logwbc,X="logwbc",main.title = "Deviance Residuals of lwbc Model")
-
+plot.dev.resid(dev.LeukSurv.wbc,x_axis_var="wbc",main.title = "Deviance Residuals of wbc Model")
+plot.dev.resid(dev.LeukSurv.logwbc,x_axis_var="logwbc",main.title = "Deviance Residuals of lwbc Model")
 
 ```
 
+## References
+Wu, T., Li, L., & Feng, C. (2024). Z-residual diagnostic tool for assessing covariate functional form in shared frailty models. Journal of Applied Statistics, 52(1), 28–58. https://doi.org/10.1080/02664763.2024.2355551
 
 

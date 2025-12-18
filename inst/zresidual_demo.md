@@ -4,41 +4,46 @@
 
 ### 1.1 Installing Z-residua from the source
 
+Code
+
+``` r
+if (!requireNamespace("Zresidual", quietly = TRUE)) {
+  if (!requireNamespace("remotes", quietly = TRUE)) {
+    install.packages("remotes")
+  }
+  remotes::install_github("tiw150/Zresidual",
+                          upgrade = "never",
+                          dependencies = TRUE)
+}
+library(Zresidual)
+```
+
 ### 1.2 Intalling and Loading R Packages used in this Demo
 
 Code
 
 ``` r
-# Vector of required packages
 pkgs <- c(
-  "survival","EnvStats","foreach", "statip", "VGAM", "plotrix", "actuar",
-  "stringr", "Rlab", "dplyr", "rlang", "tidyr",
-  "matrixStats", "timeDate", "katex", "gt","loo"
+  "survival","EnvStats","foreach","statip","VGAM","plotrix","actuar",
+  "stringr","Rlab","dplyr","rlang","tidyr",
+  "matrixStats","timeDate","katex","gt","loo"
 )
 
-# Check for missing packages and install if needed
-missing_pkgs <- pkgs[!pkgs %in% installed.packages()[, "Package"]]
-if (length(missing_pkgs) > 0) {
+missing_pkgs <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]
+if (length(missing_pkgs)) {
   message("Installing missing packages: ", paste(missing_pkgs, collapse = ", "))
   install.packages(missing_pkgs, dependencies = TRUE)
-} else {
-  message("All required packages are already installed.")
 }
 
-# Load all packages
-invisible(lapply(pkgs, library, character.only = TRUE))
+invisible(lapply(pkgs, function(p) {
+  suppressPackageStartupMessages(library(p, character.only = TRUE))
+}))
 
-options(mc.cores = parallel::detectCores())
+nc <- parallel::detectCores(logical = FALSE)
+if (!is.na(nc) && nc > 1) options(mc.cores = nc - 1)
 ```
 
-## 2 References
-
-Wu, T., Li, L., & Feng, C. (2024). Z-residual diagnostic tool for
-assessing covariate functional form in shared frailty models. Journal of
-Applied Statistics, 52(1), 28–58.
-https://doi.org/10.1080/02664763.2024.2355551
-
-## 3 Introduction
+## 2 Introduction
 
 This vignette explains how to use the Zresidual package to calculate
 Z-residuals based on the output of the coxph function from the survival
@@ -50,56 +55,45 @@ data analysis results, please refer to the original paper titled
 “Z-residual diagnostics for detecting misspecification of the functional
 form of covariates for shared frailty models.
 
-## 4 Definition of Z-residual
+## 3 Definition of Z-residual
 
 We use Z-residual to diagnose shared frailty models in a Cox
 proportional hazard setting with a baseline function unspecified.
-Suppose there are $`g`$ groups of individuals, with each group
-containing $`n_i`$ individuals, indexed as $`i`$ = 1, 2, , $`g`$ in the
-case of clustered failure survival data. Let $`y_{ij}`$ be a possibly
-right-censored observation for the $`j`$th individual from the $`i`$th
-group, and $`\delta_{ij}`$ be the indicator for being uncensored. The
-normalized randomized survival probabilities (RSPs) for $`y_{ij}`$ in
-the shared frailty model is defined as:
-``` math
-\begin{equation}
-S_{ij}^{R}(y_{ij}, \delta_{ij}, U_{ij}) =
-\left\{
-\begin{array}{rl}
-S_{ij}(y_{ij}), & \text{if $y_{ij}$ is uncensored, i.e., $\delta_{ij}=1$,}\\
-U_{ij}\,S_{ij}(y_{ij}), & \text{if $y_{ij}$ is censored, i.e., $\delta_{ij}=0$,}
-\end{array}
-\right. \label{rsp}
-\end{equation}
-```
-where $`U_{ij}`$ is a uniform random number on $`(0, 1)`$, and
-$`S_{ij}(\cdot)`$ is the postulated survival function for $`t_{ij}`$
-given $`x_{ij}`$. $`S_{ij}^{R}(y_{ij}, \delta_{ij}, U_{ij})`$ is a
-random number between $`0`$ and $`S_{ij}(y_{ij})`$ when $`y_{ij}`$ is
-censored. It is proved that the RSPs are uniformly distributed on
-$`(0,1)`$ given $`x_{i}`$ under the true model . Therefore, the RSPs can
-be transformed into residuals with any desired distribution. We prefer
-to transform them with the normal quantile:
-``` math
-\begin{equation}
-r_{ij}^{Z}(y_{ij}, \delta_{ij}, U_{ij})=-\Phi^{-1} (S_{ij}^R(y_{ij}, \delta_{ij}, U_{ij})),\label{zresid}
-\end{equation}
-```
-which is normally distributed under the true model, so that we can
-conduct model diagnostics with Z-residuals for censored data in the same
-way as conducting model diagnostics for a normal regression model. There
-are a few advantages of transforming RSPs into Z-residuals. First, the
-diagnostics methods for checking normal regression are rich in the
-literature. Second, transforming RSPs into normal deviates facilitates
-the identification of extremely small and large RSPs. The frequency of
-such small RSPs may be too small to be highlighted by the plots of RSPs.
-However, the presence of such extreme SPs, even very few, is indicative
-of model misspecification. Normal transformation can highlight such
-extreme RSPs.
+Suppose there are g groups of individuals, with each group containing
+n_i individuals, indexed as i = 1, 2, , g in the case of clustered
+failure survival data. Let y\_{ij} be a possibly right-censored
+observation for the jth individual from the ith group, and \delta\_{ij}
+be the indicator for being uncensored. The normalized randomized
+survival probabilities (RSPs) for y\_{ij} in the shared frailty model is
+defined as: \begin{equation} S\_{ij}^{R}(y\_{ij}, \delta\_{ij}, U\_{ij})
+= \left\\ \begin{array}{rl} S\_{ij}(y\_{ij}), & \text{if \$y\_{ij}\$ is
+uncensored, i.e., \$\delta\_{ij}=1\$,}\\ U\_{ij}\\S\_{ij}(y\_{ij}), &
+\text{if \$y\_{ij}\$ is censored, i.e., \$\delta\_{ij}=0\$,} \end{array}
+\right. \label{rsp} \end{equation} where U\_{ij} is a uniform random
+number on (0, 1), and S\_{ij}(\cdot) is the postulated survival function
+for t\_{ij} given x\_{ij}. S\_{ij}^{R}(y\_{ij}, \delta\_{ij}, U\_{ij})
+is a random number between 0 and S\_{ij}(y\_{ij}) when y\_{ij} is
+censored. It is proved that the RSPs are uniformly distributed on (0,1)
+given x\_{i} under the true model . Therefore, the RSPs can be
+transformed into residuals with any desired distribution. We prefer to
+transform them with the normal quantile: \begin{equation}
+r\_{ij}^{Z}(y\_{ij}, \delta\_{ij}, U\_{ij})=-\Phi^{-1}
+(S\_{ij}^R(y\_{ij}, \delta\_{ij}, U\_{ij})),\label{zresid}
+\end{equation} which is normally distributed under the true model, so
+that we can conduct model diagnostics with Z-residuals for censored data
+in the same way as conducting model diagnostics for a normal regression
+model. There are a few advantages of transforming RSPs into Z-residuals.
+First, the diagnostics methods for checking normal regression are rich
+in the literature. Second, transforming RSPs into normal deviates
+facilitates the identification of extremely small and large RSPs. The
+frequency of such small RSPs may be too small to be highlighted by the
+plots of RSPs. However, the presence of such extreme SPs, even very few,
+is indicative of model misspecification. Normal transformation can
+highlight such extreme RSPs.
 
-## 5 Examples for Illustration and Demonstration
+## 4 Examples for Illustration and Demonstration
 
-### 5.1 Load the real Dataset
+### 4.1 Load the real Dataset
 
 This example provides a fundamental illustration of using the
 Z-residuals for diagnosing both the overall goodness of fit (GOF) and
@@ -125,14 +119,19 @@ outcome variable.
 Code
 
 ``` r
-load(here::here("inst/extdata/LeukSurv.rda"))
-LeukSurv$district<-as.factor(LeukSurv$district)
-LeukSurv$sex<-as.factor(LeukSurv$sex)
-LeukSurv$logwbc<- log(LeukSurv$wbc+0.001)
-LeukSurv<-LeukSurv[LeukSurv$age<60,]
+data_path <- system.file("extdata", "LeukSurv.rda", package = "Zresidual")
+load(data_path)
+
+LeukSurv <- transform(LeukSurv,
+  district = as.factor(district),
+  sex      = as.factor(sex),
+  logwbc   = log(wbc + 0.001)
+)
+
+LeukSurv <- LeukSurv[LeukSurv$age < 60, ]
 ```
 
-### 5.2 Fitting Models
+### 4.2 Fitting Models
 
 We fitted two shared frailty models, one with covariates wbc, age, sex
 and tpi, which is labelled as the wbc model, and the other with log(wbc)
@@ -147,19 +146,18 @@ fit_LeukSurv_logwbc  <- coxph(Surv(time, cens) ~ age +sex + logwbc + tpi +
           frailty(district, distribution="gamma"), data= LeukSurv)
 ```
 
-### 5.3 Computing Z-Residuals
+### 4.3 Computing Z-Residuals
 
 Once the model is fitted, we can calculate Z-residuals for two models.
 
 Code
 
 ``` r
-library(Zresidual)
-Zresid.LeukSurv.wbc<-Zresidual(fit.object = fit_LeukSurv_wbc,nrep=10)
-Zresid.LeukSurv.logwbc<-Zresidual(fit.object = fit_LeukSurv_logwbc,nrep=10)
+Zresid.LeukSurv.wbc<-Zresidual(object = fit_LeukSurv_wbc,nrep=10)
+Zresid.LeukSurv.logwbc<-Zresidual(object = fit_LeukSurv_logwbc,nrep=10)
 ```
 
-### 5.4 Inspecting the Normality of Z-Residuals for Checking Overall GOF
+### 4.4 Inspecting the Normality of Z-Residuals for Checking Overall GOF
 
 Diagnosing the overall goodness-of-fit (GOF) using Z-residuals as
 follows:
@@ -168,34 +166,30 @@ A QQ plot based on Z-residuals can be used to graphically assess the
 model’s overall GOF, and Shapiro-Wilk (SW) or Shapiro-Francia (SF)
 normality tests applied to Z-residuals can be used to numerically test
 the overall GOF of the model. We can see that the QQ plots of
-Z-residuals of these two models align well with the 45 $`^\circ`$
-diagonal line. The Z-SW tests also give large p-values for two models,
-where Z-SW is the test method that the normality of Z-residuals is
-tested with the SW test.
+Z-residuals of these two models align well with the 45 ^\circ diagonal
+line. The Z-SW tests also give large p-values for two models, where Z-SW
+is the test method that the normality of Z-residuals is tested with the
+SW test.
 
 Code
 
 ``` r
+for (i in 1:10) {
   par(mfrow = c(1, 2), mar = c(4, 4, 2, 2))
-  qqnorm.zresid(
-    Zresid.LeukSurv.wbc,
-    main.title = "Z-residual QQ plot of wbc model"
-  )
-  qqnorm.zresid(
-    Zresid.LeukSurv.logwbc,
-    main.title = "Z-residual QQ plot of lwbc model"
-  )
+   qqnorm.zresid(Zresid.LeukSurv.wbc,irep=i)
+   qqnorm.zresid(Zresid.LeukSurv.logwbc, irep=i)
+}
 ```
 
-![](zresidual_demo_files/figure-html/qqplot-zresid-1.png)
+![](zresidual_demo_files/figure-html/qqplot-zresid-anim-.gif)
 
 Figure 1: QQ plots of Z-residuals for the wbc (left panels) and lwbc
 (right panels) models fitted to the survival data of acute myeloid
 leukemia patients
 
-The Z-residuals can be divided into $`k`$ groups by cutting the linear
+The Z-residuals can be divided into k groups by cutting the linear
 predictors or covariates into equally-spaced intervals. Then we can
-check whether the Z-residuals of the $`k`$ groups are homogeneously
+check whether the Z-residuals of the k groups are homogeneously
 distributed. A quantitative method to assess the homogeneity of such
 grouped Z-residuals is to test the equality of group means or variances
 of the Z-residuals. We employ the F-test in ANOVA to assess the equality
@@ -214,33 +208,30 @@ formed with the linear predictor.
 Code
 
 ``` r
+for (i in 1:10) {
 par(mfrow = c(2, 2), mar = c(4, 4, 1.5, 2))
-plot.zresid(
-    Zresid.LeukSurv.wbc,X="index",
-    main.title = "Z-residual Scatterplot of wbc model"
+plot(
+    Zresid.LeukSurv.wbc,x_axis_var="index",
+    main.title = "Z-residual Scatterplot of wbc model",
+    irep=i
   )
-```
-
-Code
-
-``` r
-plot.zresid(
-    Zresid.LeukSurv.logwbc,X="index",
-    main.title = "Z-residual Scatterplot of lwbc model"
+plot(
+    Zresid.LeukSurv.logwbc,x_axis_var="index",
+    main.title = "Z-residual Scatterplot of lwbc model",
+    irep=i
   )
-```
 
-Code
-
-``` r
-boxplot.zresid(
-    Zresid.LeukSurv.wbc,X = "lp",
-    main.title = "Z-residual Boxplot of wbc model"
+boxplot(
+    Zresid.LeukSurv.wbc,x_axis_var = "lp",
+    main.title = "Z-residual Boxplot of wbc model",
+    irep=i
   )
-boxplot.zresid(
-    Zresid.LeukSurv.logwbc,X = "lp",
-    main.title = "Z-residual Boxplot of lwbc model"
+boxplot(
+    Zresid.LeukSurv.logwbc,x_axis_var = "lp",
+    main.title = "Z-residual Boxplot of lwbc model",
+    irep=i
   )
+}
 ```
 
 ![](zresidual_demo_files/figure-html/fig-zresid-scatter-box-.gif)
@@ -272,38 +263,35 @@ survival time.
 Code
 
 ``` r
+for (i in 1:10) {
   par(mfrow = c(2, 2), mar = c(4, 4, 1.5, 2))
 
-  plot.zresid(
+  plot(
     Zresid.LeukSurv.wbc,
-    X = "wbc",
-    main.title = "Z-residual Scatterplot of wbc model"
+    x_axis_var = "wbc",
+    main.title = "Z-residual Scatterplot of wbc model",
+    irep=i
   )
-```
-
-Code
-
-``` r
-  plot.zresid(
+  plot(
     Zresid.LeukSurv.logwbc,
-    X = "logwbc",
-    main.title = "Z-residual Scatterplot of lwbc model"
+    x_axis_var = "logwbc",
+    main.title = "Z-residual Scatterplot of lwbc model",
+    irep=i
   )
-```
 
-Code
-
-``` r
-  boxplot.zresid(
+  boxplot(
     Zresid.LeukSurv.wbc,
-    X = "wbc",
-    main.title = "Z-residual Boxplot of wbc model"
+    x_axis_var = "wbc",
+    main.title = "Z-residual Boxplot of wbc model",
+    irep=i
   )
-  boxplot.zresid(
+  boxplot(
     Zresid.LeukSurv.logwbc,
-    X = "logwbc",
-    main.title = "Z-residual Boxplot of lwbc model"
+    x_axis_var = "logwbc",
+    main.title = "Z-residual Boxplot of lwbc model",
+    irep=i
   )
+}
 ```
 
 ![](zresidual_demo_files/figure-html/fig-zresid-scatter-box-wbc-.gif)
@@ -316,7 +304,7 @@ The boxplots of the Z-residuals against categorical covariate sex shows
 the grouped Z-residuals appear to have equal means and variances across
 groups. The p-values of Z-AOV and Z-BL are greater than 0.05.
 
-### 5.5 Diagnostic Tests with Z-residuals
+### 4.5 Diagnostic Tests with Z-residuals
 
 The Shapiro-Wilk (SW) or Shapiro-Francia (SF) normality tests applied to
 Z-residuals can be used to numerically test the overall GOF of the
@@ -337,12 +325,12 @@ sf.lwbc<-sf.test.zresid(Zresid.LeukSurv.logwbc)
 gof_tests<-data.frame(sw.wbc,sw.lwbc,sf.wbc,sf.lwbc)
 ```
 
-The Z-residuals can be divided into $`k`$ groups by cutting the
-covariates or linear predictors into equally-spaced intervals. To
-quantitatively evaluate the homogeneity of grouped Z-residuals, we
-propose testing the equality of group means and group variances. For
-this purpose, we employ the F-test in ANOVA to assess the equality of
-means and Bartlett’s test to examine the equality of variances.
+The Z-residuals can be divided into k groups by cutting the covariates
+or linear predictors into equally-spaced intervals. To quantitatively
+evaluate the homogeneity of grouped Z-residuals, we propose testing the
+equality of group means and group variances. For this purpose, we employ
+the F-test in ANOVA to assess the equality of means and Bartlett’s test
+to examine the equality of variances.
 
 Code
 
@@ -377,19 +365,46 @@ aov.lwbc<-aov.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.anova=10)
 bl.wbc<-bartlett.test.zresid(Zresid.LeukSurv.wbc,X="wbc", k.bl=10)
 bl.lwbc<-bartlett.test.zresid(Zresid.LeukSurv.logwbc,X="logwbc", k.bl=10)
 
-homogeneity_tests<-data.frame(aov.wbc.lp,aov.lwbc.lp,bl.wbc.lp,bl.lwbc.lp,aov.wbc,aov.lwbc,bl.wbc,bl.lwbc)
+homogeneity_tests<-data.frame(aov.wbc.lp,aov.lwbc.lp,bl.wbc.lp,bl.lwbc.lp,
+                              aov.wbc,aov.lwbc,bl.wbc,bl.lwbc)
+
+homogeneity_tests %>%
+  gt() %>%
+  tab_header(
+    title = "Summary of Residual Homogeneity Tests"
+  ) %>%
+  fmt_number(
+    columns = everything(),
+    decimals = 4 
+  )
 ```
+
+| Summary of Residual Homogeneity Tests |  |  |  |  |  |  |  |
+|----|----|----|----|----|----|----|----|
+| aov.wbc.lp | aov.lwbc.lp | bl.wbc.lp | bl.lwbc.lp | aov.wbc | aov.lwbc | bl.wbc | bl.lwbc |
+| 0.8701 | 0.7612 | 0.5704 | 0.8464 | 0.5868 | 0.0000 | 0.9885 | 0.3246 |
+| 0.8412 | 0.4262 | 0.6401 | 0.2272 | 0.6530 | 0.0000 | 0.9172 | 0.8309 |
+| 0.9724 | 0.7513 | 0.6459 | 0.0650 | 0.5199 | 0.0000 | 0.7273 | 0.8701 |
+| 0.7362 | 0.6982 | 0.3540 | 0.9418 | 0.6979 | 0.0000 | 0.5464 | 0.4048 |
+| 0.9054 | 0.8855 | 0.8773 | 0.1509 | 0.6199 | 0.0001 | 0.9712 | 0.2012 |
+| 0.9276 | 0.9345 | 0.9451 | 0.1153 | 0.8013 | 0.0000 | 0.2140 | 0.6106 |
+| 0.9730 | 0.6420 | 0.1287 | 0.8445 | 0.5196 | 0.0000 | 0.4639 | 0.4029 |
+| 0.9149 | 0.7207 | 0.9055 | 0.7562 | 0.5772 | 0.0001 | 0.9324 | 0.8918 |
+| 0.8917 | 0.3598 | 0.8742 | 0.0552 | 0.5520 | 0.0005 | 0.7991 | 0.1496 |
+| 0.9076 | 0.7621 | 0.7593 | 0.8256 | 0.6597 | 0.0000 | 0.9469 | 0.8015 |
 
 The histograms of 1000 replicated Z-residual test p-values for the wbc
 and lwbc models. The red vertical lines in these histograms show the
-upper bound summaries of these replicated p-values, $`p_{min}`$. These
+upper bound summaries of these replicated p-values, p\_{min}. These
 histograms show that the Z-SW, Z-SF, and Z-AOV with LP tests for both
 models give a large proportion of p-values greater than 0.05, and the
-large p-values result in large $`p_{min}`$ values. In contrast, the
+large p-values result in large p\_{min} values. In contrast, the
 replicated Z-AOV with log(wbc) p-values for the lwbc model are almost
 all smaller than 0.001. The consistently small Z-AOV with log(wbc)
 p-values further confirm that the log transformation of wbc is
 inappropriate for modelling the survival time.
+
+[TABLE]
 
 Code
 
@@ -466,14 +481,13 @@ abline(v = pmin.aov.lwbc.LeukSurv, col = "red")
 Figure 3: Figure 5: The histograms of 1000 replicated Z-SW, Z-SF,
 Z-AOV-LP and Z-AOV-log(wbc) p-values for the wbc model (left panels) and
 the lwbc model (right panels) fitted with the survival times of acute
-myeloid leukemia patients. The vertical red lines indicate $`p_{min}`$
-for 1000 replicated p-values. Note that the upper limit of the x-axis
-for Z-AOV-log(wbc) p-values for the lwbc model is 0.005, not 1 for
-others.
+myeloid leukemia patients. The vertical red lines indicate p\_{min} for
+1000 replicated p-values. Note that the upper limit of the x-axis for
+Z-AOV-log(wbc) p-values for the lwbc model is 0.005, not 1 for others.
 
-## 6 Other residual calculation
+## 5 Other residual calculation
 
-### 6.1 censored Z-residuals
+### 5.1 censored Z-residuals
 
 The normality of censored Z-residuals is tested by an extended SF method
 for censored observations, which is implemented with gofTestCensored in
@@ -501,12 +515,12 @@ gof.censored.zresidual(censored.Zresidual=censored.Zresid.LeukSurv.logwbc)
 
     [1] 0.07535993
 
-### 6.2 Cox-Snell residual
+### 5.2 Cox-Snell residual
 
 The overall GOF tests and graphical checking with Cox-Snell residuals
 show that both the wbc and lwbc models provide adequate fits to the
 dataset. The estimated CHFs of the CS residuals of both of the wbc and
-lwbc models align closely along the $`45^{\circ}`$ diagonal line.
+lwbc models align closely along the 45^{\circ} diagonal line.
 
 Code
 
@@ -514,15 +528,20 @@ Code
 ##unmodified CS residuals
 ucs.LeukSurv.wbc<-surv_residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type = "Cox-Snell" )
 ucs.LeukSurv.logwbc<-surv_residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "Cox-Snell" )
-
-par(mfrow = c(1,2))
-plot.cs.residual(cs.residual=ucs.LeukSurv.wbc,main.title = "CS Residuals of wbc model")
-plot.cs.residual(cs.residual=ucs.LeukSurv.logwbc,main.title = "CS Residuals of lwbc model")
 ```
 
-![](zresidual_demo_files/figure-html/unnamed-chunk-4-1.png)
+Code
 
-### 6.3 Martingale residual
+``` r
+##unmodified CS residuals
+par(mfrow = c(1, 2), mar = c(4, 4, 3, 2))
+plot.cs.residual(ucs.LeukSurv.wbc,main.title = "CS Residuals of wbc model")
+plot.cs.residual(ucs.LeukSurv.logwbc,main.title = "CS Residuals of lwbc model")
+```
+
+![](zresidual_demo_files/figure-html/unnamed-chunk-5-1.png)
+
+### 5.3 Martingale residual
 
 The martingale residuals are mostly within the interval (-3, 1) for
 those two models. In the scatterplots of martingale residuals under the
@@ -535,15 +554,19 @@ Code
 ``` r
 martg.LeukSurv.wbc<-surv_residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type = "martingale")
 martg.LeukSurv.logwbc<-surv_residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "martingale" )
-
-par(mfrow = c(1,2))
-plot.martg.resid(martg.LeukSurv.wbc,X="wbc",main.title = "Martingale Residuals of wbc Model")
-plot.martg.resid(martg.LeukSurv.logwbc,X="logwbc",main.title = "Martingale Residuals of lwbc Model")
 ```
 
-![](zresidual_demo_files/figure-html/unnamed-chunk-5-1.png)
+Code
 
-### 6.4 Deviance residual
+``` r
+par(mfrow = c(1,2))
+plot.martg.resid(martg.LeukSurv.wbc,x_axis_var="wbc",main.title = "Martingale Residuals of wbc Model")
+plot.martg.resid(martg.LeukSurv.logwbc,x_axis_var="logwbc",main.title = "Martingale Residuals of lwbc Model")
+```
+
+![](zresidual_demo_files/figure-html/unnamed-chunk-7-1.png)
+
+### 5.4 Deviance residual
 
 The deviance residuals are more symmetrically distributed than
 martingale residuals and they are mostly within the interval (-3, 3). In
@@ -556,10 +579,21 @@ Code
 #Deviance residuals
 dev.LeukSurv.wbc<-surv_residuals(fit.object = fit_LeukSurv_wbc,data= LeukSurv,residual.type = "deviance" )
 dev.LeukSurv.logwbc<-surv_residuals(fit.object = fit_LeukSurv_logwbc,data= LeukSurv,residual.type = "deviance" )
-
-par(mfrow = c(1,2))
-plot.dev.resid(dev.LeukSurv.wbc,X="wbc",main.title = "Deviance Residuals of wbc Model")
-plot.dev.resid(dev.LeukSurv.logwbc,X="logwbc",main.title = "Deviance Residuals of lwbc Model")
 ```
 
-![](zresidual_demo_files/figure-html/unnamed-chunk-6-1.png)
+Code
+
+``` r
+par(mfrow = c(1,2))
+plot.dev.resid(dev.LeukSurv.wbc,x_axis_var="wbc",main.title = "Deviance Residuals of wbc Model")
+plot.dev.resid(dev.LeukSurv.logwbc,x_axis_var="logwbc",main.title = "Deviance Residuals of lwbc Model")
+```
+
+![](zresidual_demo_files/figure-html/unnamed-chunk-9-1.png)
+
+## 6 References
+
+Wu, T., Li, L., & Feng, C. (2024). Z-residual diagnostic tool for
+assessing covariate functional form in shared frailty models. Journal of
+Applied Statistics, 52(1), 28–58.
+https://doi.org/10.1080/02664763.2024.2355551

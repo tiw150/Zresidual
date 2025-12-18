@@ -4,6 +4,20 @@
 
 ### 1.1 Installing Z-residua from the source
 
+Code
+
+``` r
+if (!requireNamespace("Zresidual", quietly = TRUE)) {
+  if (!requireNamespace("remotes", quietly = TRUE)) {
+    install.packages("remotes")
+  }
+  remotes::install_github("tiw150/Zresidual",
+                          upgrade = "never",
+                          dependencies = TRUE)
+}
+library(Zresidual)
+```
+
 ### 1.2 Intalling and Loading R Packages used in this Demo
 
 Code
@@ -11,24 +25,23 @@ Code
 ``` r
 # Vector of required packages
 pkgs <- c(
-  "survival","EnvStats","foreach", "statip", "VGAM", "plotrix", "actuar",
+  "brms","EnvStats","foreach", "statip", "VGAM", "plotrix", "actuar",
   "stringr", "Rlab", "dplyr", "rlang", "tidyr",
   "matrixStats", "timeDate", "katex", "gt","loo"
 )
 
-# Check for missing packages and install if needed
-missing_pkgs <- pkgs[!pkgs %in% installed.packages()[, "Package"]]
-if (length(missing_pkgs) > 0) {
+missing_pkgs <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]
+if (length(missing_pkgs)) {
   message("Installing missing packages: ", paste(missing_pkgs, collapse = ", "))
   install.packages(missing_pkgs, dependencies = TRUE)
-} else {
-  message("All required packages are already installed.")
 }
 
-# Load all packages
-invisible(lapply(pkgs, library, character.only = TRUE))
+invisible(lapply(pkgs, function(p) {
+  suppressPackageStartupMessages(library(p, character.only = TRUE))
+}))
 
-options(mc.cores = parallel::detectCores())
+nc <- parallel::detectCores(logical = FALSE)
+if (!is.na(nc) && nc > 1) options(mc.cores = nc - 1)
 ```
 
 ## 2 Introduction
@@ -157,8 +170,8 @@ users can choose the standard Posterior RPP method by setting
 Code
 
 ``` r
-zres_logit_iscv <- Zresidual(fit_logit)
-zres_logit_post <- Zresidual(fit_logit, method = "rpost")
+zres_logit_iscv <- Zresidual(fit_logit,nrep=10)
+zres_logit_post <- Zresidual(fit_logit, method = "rpost",nrep=10)
 ```
 
 ##### 4.2.0.1 **What the function returns**
@@ -214,24 +227,36 @@ help assess:
 Code
 
 ``` r
+for (i in 1:10) {
 par(mfrow = c(1,3))
-qqnorm.zresid(zres_logit_iscv)
-plot.zresid(zres_logit_iscv, X="x2", outlier.return = TRUE,categor=TRUE)
-boxplot.zresid(zres_logit_iscv, X="lp")
+qqnorm.zresid(zres_logit_iscv,irep=i)
+plot.zresid(zres_logit_iscv, x_axis_var="x2", outlier.return = TRUE,categor=TRUE,irep=i)
+boxplot(zres_logit_iscv, x_axis_var="lp",irep=i)
+}
 ```
 
-![](zresidual_logistic_demo_files/figure-html/unnamed-chunk-4-1.png)
+![](zresidual_logistic_demo_files/figure-html/plot-zresid-.gif)
+
+Figure 1: Scatterplots and QQ plots of No-CV and LOOCV Z-residuals of
+the fitted shared frailty models based on the original kidney infection
+dataset.
 
 Code
 
 ``` r
+for (i in 1:10) {
 par(mfrow = c(1,3))
-qqnorm.zresid(zres_logit_post)
-plot.zresid(zres_logit_post, X="x2", outlier.return = TRUE,categor=TRUE)
-boxplot.zresid(zres_logit_post, X="lp")
+qqnorm.zresid(zres_logit_post,irep=i)
+plot.zresid(zres_logit_post, x_axis_var="x2", outlier.return = TRUE,categor=TRUE,irep=i)
+boxplot(zres_logit_post, x_axis_var="lp",irep=i)
+}
 ```
 
-![](zresidual_logistic_demo_files/figure-html/unnamed-chunk-5-1.png)
+![](zresidual_logistic_demo_files/figure-html/plot-zresid2-.gif)
+
+Figure 1: Scatterplots and QQ plots of No-CV and LOOCV Z-residuals of
+the fitted shared frailty models based on the original kidney infection
+dataset.
 
 The diagnostic evaluations for the model—comprising scatter plots, Q-Q
 plots, and boxplots of Z-residuals—demonstrate that the model adequately
@@ -270,59 +295,55 @@ In addition to visual diagnostics, the package offers formal statistical
 tests to quantify deviations from normality or homogeneity of variance
 in Z-residuals by taking an `zresid` class object as an input.
 
-**Shapiro-Wilk Test for Normality (SW)**
-
 Code
 
 ``` r
-sw.test.zresid(zres_logit_iscv)
+library(gt)
+library(tibble)
+library(dplyr)
+
+res_sw_iscv <- as.numeric(sw.test.zresid(zres_logit_iscv))
+res_sw_post <- as.numeric(sw.test.zresid(zres_logit_post))
+
+res_aov_iscv <- as.numeric(aov.test.zresid(zres_logit_iscv, X="lp"))
+res_aov_post <- as.numeric(aov.test.zresid(zres_logit_post, X="lp"))
+
+res_bl_iscv <- as.numeric(bartlett.test.zresid(zres_logit_iscv, X="lp"))
+res_bl_post <- as.numeric(bartlett.test.zresid(zres_logit_post, X="lp"))
+
+gof_wide <- data.frame(
+  Residual = paste0("CV.Z-residual ", 1:10),
+  SW_ISCV = res_sw_iscv, SW_Post = res_sw_post,
+  AOV_ISCV = res_aov_iscv, AOV_Post = res_aov_post,
+  BL_ISCV = res_bl_iscv, BL_Post = res_bl_post
+)
+
+gof_table <- gof_wide %>%
+  gt() %>%
+  tab_spanner(label = "Shapiro-Wilk", columns = starts_with("SW_")) %>%
+  tab_spanner(label = "ANOVA", columns = starts_with("AOV_")) %>%
+  tab_spanner(label = "Bartlett", columns = starts_with("BL_")) %>%
+  cols_label(
+    SW_ISCV = "ISCV", SW_Post = "Post",
+    AOV_ISCV = "ISCV", AOV_Post = "Post",
+    BL_ISCV = "ISCV", BL_Post = "Post"
+  ) %>%
+  fmt_number(columns = -Residual, decimals = 4) %>%
+  cols_align(align = "center", columns = everything()) %>%
+  tab_options(
+    column_labels.font.weight = "bold",
+    table.width = pct(100),
+    table.font.size = px(12)
+  ) %>%
+  tab_style(
+    style = cell_fill(color = "#f9f9f9"),
+    locations = cells_body(columns = starts_with("AOV_"))
+  )
+
+gof_table
 ```
 
-    [1] 0.18219
-
-Code
-
-``` r
-sw.test.zresid(zres_logit_post)
-```
-
-    [1] 0.497763
-
-**Analysis of Variance (ANOVA)**
-
-Code
-
-``` r
-aov.test.zresid(zres_logit_iscv, X="lp")
-```
-
-    [1] 0.6287762
-
-Code
-
-``` r
-aov.test.zresid(zres_logit_post, X="lp")
-```
-
-    [1] 0.20119
-
-**Bartlett Test (BL)**
-
-Code
-
-``` r
-bartlett.test.zresid(zres_logit_iscv, X="lp")
-```
-
-    [1] 0.3795297
-
-Code
-
-``` r
-bartlett.test.zresid(zres_logit_post, X="lp")
-```
-
-    [1] 0.1328637
+[TABLE]
 
 These tests return standard `htest` or `aov` objects, making them easy
 to report, summarize, or integrate into automated workflows. One
