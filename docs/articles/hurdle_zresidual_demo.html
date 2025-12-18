@@ -14,6 +14,7 @@
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="hurdle_zresidual_demo_files/libs/quarto-html/popper.min.js"></script><script src="hurdle_zresidual_demo_files/libs/quarto-html/tippy.umd.min.js"></script><link href="hurdle_zresidual_demo_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="hurdle_zresidual_demo_files/libs/quarto-html/light-border.css" rel="stylesheet">
 <link rel="stylesheet" href="mystyles.css">
+<link rel="stylesheet" href="pkgdown/extra.css">
 <!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <script src="../extra.js"></script><meta property="og:title" content="Component-wise Z-residual Diagnosis for Bayesian Hurdle Models">
 </head>
@@ -233,7 +234,7 @@ z_i = -\Phi^{-1}(\text{rpp}_i(y_i^\text{obs}|\theta)) \sim N(0, 1)
 <span></span>
 <span><span class="co"># Generate from zero-truncated negative binomial</span></span>
 <span><span class="va">prob</span> <span class="op">&lt;-</span> <span class="va">size</span> <span class="op">/</span> <span class="op">(</span><span class="va">size</span> <span class="op">+</span> <span class="va">mu</span><span class="op">)</span></span>
-<span><span class="va">y</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">zeros</span><span class="op">)</span><span class="op">*</span><span class="fu">distributions3</span><span class="fu">::</span><span class="fu">rztnbinom</span><span class="op">(</span><span class="va">n</span>, <span class="va">size</span>, <span class="va">prob</span><span class="op">)</span></span>
+<span><span class="va">y</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">zeros</span><span class="op">)</span><span class="op">*</span><span class="fu">distributions3</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/distributions3/man/ztnbinom.html" class="external-link">rztnbinom</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">size</span>, <span class="va">prob</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># A random error variable</span></span>
 <span><span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
