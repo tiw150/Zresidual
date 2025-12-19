@@ -1,0 +1,245 @@
+:root {
+  --background: white;
+  --textcolor: black;
+  --linkcolor: blue;
+  --menubackground: lightgrey;
+  /* ADDITION: 
+    Define navbar height as a variable.
+    If you change your .responsive-nav height, just change it here.
+  */
+  --navbar-height: 40px;
+}
+
+body {
+  /* MODIFICATION: 
+    This is now the *single* source of truth for body styling.
+    It includes padding for the navbar (top), footer (bottom),
+    and side margins (left/right).
+  */
+  /* REMOVED: padding-top: var(--navbar-height); */
+  padding-bottom: 60px; /* Keeps footer from overlapping content */
+  padding-left: 1rem; /* From the merged rule */
+  padding-right: 2rem; /* From the merged rule */
+  margin-top: 30px;
+  margin-right: 10px;
+  background: var(--background);
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  font-weight: normal;
+  color: var(--textcolor);
+  line-height: 1.5em;
+  text-align: justify;
+}
+
+
+
+a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+h1 {
+  font-size: 1.8em;
+  color: quarto-dark;
+}
+
+
+/* Fancy shaded H2 box with royal blue text and background */
+h2 {
+  font-size: 1.5em;
+  color: royalblue; /* heading text color */
+  background: linear-gradient(180deg, #f8fbff 0%, #eaf2ff 100%);
+  border: 1px solid #c8daff;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-top: 40px;
+  box-shadow:
+    0 2px 6px rgba(65, 105, 225, 0.15),  /* soft royal blue glow */
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  background-clip: padding-box;
+  border-bottom: 3px solid royalblue; /* accent underline */
+}
+
+/* Quarto anchor link icon */
+h2 .anchorjs-link {
+  color: royalblue;
+}
+
+/* Dark mode adjustments */
+.quarto-dark h2 {
+  color: #9ecaff; /* light royal blue text */
+  background: linear-gradient(180deg, #1c2756 0%, #141d3d 100%);
+  border: 1px solid #324a8a;
+  border-bottom: 3px solid #5a7fff;
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+
+h3 {
+  font-size: 1.3em;
+}
+
+h4 {
+  font-size: 1.2em;
+}
+
+/* This was a duplicate h3, I've removed it */
+
+p {
+  padding-top: 0em;
+  padding-left: 0em;
+  padding-bottom: 0em;
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+}
+
+ul {
+  margin-left: 0em;
+  padding-left: 2em;
+}
+
+ol {
+  margin-left: 0em;
+  padding-left: 2.5em;
+}
+
+p.small {
+  font-size: 0.9em;
+}
+
+p.big {
+  font-size: 1.2em;
+}
+
+li {
+  margin-bottom: 0.5em;
+  margin-left: 0.5em;
+}
+
+
+/* Make content span the full browser width */
+.main-container { 
+  max-width: 100% !important; 
+  width: 100% !important; 
+  /* ADDITION: This is the correct fix.
+    We apply the padding to Quarto's content container,
+    not the body.
+  */
+  padding-top: var(--navbar-height);
+}
+
+
+/* Optional: make figures use full width too */
+img, .figure, .figure > img { 
+  max-width: 100% !important; 
+  width: 100% !important; 
+  height: auto; }
+
+/* Make the number + title stay on the same first line; wrap only the title */
+.sidebar .sidebar-item-container > a.sidebar-item-text .menu-text {
+  display: flex;
+  align-items: baseline;
+  gap: .4em;            /* spacing between number and title */
+  white-space: normal;  /* allow wrapping */
+}
+
+.sidebar .sidebar-item-container > a.sidebar-item-text .chapter-number {
+  flex: 0 0 auto;       /* fixed-size column for the number */
+}
+
+.sidebar .sidebar-item-container > a.sidebar-item-text .chapter-title {
+  flex: 1 1 auto;       /* take remaining width and wrap as needed */
+  min-width: 0;         /* allow flex item to shrink so wrapping works */
+  overflow-wrap: anywhere;
+}
+
+/* Keep the number and heading text on the same first line; wrap only within the text */
+h2.anchored:has(.header-section-number),
+h3.anchored:has(.header-section-number),
+h4.anchored:has(.header-section-number),
+h5.anchored:has(.header-section-number),
+h6.anchored:has(.header-section-number) {
+  display: flex;
+  align-items: baseline;
+  gap: .4em;        /* space between number and text */
+  flex-wrap: nowrap;/* ⟵ don't allow items to move to a new line */
+  white-space: normal;
+}
+
+/* Number is a fixed-size item */
+h2 .header-section-number,
+h3 .header-section-number,
+h4 .header-section-number,
+h5 .header-section-number,
+h6 .header-section-number {
+  flex: 0 0 auto;
+}
+
+/* Make numbered prefix match the heading color */
+h1 .header-section-number,
+h2 .header-section-number,
+h3 .header-section-number,
+h4 .header-section-number,
+h5 .header-section-number,
+h6 .header-section-number {
+  color: inherit;      /* same as the text color (e.g., royalblue) */
+  margin-right: .35em; /* tidy spacing */
+}
+
+/* If you show numbers in the sidebar TOC, match link color too */
+nav[role="doc-toc"] .toc-section-number {
+  color: inherit;
+}
+
+/* Let the title text wrap within its own flex item */
+h2.anchored, h3.anchored, h4.anchored, h5.anchored, h6.anchored {
+  overflow-wrap: anywhere; /* wrapping inside the text flex item */
+}
+
+/* Keep the anchor icon parked at the far right if present */
+h2.anchored .anchorjs-link,
+h3.anchored .anchorjs-link,
+h4.anchored .anchorjs-link,
+h5.anchored .anchorjs-link,
+h6.anchored .anchorjs-link {
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+/* Chapter H1: keep number + title on the same line; wrap only the title text */
+h1.title:has(.chapter-number) {
+  display: flex;
+  align-items: baseline;
+  gap: .4em;          /* space between number and title (Quarto also has &nbsp;) */
+  flex-wrap: nowrap;  /* keep both items on the first line */
+  white-space: normal;
+}
+
+h1.title .chapter-number {
+  flex: 0 0 auto;     /* fixed to its content width */
+}
+
+h1.title .chapter-title {
+  flex: 1 1 auto;     /* take remaining width, allow wrapping */
+  min-width: 0;       /* allow shrink so wrapping works */
+  overflow-wrap: anywhere;
+}
+
+/* (Optional) Do the same for 'Part' headings, if you use them */
+h1.part:has(.part-number) {
+  display: flex;
+  align-items: baseline;
+  gap: .4em;
+  flex-wrap: nowrap;
+  white-space: normal;
+}
+h1.part .part-number { flex: 0 0 auto; }
+h1.part .part-title  { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+
+
