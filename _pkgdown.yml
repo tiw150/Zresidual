@@ -23,6 +23,11 @@ navbar:
       href: https://github.com/tiw150/Zresidual
       aria-label: "GitHub repository"
 
+    - icon: fas fa-newspaper
+      aria-label: "Changelog"
+      href: changelog.html
+
+
 # reference:
 # - title: Z-residual Diagnostics
 #   desc: Functions for calculating, plotting, and testing Z-residuals.

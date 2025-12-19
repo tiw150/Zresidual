@@ -31,10 +31,15 @@ pkgdown::clean_site()
 unlink("docs", recursive = TRUE)
 # 3. Build fresh
 pkgdown::build_site(
-    lazy=FALSE,
+    lazy=TRUE,
     preview=TRUE,
     devel=TRUE, 
     install=TRUE)
 ```
 
+
+## Build home page only
+```{r}
+pkgdown::build_home()
+```
 
