@@ -89,6 +89,8 @@ message(sprintf("Environment: %s | Path: %s",
 #| eval: false
 #| include: false
 # this is for developer use
+remove.packages("Zresidual")
+devtools::document()
 devtools::install()
 
 ```
