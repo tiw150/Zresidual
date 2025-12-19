@@ -43,10 +43,11 @@ set.seed(123)
 ### Installing Z-residua from the source
 
 ```{r}
-#| eval: true
-
+#| eval: false
+#| include: false
+# this is for developer use
 devtools::install()
-library(Zresidual)
+
 ```
 
 ```{r}
@@ -60,9 +61,12 @@ if (!requireNamespace("Zresidual", quietly = TRUE)) {
                           upgrade = "never",
                           dependencies = TRUE)
 }
-library(Zresidual)
+
 ```
 
+```{r}
+library(Zresidual)
+```
 
 
 ### Intalling and Loading R Packages used in this Demo
@@ -202,28 +206,28 @@ The scatterplots of Z-residuals against the linear predictor don't exhibit visib
 #| fig-align: center
 #| fig-cap: "Figure 2: Scatter plots and box plots of Z-residuals against LP for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients"
 for (i in 1:10) {
-par(mfrow = c(2, 2), mar = c(4, 4, 1.5, 2))
-plot(
-    Zresid.LeukSurv.wbc,x_axis_var="index",
-    main.title = "Z-residual Scatterplot of wbc model",
-    irep=i
-  )
-plot(
-    Zresid.LeukSurv.logwbc,x_axis_var="index",
-    main.title = "Z-residual Scatterplot of lwbc model",
-    irep=i
-  )
-
-boxplot(
-    Zresid.LeukSurv.wbc,x_axis_var = "lp",
-    main.title = "Z-residual Boxplot of wbc model",
-    irep=i
-  )
-boxplot(
-    Zresid.LeukSurv.logwbc,x_axis_var = "lp",
-    main.title = "Z-residual Boxplot of lwbc model",
-    irep=i
-  )
+  par(mfrow = c(2, 2), mar = c(4, 4, 1.5, 2))
+  plot(
+      Zresid.LeukSurv.wbc,x_axis_var="index",
+      main.title = "Z-residual Scatterplot of wbc model",
+      irep=i
+    )
+  plot(
+      Zresid.LeukSurv.logwbc,x_axis_var="index",
+      main.title = "Z-residual Scatterplot of lwbc model",
+      irep=i
+    )
+  
+  boxplot(
+      Zresid.LeukSurv.wbc,x_axis_var = "lp",
+      main.title = "Z-residual Boxplot of wbc model",
+      irep=i
+    )
+  boxplot(
+      Zresid.LeukSurv.logwbc,x_axis_var = "lp",
+      main.title = "Z-residual Boxplot of lwbc model",
+      irep=i
+    )
 }
 
 ```
