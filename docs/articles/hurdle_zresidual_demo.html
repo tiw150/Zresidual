@@ -52,7 +52,7 @@
       <h1>Component-wise Z-residual Diagnosis for Bayesian Hurdle Models</h1>
 
 
-      <p class="date">2025-12-17</p>
+      <p class="date">2025-12-18</p>
 
       <small class="dont-index">Source: <a href="https://github.com/tiw150/Zresidual/blob/HEAD/vignettes/hurdle_zresidual_demo.qmd" class="external-link"><code>vignettes/hurdle_zresidual_demo.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
@@ -234,7 +234,7 @@ z_i = -\Phi^{-1}(\text{rpp}_i(y_i^\text{obs}|\theta)) \sim N(0, 1)
 <span></span>
 <span><span class="co"># Generate from zero-truncated negative binomial</span></span>
 <span><span class="va">prob</span> <span class="op">&lt;-</span> <span class="va">size</span> <span class="op">/</span> <span class="op">(</span><span class="va">size</span> <span class="op">+</span> <span class="va">mu</span><span class="op">)</span></span>
-<span><span class="va">y</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">zeros</span><span class="op">)</span><span class="op">*</span><span class="fu">distributions3</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/distributions3/man/ztnbinom.html" class="external-link">rztnbinom</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">size</span>, <span class="va">prob</span><span class="op">)</span></span>
+<span><span class="va">y</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">zeros</span><span class="op">)</span><span class="op">*</span><span class="fu">distributions3</span><span class="fu">::</span><span class="fu">rztnbinom</span><span class="op">(</span><span class="va">n</span>, <span class="va">size</span>, <span class="va">prob</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># A random error variable</span></span>
 <span><span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">n</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>

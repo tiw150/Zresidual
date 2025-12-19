@@ -4,6 +4,9 @@
 
 - [Z-residual diagnostic tool for assessing covariate functional form in
   shared frailty
+  models](https://tiw150.github.io/Zresidual/articles/zresidual_coxph_demo.md):
+- [Z-residual diagnostic tool for assessing covariate functional form in
+  shared frailty
   models](https://tiw150.github.io/Zresidual/articles/zresidual_demo.md):
 - [Cross-validatory Z-Residual for Diagnosing Shared Frailty
   Models](https://tiw150.github.io/Zresidual/articles/cv_zresidual_demo.md):

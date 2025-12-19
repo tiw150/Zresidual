@@ -4,9 +4,10 @@ pkgdown_sha: ~
 articles:
   cv_zresidual_demo: cv_zresidual_demo.html
   hurdle_zresidual_demo: hurdle_zresidual_demo.html
+  zresidual_coxph_demo: zresidual_coxph_demo.html
   zresidual_demo: zresidual_demo.html
   zresidual_logistic_demo: zresidual_logistic_demo.html
-last_built: 2025-12-18T02:29Z
+last_built: 2025-12-19T04:15Z
 urls:
   reference: https://tiw150.github.io/Zresidual/reference
   article: https://tiw150.github.io/Zresidual/articles
