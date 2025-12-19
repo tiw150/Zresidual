@@ -33,16 +33,16 @@
 #' # Example: Compute the CDF for y = 1:5
 #' mu <- 2
 #' size <- 1
-#' cdf.tnb(1:5, mu, size)
+#' p_tnb(1:5, mu, size)
 #'
 #' # Compute the upper-tail probabilities
-#' cdf.tnb(1:5, mu, size, lower.tail = FALSE)
+#' p_tnb(1:5, mu, size, lower.tail = FALSE)
 #'
 #' # Log probabilities
-#' cdf.tnb(1:5, mu, size, log.p = TRUE)
+#' p_tnb(1:5, mu, size, log.p = TRUE)
 #' @export
 
-cdf.tnb <- function(y, mu, size, lower.tail = FALSE, log.p = FALSE) {
+p_tnb <- function(y, mu, size, lower.tail = FALSE, log.p = FALSE) {
 
   n.y <- max(length(y), length(mu),length(size),length(pi))
   y <- rep(y,length=n.y)
