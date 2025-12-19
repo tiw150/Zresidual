@@ -1,6 +1,14 @@
+
 ## Change Logs
 
 ### December 19, 2025
+
+
+* Improve vignettes like: 
+
+  - $$ Z_i =-\Phi^{-1} (RSP_i) $${#eq-rsp}, 
+  - more verbal descriptions of the experiments and results.
+
 
 * In the vignettes, you can generate a large number like 1000 replicated Z-residuals so that the histograms look better, and the upper-bound p-values have more sample size. using the saved rds to save the pre-computed objects to inst/extdata to save the re-production time. See this: https://gemini.google.com/share/5362ba39f503 
 
@@ -10,10 +18,9 @@
   - Rename (refactor) all the messy function names. But need to change all of them in the packages. In RStudio, you can use edit-> find in files to find all the function names in the whole directory. This may be the easiest way to change all these function names. I would recommend this permanent change for future developers.
   - Using S3method export to create an alias for users. This may be easier without modifying the internal code but may cause confusion to future developers.
 
-*
-  - Write a method to compute log_pred given fitting class: log_pred.brms, log_pred.coxph,log_pred.survreg, 
+* Extend Zresidual method for custom models
 
-  - Write a method Zresidual for class log_pred (log_cdf, log_pmf, log_like), all **vectors**
-
-* Improve vignettes like: $$ $${#eq-rsp}, more verbal descriptions of the experiments and results.
+  - Write a method log_pred.model to compute log_pred given fitting class, eg, log_pred.brms, log_pred.coxph,log_pred.survreg, 
+  - Rewrite a method Zresidual to take input from class log_pred (log_cdf, log_pmf, log_like), all **vectors**.  
+  - If the obj to Zresidual is a specific model (e.g, brms), find log_pred.brms, to compute Z-residuals
 
