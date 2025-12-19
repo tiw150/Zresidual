@@ -22,9 +22,9 @@ devtools::install()
     * building ‘Zresidual_0.1.0.tar.gz’
 
     Running /Library/Frameworks/R.framework/Resources/bin/R CMD INSTALL \
-      /var/folders/mh/fxdzznn94tg5z23jqm1n3tgc0000gq/T//RtmpVgkmnf/Zresidual_0.1.0.tar.gz \
+      /var/folders/mh/fxdzznn94tg5z23jqm1n3tgc0000gq/T//RtmpfKr3Dn/Zresidual_0.1.0.tar.gz \
       --install-tests
-    * installing to library ‘/Users/longhai/Library/R/arm64/4.5/library’
+    * installing to library ‘/Users/longhai/Library/Caches/org.R-project.R/R/renv/library/Zresidual-cb0efefe/macos/R-4.5/aarch64-apple-darwin20’
     * installing *source* package ‘Zresidual’ ...
     ** this is package ‘Zresidual’ version ‘0.1.0’
     ** using staged installation
