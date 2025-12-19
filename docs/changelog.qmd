@@ -3,6 +3,21 @@ title: "Change Logs for Zresidual Packages"
 format: html
 ---
 
+```{r}
+#| eval: false
+#| include: false
+
+# Find the project root by looking for the DESCRIPTION file
+root <- rprojroot::find_package_root_file()
+
+# Use absolute paths so it doesn't matter where the chunk runs from
+source_file <- file.path(root, "pkgdown", "assets", "changelog.html")
+dest_file   <- file.path(root, "docs", "changelog.html")
+
+if (file.exists(source_file)) {
+  file.copy(from = source_file, to = dest_file, overwrite = TRUE)
+}
+```
 
 ### December 19, 2025
 
