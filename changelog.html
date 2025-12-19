@@ -86,6 +86,25 @@ ul.task-list li input[type="checkbox"] {
 </li>
 <li>If the obj to Zresidual is a specific model (e.g, brms), find log_pred.brms, to compute Z-residuals</li>
 </ul></li>
+<li><p>Add <span class="citation" data-cites="concept">@concept</span> tags to each function, then the reference list will be organized. Example:</p>
+<pre><code>#' @concept Zresidual
+#' @concept visualization
+#' @concept log_pred
+#' @concept test</code></pre>
+<p>Then add such lines to the _pkgdown.yaml:</p>
+<pre><code>reference:
+
+
+  - title: "Visualization"
+    desc: "Functions for visualizing entropy contributions and model noise."
+    contents:
+      - has_concept("visualization")
+
+  - title: "Tabulation"
+    desc: "Functions for formatting, printing, and exporting results tables."
+    contents:
+      - has_concept("tabulation")</code></pre>
+<p>The pkgdown will then organize the functions by concept. A function can have multiple concepts.</p></li>
 </ul>
 </section>
 
