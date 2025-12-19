@@ -9,25 +9,22 @@ format:
     page-layout: full
     code-fold: true
     html-math-method: mathjax
-
 execute:
   echo: true
   warning: false
   message: false
   cache: false
-  freeze: true
+  freeze: false
 crossref:
       eq-prefix: "Equation"
 editor_options: 
   chunk_output_type: console
 bibliography: ref.bib
 link-citations: true      # for HTML
-
 vignette: >
   %\VignetteIndexEntry{Z-residual diagnostic for shared frailty models}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 ```{r setup, include=FALSE}
@@ -35,7 +32,53 @@ knitr::opts_chunk$set(
  fig.width = 7, fig.height = 5, fig.align = "center"
 )
 set.seed(123)
+
+
 ```
+
+```{r}
+#| label: setup-extdata-path
+#| include: false
+
+# 1. Configuration
+pkg_name <- "Zresidual"
+
+# 2. Path Discovery Logic
+# Check if we are in the package source (root or vignettes/ directory)
+is_source <- file.exists("DESCRIPTION") || file.exists("../DESCRIPTION")
+root_dir  <- ifelse(file.exists("DESCRIPTION"), ".", "..")
+
+if (is_source) {
+  # Scenario: Local Development or Local pkgdown build
+  extdata_path <- file.path(root_dir, "inst", "extdata")
+  if (!dir.exists(extdata_path)) dir.create(extdata_path, recursive = TRUE)
+  is_dev <- TRUE
+} else {
+  # Scenario: CRAN or User installation
+  extdata_path <- system.file("extdata", package = pkg_name)
+  is_dev <- FALSE
+}
+
+# 3. Helper: Local Asset Copy
+# Ensures knitr can find the file by copying it to the current directory
+get_local_asset <- function(filename, source_dir) {
+  src <- file.path(source_dir, filename)
+  if (!file.exists(src)) return(NULL)
+  
+  # Copy to current directory if it's not already there
+  if (!file.exists(filename) || file.mtime(src) > file.mtime(filename)) {
+    file.copy(src, filename, overwrite = TRUE)
+  }
+  return(filename)
+}
+
+# Status for console debugging
+message(sprintf("Environment: %s | Path: %s", 
+                ifelse(is_dev, "Source", "Installed"), 
+                extdata_path))
+```
+
+
 
 ## Installing Zresidual and Other packages
 
@@ -43,10 +86,11 @@ set.seed(123)
 ### Installing Z-residua from the source
 
 ```{r}
-#| eval: true
-
+#| eval: false
+#| include: false
+# this is for developer use
 devtools::install()
-library(Zresidual)
+
 ```
 
 ```{r}
@@ -60,9 +104,12 @@ if (!requireNamespace("Zresidual", quietly = TRUE)) {
                           upgrade = "never",
                           dependencies = TRUE)
 }
-library(Zresidual)
+
 ```
 
+```{r}
+library(Zresidual)
+```
 
 
 ### Intalling and Loading R Packages used in this Demo
@@ -165,25 +212,47 @@ Diagnosing the overall goodness-of-fit (GOF) using Z-residuals as follows:
 A QQ plot based on Z-residuals can be used to graphically assess the model's overall GOF, and Shapiro-Wilk (SW) or Shapiro-Francia (SF) normality tests applied to Z-residuals can be used to numerically test the overall GOF of the model. We can see that the QQ plots of Z-residuals of these two models align well with the 45 $^\circ$ diagonal line. The Z-SW tests also give large p-values for two models, where Z-SW is the test method that the normality of Z-residuals is tested with the SW test.
 
 ```{r}
-#| label: qqplot-zresid-anim
-#| fig-show: animate
-#| animation.hook: "gifski"
-#| interval: 1
-#| aniopts: "controls,loop"
-#| fig-width: 9
-#| fig-height: 4.5
-#| echo: true
-#| results: hide
+#| label: qqplot-animation
+#| echo: false
 #| fig-align: center
-#| fig-cap: "Figure 1: QQ plots of Z-residuals for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients"
+#| fig-cap: "Animated QQ plots of Z-residuals."
 
-for (i in 1:10) {
-  par(mfrow = c(1, 2), mar = c(4, 4, 2, 2))
-   qqnorm.zresid(Zresid.LeukSurv.wbc,irep=i)
-   qqnorm.zresid(Zresid.LeukSurv.logwbc, irep=i)
+gif_name <- "qqplot_anim.gif"
+gif_storage_path <- file.path(extdata_path, gif_name)
+
+# 1. Generate only if we are the developer and the file doesn't exist yet
+if (is_dev && !file.exists(gif_storage_path)) {
+  message("Generating animation GIF...")
+  gifski::save_gif(
+    expr = {
+      for (i in 1:10) {
+        par(mfrow = c(1, 2), mar = c(4, 4, 2, 2))
+        qqnorm.zresid(Zresid.LeukSurv.wbc, irep = i)
+        qqnorm.zresid(Zresid.LeukSurv.logwbc, irep = i)
+      }
+    },
+    gif_file = gif_storage_path,
+    width = 800, height = 400, res = 72, delay = 0.8, loop = TRUE
+  )
 }
 
+# 2. Retrieve local path (Copies from extdata to current folder if needed)
+local_gif <- get_local_asset(gif_name, extdata_path)
+
+# 3. Render the local copy
+if (!is.null(local_gif) && file.exists(local_gif)) {
+  knitr::include_graphics(local_gif)
+} else {
+  # Static fallback
+  par(mfrow = c(1, 2), mar = c(4, 4, 2, 2))
+  qqnorm.zresid(Zresidual::Zresid.LeukSurv.wbc, irep = 1)
+  qqnorm.zresid(Zresidual::Zresid.LeukSurv.logwbc, irep = 1)
+}
 ```
+
+
+
+
 
 The Z-residuals can be divided into $k$ groups by cutting the linear predictors or covariates into equally-spaced intervals. Then we can check whether the Z-residuals of the $k$ groups are homogeneously distributed. A quantitative method to assess the homogeneity of such grouped Z-residuals is to test the equality of group means or variances of the Z-residuals. We employ the F-test in ANOVA to assess the equality of means and Bartlett's test to examine the equality of variances.
 
@@ -202,28 +271,28 @@ The scatterplots of Z-residuals against the linear predictor don't exhibit visib
 #| fig-align: center
 #| fig-cap: "Figure 2: Scatter plots and box plots of Z-residuals against LP for the wbc (left panels) and lwbc (right panels) models fitted to the survival data of acute myeloid leukemia patients"
 for (i in 1:10) {
-par(mfrow = c(2, 2), mar = c(4, 4, 1.5, 2))
-plot(
-    Zresid.LeukSurv.wbc,x_axis_var="index",
-    main.title = "Z-residual Scatterplot of wbc model",
-    irep=i
-  )
-plot(
-    Zresid.LeukSurv.logwbc,x_axis_var="index",
-    main.title = "Z-residual Scatterplot of lwbc model",
-    irep=i
-  )
-
-boxplot(
-    Zresid.LeukSurv.wbc,x_axis_var = "lp",
-    main.title = "Z-residual Boxplot of wbc model",
-    irep=i
-  )
-boxplot(
-    Zresid.LeukSurv.logwbc,x_axis_var = "lp",
-    main.title = "Z-residual Boxplot of lwbc model",
-    irep=i
-  )
+  par(mfrow = c(2, 2), mar = c(4, 4, 1.5, 2))
+  plot(
+      Zresid.LeukSurv.wbc,x_axis_var="index",
+      main.title = "Z-residual Scatterplot of wbc model",
+      irep=i
+    )
+  plot(
+      Zresid.LeukSurv.logwbc,x_axis_var="index",
+      main.title = "Z-residual Scatterplot of lwbc model",
+      irep=i
+    )
+  
+  boxplot(
+      Zresid.LeukSurv.wbc,x_axis_var = "lp",
+      main.title = "Z-residual Boxplot of wbc model",
+      irep=i
+    )
+  boxplot(
+      Zresid.LeukSurv.logwbc,x_axis_var = "lp",
+      main.title = "Z-residual Boxplot of lwbc model",
+      irep=i
+    )
 }
 
 ```
@@ -295,14 +364,6 @@ gof_tests<-data.frame(sw.wbc,sw.lwbc,sf.wbc,sf.lwbc)
 
 The Z-residuals can be divided into $k$ groups by cutting the covariates or linear predictors into equally-spaced intervals. To quantitatively evaluate the homogeneity of grouped Z-residuals, we propose testing the equality of group means and group variances. For this purpose, we employ the F-test in ANOVA to assess the equality of means and Bartlett's test to examine the equality of variances.
 
-```{r}
-#| label: check-zresidual-version
-library(Zresidual)
-
-packageVersion("Zresidual")
-ls("package:Zresidual")[grep("bartlett", ls("package:Zresidual"))]
-
-```
 
 ```{r }
 aov.wbc.lp<-aov.test.zresid(Zresid.LeukSurv.wbc,X = "lp", k.anova=10)
@@ -321,6 +382,7 @@ homogeneity_tests<-data.frame(aov.wbc.lp,aov.lwbc.lp,bl.wbc.lp,bl.lwbc.lp,
                               aov.wbc,aov.lwbc,bl.wbc,bl.lwbc)
 
 homogeneity_tests %>%
+  head(10) %>% 
   gt() %>%
   tab_header(
     title = "Summary of Residual Homogeneity Tests"
