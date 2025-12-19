@@ -27,7 +27,7 @@ devtools::install(upgrade = "never", build = FALSE, args = c("--no-byte-compile"
 ## Build the whole Site
 ```{r}
 devtools::document()
-pkgdown::clean_site()
+#pkgdown::clean_site()
 unlink("docs", recursive = TRUE)
 # 3. Build fresh
 pkgdown::build_site(
@@ -41,5 +41,11 @@ pkgdown::build_site(
 ## Build home page only
 ```{r}
 pkgdown::build_home()
+```
+
+
+## Build home page only
+```{r}
+pkgdown::build_news()
 ```
 
