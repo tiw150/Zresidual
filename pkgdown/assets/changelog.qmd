@@ -4,6 +4,12 @@ format: html
 ---
 
 
+```{r eval=FALSE, include=FALSE, echo=FALSE}
+file.copy(from = "pkgdown/assets/changelog.html", 
+          to = "docs/changelog.html", 
+          overwrite = TRUE)
+```
+
 ### December 19, 2025
 
 
