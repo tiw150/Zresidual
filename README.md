@@ -1,3 +1,8 @@
+---
+title: "Zresidual: Tools for Computing and Diagnosing Gaussian Residuals"
+format: html
+---
+
 ### Z-residuals
 
 The **Zresidual** package implements diagnostic residuals based on the **predictive distribution** of each observation. By utilizing the full probabilistic information of the model, the package generates residuals that are approximately normally distributed, enabling further standard diagnostics for Pearson's residuals for OLS. 
