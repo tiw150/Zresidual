@@ -35,4 +35,4 @@ Wu, T., Feng, C., & Li, L. (2024). Cross-Validatory Z-Residual for
 Diagnosing Shared Frailty Models. The American Statistician, 79(2),
 198–211. <https://doi.org/10.1080/00031305.2024.2421370>
 
-## Example
+
