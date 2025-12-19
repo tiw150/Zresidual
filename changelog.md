@@ -11,8 +11,9 @@
   - Using S3method export to create an alias for users. This may be easier without modifying the internal code but may cause confusion to future developers.
 
 *
-  - Write a method to compute log_pred given fitting class: log_pred.brms, log_pred.coxph,
+  - Write a method to compute log_pred given fitting class: log_pred.brms, log_pred.coxph,log_pred.survreg, 
+
   - Write a method Zresidual for class log_pred (log_cdf, log_pmf, log_like), all **vectors**
 
+* Improve vignettes like: $$ $${#eq-rsp}, more verbal descriptions of the experiments and results.
 
-log_pred.survreg, 
