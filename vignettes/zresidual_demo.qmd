@@ -9,18 +9,13 @@ format:
     page-layout: full
     code-fold: true
     html-math-method: mathjax
-    css: 
-      - mystyles.css
-      - pkgdown/extra.css
-    include-after-body: 
-      - pagetoc.js
-      - pkgdown/extra.js
- 
+
 execute:
   echo: true
   warning: false
   message: false
-  cache: true
+  cache: false
+  freeze: true
 crossref:
       eq-prefix: "Equation"
 editor_options: 
@@ -48,6 +43,13 @@ set.seed(123)
 ### Installing Z-residua from the source
 
 ```{r}
+#| eval: true
+
+devtools::install()
+library(Zresidual)
+```
+
+```{r}
 #| label: install-and-load-zresidual
 #| eval: false
 if (!requireNamespace("Zresidual", quietly = TRUE)) {
@@ -61,7 +63,10 @@ if (!requireNamespace("Zresidual", quietly = TRUE)) {
 library(Zresidual)
 ```
 
+
+
 ### Intalling and Loading R Packages used in this Demo
+
 
 ```{r loading-packages}
 #| label: loading-packages
@@ -135,7 +140,7 @@ LeukSurv <- LeukSurv[LeukSurv$age < 60, ]
 
 We fitted two shared frailty models, one with covariates wbc, age, sex and tpi, which is labelled as the wbc model, and the other with log(wbc) replacing wbc, which is labelled as the lwbc model.
 
-```{r fit-models, cache=TRUE}
+```{r fit-models}
 fit_LeukSurv_wbc <- coxph(Surv(time, cens) ~ age  +sex+ wbc +tpi  +
           frailty(district, distribution="gamma"), data= LeukSurv)
 fit_LeukSurv_logwbc  <- coxph(Surv(time, cens) ~ age +sex + logwbc + tpi +
@@ -146,9 +151,9 @@ fit_LeukSurv_logwbc  <- coxph(Surv(time, cens) ~ age +sex + logwbc + tpi +
 Once the model is fitted, we can calculate Z-residuals for two models.
 
 
-```{r zresiduals-linear, cache=TRUE}
-Zresid.LeukSurv.wbc<-Zresidual(object = fit_LeukSurv_wbc,nrep=10)
-Zresid.LeukSurv.logwbc<-Zresidual(object = fit_LeukSurv_logwbc,nrep=10)
+```{r zresiduals-linear, cache=FALSE}
+Zresid.LeukSurv.wbc<-Zresidual(object = fit_LeukSurv_wbc,nrep=1000)
+Zresid.LeukSurv.logwbc<-Zresidual(object = fit_LeukSurv_logwbc,nrep=1000)
 
 ```
 
@@ -165,7 +170,6 @@ A QQ plot based on Z-residuals can be used to graphically assess the model's ove
 #| animation.hook: "gifski"
 #| interval: 1
 #| aniopts: "controls,loop"
-#| cache: true
 #| fig-width: 9
 #| fig-height: 4.5
 #| echo: true
@@ -191,7 +195,6 @@ The scatterplots of Z-residuals against the linear predictor don't exhibit visib
 #| animation.hook: "gifski"
 #| interval: 1
 #| aniopts: "controls,loop"
-#| cache: true
 #| fig-width: 9
 #| fig-height: 9
 #| echo: true
@@ -235,7 +238,6 @@ The above diagnostics results reveal no serious misspecification in  these two m
 #| animation.hook: "gifski"
 #| interval: 1
 #| aniopts: "controls,loop"
-#| cache: true
 #| fig-width: 9
 #| fig-height: 9
 #| echo: true
