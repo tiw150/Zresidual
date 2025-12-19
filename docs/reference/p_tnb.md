@@ -8,7 +8,7 @@ supports \\y \> 0\\).
 ## Usage
 
 ``` r
-cdf.tnb(y, mu, size, lower.tail = FALSE, log.p = FALSE)
+p_tnb(y, mu, size, lower.tail = FALSE, log.p = FALSE)
 ```
 
 ## Arguments
@@ -68,14 +68,14 @@ negative binomial CDF.
 # Example: Compute the CDF for y = 1:5
 mu <- 2
 size <- 1
-cdf.tnb(1:5, mu, size)
+p_tnb(1:5, mu, size)
 #> [1] 0.6666667 0.4444444 0.2962963 0.1975309 0.1316872
 
 # Compute the upper-tail probabilities
-cdf.tnb(1:5, mu, size, lower.tail = FALSE)
+p_tnb(1:5, mu, size, lower.tail = FALSE)
 #> [1] 0.6666667 0.4444444 0.2962963 0.1975309 0.1316872
 
 # Log probabilities
-cdf.tnb(1:5, mu, size, log.p = TRUE)
+p_tnb(1:5, mu, size, log.p = TRUE)
 #> [1] -0.4054651 -0.8109302 -1.2163953 -1.6218604 -2.0273255
 ```

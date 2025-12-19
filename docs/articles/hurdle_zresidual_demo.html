@@ -79,7 +79,7 @@
 <span>                          upgrade <span class="op">=</span> <span class="st">"never"</span>,</span>
 <span>                          dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tiw150.github.io/Zresidual">Zresidual</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">Zresidual</span><span class="op">)</span></span></code></pre></div>
 </details>
 </div>
 </section><section class="level3" data-number="1.2"><h3 data-number="1.2" id="intalling-and-loading-r-packages-used-in-this-demo">
@@ -265,7 +265,7 @@ z_i = -\Phi^{-1}(\text{rpp}_i(y_i^\text{obs}|\theta)) \sim N(0, 1)
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/HenrikBengtsson/matrixStats" class="external-link">matrixStats</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/alexpghayes/distributions3" class="external-link">distributions3</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tiw150.github.io/Zresidual">Zresidual</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">Zresidual</span><span class="op">)</span></span>
 <span><span class="va">zres_hnb_post_zero</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Zresidual.html">Zresidual</a></span><span class="op">(</span><span class="va">fit_hnb</span>, type <span class="op">=</span> <span class="st">"zero"</span>, method <span class="op">=</span> <span class="st">"rpost"</span>,nrep<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
 <span><span class="va">zres_hnb_post_count</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Zresidual.html">Zresidual</a></span><span class="op">(</span><span class="va">fit_hnb</span>, type <span class="op">=</span> <span class="st">"count"</span>, method <span class="op">=</span> <span class="st">"rpost"</span>,nrep<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
 <span><span class="va">zres_hnb_post_hurdle</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Zresidual.html">Zresidual</a></span><span class="op">(</span><span class="va">fit_hnb</span>, type <span class="op">=</span> <span class="st">"hurdle"</span>, method <span class="op">=</span> <span class="st">"rpost"</span>,nrep<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span></code></pre></div>

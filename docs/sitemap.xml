@@ -33,7 +33,6 @@
 <url><loc>https://tiw150.github.io/Zresidual/reference/aov.test.zresid.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/bartlett.test.zresid.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/boxplot.zresid.html</loc></url>
-<url><loc>https://tiw150.github.io/Zresidual/reference/cdf.tnb.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/cdf.tp.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/dhurdle.nb.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/dhurdle.pois.html</loc></url>
@@ -53,6 +52,7 @@
 <url><loc>https://tiw150.github.io/Zresidual/reference/model.frame.survreg.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/model.matrix.coxph.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/model.matrix.survreg.html</loc></url>
+<url><loc>https://tiw150.github.io/Zresidual/reference/p_tnb.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/pdf.tnb.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/pdf.tp.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/reference/phurdle.nb.html</loc></url>

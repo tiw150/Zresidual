@@ -41,7 +41,7 @@ For each posterior draw and observation, the function computes:
   [`pdf.tnb()`](https://tiw150.github.io/Zresidual/reference/pdf.tnb.md).
 
 - `lcdf_hat`: Log cumulative distribution function values using
-  [`cdf.tnb()`](https://tiw150.github.io/Zresidual/reference/cdf.tnb.md)
+  [`p_tnb()`](https://tiw150.github.io/Zresidual/reference/p_tnb.md)
   with `lower.tail = FALSE`.
 
 ## Examples

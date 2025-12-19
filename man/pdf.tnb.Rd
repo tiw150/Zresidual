@@ -48,5 +48,5 @@ pdf.tnb(y, mu, size, log.p = TRUE)
 }
 \seealso{
 \code{\link[stats]{dnbinom}}, \code{\link[stats]{pnbinom}},
-and \code{\link{cdf.tnb}} for the corresponding cumulative function.
+and \code{\link{p_tnb}} for the corresponding cumulative function.
 }

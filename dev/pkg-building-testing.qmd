@@ -1,5 +1,5 @@
 ---
-title: "Building and Installing ANOEN Package"
+title: "Building and Installing Package"
 author: "Longhai Li"
 format: html
 editor_options: 
@@ -36,12 +36,5 @@ pkgdown::build_site(
     devel=TRUE, 
     install=TRUE)
 ```
-
-## Re-build a particular vignette
-
-```{r}
-quarto::quarto_render("vignettes/intro_r_squared.qmd", quiet = FALSE)
-```
-
 
 
