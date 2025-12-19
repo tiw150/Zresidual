@@ -27,7 +27,6 @@ devtools::install(upgrade = "never", build = FALSE, args = c("--no-byte-compile"
 ## Build the whole Site
 ```{r}
 devtools::document()
-
 pkgdown::clean_site()
 unlink("docs", recursive = TRUE)
 # 3. Build fresh
@@ -44,29 +43,5 @@ pkgdown::build_site(
 quarto::quarto_render("vignettes/intro_r_squared.qmd", quiet = FALSE)
 ```
 
-```{r}
-quarto::quarto_render("vignettes/lr-example.qmd", quiet = FALSE)
-```
 
-```{r}
-quarto::quarto_render("vignettes/intro_r_squared.qmd", quiet = FALSE)
-```
-
-
-
-```{r}
-quarto::quarto_render("README.qmd")
-pkgdown::build_home()
-```
-
-
-# Preview the package site
-```{r, include=FALSE, eval=FALSE}
-servr::httd("docs")
-```
-
-# Find the path of ANOEN
-```{r, eval=FALSE}
-find.package("ANOEN")
-```
 
