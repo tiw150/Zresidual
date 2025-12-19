@@ -10,5 +10,9 @@
   - Rename (refactor) all the messy function names. But need to change all of them in the packages. In RStudio, you can use edit-> find in files to find all the function names in the whole directory. This may be the easiest way to change all these function names. I would recommend this permanent change for future developers.
   - Using S3method export to create an alias for users. This may be easier without modifying the internal code but may cause confusion to future developers.
 
+*
+  - Write a method to compute log_pred given fitting class: log_pred.brms, log_pred.coxph,
+  - Write a method Zresidual for class log_pred (log_cdf, log_pmf, log_like), all **vectors**
 
-* 
+
+log_pred.survreg, 
