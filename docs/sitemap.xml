@@ -1,11 +1,11 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://tiw150.github.io/Zresidual/404.html</loc></url>
-<url><loc>https://tiw150.github.io/Zresidual/articles/cv_zresidual_demo.html</loc></url>
-<url><loc>https://tiw150.github.io/Zresidual/articles/hurdle_zresidual_demo.html</loc></url>
+<url><loc>https://tiw150.github.io/Zresidual/articles/demo_coxph_survival.html</loc></url>
+<url><loc>https://tiw150.github.io/Zresidual/articles/demo_cv_zresidual_survival.html</loc></url>
+<url><loc>https://tiw150.github.io/Zresidual/articles/demo_hurdle_brms.html</loc></url>
+<url><loc>https://tiw150.github.io/Zresidual/articles/demo_logistic_brms.html</loc></url>
+<url><loc>https://tiw150.github.io/Zresidual/articles/illus_zresid.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/articles/index.html</loc></url>
-<url><loc>https://tiw150.github.io/Zresidual/articles/zresidual_coxph_demo.html</loc></url>
-<url><loc>https://tiw150.github.io/Zresidual/articles/zresidual_demo.html</loc></url>
-<url><loc>https://tiw150.github.io/Zresidual/articles/zresidual_logistic_demo.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/authors.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/changelog.html</loc></url>
 <url><loc>https://tiw150.github.io/Zresidual/index.html</loc></url>

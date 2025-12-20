@@ -4,13 +4,14 @@ template:
   bootswatch: flatly
   math-rendering: katex
 articles:
-  - title: "How to use various features of the package."
+  - title: "Illustration"
     contents:
-      - zresidual_coxph_demo
-      - zresidual_demo
-      - cv_zresidual_demo
-      - zresidual_logistic_demo
-      - hurdle_zresidual_demo
+      - starts_with("illus") # Automatically grabs files like 'vignettes/theory-*.Rmd'
+
+  - title: "Demontration"
+    contents:
+      - starts_with("demo")    # Automatically grabs files like 'vignettes/app-*.Rmd'
+
 navbar:
   title: "Z-residuals"
   left:
