@@ -18,8 +18,7 @@ format: html
 
 * Use the upper-bound p-values for the median to summarize the replicated Z-residuals for all of them, even for the past works on survival Z-residuals. This is a more theoretically grounded method than p-min. Don’t use the min p-value, which confuses people. Use the name in the recent paper on this.
 
-* Sanitize the function names so that the names follow the generic.class convention, for example using log_pred.bern.brms, phurdle, ptruncnb, etc. The functions like pdf and cdf needs to be renamed to be consistent with conventional names dnorm.pnorm.  If the function is applied to a class name, register an S3 method. You can use either of these two methods:
-  - Rename (refactor) all the messy function names. But need to change all of them in the packages. In RStudio, you can use edit-> find in files to find all the function names in the whole directory. This may be the easiest way to change all these function names. I would recommend this permanent change for future developers.
+* Sanitize the function names so that the names follow the generic.class convention, for example using log_pred.bern.brms, phurdle, ptruncnb, etc. The functions like pdf and cdf needs to be renamed to be consistent with conventional names dnorm.pnorm.  If the function is applied to a class name, register an S3 method. Rename (refactor) all the messy function names. But need to change all of them in the packages. In RStudio, you can use edit-> find in files to find all the function names in the whole directory. This may be the easiest way to change all these function names. I would recommend this permanent change for future developers. This step will need to be combined with future work in "refactoring Zresidual" discussed below.
 
 * Refactor Zresidual method to be extensible for custom models
 
@@ -32,7 +31,7 @@ format: html
     The argument "method" is only needed by log_pred.brms.  
     Both of these arguments should be stripped off from the Zredidual method. The Zresidual method essential only repeat the calculation of multiple Z-residuals by using repeated random draws of U_i. 
 
-  - If the obj to Zresidual is a specific model (e.g, brms), find log_pred.brms, to compute Z-residuals
+  - If the obj to Zresidual is a specific model (e.g, brms for hurdle etc.), find or call lower level functions directly, such as log_pred.brms, to compute Z-residuals.  Leaving this option momentarily for not changing the workflow for the Bayesian z-residuals until we make changes in "Refactor the Bayesian workflow"
   
 * Organize the function list
   - Add @concept tags to each function, then the reference list will be organized. Example: 
@@ -60,3 +59,7 @@ format: html
         - has_concept("tabulation")
   ```
   The pkgdown will then organize the functions by concept. A function can have multiple concepts.
+  
+  * Refactor Bayesian workflow
+  
+    - the function post_logrpp, iscv_logrpp etc need to be changed with U_i removed and merged into log_pred.brms, which will return only log_cdf/log_pmf (post or iscv), which will then be passed to Zresidual to generate replicated Z-residual with random draws of U_i. Once Zresidual method is modified to take only log_cdf and log_pmf as inputs, the following calculation is fast.
