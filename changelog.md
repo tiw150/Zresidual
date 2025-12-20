@@ -60,6 +60,6 @@ format: html
   ```
   The pkgdown will then organize the functions by concept. A function can have multiple concepts.
   
-  * Refactor Bayesian workflow
+* Refactor Bayesian workflow
   
-    - the function post_logrpp, iscv_logrpp etc need to be changed with U_i removed and merged into log_pred.brms, which will return only log_cdf/log_pmf (post or iscv), which will then be passed to Zresidual to generate replicated Z-residual with random draws of U_i. Once Zresidual method is modified to take only log_cdf and log_pmf as inputs, the following calculation is fast.
+  - the function post_logrpp, iscv_logrpp etc need to be changed with U_i removed and merged into log_pred.brms, which will return only log_cdf/log_pmf (post or iscv), which will then be passed to Zresidual to generate replicated Z-residual with random draws of U_i. Once Zresidual method is modified to take only log_cdf and log_pmf as inputs, the following calculation is fast.
