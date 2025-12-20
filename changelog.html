@@ -78,11 +78,13 @@ ul.task-list li input[type="checkbox"] {
 <ul>
 <li>Rename (refactor) all the messy function names. But need to change all of them in the packages. In RStudio, you can use edit-&gt; find in files to find all the function names in the whole directory. This may be the easiest way to change all these function names. I would recommend this permanent change for future developers.</li>
 </ul></li>
-<li><p>Extend Zresidual method for custom models</p>
+<li><p>Refactor Zresidual method to be extensible for custom models</p>
 <ul>
 <li><p>Rewrite methods <code>log_pred.model</code> to compute log_pred given fitting class, eg, log_pred.brms, log_pred.coxph,log_pred.survreg,</p></li>
-<li><p>Rewrite a method Zresidual to take input from class <code>log_pred</code>: (<code>log_cdf</code>, <code>log_pmf</code>, and data, which includes lp, and covariates, which is needed for plot and stat tests), all <strong>vectors</strong>.</p></li>
-<li><p>The workflow is model -&gt; log.pred -&gt; Zresidual.</p></li>
+<li><p>Rewrite a method Zresidual to take input from class <code>log_pred</code>: (<code>log_cdf</code>, <code>log_pmf</code>, both <strong>vectors</strong>, and data, which includes lp, and covariates, which is needed for plot and stat tests), .</p></li>
+<li><p>The workflow is model -&gt; log.pred -&gt; Zresidual -&gt; Diangnose (plot, boxplot, stat tests)</p></li>
+<li><p>The argument “type” is only needed by log_pred.brms for hurdle family The argument “method” is only needed by log_pred.brms.<br>
+Both of these arguments should be stripped off from the Zredidual method. The Zresidual method essential only repeat the calculation of multiple Z-residuals by using repeated random draws of U_i.</p></li>
 <li><p>If the obj to Zresidual is a specific model (e.g, brms), find log_pred.brms, to compute Z-residuals</p></li>
 </ul></li>
 <li><p>Organize the function list</p>

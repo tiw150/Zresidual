@@ -21,12 +21,16 @@ format: html
 * Sanitize the function names so that the names follow the generic.class convention, for example using log_pred.bern.brms, phurdle, ptruncnb, etc. The functions like pdf and cdf needs to be renamed to be consistent with conventional names dnorm.pnorm.  If the function is applied to a class name, register an S3 method. You can use either of these two methods:
   - Rename (refactor) all the messy function names. But need to change all of them in the packages. In RStudio, you can use edit-> find in files to find all the function names in the whole directory. This may be the easiest way to change all these function names. I would recommend this permanent change for future developers.
 
-* Extend Zresidual method for custom models
+* Refactor Zresidual method to be extensible for custom models
 
   - Rewrite methods `log_pred.model` to compute log_pred given fitting class, eg, log_pred.brms, log_pred.coxph,log_pred.survreg, 
-  - Rewrite a method Zresidual to take input from class `log_pred`: (`log_cdf`, `log_pmf`, and data, which includes lp, and covariates, which is needed for plot and stat tests), all **vectors**.  
+  - Rewrite a method Zresidual to take input from class `log_pred`: (`log_cdf`, `log_pmf`, both **vectors**, and data, which includes lp, and covariates, which is needed for plot and stat tests), .  
   
-  - The workflow is model -> log.pred -> Zresidual.  
+  - The workflow is model -> log.pred -> Zresidual -> Diangnose (plot, boxplot, stat tests)
+  
+  - The argument "type" is only  needed by log_pred.brms for hurdle family
+    The argument "method" is only needed by log_pred.brms.  
+    Both of these arguments should be stripped off from the Zredidual method. The Zresidual method essential only repeat the calculation of multiple Z-residuals by using repeated random draws of U_i. 
 
   - If the obj to Zresidual is a specific model (e.g, brms), find log_pred.brms, to compute Z-residuals
   
