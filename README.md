@@ -107,19 +107,16 @@ devtools::install_github("tiw150/Zresidual")
 
 - Li L, Wu T, Feng C. Model diagnostics for censored regression via
   randomized survival probabilities. Statistics in Medicine. 2021; 40:
-  1482–1497. <https://doi.org/10.1002/sim.8852>;
-  <a href="https://longhaisk.github.io/doc/1911.00198v4.pdf">Reprint
-  version</a>
+  1482–1497. <https://doi.org/10.1002/sim.8852>; [Reprint
+  version](https://longhaisk.github.io/doc/1911.00198v4.pdf)
 
 - Wu, T., Li, L., & Feng, C. (2024). Z-residual diagnostic tool for
   assessing covariate functional form in shared frailty models. Journal
   of Applied Statistics, 52(1), 28–58.
-  <https://doi.org/10.1080/02664763.2024.2355551>;
-  <a href="https://longhaisk.github.io/doc/jas_z_residual_nolinear.pdf">Reprint
-  version</a>
+  <https://doi.org/10.1080/02664763.2024.2355551>; [Reprint
+  version](https://longhaisk.github.io/doc/jas_z_residual_nolinear.pdf)
 
 - Wu, T., Feng, C., & Li, L. (2024). Cross-Validatory Z-Residual for
   Diagnosing Shared Frailty Models. The American Statistician, 79(2),
-  198–211. <https://doi.org/10.1080/00031305.2024.2421370>;
-  <a href="https://longhaisk.github.io/doc/cv_zresidual_final.pdf">Reprint
-  version</a>
+  198–211. <https://doi.org/10.1080/00031305.2024.2421370>; [Reprint
+  version](%22https://longhaisk.github.io/doc/cv_zresidual_final.pdf%22)
