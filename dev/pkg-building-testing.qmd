@@ -30,7 +30,7 @@ library("Zresidual")
 ## Build the whole Site
 ```{r}
 devtools::document()
-#pkgdown::clean_site()
+pkgdown::clean_site()
 unlink("docs", recursive = TRUE)
 # 3. Build fresh
 pkgdown::build_site(
@@ -55,10 +55,4 @@ pkgdown::build_home()
 pkgdown::build_news()
 ```
 
-## Copy change logs
-```{r}
-file.copy(from = "changelog.html", to="docs/changelog.html",overwrite = TRUE)
-file.copy(from = "changelog.md", to="docs/changelog.md",overwrite = TRUE)
-
-```
 
