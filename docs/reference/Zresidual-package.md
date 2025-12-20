@@ -7,12 +7,13 @@ frameworks—including 'coxph', 'survreg', 'glmmTMB', and 'brms'—into
 standardized Z-residuals. These tools enable researchers to assess model
 fit, identify outliers, and detect misspecification. In addition to
 standard residuals, the package implements cross-validatory variants to
-support robust predictive assessments and model validation
-workflows.URL: https://tiw150.github.io/Zresidual
+support robust predictive assessments and model validation workflows.
 
 ## See also
 
 Useful links:
+
+- <https://tiw150.github.io/Zresidual>
 
 - Report bugs at <https://github.com/tiw150/Zresidual/issues>
 

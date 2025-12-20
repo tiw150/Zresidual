@@ -3,21 +3,6 @@ title: "Change Logs for Zresidual Packages"
 format: html
 ---
 
-```{r}
-#| eval: false
-#| include: false
-
-# Find the project root by looking for the DESCRIPTION file
-root <- rprojroot::find_package_root_file()
-
-# Use absolute paths so it doesn't matter where the chunk runs from
-source_file <- file.path(root, "pkgdown", "assets", "changelog.html")
-dest_file   <- file.path(root, "docs", "changelog.html")
-
-if (file.exists(source_file)) {
-  file.copy(from = source_file, to = dest_file, overwrite = TRUE)
-}
-```
 
 ### December 19, 2025
 
@@ -33,17 +18,20 @@ if (file.exists(source_file)) {
 
 * Use the upper-bound p-values for the median to summarize the replicated Z-residuals for all of them, even for the past works on survival Z-residuals. This is a more theoretically grounded method than p-min. Don’t use the min p-value, which confuses people. Use the name in the recent paper on this.
 
-* Sanitize the function names so that the names follow the same patterns, for example using log_pred.bern.brms, phurdle, ptruncnb, etc. The functions like pdf and cdf needs to be renamed to be consistent with conventional names dnorm.pnorm.  If the function is applied to a class name, register an S3 method. You can use either of these two methods:
+* Sanitize the function names so that the names follow the generic.class convention, for example using log_pred.bern.brms, phurdle, ptruncnb, etc. The functions like pdf and cdf needs to be renamed to be consistent with conventional names dnorm.pnorm.  If the function is applied to a class name, register an S3 method. You can use either of these two methods:
   - Rename (refactor) all the messy function names. But need to change all of them in the packages. In RStudio, you can use edit-> find in files to find all the function names in the whole directory. This may be the easiest way to change all these function names. I would recommend this permanent change for future developers.
-  - Using S3method export to create an alias for users. This may be easier without modifying the internal code but may cause confusion to future developers.
 
 * Extend Zresidual method for custom models
 
   - Rewrite methods `log_pred.model` to compute log_pred given fitting class, eg, log_pred.brms, log_pred.coxph,log_pred.survreg, 
-  - Rewrite a method Zresidual to take input from class `log_pred`: (`log_cdf`, `log_pmf`), all **vectors**.  
+  - Rewrite a method Zresidual to take input from class `log_pred`: (`log_cdf`, `log_pmf`, and data, which includes lp, and covariates, which is needed for plot and stat tests), all **vectors**.  
+  
+  - The workflow is model -> log.pred -> Zresidual.  
+
   - If the obj to Zresidual is a specific model (e.g, brms), find log_pred.brms, to compute Z-residuals
   
-* Add @concept tags to each function, then the reference list will be organized. Example: 
+* Organize the function list
+  - Add @concept tags to each function, then the reference list will be organized. Example: 
 
   ```
   #' @concept Zresidual
@@ -51,7 +39,7 @@ if (file.exists(source_file)) {
   #' @concept log_pred
   #' @concept test
   ```
-  Then add such lines to the _pkgdown.yaml:
+  - add such lines to the _pkgdown.yaml:
 
   ```
   reference:

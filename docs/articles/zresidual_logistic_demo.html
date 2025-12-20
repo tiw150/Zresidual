@@ -54,7 +54,7 @@
       <h1>Z-residual Diagnosis for Logistic Regression</h1>
 
 
-      <p class="date">2025-12-19</p>
+      <p class="date">2025-12-20</p>
 
       <small class="dont-index">Source: <a href="https://github.com/tiw150/Zresidual/blob/HEAD/vignettes/zresidual_logistic_demo.qmd" class="external-link"><code>vignettes/zresidual_logistic_demo.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
@@ -81,7 +81,7 @@
 <span>                          upgrade <span class="op">=</span> <span class="st">"never"</span>,</span>
 <span>                          dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">Zresidual</span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tiw150.github.io/Zresidual">Zresidual</a></span><span class="op">)</span></span></code></pre></div>
 </details>
 </div>
 </section><section class="level3" data-number="1.2"><h3 data-number="1.2" id="intalling-and-loading-r-packages-used-in-this-demo">
@@ -187,7 +187,7 @@ z_i = -\Phi^{-1}(\text{rpp}_i(y_i^\text{obs}|\theta)) \sim N(0, 1)
 <div class="cell">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/HenrikBengtsson/matrixStats" class="external-link">matrixStats</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">Zresidual</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tiw150.github.io/Zresidual">Zresidual</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/paul-buerkner/brms" class="external-link">brms</a></span><span class="op">)</span></span>
 <span><span class="co">#fit_logit &lt;- brm(bf(logit_formula),</span></span>
 <span><span class="co">#               data = data_logit, </span></span>

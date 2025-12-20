@@ -4,21 +4,24 @@ author: "Longhai Li"
 format: html
 editor_options: 
   chunk_output_type: console
+execute: 
+  dir: project
 ---
 
 ```{r setup, include=FALSE}
 # This forces knitr to use the Project Root directory
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
+
 # Install the updated package
 
 ```{r, eval=FALSE}
-remove.packages("Zresidual")
+#remove.packages("Zresidual")
 devtools::document()
-suppressWarnings(unloadNamespace("Zresidual"))
+
 devtools::install(upgrade = "never", build = FALSE, args = c("--no-byte-compile", "--no-test-load"))
-
-
+suppressWarnings(unloadNamespace("Zresidual"))
+library("Zresidual")
 
 ```
 
@@ -35,6 +38,9 @@ pkgdown::build_site(
     preview=TRUE,
     devel=TRUE, 
     install=TRUE)
+
+
+
 ```
 
 
@@ -47,5 +53,12 @@ pkgdown::build_home()
 ## Build home page only
 ```{r}
 pkgdown::build_news()
+```
+
+## Copy change logs
+```{r}
+file.copy(from = "changelog.html", to="docs/changelog.html",overwrite = TRUE)
+file.copy(from = "changelog.md", to="docs/changelog.md",overwrite = TRUE)
+
 ```
 
