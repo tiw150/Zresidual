@@ -35,7 +35,7 @@
 <div id="change-logs-for-zresidual-package" class="section level1">
 
 <div class="section level3">
-<h3 id="december-19-2025">December 19, 2025<a class="anchor" aria-label="anchor" href="#december-19-2025"></a></h3>
+<h3 id="planned-tasks-on-december-19-2025">Planned Tasks on December 19, 2025<a class="anchor" aria-label="anchor" href="#planned-tasks-on-december-19-2025"></a></h3>
 <ul><li>
 <p>Improve vignettes like:</p>
 <ul><li>
@@ -47,13 +47,29 @@
 <li><p>Use the upper-bound p-values for the median to summarize the replicated Z-residuals for all of them, even for the past works on survival Z-residuals. This is a more theoretically grounded method than p-min. Don’t use the min p-value, which confuses people. Use the name in the recent paper on this.</p></li>
 <li><p>Sanitize the function names so that the names follow the generic.class convention, for example using log_pred.bern.brms, phurdle, ptruncnb, etc. The functions like pdf and cdf needs to be renamed to be consistent with conventional names dnorm.pnorm. If the function is applied to a class name, register an S3 method. Rename (refactor) all the messy function names. But need to change all of them in the packages. In RStudio, you can use edit-&gt; find in files to find all the function names in the whole directory. This may be the easiest way to change all these function names. I would recommend this permanent change for future developers. This step will need to be combined with future work in “refactoring Zresidual” discussed below.</p></li>
 <li>
-<p>Refactor Zresidual method to be extensible for custom models</p>
-<ul><li><p>Rewrite methods <code>log_pred.model</code> to compute log_pred given fitting class, eg, log_pred.brms, log_pred.coxph,log_pred.survreg,</p></li>
-<li><p>Rewrite a method Zresidual to take input from class <code>log_pred</code>: (<code>log_cdf</code>, <code>log_pmf</code>, both <strong>vectors</strong>, and data, which includes lp, and covariates, which is needed for plot and stat tests), .</p></li>
-<li><p>The workflow is model -&gt; log.pred -&gt; Zresidual -&gt; Diangnose (plot, boxplot, stat tests)</p></li>
-<li><p>The argument “type” is only needed by log_pred.brms for hurdle family The argument “method” is only needed by log_pred.brms.<br>
-Both of these arguments should be stripped off from the Zredidual method. The Zresidual method essential only repeat the calculation of multiple Z-residuals by using repeated random draws of U_i.</p></li>
-<li><p>If the obj to Zresidual is a specific model (e.g, brms for hurdle etc.), find or call lower level functions directly, such as log_pred.brms, to compute Z-residuals. Leaving this option momentarily for not changing the workflow for the Bayesian z-residuals until we make changes in “Refactor the Bayesian workflow”</p></li>
+<p>Refactor Zresidual method and the subsequent worklows to be extensible for custom models</p>
+<ul><li>
+<p>The structure of the workflow is as follows:</p>
+<ul><li>
+<p>Frequentist models:</p>
+<p>model -&gt; log_pred_family_pkg -&gt; log_pred_pkg -&gt; Zresidual -&gt; Diangnose</p>
+</li>
+<li>
+<p>Bayesian models:</p>
+<p>model -&gt; log_mcmcpred_family_pkg -&gt; log_mcmcpred_pkg -&gt; log_pred_pkg -&gt; Zresidual -&gt; Diagnose</p>
+</li>
+</ul></li>
+<li><p><strong>The steps from log_pred_pkg -&gt; Zresidual -&gt; Diagnose is generic. What’s difference is computing the obj in log_pred_pkg for different family. The naming of the functions should be standardized so that the upper-level function/method Zresidual will cascadely search the functions for computing log_pred for each family and each pkg.</strong></p></li>
+<li>
+<p>To refactor Zresidual to use the above workflow, we will need to do these:</p>
+<ul><li><p>Rewrite and rename the lowest level functions to compute log_pred given pkg and family, eg, log_pred_bern_brms,log_pred_hurdleNB_brms, log_pred_coxph,log_pred_weibull_survreg. The family name and pkg names and be retrieve from the model object.</p></li>
+<li><p>Rewrite the method Zresidual to take input from class <code>log_pred</code>: (<code>log_cdf</code>, <code>log_pmf</code>, both <strong>vectors</strong>, and optional <code>data</code>, which includes <code>lp</code>, and <code>covariates</code>, which is needed for plot and stat tests), .</p></li>
+<li><p>To generally support naive cross-validation or external residuals, in the step from model to log_pred_family_pkg or log_mcmcpred_family_pkg, we should allow a testdata arugment, which could be an external <code>testdata</code>. If <code>testdata</code> is null, it will be the <code>data</code> from model obj, ie, training data</p></li>
+<li><p>It is good to define %&gt;% operator for the above workflow. We also provide short-cut function like Zredidual(model, …) to do these steps.</p></li>
+<li><p>If the obj to Zresidual is a specific model (e.g, brms for hurdle etc.), find or call lower level functions directly, such as log_pred.brms, to compute Z-residuals. Before finishing the whole refactoring process, we can leave hard-redirction to a specific function so that the current code work. Remove these hard-redirection after refactoring of the lower-level functions are done.</p></li>
+<li><p>The argument “type” and “method” are only for the <code>log_pred_hurdle_brms</code> functions, not for Zresidual. The Zresidual method essential only repeat the calculation of multiple Z-residuals by using repeated random draws of U_i. But these arguments can be passed down to lower-level functions if it is called with Zresidual(model, …). The <code>type</code> should be renamed as <code>zr.type.hurdle</code>, and the <code>method</code> should be renamed as <code>sum.mcmc.method</code> which could be <code>post</code> or <code>iscv</code>.</p></li>
+<li><p>The MPP method is coded as an option in the highest level Zresidual method with an argument called <code>randomized</code>. If <code>randomized=FALSE</code>, <span class="math inline">U_i=0.5</span>, and <code>nrep</code> argument takes no effect as there is no need to replicate Z-residual.</p></li>
+</ul></li>
 </ul></li>
 <li>
 <p>Organize the function list</p>
@@ -85,7 +101,7 @@ Both of these arguments should be stripped off from the Zredidual method. The Zr
 <p>Refactor Bayesian workflow</p>
 <p>The function post_logrpp, iscv_logrpp etc need to be changed with U_i removed and merged into log_pred.brms, which will return only log_cdf/log_pmf (post or iscv), which will then be passed to Zresidual to generate replicated Z-residual with random draws of U_i. Once Zresidual method is modified to take only log_cdf and log_pmf as inputs, the following calculation is fast.</p>
 </li>
-<li><p>Make generic function to compute Zresidual-based PPC p-values for Bayesian log_pred_mcmc object, which is an object of log_cdf and log_pmf for each MCMC samples</p></li>
+<li><p>Make generic function to compute Z-residual-based PPC p-values for Bayesian log_pred_mcmc object, which is an object of log_cdf and log_pmf for each MCMC samples</p></li>
 </ul></div>
 </div>
 
