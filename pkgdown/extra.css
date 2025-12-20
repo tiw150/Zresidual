@@ -46,15 +46,34 @@ h1 {
   font-weight: bold;
 }
 
+
+
 h2 {
   font-size: 1.5em;
   color: black;
-  border-bottom: 2px solid lightgrey;
   padding-bottom: 10px;
-  margin-top: 40px;
+  margin-top: 40px;cd
   font-weight: bold;
 
 }
+
+
+/* Fancy shaded H2 box with royal blue text and background */
+h2 {
+  font-size: 1.5em;
+  color: royalblue; /* heading text color */
+  background: linear-gradient(180deg, #f8fbff 0%, #eaf2ff 100%);
+  border: 1px solid #c8daff;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-top: 40px;
+  box-shadow:
+    0 2px 6px rgba(65, 105, 225, 0.15),  /* soft royal blue glow */
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  background-clip: padding-box;
+
+}
+
 
 h3 {
   font-size: 1.2em;
@@ -194,6 +213,5 @@ h1.part .part-title  { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
   max-width: 16% !important;
   visibility: visible !important;
 }
-
 
 

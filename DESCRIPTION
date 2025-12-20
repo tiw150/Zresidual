@@ -1,6 +1,6 @@
 Package: Zresidual
 Type: Package
-Title: Z-residual for Regression Modelling
+Title: Z-residual: Computing and Diagnosing Gaussian-like Residuals
 Version: 0.1.0
 Authors@R: c(person(given = "Tingxuan", family = "Wu", role = c("aut","cre"), 
                     email = "tiw150@mail.usask.ca"),
@@ -11,7 +11,7 @@ Authors@R: c(person(given = "Tingxuan", family = "Wu", role = c("aut","cre"),
              person(given = "Cindy", family = "Feng", role = c("ctb"), 
                     email = "longhai@math.usask.ca"))
 License: GPL-3
-Description: This package provides functions for computing and analyzing Z-residuals and cross-validatory Z-residuals from fitting outputs of several R packages, including coxph, survreg, glmmTMB, brms, ...
+Description: Provides a unified framework for computing and analyzing Z-residuals across a diverse range of statistical models. The package facilitates model diagnostics by transforming outputs from popular modeling frameworks—including 'coxph', 'survreg', 'glmmTMB', and 'brms'—into standardized Z-residuals. These tools enable researchers to assess model fit, identify outliers, and detect misspecification. In addition to standard residuals, the package implements cross-validatory variants to support robust predictive assessments and model validation workflows.
 URL: https://tiw150.github.io/Zresidual
 BugReports: https://github.com/tiw150/Zresidual/issues
 Depends: R (>= 3.5.0)

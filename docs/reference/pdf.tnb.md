@@ -52,8 +52,8 @@ corresponds elementwise to each set of parameters.
 
 [`dnbinom`](https://rdrr.io/r/stats/NegBinomial.html),
 [`pnbinom`](https://rdrr.io/r/stats/NegBinomial.html), and
-[`cdf.tnb`](https://tiw150.github.io/Zresidual/reference/cdf.tnb.md) for
-the corresponding cumulative function.
+[`p_tnb`](https://tiw150.github.io/Zresidual/reference/p_tnb.md) for the
+corresponding cumulative function.
 
 ## Examples
 

@@ -30,7 +30,7 @@ For each posterior draw and observation, the function computes:
 \itemize{
 \item \code{lpmf_hat}: Log predictive mass function values using \code{pdf.tnb()}.
 \item \code{lcdf_hat}: Log cumulative distribution function values
-using \code{cdf.tnb()} with \code{lower.tail = FALSE}.
+using \code{p_tnb()} with \code{lower.tail = FALSE}.
 }
 }
 \examples{

@@ -1,24 +1,27 @@
 ---
-title: "Building and Installing ANOEN Package"
+title: "Building and Installing Package"
 author: "Longhai Li"
 format: html
 editor_options: 
   chunk_output_type: console
+execute: 
+  dir: project
 ---
 
 ```{r setup, include=FALSE}
 # This forces knitr to use the Project Root directory
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
+
 # Install the updated package
 
 ```{r, eval=FALSE}
-remove.packages("Zresidual")
+#remove.packages("Zresidual")
 devtools::document()
-suppressWarnings(unloadNamespace("Zresidual"))
+
 devtools::install(upgrade = "never", build = FALSE, args = c("--no-byte-compile", "--no-test-load"))
-
-
+suppressWarnings(unloadNamespace("Zresidual"))
+library("Zresidual")
 
 ```
 
@@ -27,21 +30,35 @@ devtools::install(upgrade = "never", build = FALSE, args = c("--no-byte-compile"
 ## Build the whole Site
 ```{r}
 devtools::document()
-pkgdown::clean_site()
+#pkgdown::clean_site()
 unlink("docs", recursive = TRUE)
 # 3. Build fresh
 pkgdown::build_site(
-    lazy=FALSE,
+    lazy=TRUE,
     preview=TRUE,
     devel=TRUE, 
     install=TRUE)
+
+
+
 ```
 
-## Re-build a particular vignette
 
+## Build home page only
 ```{r}
-quarto::quarto_render("vignettes/intro_r_squared.qmd", quiet = FALSE)
+pkgdown::build_home()
 ```
 
 
+## Build home page only
+```{r}
+pkgdown::build_news()
+```
+
+## Copy change logs
+```{r}
+file.copy(from = "changelog.html", to="docs/changelog.html",overwrite = TRUE)
+file.copy(from = "changelog.md", to="docs/changelog.md",overwrite = TRUE)
+
+```
 

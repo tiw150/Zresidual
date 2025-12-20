@@ -42,6 +42,6 @@
 ^vignettes/pagetoc\.js$
 ^vignettes/ref\.bib$
 
-
+^changelog\.md$
 
 

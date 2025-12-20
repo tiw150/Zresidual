@@ -31,9 +31,6 @@
   : A function to calculate Bartlett of Zresidual
 - [`boxplot(`*`<zresid>`*`)`](https://tiw150.github.io/Zresidual/reference/boxplot.zresid.md)
   : Boxplot of Z-Residuals
-- [`cdf.tnb()`](https://tiw150.github.io/Zresidual/reference/cdf.tnb.md)
-  : Cumulative Distribution Function (CDF) of Zero-Truncated Negative
-  Binomial Distribution
 - [`cdf.tp()`](https://tiw150.github.io/Zresidual/reference/cdf.tp.md) :
   Cumulative Distribution Function (CDF) of Zero-Truncated Poisson
   Distribution
@@ -73,6 +70,9 @@
 - [`log_pred_dist_zero()`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_zero.md)
   : A function to calculate log predictive distribution (pmf and cdf) of
   logistic component of a 'brm' fit
+- [`p_tnb()`](https://tiw150.github.io/Zresidual/reference/p_tnb.md) :
+  Cumulative Distribution Function (CDF) of Zero-Truncated Negative
+  Binomial Distribution
 - [`pdf.tnb()`](https://tiw150.github.io/Zresidual/reference/pdf.tnb.md)
   : Probability Mass Function of the Zero-Truncated Negative Binomial
   Distribution

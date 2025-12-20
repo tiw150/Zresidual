@@ -25,7 +25,9 @@ and evaluates the predictive distributions across all posterior draws."></head><
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/index.html">Vignettes</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Functions</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/tiw150/Zresidual" aria-label="GitHub repository"><span class="fa fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="nav-link" href="../changelog.html" aria-label="Changelog"><span class="fa fas fa-newspaper"></span></a></li>
       </ul></div>
 
 
@@ -76,7 +78,7 @@ and <code>shape</code> (dispersion parameter).</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>For each posterior draw and observation, the function computes:</p><ul><li><p><code>lpmf_hat</code>: Log predictive mass function values using <code><a href="pdf.tnb.html">pdf.tnb()</a></code>.</p></li>
 <li><p><code>lcdf_hat</code>: Log cumulative distribution function values
-using <code><a href="cdf.tnb.html">cdf.tnb()</a></code> with <code>lower.tail = FALSE</code>.</p></li>
+using <code><a href="p_tnb.html">p_tnb()</a></code> with <code>lower.tail = FALSE</code>.</p></li>
 </ul></div>
 
     <div class="section level2">
