@@ -100,6 +100,11 @@ devtools::install_github("tiw150/Zresidual")
 
 ## References
 
+- Feng, C., Li, L., Sadeghpour, A., 2020. A comparison of residual
+  diagnosis tools for diagnosing regression models for count data. BMC
+  Medical Research Methodology 20, 175.
+  <https://doi.org/10.1186/s12874-020-01055-2>
+
 - Li L, Wu T, Feng C. Model diagnostics for censored regression via
   randomized survival probabilities. Statistics in Medicine. 2021; 40:
   1482–1497. <https://doi.org/10.1002/sim.8852>
