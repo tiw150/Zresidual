@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>An Animation to Explain Z-residuals • Zresidual</title>
+<title>An Animation to Understand Z-residuals • Zresidual</title>
 <!-- katex math --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script><script src="../katex-auto.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
@@ -14,7 +14,7 @@
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="illus_zresid_files/libs/quarto-html/popper.min.js"></script><script src="illus_zresid_files/libs/quarto-html/tippy.umd.min.js"></script><link href="illus_zresid_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="illus_zresid_files/libs/quarto-html/light-border.css" rel="stylesheet">
 <!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<script src="../extra.js"></script><meta property="og:title" content="An Animation to Explain Z-residuals">
+<script src="../extra.js"></script><meta property="og:title" content="An Animation to Understand Z-residuals">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -49,7 +49,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>An Animation to Explain Z-residuals</h1>
+      <h1>An Animation to Understand Z-residuals</h1>
 
 
 
@@ -63,15 +63,37 @@
 
 
 
-    <section class="level2"><h2 id="z-residuals">Z-residuals<a class="anchor" aria-label="anchor" href="#z-residuals"></a>
+    <section class="level2" data-number="1"><h2 data-number="1" id="z-residuals">
+<span class="header-section-number">1</span> Z-residuals<a class="anchor" aria-label="anchor" href="#z-residuals"></a>
 </h2>
-<p>The <strong>Zresidual</strong> package implements diagnostic residuals based on the <strong>predictive distribution</strong> of each observation. By utilizing the full probabilistic information of the model, the package generates residuals that are approximately normally distributed, enabling further standard diagnostics as using Pearson’s residuals for OLS.</p>
-<p>For a given observation <span class="math inline">y_i</span>, the randomized survival probability (also known as randomized probability integral transform) represents the value of the predictive survival function (CDF) at <span class="math inline">y_i</span>, with a randomization term to ensure continuity for discrete outcomes. It is defined as:</p>
-<p><span class="math display">RSP_i(y_i \mid \theta) = S_i(y_i \mid \theta) + U_i \, p_i(y_i \mid \theta)</span></p>
-<p>where <span class="math inline">S_i</span> and <span class="math inline">p_i</span> represent the survival function and probability mass function, respectively, derived from the predictive distribution of <span class="math inline">y_i</span> given covariates <span class="math inline">\mathbf{x}_i</span> and parameters <span class="math inline">\theta</span>. <span class="math inline">U_i \sim \text{Unif}(0,1)</span> is a random uniform variable used to handle discrete outcomes. Under a correctly specified model where the observed data <span class="math inline">y_i</span> arises from the assumed predictive distribution, the RSP follows a <span class="math inline">\text{Unif}(0,1)</span> distribution.</p>
-<p>The <strong>Z-residual</strong> (also known as randomized quantile residual) is then derived by transforming the RSP via the inverse standard normal cumulative distribution function:</p>
-<p><span class="math display">z_i^{RSP}(y_i \mid \theta) = -\Phi^{-1}[RSP_i(y_i \mid \theta)]</span></p>
-<p>Under correct model specification, these residuals follow a standard normal <span class="math inline">N(0,1)</span> distribution. This mapping allows researchers to assess the quality of the predictive distribution—including its mean, variance, and shape—using standard diagnostics for Gaussian OLS.</p>
+<p>The <strong>Zresidual</strong> package implements diagnostic residuals based on the <strong>predictive distribution</strong> of each observation. By utilizing the full probabilistic information of the model, the package generates residuals that are approximately normally distributed. This allows for standard diagnostic techniques similar to using Pearson residuals in OLS regression.</p>
+<p>For a given observation <span class="math inline">y_i</span>, the <strong>Randomized Survival Probability (RSP)</strong>—also known as the randomized probability integral transform—represents the value of the predictive survival function (upper-tail probability) at <span class="math inline">y_i</span>, adjusted with a randomization term to ensure continuity for discrete outcomes. It is defined as:</p>
+<p><span id="eq-rsp"><span class="math display">RSP_i(y_i \mid \theta) = S_i(y_i \mid \theta) + U_i \, p_i(y_i \mid \theta) \tag{1}</span></span></p>
+<p>where <span class="math inline">S_i</span> and <span class="math inline">p_i</span> represent the survival function and probability mass function, respectively, derived from the predictive distribution of <span class="math inline">y_i</span> given covariates <span class="math inline">\mathbf{x}_i</span> and parameters <span class="math inline">\theta</span>. <span class="math inline">U_i \sim \text{Unif}(0,1)</span> is a random uniform variable used to smooth discrete outcomes. Under a correctly specified model—where the observed data <span class="math inline">y_i</span> arises from the assumed predictive distribution—the RSP follows a <span class="math inline">\text{Unif}(0,1)</span> distribution.</p>
+<p>The <strong>Z-residual</strong> (or randomized quantile residual) is derived by transforming the RSP via the inverse standard normal cumulative distribution function (CDF):</p>
+<p><span id="eq-zs"><span class="math display">z_i(y_i \mid \theta) = -\Phi^{-1}\left(RSP_i(y_i \mid \theta)\right)= \Psi^{-1}\left(RSP_i(y_i \mid \theta)\right) \tag{2}</span></span></p>
+<p>where <span class="math inline">\Psi^{-1}(p) = -\Phi^{-1}(p) = \Phi^{-1}(1-p)</span> represents the inverse survival function (upper-tailed quantile) of the standard normal distribution <span class="math inline">N(0,1)</span>.</p>
+<p>In simpler terms, the Z-residual of <span class="math inline">y_i</span> is the <span class="math inline">N(0,1)</span> quantile that shares the same <strong>upper-tail probability</strong> as <span class="math inline">y_i</span> in its predictive distribution. For discrete <span class="math inline">y_i</span>, this position is discrete (a step function), so randomization is applied to fill the gap. This transformation effectively maps any predictive distribution to <span class="math inline">N(0,1)</span>. If the model is correctly specified, the resulting Z-residuals will follow a standard normal distribution.</p>
+<p>The animation in <strong><a href="#fig-aniz" class="quarto-xref">Figure 1</a></strong> demonstrates this transformation.</p>
+<ul>
+<li>
+<strong>Top Plot:</strong> A value <span class="math inline">y_i</span> is randomly drawn from a Negative Binomial distribution (<span class="math inline">\mu=5</span>, dispersion parameter size <span class="math inline">=5</span>). The <strong>dark blue</strong> area represents the survival probability <span class="math inline">S(y_i)</span>, while the <strong>light blue</strong> area represents the random jitter <span class="math inline">U_i p(y_i)</span>. The combined shaded area equals the <span class="math inline">RSP_i</span>.</li>
+<li>
+<strong>Bottom Plot:</strong> This total area (probability mass) is mapped to the upper tail of the standard normal distribution. The resulting <span class="math inline">z_i</span> is marked by a red dot.</li>
+</ul>
+<p>As more points are simulated, the distribution of <span class="math inline">z_i</span> values (shown by the accumulating points) aligns with the theoretical <span class="math inline">N(0,1)</span> density curve.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-aniz" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-aniz-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="z_residual_anim.gif">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-aniz-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 1: Animation to Demonstrate the Z-residuals given the true parameter.
+</figcaption></figure>
+</div>
+</div>
+</div>
 </section><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);

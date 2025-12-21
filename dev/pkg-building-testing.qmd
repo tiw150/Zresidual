@@ -13,6 +13,48 @@ execute:
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
 
+```{r}
+#| label: setup-extdata-path
+#| include: false
+
+# 1. Configuration
+pkg_name <- "Zresidual"
+
+# 2. Path Discovery Logic
+# Check if we are in the package source (root or vignettes/ directory)
+is_source <- file.exists("DESCRIPTION") || file.exists("../DESCRIPTION")
+root_dir  <- ifelse(file.exists("DESCRIPTION"), ".", "..")
+
+if (is_source) {
+  # Scenario: Local Development or Local pkgdown build
+  extdata_path <- file.path(root_dir, "inst", "extdata")
+  if (!dir.exists(extdata_path)) dir.create(extdata_path, recursive = TRUE)
+  is_dev <- TRUE
+} else {
+  # Scenario: CRAN or User installation
+  extdata_path <- system.file("extdata", package = pkg_name)
+  is_dev <- FALSE
+}
+
+# 3. Helper: Local Asset Copy
+# Ensures knitr can find the file by copying it to the current directory
+get_local_asset <- function(filename, source_dir) {
+  src <- file.path(source_dir, filename)
+  if (!file.exists(src)) return(NULL)
+  
+  # Copy to current directory if it's not already there
+  if (!file.exists(filename) || file.mtime(src) > file.mtime(filename)) {
+    file.copy(src, filename, overwrite = TRUE)
+  }
+  return(filename)
+}
+
+# Status for console debugging
+message(sprintf("Environment: %s | Path: %s", 
+                ifelse(is_dev, "Source", "Installed"), 
+                extdata_path))
+```
+
 # Install the updated package
 
 ```{r, eval=FALSE}
@@ -29,9 +71,9 @@ library("Zresidual")
 
 ## Build the whole Site
 ```{r}
-devtools::document()
-pkgdown::clean_site()
-unlink("docs", recursive = TRUE)
+#devtools::document()
+#pkgdown::clean_site()
+#unlink("docs", recursive = TRUE)
 # 3. Build fresh
 pkgdown::build_site(
     lazy=TRUE,
@@ -55,4 +97,7 @@ pkgdown::build_home()
 pkgdown::build_news()
 ```
 
+```{r}
+pkgdown::build_article("illus_zresid")
+```
 
