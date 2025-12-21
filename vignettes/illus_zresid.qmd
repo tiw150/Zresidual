@@ -14,9 +14,11 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
 ```{r rerun-gif}
 #| include: false
 #| echo: false
+#| eval: true
 rerun <- FALSE
 ```
 
@@ -79,7 +81,9 @@ $$z_i(y_i \mid \theta) = -\Phi^{-1}\left(RSP_i(y_i \mid \theta)\right)= \Psi^{-1
 
 where $\Psi^{-1}(p) = -\Phi^{-1}(p) = \Phi^{-1}(1-p)$ represents the inverse survival function (upper-tailed quantile) of the standard normal distribution $N(0,1)$.
 
-In simpler terms, the Z-residual of $y_i$ is the $N(0,1)$ quantile that shares the same **upper-tail probability** as $y_i$ in its predictive distribution. For discrete $y_i$, this position is discrete (a step function), so randomization is applied to fill the gap. This transformation effectively maps any predictive distribution to $N(0,1)$. If the model is correctly specified, the resulting Z-residuals will follow a standard normal distribution.
+In words, the Z-residual is simply the $N(0,1)$ value that shares the same **upper-tail area (RSP)** as the observed $y_i$. This transformation effectively maps any predictive distribution to the standard normal scale while preserving the tail probabilities. If the model is correct, the resulting Z-residuals follow a standard normal distribution.
+
+**Intuition:** Think of the Z-residual as the **distance to the median**, but **rescaled** to account for skewness and **smoothed** to handle discreteness. This ensures that a residual of $+2$ always implies the same degree of 'extremeness', regardless of the original distribution's shape.
 
 ## Z-residuals of a True Model
 
@@ -235,13 +239,11 @@ The plotting window is fixed to the **Postulated Model** (the expectation). You 
 
 ```{r}
 #| label: fig-aniz-wrong
-#| fig-cap: Z-residuals under a misspecified model. **Top Plot:** Data $y_i$ are drawn from the True Model ($\mu=3$, solid bars), but RSP is calculated using the Postulated Model ($\mu=5$, dashed bars). The mismatch causes the **Bottom Plot** to show $z_i$ values (red dots) systematically drifting to the left of the standard normal density.
+#| fig-cap: "Z-residuals under a misspecified model. **Top Plot:** Data $y_i$ are drawn from the True Model ($\\mu=3$, solid bars), but RSP is calculated using the Postulated Model ($\\mu=5$, dashed bars). The mismatch causes the **Bottom Plot** to show $z_i$ values (red dots) systematically drifting to the left of the standard normal density."
 #| fig-cap-location: top
 #| echo: false
 #| message: false
 #| warning: false
-#| fig-height: 100
-#| fig-width: 8
 
 library(dplyr)
 library(patchwork)
@@ -251,13 +253,13 @@ library(ggplot2)
 library(gifski)
 
 # --- Configuration ---
-
 anim_filename <- "z_residual_anim-wrong.gif"
 anim_full_path <- file.path(extdata_path, anim_filename)
 
 # --- Generation Logic ---
 if (is_source && (rerun || !file.exists(anim_full_path))) {
   
+  # Height set to 900 to accommodate the taller Top Plot
   save_gif({
     
     set.seed(2024)
@@ -274,6 +276,7 @@ if (is_source && (rerun || !file.exists(anim_full_path))) {
     n_sim <- 50
     size_val <- 5
     
+    # Misspecification Scenario
     mu_true <- 3        # Data comes from here
     mu_postulated <- 5  # Residuals calculated using this
     
@@ -296,8 +299,19 @@ if (is_source && (rerun || !file.exists(anim_full_path))) {
     # --- Static Backgrounds ---
     x_nb <- 0:18
     
-    df_post <- data.frame(x = x_nb, prob = dnbinom(x_nb, mu = mu_postulated, size = size_val), type = "Postulated")
-    df_true <- data.frame(x = x_nb, prob = dnbinom(x_nb, mu = mu_true, size = size_val), type = "True")
+    # Postulated Density (Dashed) - The Expectation
+    df_post <- data.frame(
+      x = x_nb, 
+      prob = dnbinom(x_nb, mu = mu_postulated, size = size_val),
+      type = "Postulated"
+    )
+    
+    # True Density (Solid) - The Reality
+    df_true <- data.frame(
+      x = x_nb, 
+      prob = dnbinom(x_nb, mu = mu_true, size = size_val),
+      type = "True"
+    )
     
     # Normal Density
     x_norm <- seq(-6, 6, length.out = 500)
@@ -308,11 +322,10 @@ if (is_source && (rerun || !file.exists(anim_full_path))) {
     xlim_bot <- c(-10, 10) 
     common_margin <- theme(plot.margin = unit(c(0.2, 0.5, 0.2, 0.5), "cm"))
     
-    # CALCULATE Y-LIMITS dynamically
-    # We want the y-axis to fit the True Model's higher peak
+    # Dynamic Y-Limits
     max_prob <- max(df_true$prob, df_post$prob)
-    ylim_top <- c(0, max_prob * 1.1) # Add 10% buffer
-    
+    ylim_top <- c(0, max_prob * 1.1) 
+
     # --- Animation Loop ---
     for (i in 1:n_sim) {
       
@@ -351,10 +364,12 @@ if (is_source && (rerun || !file.exists(anim_full_path))) {
         
         scale_fill_manual(name = "Area", values = c("S" = col_S, "U" = col_U), labels = c("S" = expression(S[i](y[i])), "U" = expression(U[i] %.% p[i](y[i])))) +
         scale_linetype_manual(name = "Model", values = c("True" = "solid", "Postulated" = "dashed")) +
-        scale_x_continuous(limits = xlim_top, expand = c(0,0)) +
         
-        # Explicit Y-Limit to show full height of True model
-        scale_y_continuous(limits = ylim_top, expand = c(0,0)) + 
+        # --- FIX: Use coord_cartesian(clip = "off") ---
+        # We remove 'limits' from scale_* and rely on coord_cartesian for framing.
+        scale_x_continuous(expand = c(0,0)) +
+        scale_y_continuous(expand = c(0,0)) + 
+        coord_cartesian(xlim = xlim_top, ylim = ylim_top, clip = "off") +
         
         labs(title = bquote(paste("NB (True ", mu==.(mu_true), ", Post. ", mu==.(mu_postulated), "): ", y[i] == .(curr$y))), y = "Probability", x = expression(y[i])) + 
         theme_minimal() + common_margin +
@@ -369,26 +384,30 @@ if (is_source && (rerun || !file.exists(anim_full_path))) {
         geom_area(data = shade_norm, aes(x = x, y = dens), fill = col_Z) +
         geom_point(data = past %>% filter(id != i), aes(x = z, y = 0), color = col_past, size = 2) +
         geom_point(aes(x = curr$z, y = 0), color = col_curr, size = 4) +
+        
+        # Bottom plot limits/coord
         scale_x_continuous(limits = xlim_bot, expand = c(0,0)) +
-        coord_cartesian(xlim = c(-3, 3), ylim = c(0, 0.45)) + 
+        coord_cartesian(xlim = c(-3, 3), ylim = c(0, 0.45), clip = "off") + 
+        
         labs(title = bquote(paste("Standard Normal: ", z[i] == .(round(curr$z, 2)))), y = "Density", x = expression(z[i])) + 
         theme_minimal() + common_margin + theme(legend.position = "none")
       
       # 4. Assembly
       plots_aligned <- align_plots(p_nb, p_z, align = 'v', axis = 'lr')
-      
-      # ADJUSTMENT HERE: Increase Top Plot Height (1.5) to keep visual scale consistent
-      # Top plot is taller (to fit max_prob ~0.25) but scale remains similar to bottom plot (max ~0.4)
       grid_layout <- plot_grid(p_meter, plots_aligned[[1]], plots_aligned[[2]], 
                                ncol = 1, rel_heights = c(0.2, 1.5, 1))
       print(grid_layout)
     }
     
-  }, gif_file = anim_full_path, width = 800, height = 900, res = 100, delay = 2.0)
+  }, gif_file = anim_full_path, width = 800, height = 950, res = 100, delay = 2.0)
   
   message("Animation generated and saved to: ", anim_full_path)
 }
 
 local_anim <- get_local_asset(anim_filename, extdata_path)
-if (!is.null(local_anim)) knitr::include_graphics(local_anim)
+if (!is.null(local_anim)) {
+  knitr::include_graphics(local_anim)
+} else {
+  message("Animation file not found in extdata.")
+}
 ```
