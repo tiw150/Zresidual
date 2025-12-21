@@ -2,8 +2,8 @@
 title: "An Animation to Understand Z-residuals"
 format: 
   html:
-    toc: false
-    number-sections: true
+    toc: true
+    number-sections: false
     format-links: false
     page-layout: full
     code-fold: true
@@ -14,6 +14,12 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+```{r rerun-gif}
+#| include: false
+#| echo: false
+rerun <- FALSE
+```
+
 
 ```{r}
 #| label: setup-extdata-path
@@ -75,43 +81,30 @@ where $\Psi^{-1}(p) = -\Phi^{-1}(p) = \Phi^{-1}(1-p)$ represents the inverse sur
 
 In simpler terms, the Z-residual of $y_i$ is the $N(0,1)$ quantile that shares the same **upper-tail probability** as $y_i$ in its predictive distribution. For discrete $y_i$, this position is discrete (a step function), so randomization is applied to fill the gap. This transformation effectively maps any predictive distribution to $N(0,1)$. If the model is correctly specified, the resulting Z-residuals will follow a standard normal distribution.
 
-The animation in **@fig-aniz** demonstrates this transformation. 
+## Z-residuals of a True Model
 
-* **Top Plot:** A value $y_i$ is randomly drawn from a Negative Binomial distribution ($\mu=5$, dispersion parameter size $=5$). The **dark blue** area represents the survival probability $S(y_i)$, while the **light blue** area represents the random jitter $U_i p(y_i)$. The combined shaded area equals the $RSP_i$.
-* **Bottom Plot:** This total area (probability mass) is mapped to the upper tail of the standard normal distribution. The resulting $z_i$ is marked by a red dot. 
-
-As more points are simulated, the distribution of $z_i$ values (shown by the accumulating points) aligns with the theoretical $N(0,1)$ density curve.
+The animation in **@fig-aniz-true** demonstrates this transformation for $y_i$ using its true predictive distribution. As more points are simulated, the distribution of $z_i$ values (shown by the accumulating points) aligns with the theoretical $N(0,1)$ density curve.
 
 
 ```{r}
-#| label: setup
-#| include: false
-library(ggplot2)
+#| label: fig-aniz-true
+#| fig-cap-location: top
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-height: 8
+#| fig-width: 8
+#| fig-cap: Z-residuals under the true model. **Top Plot:** A value $y_i$ is randomly drawn from a Negative Binomial distribution ($\mu=5$, dispersion parameter size $=5$). The **dark blue** area represents the survival probability $S(y_i)$, while the **light blue** area represents the random jitter $U_i p(y_i)$. The combined shaded area equals the $RSP_i$. **Bottom Plot:** This total area (probability mass) is mapped to the upper tail of the standard normal distribution. The resulting $z_i$ is marked by a red dot.
+
 library(dplyr)
 library(patchwork)
 library(cowplot)
 library(grid)
-
-# Ensure reproducible results
-set.seed(123)
-```
-
-
-```{r}
-#| label: fig-aniz
-#| fig-cap: Animation to Demonstrate the Z-residuals given the true parameter. 
-#| echo: false
-#| message: false
-#| warning: false
-
 library(ggplot2)
-library(dplyr)
-library(cowplot)
 library(gifski) # Required to save the animation to file
 
 # --- Configuration ---
-rerun <- FALSE
-anim_filename <- "z_residual_anim.gif"
+anim_filename <- "z_residual_anim-true.gif"
 anim_full_path <- file.path(extdata_path, anim_filename)
 
 # --- Generation Logic ---
@@ -134,7 +127,7 @@ if (is_source && (rerun || !file.exists(anim_full_path))) {
     col_past <- "#fdae61"   
     
     # --- Parameters ---
-    n_sim <- 100
+    n_sim <- 50
     mu_val <- 5
     size_val <- 5
     nb_median <- qnbinom(0.5, mu = mu_val, size = size_val)
@@ -195,7 +188,7 @@ if (is_source && (rerun || !file.exists(anim_full_path))) {
         scale_x_continuous(limits = xlim_top, expand = c(0,0)) +
         labs(title = bquote(paste("Negative Binomial: ", y[i] == .(curr$y))), y = "Probability", x = expression(y[i])) + 
         theme_minimal() + common_margin +
-        theme(legend.position = c(0.02, 0.95), legend.justification = c(0, 1),
+        theme(legend.position = c(0.90, 0.95), legend.justification = c(0, 1),
               legend.background = element_rect(fill = "white", color = NA), legend.margin = margin(2, 2, 2, 2))
       
       # 3. Bottom Plot (Z)
@@ -230,4 +223,172 @@ if (!is.null(local_anim)) {
 } else {
   message("Animation file not found in extdata.")
 }
+```
+
+---------
+
+## Z-residuals of a Wrong Model
+
+The animation in **@fig-aniz-wrong** demonstrates the behavior of Z-residuals when the model is misspecified. Here, the data $y_i$ are simulated from a **True Model** (Negative Binomial with $\mu=3$), but the residuals are calculated based on a **Postulated Model** (Negative Binomial with $\mu=5$).
+
+The plotting window is fixed to the **Postulated Model** (the expectation). You can see that the observed data (solid bars) fall systematically to the left of the expected distribution (dashed bars). Because the observed values are smaller than expected, the calculated $RSP$ values are consistently high (upper tail area is large), resulting in $z_i$ values that drift toward the negative side of the standard normal distribution.
+
+```{r}
+#| label: fig-aniz-wrong
+#| fig-cap: Z-residuals under a misspecified model. **Top Plot:** Data $y_i$ are drawn from the True Model ($\mu=3$, solid bars), but RSP is calculated using the Postulated Model ($\mu=5$, dashed bars). The mismatch causes the **Bottom Plot** to show $z_i$ values (red dots) systematically drifting to the left of the standard normal density.
+#| fig-cap-location: top
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-height: 100
+#| fig-width: 8
+
+library(dplyr)
+library(patchwork)
+library(cowplot)
+library(grid)
+library(ggplot2)
+library(gifski)
+
+# --- Configuration ---
+
+anim_filename <- "z_residual_anim-wrong.gif"
+anim_full_path <- file.path(extdata_path, anim_filename)
+
+# --- Generation Logic ---
+if (is_source && (rerun || !file.exists(anim_full_path))) {
+  
+  save_gif({
+    
+    set.seed(2024)
+    
+    # --- 1. COLOR SETTINGS ---
+    col_S <- "#253494" 
+    col_U <- "#41b6c4" 
+    col_Z <- "#225ea8" 
+    col_text <- "white"     
+    col_curr <- "#d7191c"   
+    col_past <- "#fdae61"   
+    
+    # --- Parameters ---
+    n_sim <- 50
+    size_val <- 5
+    
+    mu_true <- 3        # Data comes from here
+    mu_postulated <- 5  # Residuals calculated using this
+    
+    # Alignment: Center on POSTULATED Mean
+    nb_center <- mu_postulated 
+    
+    # --- Data Generation ---
+    sim_data <- data.frame(
+      id = 1:n_sim,
+      y = rnbinom(n_sim, mu = mu_true, size = size_val),
+      u = runif(n_sim)
+    ) %>%
+      mutate(
+        S_y = pnbinom(y, mu = mu_postulated, size = size_val, lower.tail = FALSE),
+        p_y = dnbinom(y, mu = mu_postulated, size = size_val),
+        rsp = S_y + u * p_y,
+        z = qnorm(1 - rsp)
+      )
+    
+    # --- Static Backgrounds ---
+    x_nb <- 0:18
+    
+    df_post <- data.frame(x = x_nb, prob = dnbinom(x_nb, mu = mu_postulated, size = size_val), type = "Postulated")
+    df_true <- data.frame(x = x_nb, prob = dnbinom(x_nb, mu = mu_true, size = size_val), type = "True")
+    
+    # Normal Density
+    x_norm <- seq(-6, 6, length.out = 500)
+    df_norm <- data.frame(x = x_norm, dens = dnorm(x_norm))
+    
+    # --- Plot Formatting ---
+    xlim_top <- c(nb_center - 10, nb_center + 10) 
+    xlim_bot <- c(-10, 10) 
+    common_margin <- theme(plot.margin = unit(c(0.2, 0.5, 0.2, 0.5), "cm"))
+    
+    # CALCULATE Y-LIMITS dynamically
+    # We want the y-axis to fit the True Model's higher peak
+    max_prob <- max(df_true$prob, df_post$prob)
+    ylim_top <- c(0, max_prob * 1.1) # Add 10% buffer
+    
+    # --- Animation Loop ---
+    for (i in 1:n_sim) {
+      
+      curr <- sim_data[i, ]
+      past <- sim_data[1:i, ]
+      
+      # 1. Meter Plot
+      p_meter <- ggplot() +
+        geom_rect(aes(xmin=0, xmax=1, ymin=0, ymax=1), fill="white", color="black", size=0.3) +
+        geom_rect(aes(xmin = 1 - curr$S_y, xmax = 1, ymin = 0, ymax = 1), fill = col_S) + 
+        geom_rect(aes(xmin = 1 - curr$rsp, xmax = 1 - curr$S_y, ymin = 0, ymax = 1), fill = col_U) + 
+        geom_text(aes(x = 1 - (curr$rsp / 2), y = 0.5, label = paste0("RSP = ", round(curr$rsp, 3))),
+                  color = col_text, size = 4, fontface = "bold") +
+        scale_x_continuous(limits = c(0, 1), expand = c(0,0)) +
+        theme_void() +
+        theme(plot.margin = unit(c(1.0, 0.5, 0.2, 0.5), "cm")) 
+      
+      # 2. Top Plot (NB)
+      shade_S <- df_post %>% filter(x > curr$y)
+      x_start_val <- (curr$y + 0.5) - curr$u
+      rect_U <- data.frame(xmin = x_start_val, xmax = curr$y + 0.5, 
+                           ymin = 0, ymax = dnbinom(curr$y, mu = mu_postulated, size = size_val))
+      
+      p_nb <- ggplot() +
+        # Shading
+        geom_rect(data = shade_S, aes(xmin=x-0.5, xmax=x+0.5, ymin=0, ymax=prob, fill = "S"), alpha = 1) +
+        geom_rect(data = rect_U, aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax, fill = "U"), alpha = 1) +
+        # Postulated
+        geom_step(data = df_post, aes(x = x - 0.5, y = prob, linetype = "Postulated"), direction = "hv", color = "black") +
+        geom_segment(aes(x = max(df_post$x) + 0.5, xend = max(df_post$x) + 0.5, y = df_post$prob[nrow(df_post)], yend = 0), linetype = "dashed") +
+        # True
+        geom_step(data = df_true, aes(x = x - 0.5, y = prob, linetype = "True"), direction = "hv", color = "black", size = 0.8) +
+        geom_segment(aes(x = max(df_true$x) + 0.5, xend = max(df_true$x) + 0.5, y = df_true$prob[nrow(df_true)], yend = 0), linetype = "solid") +
+        # Point
+        geom_point(aes(x = curr$y, y = 0), shape = 1, size = 3, stroke = 1.5) +
+        
+        scale_fill_manual(name = "Area", values = c("S" = col_S, "U" = col_U), labels = c("S" = expression(S[i](y[i])), "U" = expression(U[i] %.% p[i](y[i])))) +
+        scale_linetype_manual(name = "Model", values = c("True" = "solid", "Postulated" = "dashed")) +
+        scale_x_continuous(limits = xlim_top, expand = c(0,0)) +
+        
+        # Explicit Y-Limit to show full height of True model
+        scale_y_continuous(limits = ylim_top, expand = c(0,0)) + 
+        
+        labs(title = bquote(paste("NB (True ", mu==.(mu_true), ", Post. ", mu==.(mu_postulated), "): ", y[i] == .(curr$y))), y = "Probability", x = expression(y[i])) + 
+        theme_minimal() + common_margin +
+        theme(legend.position = c(0.9, 0.95), legend.justification = c(0, 1),
+              legend.background = element_rect(fill = "white", color = NA), legend.box = "vertical",
+              legend.margin = margin(2, 2, 2, 2), legend.spacing.y = unit(0, "cm"))
+      
+      # 3. Bottom Plot (Z)
+      shade_norm <- df_norm %>% filter(x >= curr$z)
+      p_z <- ggplot() +
+        geom_line(data = df_norm, aes(x = x, y = dens)) +
+        geom_area(data = shade_norm, aes(x = x, y = dens), fill = col_Z) +
+        geom_point(data = past %>% filter(id != i), aes(x = z, y = 0), color = col_past, size = 2) +
+        geom_point(aes(x = curr$z, y = 0), color = col_curr, size = 4) +
+        scale_x_continuous(limits = xlim_bot, expand = c(0,0)) +
+        coord_cartesian(xlim = c(-3, 3), ylim = c(0, 0.45)) + 
+        labs(title = bquote(paste("Standard Normal: ", z[i] == .(round(curr$z, 2)))), y = "Density", x = expression(z[i])) + 
+        theme_minimal() + common_margin + theme(legend.position = "none")
+      
+      # 4. Assembly
+      plots_aligned <- align_plots(p_nb, p_z, align = 'v', axis = 'lr')
+      
+      # ADJUSTMENT HERE: Increase Top Plot Height (1.5) to keep visual scale consistent
+      # Top plot is taller (to fit max_prob ~0.25) but scale remains similar to bottom plot (max ~0.4)
+      grid_layout <- plot_grid(p_meter, plots_aligned[[1]], plots_aligned[[2]], 
+                               ncol = 1, rel_heights = c(0.2, 1.5, 1))
+      print(grid_layout)
+    }
+    
+  }, gif_file = anim_full_path, width = 800, height = 900, res = 100, delay = 2.0)
+  
+  message("Animation generated and saved to: ", anim_full_path)
+}
+
+local_anim <- get_local_asset(anim_filename, extdata_path)
+if (!is.null(local_anim)) knitr::include_graphics(local_anim)
 ```

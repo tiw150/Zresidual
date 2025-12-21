@@ -13,6 +13,8 @@ execute:
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
 
+# Code to Find extdata Directory
+
 ```{r}
 #| label: setup-extdata-path
 #| include: false
@@ -80,9 +82,6 @@ pkgdown::build_site(
     preview=TRUE,
     devel=TRUE, 
     install=TRUE)
-
-
-
 ```
 
 
@@ -97,6 +96,7 @@ pkgdown::build_home()
 pkgdown::build_news()
 ```
 
+## Build an artile
 ```{r}
 pkgdown::build_article("illus_zresid")
 ```
