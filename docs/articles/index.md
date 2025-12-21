@@ -2,7 +2,7 @@
 
 ### Illustration
 
-- [An Animation to Explain
+- [An Animation to Understand
   Z-residuals](https://tiw150.github.io/Zresidual/articles/illus_zresid.md):
 
 ### Demontration

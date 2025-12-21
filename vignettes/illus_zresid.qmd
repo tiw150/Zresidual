@@ -1,20 +1,233 @@
 ---
-title: "An Animation to Explain Z-residuals"
-format: html
+title: "An Animation to Understand Z-residuals"
+format: 
+  html:
+    toc: false
+    number-sections: true
+    format-links: false
+    page-layout: full
+    code-fold: true
+    html-math-method: mathjax
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Your Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
+
+```{r}
+#| label: setup-extdata-path
+#| include: false
+
+# 1. Configuration
+pkg_name <- "Zresidual"
+
+# 2. Path Discovery Logic
+# Check if we are in the package source (root or vignettes/ directory)
+is_source <- file.exists("DESCRIPTION") || file.exists("../DESCRIPTION")
+root_dir  <- ifelse(file.exists("DESCRIPTION"), ".", "..")
+
+if (is_source) {
+  # Scenario: Local Development or Local pkgdown build
+  extdata_path <- file.path(root_dir, "inst", "extdata")
+  if (!dir.exists(extdata_path)) dir.create(extdata_path, recursive = TRUE)
+  is_dev <- TRUE
+} else {
+  # Scenario: CRAN or User installation
+  extdata_path <- system.file("extdata", package = pkg_name)
+  is_dev <- FALSE
+}
+
+# 3. Helper: Local Asset Copy
+# Ensures knitr can find the file by copying it to the current directory
+get_local_asset <- function(filename, source_dir) {
+  src <- file.path(source_dir, filename)
+  if (!file.exists(src)) return(NULL)
+   
+  # Copy to current directory if it's not already there
+  if (!file.exists(filename) || file.mtime(src) > file.mtime(filename)) {
+    file.copy(src, filename, overwrite = TRUE)
+  }
+  return(filename)
+}
+
+# Status for console debugging
+message(sprintf("Environment: %s | Path: %s", 
+                ifelse(is_dev, "Source", "Installed"), 
+                extdata_path))
+```
 
 ## Z-residuals
 
-The **Zresidual** package implements diagnostic residuals based on the **predictive distribution** of each observation. By utilizing the full probabilistic information of the model, the package generates residuals that are approximately normally distributed, enabling further standard diagnostics as using Pearson's residuals for OLS. 
+The **Zresidual** package implements diagnostic residuals based on the **predictive distribution** of each observation. By utilizing the full probabilistic information of the model, the package generates residuals that are approximately normally distributed. This allows for standard diagnostic techniques similar to using Pearson residuals in OLS regression.
 
-For a given observation $y_i$, the randomized survival probability (also known as randomized probability integral transform) represents the value of the predictive survival function (CDF) at $y_i$, with a randomization term to ensure continuity for discrete outcomes. It is defined as:
+For a given observation $y_i$, the **Randomized Survival Probability (RSP)**—also known as the randomized probability integral transform—represents the value of the predictive survival function (upper-tail probability) at $y_i$, adjusted with a randomization term to ensure continuity for discrete outcomes. It is defined as:
 
-$$RSP_i(y_i \mid \theta) = S_i(y_i \mid \theta) + U_i \, p_i(y_i \mid \theta)$$
+$$RSP_i(y_i \mid \theta) = S_i(y_i \mid \theta) + U_i \, p_i(y_i \mid \theta)$${#eq-rsp}
 
-where $S_i$ and $p_i$ represent the survival function and probability mass function, respectively, derived from the predictive distribution of $y_i$ given covariates $\mathbf{x}_i$ and parameters $\theta$. $U_i \sim \text{Unif}(0,1)$ is a random uniform variable used to handle discrete outcomes. Under a correctly specified model where the observed data $y_i$ arises from the assumed predictive distribution, the RSP follows a $\text{Unif}(0,1)$ distribution. 
+where $S_i$ and $p_i$ represent the survival function and probability mass function, respectively, derived from the predictive distribution of $y_i$ given covariates $\mathbf{x}_i$ and parameters $\theta$. $U_i \sim \text{Unif}(0,1)$ is a random uniform variable used to smooth discrete outcomes. Under a correctly specified model—where the observed data $y_i$ arises from the assumed predictive distribution—the RSP follows a $\text{Unif}(0,1)$ distribution.
 
-The **Z-residual** (also known as randomized quantile residual) is then derived by transforming the RSP via the inverse standard normal cumulative distribution function:
+The **Z-residual** (or randomized quantile residual) is derived by transforming the RSP via the inverse standard normal cumulative distribution function (CDF):
 
-$$z_i^{RSP}(y_i \mid \theta) = -\Phi^{-1}[RSP_i(y_i \mid \theta)]$$
+$$z_i(y_i \mid \theta) = -\Phi^{-1}\left(RSP_i(y_i \mid \theta)\right)= \Psi^{-1}\left(RSP_i(y_i \mid \theta)\right)$${#eq-zs}
 
-Under correct model specification, these residuals follow a standard normal $N(0,1)$ distribution. This mapping allows researchers to assess the quality of the predictive distribution—including its mean, variance, and shape—using standard diagnostics for Gaussian OLS.
+where $\Psi^{-1}(p) = -\Phi^{-1}(p) = \Phi^{-1}(1-p)$ represents the inverse survival function (upper-tailed quantile) of the standard normal distribution $N(0,1)$.
+
+In simpler terms, the Z-residual of $y_i$ is the $N(0,1)$ quantile that shares the same **upper-tail probability** as $y_i$ in its predictive distribution. For discrete $y_i$, this position is discrete (a step function), so randomization is applied to fill the gap. This transformation effectively maps any predictive distribution to $N(0,1)$. If the model is correctly specified, the resulting Z-residuals will follow a standard normal distribution.
+
+The animation in **@fig-aniz** demonstrates this transformation. 
+
+* **Top Plot:** A value $y_i$ is randomly drawn from a Negative Binomial distribution ($\mu=5$, dispersion parameter size $=5$). The **dark blue** area represents the survival probability $S(y_i)$, while the **light blue** area represents the random jitter $U_i p(y_i)$. The combined shaded area equals the $RSP_i$.
+* **Bottom Plot:** This total area (probability mass) is mapped to the upper tail of the standard normal distribution. The resulting $z_i$ is marked by a red dot. 
+
+As more points are simulated, the distribution of $z_i$ values (shown by the accumulating points) aligns with the theoretical $N(0,1)$ density curve.
+
+
+```{r}
+#| label: setup
+#| include: false
+library(ggplot2)
+library(dplyr)
+library(patchwork)
+library(cowplot)
+library(grid)
+
+# Ensure reproducible results
+set.seed(123)
+```
+
+
+```{r}
+#| label: fig-aniz
+#| fig-cap: Animation to Demonstrate the Z-residuals given the true parameter. 
+#| echo: false
+#| message: false
+#| warning: false
+
+library(ggplot2)
+library(dplyr)
+library(cowplot)
+library(gifski) # Required to save the animation to file
+
+# --- Configuration ---
+rerun <- FALSE
+anim_filename <- "z_residual_anim.gif"
+anim_full_path <- file.path(extdata_path, anim_filename)
+
+# --- Generation Logic ---
+# Only regenerate the GIF if we are in the source environment (Development).
+# If installed, we skip generation and just retrieve the file.
+
+if (is_source && (rerun || !file.exists(anim_full_path))) {
+  
+  # Set Dimensions (8 inches * 100 dpi = 800px)
+  save_gif({
+    
+    set.seed(2024)
+    
+    # --- 1. COLOR SETTINGS ---
+    col_S <- "#253494" 
+    col_U <- "#41b6c4" 
+    col_Z <- "#225ea8" 
+    col_text <- "white"     
+    col_curr <- "#d7191c"   
+    col_past <- "#fdae61"   
+    
+    # --- Parameters ---
+    n_sim <- 100
+    mu_val <- 5
+    size_val <- 5
+    nb_median <- qnbinom(0.5, mu = mu_val, size = size_val)
+    
+    # --- Data Generation ---
+    sim_data <- data.frame(
+      id = 1:n_sim,
+      y = rnbinom(n_sim, mu = mu_val, size = size_val),
+      u = runif(n_sim)
+    ) %>%
+      mutate(
+        S_y = pnbinom(y, mu = mu_val, size = size_val, lower.tail = FALSE),
+        p_y = dnbinom(y, mu = mu_val, size = size_val),
+        rsp = S_y + u * p_y,
+        z = qnorm(1 - rsp)
+      )
+    
+    # --- Static Backgrounds ---
+    x_nb <- 0:18
+    df_nb <- data.frame(x = x_nb, prob = dnbinom(x_nb, mu = mu_val, size = size_val))
+    x_norm <- seq(-4, 4, length.out = 500)
+    df_norm <- data.frame(x = x_norm, dens = dnorm(x_norm))
+    
+    # --- Plot Formatting ---
+    xlim_top <- c(nb_median - 10, nb_median + 10) 
+    xlim_bot <- c(-10, 10)
+    common_margin <- theme(plot.margin = unit(c(0.2, 0.5, 0.2, 0.5), "cm"))
+    
+    # --- Animation Loop ---
+    for (i in 1:n_sim) {
+      
+      curr <- sim_data[i, ]
+      past <- sim_data[1:i, ]
+      
+      # 1. Meter Plot
+      p_meter <- ggplot() +
+        geom_rect(aes(xmin=0, xmax=1, ymin=0, ymax=1), fill="white", color="black", size=0.3) +
+        geom_rect(aes(xmin = 1 - curr$S_y, xmax = 1, ymin = 0, ymax = 1), fill = col_S) + 
+        geom_rect(aes(xmin = 1 - curr$rsp, xmax = 1 - curr$S_y, ymin = 0, ymax = 1), fill = col_U) + 
+        geom_text(aes(x = 1 - (curr$rsp / 2), y = 0.5, label = paste0("RSP = ", round(curr$rsp, 3))),
+                  color = col_text, size = 4, fontface = "bold") +
+        scale_x_continuous(limits = c(0, 1), expand = c(0,0)) +
+        theme_void() +
+        theme(plot.margin = unit(c(1.0, 0.5, 0.2, 0.5), "cm")) 
+      
+      # 2. Top Plot (NB)
+      shade_S <- df_nb %>% filter(x > curr$y)
+      x_start_val <- (curr$y + 0.5) - curr$u
+      rect_U <- data.frame(xmin = x_start_val, xmax = curr$y + 0.5, ymin = 0, ymax = dnbinom(curr$y, mu = mu_val, size = size_val))
+      
+      p_nb <- ggplot() +
+        geom_rect(data = df_nb, aes(xmin=x-0.5, xmax=x+0.5, ymin=0, ymax=prob), fill = "transparent", color = "black") +
+        geom_rect(data = shade_S, aes(xmin=x-0.5, xmax=x+0.5, ymin=0, ymax=prob, fill = "S"), alpha = 1) +
+        geom_rect(data = rect_U, aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax, fill = "U"), alpha = 1) +
+        geom_point(aes(x = curr$y, y = 0), shape = 1, size = 3, stroke = 1.5) +
+        scale_fill_manual(name = NULL, values = c("S" = col_S, "U" = col_U),
+                          labels = c("S" = expression(S[i](y[i])), "U" = expression(U[i] %.% p[i](y[i])))) +
+        scale_x_continuous(limits = xlim_top, expand = c(0,0)) +
+        labs(title = bquote(paste("Negative Binomial: ", y[i] == .(curr$y))), y = "Probability", x = expression(y[i])) + 
+        theme_minimal() + common_margin +
+        theme(legend.position = c(0.02, 0.95), legend.justification = c(0, 1),
+              legend.background = element_rect(fill = "white", color = NA), legend.margin = margin(2, 2, 2, 2))
+      
+      # 3. Bottom Plot (Z)
+      shade_norm <- df_norm %>% filter(x >= curr$z)
+      p_z <- ggplot() +
+        geom_line(data = df_norm, aes(x = x, y = dens)) +
+        geom_area(data = shade_norm, aes(x = x, y = dens), fill = col_Z) +
+        geom_point(data = past %>% filter(id != i), aes(x = z, y = 0), color = col_past, size = 2) +
+        geom_point(aes(x = curr$z, y = 0), color = col_curr, size = 4) +
+        scale_x_continuous(limits = xlim_bot, expand = c(0,0)) +
+        coord_cartesian(xlim = c(-3, 3), ylim = c(0, 0.45)) +
+        labs(title = bquote(paste("Standard Normal: ", z[i] == .(round(curr$z, 2)))), y = "Density", x = expression(z[i])) + 
+        theme_minimal() + common_margin + theme(legend.position = "none")
+      
+      # 4. Assembly & Print
+      plots_aligned <- align_plots(p_nb, p_z, align = 'v', axis = 'lr')
+      grid_layout <- plot_grid(p_meter, plots_aligned[[1]], plots_aligned[[2]], ncol = 1, rel_heights = c(0.2, 1, 1))
+      print(grid_layout)
+    }
+    
+  }, gif_file = anim_full_path, width = 800, height = 800, res = 100, delay = 2.0)
+  
+  message("Animation generated and saved to: ", anim_full_path)
+}
+
+# --- Retrieval & Display ---
+# Retrieve the asset to local dir (required for knitr to see it properly)
+local_anim <- get_local_asset(anim_filename, extdata_path)
+
+if (!is.null(local_anim)) {
+  knitr::include_graphics(local_anim)
+} else {
+  message("Animation file not found in extdata.")
+}
+```
