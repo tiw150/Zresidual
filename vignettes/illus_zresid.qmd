@@ -23,8 +23,7 @@ rerun <- FALSE
 ```
 
 
-```{r}
-#| label: setup-extdata-path
+```{r setup-extdata-path}
 #| include: false
 
 # 1. Configuration
@@ -65,6 +64,215 @@ message(sprintf("Environment: %s | Path: %s",
                 extdata_path))
 ```
 
+```{r gen-aniz-anims}
+#| echo: false
+#| message: false
+#| warning: false
+#| results: hide
+
+library(dplyr)
+library(patchwork)
+library(cowplot)
+library(grid)
+library(ggplot2)
+library(gifski)
+
+# --- Configuration ---
+# Define the two scenarios
+scenarios <- list(
+  list(
+    suffix = "correct",
+    mu_true = 5,
+    mu_post = 5,
+    title_text = "Correct Specification"
+  ),
+  list(
+    suffix = "wrong",
+    mu_true = 3,
+    mu_post = 5,
+    title_text = "Misspecification"
+  )
+)
+
+# Shared Parameters
+n_sim <- 50
+size_val <- 5
+col_S <- "#253494" 
+col_U <- "#41b6c4" 
+col_Z <- "#225ea8" 
+col_curr <- "#d7191c"   
+col_past <- "#fdae61"   
+
+# --- Main Generation Loop ---
+for (scen in scenarios) {
+  
+  anim_filename <- paste0("z_residual_anim-", scen$suffix, ".gif")
+  anim_full_path <- file.path(extdata_path, anim_filename)
+  
+  if (is_source && (rerun || !file.exists(anim_full_path))) {
+    
+    save_gif({
+      set.seed(2024)
+      
+      # 1. Setup Parameters
+      mu_true <- scen$mu_true
+      mu_postulated <- scen$mu_post
+      nb_center <- mu_postulated
+      
+      # 2. Data Generation
+      sim_data <- data.frame(
+        id = 1:n_sim,
+        y = rnbinom(n_sim, mu = mu_true, size = size_val),
+        u = runif(n_sim)
+      ) %>%
+        mutate(
+          S_y = pnbinom(y, mu = mu_postulated, size = size_val, lower.tail = FALSE),
+          p_y = dnbinom(y, mu = mu_postulated, size = size_val),
+          rsp = S_y + u * p_y,
+          z = qnorm(1 - rsp)
+        )
+      
+      # 3. Static Backgrounds
+      x_nb <- 0:18
+      df_post <- data.frame(x = x_nb, prob = dnbinom(x_nb, mu = mu_postulated, size = size_val))
+      df_true <- data.frame(x = x_nb, prob = dnbinom(x_nb, mu = mu_true, size = size_val))
+      
+      x_norm <- seq(-6, 6, length.out = 500)
+      df_norm <- data.frame(x = x_norm, dens = dnorm(x_norm))
+      
+      # 4. Meter Grid Helper
+      # Find k such that P(Y=k) < 0.05 for the postulated model
+      check_k <- 0:30
+      densities <- dnbinom(check_k, mu=mu_postulated, size=size_val)
+      k_limit_idx <- which(check_k > mu_postulated & densities < 0.05)[1]
+      k_limit <- check_k[k_limit_idx]
+      if(is.na(k_limit)) k_limit <- 12 
+      
+      grid_idx <- 0:k_limit
+      
+      # Calculate True and Postulated limits for the meters
+      p_true_grid <- dnbinom(grid_idx, mu=mu_true, size=size_val)
+      cum_true <- cumsum(p_true_grid)
+      low_true <- c(0, head(cum_true, -1))
+      
+      p_post_grid <- dnbinom(grid_idx, mu=mu_postulated, size=size_val)
+      cum_post <- cumsum(p_post_grid)
+      low_post <- c(0, head(cum_post, -1))
+      
+      meter_grid <- data.frame(
+        y_i = grid_idx,
+        true_low = low_true, true_upp = cum_true,
+        post_low = low_post, post_upp = cum_post
+      )
+      
+      meter_grid_labels <- meter_grid %>% 
+        filter((true_upp - true_low) > 0.02 | (post_upp - post_low) > 0.02)
+      
+      # 5. Plot Formatting
+      xlim_top <- c(nb_center - 10, nb_center + 10) 
+      xlim_bot <- c(-10, 10) 
+      max_prob <- max(df_true$prob, df_post$prob)
+      ylim_top <- c(0, max_prob * 1.1) 
+      common_margin <- theme(plot.margin = unit(c(0.2, 0.5, 0.2, 0.5), "cm"))
+      
+      # 6. Animation Loop
+      for (i in 1:n_sim) {
+        
+        curr <- sim_data[i, ]
+        past <- sim_data[1:i, ]
+        
+        # --- A. Meter Plot ---
+        y_meter1_base <- 1.4  
+        y_meter2_base <- 0.2  
+        h <- 0.6              
+        
+        p_meter <- ggplot() +
+          # Meter 1: True
+          annotate("text", x = -0.05, y = y_meter1_base + h/2, label = "True Model:", 
+                   size=4, hjust=1, fontface="bold") +
+          geom_rect(aes(xmin=0, xmax=1, ymin=y_meter1_base, ymax=y_meter1_base + h), 
+                    fill="white", color="black", size=0.3) +
+          geom_rect(data = meter_grid, aes(xmin = true_low, xmax = true_upp, 
+                                           ymin = y_meter1_base, ymax = y_meter1_base + h,
+                                           fill = (y_i == curr$y)), color = "black", size = 0.2) +
+          scale_fill_manual(values = c("FALSE" = "white", "TRUE" = "lightgrey"), guide = "none") +
+          geom_text(data = meter_grid_labels,
+                    aes(x = (true_low + true_upp)/2, y = y_meter1_base + h + 0.15, label = y_i),
+                    size = 3, color = "black") +
+          
+          # Meter 2: Postulated
+          annotate("text", x = -0.05, y = y_meter2_base + h/2, label = "Postulated Model:", 
+                   size=4, hjust=1, fontface="bold") +
+          geom_rect(aes(xmin=0, xmax=1, ymin=y_meter2_base, ymax=y_meter2_base + h), 
+                    fill="white", color="black", size=0.3) +
+          geom_rect(aes(xmin = 1 - curr$S_y, xmax = 1, ymin = y_meter2_base, ymax = y_meter2_base + h), 
+                    fill = col_S) + 
+          geom_rect(aes(xmin = 1 - curr$rsp, xmax = 1 - curr$S_y, ymin = y_meter2_base, ymax = y_meter2_base + h), 
+                    fill = col_U) + 
+          geom_rect(data = meter_grid, aes(xmin = post_low, xmax = post_upp, 
+                                           ymin = y_meter2_base, ymax = y_meter2_base + h),
+                    fill = NA, color = "black", size = 0.2) +
+          geom_text(data = meter_grid_labels,
+                    aes(x = (post_low + post_upp)/2, y = y_meter2_base + h + 0.15, label = y_i),
+                    size = 3, color = "black") +
+          geom_text(aes(x = 1 - (curr$rsp / 2), y = y_meter2_base - 0.25, label = paste0("RSP = ", round(curr$rsp, 3))),
+                    color = "black", size = 3.5) +
+          
+          scale_x_continuous(limits = c(-0.35, 1), expand = c(0,0)) +
+          scale_y_continuous(limits = c(-0.5, 2.5), expand = c(0,0)) +
+          theme_void() + theme(plot.margin = unit(c(0.5, 0.5, 0.2, 0.5), "cm"))
+        
+        # --- B. Top Plot (NB) ---
+        shade_S <- df_post %>% filter(x > curr$y)
+        x_start_val <- (curr$y + 0.5) - curr$u
+        rect_U <- data.frame(xmin = x_start_val, xmax = curr$y + 0.5, 
+                             ymin = 0, ymax = dnbinom(curr$y, mu = mu_postulated, size = size_val))
+        
+        p_nb <- ggplot() +
+          geom_rect(data = shade_S, aes(xmin=x-0.5, xmax=x+0.5, ymin=0, ymax=prob, fill = "S"), alpha = 1) +
+          geom_rect(data = rect_U, aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax, fill = "U"), alpha = 1) +
+          geom_step(data = df_post, aes(x = x - 0.5, y = prob, linetype = "Postulated"), direction = "hv", color = "black") +
+          geom_segment(aes(x = max(df_post$x) + 0.5, xend = max(df_post$x) + 0.5, y = df_post$prob[nrow(df_post)], yend = 0), linetype = "dashed") +
+          geom_step(data = df_true, aes(x = x - 0.5, y = prob, linetype = "True"), direction = "hv", color = "black", size = 0.8) +
+          geom_segment(aes(x = max(df_true$x) + 0.5, xend = max(df_true$x) + 0.5, y = df_true$prob[nrow(df_true)], yend = 0), linetype = "solid") +
+          geom_point(aes(x = curr$y, y = 0), shape = 1, size = 3, stroke = 1.5) +
+          
+          scale_fill_manual(name = "Area", values = c("S" = col_S, "U" = col_U), labels = c("S" = expression(S[i](y[i])), "U" = expression(U[i] %.% p[i](y[i])))) +
+          scale_linetype_manual(name = "Model", values = c("True" = "solid", "Postulated" = "dashed")) +
+          
+          scale_x_continuous(breaks = seq(0, 50, by = 2), expand = c(0,0)) +
+          scale_y_continuous(expand = c(0,0)) + 
+          coord_cartesian(xlim = xlim_top, ylim = ylim_top, clip = "off") +
+          labs(title = bquote(paste("NB (True ", mu==.(mu_true), ", Post. ", mu==.(mu_postulated), "): ", y[i] == .(curr$y))), y = "Probability", x = expression(y[i])) + 
+          theme_minimal() + common_margin +
+          theme(legend.position = c(0.9, 0.95), legend.justification = c(0, 1),
+                legend.background = element_rect(fill = "white", color = NA), legend.box = "vertical",
+                legend.margin = margin(2, 2, 2, 2), legend.spacing.y = unit(0, "cm"))
+        
+        # --- C. Bottom Plot (Z) ---
+        shade_norm <- df_norm %>% filter(x >= curr$z)
+        p_z <- ggplot() +
+          geom_line(data = df_norm, aes(x = x, y = dens)) +
+          geom_area(data = shade_norm, aes(x = x, y = dens), fill = col_Z) +
+          geom_point(data = past %>% filter(id != i), aes(x = z, y = 0), color = col_past, size = 2) +
+          geom_point(aes(x = curr$z, y = 0), color = col_curr, size = 4) +
+          scale_x_continuous(limits = xlim_bot, expand = c(0,0)) +
+          coord_cartesian(xlim = c(-3, 3), ylim = c(0, 0.45), clip = "off") + 
+          labs(title = bquote(paste("Standard Normal: ", z[i] == .(round(curr$z, 2)))), y = "Density", x = expression(z[i])) + 
+          theme_minimal() + common_margin + theme(legend.position = "none")
+        
+        # --- D. Assembly ---
+        plots_aligned <- align_plots(p_nb, p_z, align = 'v', axis = 'lr')
+        print(plot_grid(p_meter, plots_aligned[[1]], plots_aligned[[2]], ncol = 1, rel_heights = c(0.5, 1.2, 1)))
+      }
+    }, gif_file = anim_full_path, width = 800, height = 950, res = 100, delay = 2.0)
+    
+    message("Generated: ", anim_full_path)
+  }
+}
+```
+
+
 ## Z-residuals
 
 The **Zresidual** package implements diagnostic residuals based on the **predictive distribution** of each observation. By utilizing the full probabilistic information of the model, the package generates residuals that are approximately normally distributed. This allows for standard diagnostic techniques similar to using Pearson residuals in OLS regression.
@@ -89,147 +297,23 @@ In words, the Z-residual is simply the $N(0,1)$ value that shares the same **upp
 
 The animation in **@fig-aniz-true** demonstrates this transformation for $y_i$ using its true predictive distribution. As more points are simulated, the distribution of $z_i$ values (shown by the accumulating points) aligns with the theoretical $N(0,1)$ density curve.
 
-
 ```{r}
-#| label: fig-aniz-true
+#| label: fig-aniz-correct
+#| fig-cap: "Z-residuals under a correctly specified model. **Meters:** Top and bottom bars show identical probability structures. **Top Plot:** Data $y_i$ generated from the True Model ($\\mu=3$) are evaluated against the same Postulated Model ($\\mu=3$). **Bottom Plot:** Because the model is correct, the Z-residuals (red dots) follow the Standard Normal density."
 #| fig-cap-location: top
 #| echo: false
-#| message: false
-#| warning: false
-#| fig-height: 8
-#| fig-width: 8
-#| fig-cap: Z-residuals under the true model. **Top Plot:** A value $y_i$ is randomly drawn from a Negative Binomial distribution ($\mu=5$, dispersion parameter size $=5$). The **dark blue** area represents the survival probability $S(y_i)$, while the **light blue** area represents the random jitter $U_i p(y_i)$. The combined shaded area equals the $RSP_i$. **Bottom Plot:** This total area (probability mass) is mapped to the upper tail of the standard normal distribution. The resulting $z_i$ is marked by a red dot.
 
-library(dplyr)
-library(patchwork)
-library(cowplot)
-library(grid)
-library(ggplot2)
-library(gifski) # Required to save the animation to file
-
-# --- Configuration ---
-anim_filename <- "z_residual_anim-true.gif"
-anim_full_path <- file.path(extdata_path, anim_filename)
-
-# --- Generation Logic ---
-# Only regenerate the GIF if we are in the source environment (Development).
-# If installed, we skip generation and just retrieve the file.
-
-if (is_source && (rerun || !file.exists(anim_full_path))) {
-  
-  # Set Dimensions (8 inches * 100 dpi = 800px)
-  save_gif({
-    
-    set.seed(2024)
-    
-    # --- 1. COLOR SETTINGS ---
-    col_S <- "#253494" 
-    col_U <- "#41b6c4" 
-    col_Z <- "#225ea8" 
-    col_text <- "white"     
-    col_curr <- "#d7191c"   
-    col_past <- "#fdae61"   
-    
-    # --- Parameters ---
-    n_sim <- 50
-    mu_val <- 5
-    size_val <- 5
-    nb_median <- qnbinom(0.5, mu = mu_val, size = size_val)
-    
-    # --- Data Generation ---
-    sim_data <- data.frame(
-      id = 1:n_sim,
-      y = rnbinom(n_sim, mu = mu_val, size = size_val),
-      u = runif(n_sim)
-    ) %>%
-      mutate(
-        S_y = pnbinom(y, mu = mu_val, size = size_val, lower.tail = FALSE),
-        p_y = dnbinom(y, mu = mu_val, size = size_val),
-        rsp = S_y + u * p_y,
-        z = qnorm(1 - rsp)
-      )
-    
-    # --- Static Backgrounds ---
-    x_nb <- 0:18
-    df_nb <- data.frame(x = x_nb, prob = dnbinom(x_nb, mu = mu_val, size = size_val))
-    x_norm <- seq(-4, 4, length.out = 500)
-    df_norm <- data.frame(x = x_norm, dens = dnorm(x_norm))
-    
-    # --- Plot Formatting ---
-    xlim_top <- c(nb_median - 10, nb_median + 10) 
-    xlim_bot <- c(-10, 10)
-    common_margin <- theme(plot.margin = unit(c(0.2, 0.5, 0.2, 0.5), "cm"))
-    
-    # --- Animation Loop ---
-    for (i in 1:n_sim) {
-      
-      curr <- sim_data[i, ]
-      past <- sim_data[1:i, ]
-      
-      # 1. Meter Plot
-      p_meter <- ggplot() +
-        geom_rect(aes(xmin=0, xmax=1, ymin=0, ymax=1), fill="white", color="black", size=0.3) +
-        geom_rect(aes(xmin = 1 - curr$S_y, xmax = 1, ymin = 0, ymax = 1), fill = col_S) + 
-        geom_rect(aes(xmin = 1 - curr$rsp, xmax = 1 - curr$S_y, ymin = 0, ymax = 1), fill = col_U) + 
-        geom_text(aes(x = 1 - (curr$rsp / 2), y = 0.5, label = paste0("RSP = ", round(curr$rsp, 3))),
-                  color = col_text, size = 4, fontface = "bold") +
-        scale_x_continuous(limits = c(0, 1), expand = c(0,0)) +
-        theme_void() +
-        theme(plot.margin = unit(c(1.0, 0.5, 0.2, 0.5), "cm")) 
-      
-      # 2. Top Plot (NB)
-      shade_S <- df_nb %>% filter(x > curr$y)
-      x_start_val <- (curr$y + 0.5) - curr$u
-      rect_U <- data.frame(xmin = x_start_val, xmax = curr$y + 0.5, ymin = 0, ymax = dnbinom(curr$y, mu = mu_val, size = size_val))
-      
-      p_nb <- ggplot() +
-        geom_rect(data = df_nb, aes(xmin=x-0.5, xmax=x+0.5, ymin=0, ymax=prob), fill = "transparent", color = "black") +
-        geom_rect(data = shade_S, aes(xmin=x-0.5, xmax=x+0.5, ymin=0, ymax=prob, fill = "S"), alpha = 1) +
-        geom_rect(data = rect_U, aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax, fill = "U"), alpha = 1) +
-        geom_point(aes(x = curr$y, y = 0), shape = 1, size = 3, stroke = 1.5) +
-        scale_fill_manual(name = NULL, values = c("S" = col_S, "U" = col_U),
-                          labels = c("S" = expression(S[i](y[i])), "U" = expression(U[i] %.% p[i](y[i])))) +
-        scale_x_continuous(limits = xlim_top, expand = c(0,0)) +
-        labs(title = bquote(paste("Negative Binomial: ", y[i] == .(curr$y))), y = "Probability", x = expression(y[i])) + 
-        theme_minimal() + common_margin +
-        theme(legend.position = c(0.90, 0.95), legend.justification = c(0, 1),
-              legend.background = element_rect(fill = "white", color = NA), legend.margin = margin(2, 2, 2, 2))
-      
-      # 3. Bottom Plot (Z)
-      shade_norm <- df_norm %>% filter(x >= curr$z)
-      p_z <- ggplot() +
-        geom_line(data = df_norm, aes(x = x, y = dens)) +
-        geom_area(data = shade_norm, aes(x = x, y = dens), fill = col_Z) +
-        geom_point(data = past %>% filter(id != i), aes(x = z, y = 0), color = col_past, size = 2) +
-        geom_point(aes(x = curr$z, y = 0), color = col_curr, size = 4) +
-        scale_x_continuous(limits = xlim_bot, expand = c(0,0)) +
-        coord_cartesian(xlim = c(-3, 3), ylim = c(0, 0.45)) +
-        labs(title = bquote(paste("Standard Normal: ", z[i] == .(round(curr$z, 2)))), y = "Density", x = expression(z[i])) + 
-        theme_minimal() + common_margin + theme(legend.position = "none")
-      
-      # 4. Assembly & Print
-      plots_aligned <- align_plots(p_nb, p_z, align = 'v', axis = 'lr')
-      grid_layout <- plot_grid(p_meter, plots_aligned[[1]], plots_aligned[[2]], ncol = 1, rel_heights = c(0.2, 1, 1))
-      print(grid_layout)
-    }
-    
-  }, gif_file = anim_full_path, width = 800, height = 800, res = 100, delay = 2.0)
-  
-  message("Animation generated and saved to: ", anim_full_path)
-}
-
-# --- Retrieval & Display ---
-# Retrieve the asset to local dir (required for knitr to see it properly)
-local_anim <- get_local_asset(anim_filename, extdata_path)
-
-if (!is.null(local_anim)) {
-  knitr::include_graphics(local_anim)
+local_anim_corr <- get_local_asset("z_residual_anim-correct.gif", extdata_path)
+if (!is.null(local_anim_corr)) {
+  knitr::include_graphics(local_anim_corr)
 } else {
-  message("Animation file not found in extdata.")
+  message("Animation file not found.")
 }
 ```
 
----------
+
+
+
 
 ## Z-residuals of a Wrong Model
 
@@ -239,175 +323,16 @@ The plotting window is fixed to the **Postulated Model** (the expectation). You 
 
 ```{r}
 #| label: fig-aniz-wrong
-#| fig-cap: "Z-residuals under a misspecified model. **Top Plot:** Data $y_i$ are drawn from the True Model ($\\mu=3$, solid bars), but RSP is calculated using the Postulated Model ($\\mu=5$, dashed bars). The mismatch causes the **Bottom Plot** to show $z_i$ values (red dots) systematically drifting to the left of the standard normal density."
+#| fig-cap: "Z-residuals under a misspecified model. **Meters:** Top bar shows True generating probabilities; bottom bar shows RSP calculation. **Top Plot:** Data $y_i$ are generated from the True Model ($\\mu=3$, solid) but evaluated against the Postulated Model ($\\mu=5$, dashed). Consequently, observed counts consistently fall in the lower tail of the postulated distribution. **Bottom Plot:** This mismatch biases the cumulative probabilities downward, causing the Z-residuals (red dots) to drift systematically to the left of the Standard Normal density."
 #| fig-cap-location: top
 #| echo: false
-#| message: false
-#| warning: false
 
-library(dplyr)
-library(patchwork)
-library(cowplot)
-library(grid)
-library(ggplot2)
-library(gifski)
-
-# --- Configuration ---
-anim_filename <- "z_residual_anim-wrong.gif"
-anim_full_path <- file.path(extdata_path, anim_filename)
-
-# --- Generation Logic ---
-if (is_source && (rerun || !file.exists(anim_full_path))) {
-  
-  # Height set to 900 to accommodate the taller Top Plot
-  save_gif({
-    
-    set.seed(2024)
-    
-    # --- 1. COLOR SETTINGS ---
-    col_S <- "#253494" 
-    col_U <- "#41b6c4" 
-    col_Z <- "#225ea8" 
-    col_text <- "white"     
-    col_curr <- "#d7191c"   
-    col_past <- "#fdae61"   
-    
-    # --- Parameters ---
-    n_sim <- 50
-    size_val <- 5
-    
-    # Misspecification Scenario
-    mu_true <- 3        # Data comes from here
-    mu_postulated <- 5  # Residuals calculated using this
-    
-    # Alignment: Center on POSTULATED Mean
-    nb_center <- mu_postulated 
-    
-    # --- Data Generation ---
-    sim_data <- data.frame(
-      id = 1:n_sim,
-      y = rnbinom(n_sim, mu = mu_true, size = size_val),
-      u = runif(n_sim)
-    ) %>%
-      mutate(
-        S_y = pnbinom(y, mu = mu_postulated, size = size_val, lower.tail = FALSE),
-        p_y = dnbinom(y, mu = mu_postulated, size = size_val),
-        rsp = S_y + u * p_y,
-        z = qnorm(1 - rsp)
-      )
-    
-    # --- Static Backgrounds ---
-    x_nb <- 0:18
-    
-    # Postulated Density (Dashed) - The Expectation
-    df_post <- data.frame(
-      x = x_nb, 
-      prob = dnbinom(x_nb, mu = mu_postulated, size = size_val),
-      type = "Postulated"
-    )
-    
-    # True Density (Solid) - The Reality
-    df_true <- data.frame(
-      x = x_nb, 
-      prob = dnbinom(x_nb, mu = mu_true, size = size_val),
-      type = "True"
-    )
-    
-    # Normal Density
-    x_norm <- seq(-6, 6, length.out = 500)
-    df_norm <- data.frame(x = x_norm, dens = dnorm(x_norm))
-    
-    # --- Plot Formatting ---
-    xlim_top <- c(nb_center - 10, nb_center + 10) 
-    xlim_bot <- c(-10, 10) 
-    common_margin <- theme(plot.margin = unit(c(0.2, 0.5, 0.2, 0.5), "cm"))
-    
-    # Dynamic Y-Limits
-    max_prob <- max(df_true$prob, df_post$prob)
-    ylim_top <- c(0, max_prob * 1.1) 
-
-    # --- Animation Loop ---
-    for (i in 1:n_sim) {
-      
-      curr <- sim_data[i, ]
-      past <- sim_data[1:i, ]
-      
-      # 1. Meter Plot
-      p_meter <- ggplot() +
-        geom_rect(aes(xmin=0, xmax=1, ymin=0, ymax=1), fill="white", color="black", size=0.3) +
-        geom_rect(aes(xmin = 1 - curr$S_y, xmax = 1, ymin = 0, ymax = 1), fill = col_S) + 
-        geom_rect(aes(xmin = 1 - curr$rsp, xmax = 1 - curr$S_y, ymin = 0, ymax = 1), fill = col_U) + 
-        geom_text(aes(x = 1 - (curr$rsp / 2), y = 0.5, label = paste0("RSP = ", round(curr$rsp, 3))),
-                  color = col_text, size = 4, fontface = "bold") +
-        scale_x_continuous(limits = c(0, 1), expand = c(0,0)) +
-        theme_void() +
-        theme(plot.margin = unit(c(1.0, 0.5, 0.2, 0.5), "cm")) 
-      
-      # 2. Top Plot (NB)
-      shade_S <- df_post %>% filter(x > curr$y)
-      x_start_val <- (curr$y + 0.5) - curr$u
-      rect_U <- data.frame(xmin = x_start_val, xmax = curr$y + 0.5, 
-                           ymin = 0, ymax = dnbinom(curr$y, mu = mu_postulated, size = size_val))
-      
-      p_nb <- ggplot() +
-        # Shading
-        geom_rect(data = shade_S, aes(xmin=x-0.5, xmax=x+0.5, ymin=0, ymax=prob, fill = "S"), alpha = 1) +
-        geom_rect(data = rect_U, aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax, fill = "U"), alpha = 1) +
-        # Postulated
-        geom_step(data = df_post, aes(x = x - 0.5, y = prob, linetype = "Postulated"), direction = "hv", color = "black") +
-        geom_segment(aes(x = max(df_post$x) + 0.5, xend = max(df_post$x) + 0.5, y = df_post$prob[nrow(df_post)], yend = 0), linetype = "dashed") +
-        # True
-        geom_step(data = df_true, aes(x = x - 0.5, y = prob, linetype = "True"), direction = "hv", color = "black", size = 0.8) +
-        geom_segment(aes(x = max(df_true$x) + 0.5, xend = max(df_true$x) + 0.5, y = df_true$prob[nrow(df_true)], yend = 0), linetype = "solid") +
-        # Point
-        geom_point(aes(x = curr$y, y = 0), shape = 1, size = 3, stroke = 1.5) +
-        
-        scale_fill_manual(name = "Area", values = c("S" = col_S, "U" = col_U), labels = c("S" = expression(S[i](y[i])), "U" = expression(U[i] %.% p[i](y[i])))) +
-        scale_linetype_manual(name = "Model", values = c("True" = "solid", "Postulated" = "dashed")) +
-        
-        # --- FIX: Use coord_cartesian(clip = "off") ---
-        # We remove 'limits' from scale_* and rely on coord_cartesian for framing.
-        scale_x_continuous(expand = c(0,0)) +
-        scale_y_continuous(expand = c(0,0)) + 
-        coord_cartesian(xlim = xlim_top, ylim = ylim_top, clip = "off") +
-        
-        labs(title = bquote(paste("NB (True ", mu==.(mu_true), ", Post. ", mu==.(mu_postulated), "): ", y[i] == .(curr$y))), y = "Probability", x = expression(y[i])) + 
-        theme_minimal() + common_margin +
-        theme(legend.position = c(0.9, 0.95), legend.justification = c(0, 1),
-              legend.background = element_rect(fill = "white", color = NA), legend.box = "vertical",
-              legend.margin = margin(2, 2, 2, 2), legend.spacing.y = unit(0, "cm"))
-      
-      # 3. Bottom Plot (Z)
-      shade_norm <- df_norm %>% filter(x >= curr$z)
-      p_z <- ggplot() +
-        geom_line(data = df_norm, aes(x = x, y = dens)) +
-        geom_area(data = shade_norm, aes(x = x, y = dens), fill = col_Z) +
-        geom_point(data = past %>% filter(id != i), aes(x = z, y = 0), color = col_past, size = 2) +
-        geom_point(aes(x = curr$z, y = 0), color = col_curr, size = 4) +
-        
-        # Bottom plot limits/coord
-        scale_x_continuous(limits = xlim_bot, expand = c(0,0)) +
-        coord_cartesian(xlim = c(-3, 3), ylim = c(0, 0.45), clip = "off") + 
-        
-        labs(title = bquote(paste("Standard Normal: ", z[i] == .(round(curr$z, 2)))), y = "Density", x = expression(z[i])) + 
-        theme_minimal() + common_margin + theme(legend.position = "none")
-      
-      # 4. Assembly
-      plots_aligned <- align_plots(p_nb, p_z, align = 'v', axis = 'lr')
-      grid_layout <- plot_grid(p_meter, plots_aligned[[1]], plots_aligned[[2]], 
-                               ncol = 1, rel_heights = c(0.2, 1.5, 1))
-      print(grid_layout)
-    }
-    
-  }, gif_file = anim_full_path, width = 800, height = 950, res = 100, delay = 2.0)
-  
-  message("Animation generated and saved to: ", anim_full_path)
-}
-
-local_anim <- get_local_asset(anim_filename, extdata_path)
-if (!is.null(local_anim)) {
-  knitr::include_graphics(local_anim)
+local_anim_wrong <- get_local_asset("z_residual_anim-wrong.gif", extdata_path)
+if (!is.null(local_anim_wrong)) {
+  knitr::include_graphics(local_anim_wrong)
 } else {
-  message("Animation file not found in extdata.")
+  message("Animation file not found.")
 }
 ```
+```
+

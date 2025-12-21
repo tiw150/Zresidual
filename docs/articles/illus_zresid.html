@@ -76,20 +76,20 @@
 <p><strong>Intuition:</strong> Think of the Z-residual as the <strong>distance to the median</strong>, but <strong>rescaled</strong> to account for skewness and <strong>smoothed</strong> to handle discreteness. This ensures that a residual of <span class="math inline">+2</span> always implies the same degree of ‘extremeness’, regardless of the original distribution’s shape.</p>
 </section><section class="level2"><h2 id="z-residuals-of-a-true-model">Z-residuals of a True Model<a class="anchor" aria-label="anchor" href="#z-residuals-of-a-true-model"></a>
 </h2>
-<p>The animation in <strong><a href="#fig-aniz-true" class="quarto-xref">Figure 1</a></strong> demonstrates this transformation for <span class="math inline">y_i</span> using its true predictive distribution. As more points are simulated, the distribution of <span class="math inline">z_i</span> values (shown by the accumulating points) aligns with the theoretical <span class="math inline">N(0,1)</span> density curve.</p>
+<p>The animation in <strong><strong>?@fig-aniz-true</strong></strong> demonstrates this transformation for <span class="math inline">y_i</span> using its true predictive distribution. As more points are simulated, the distribution of <span class="math inline">z_i</span> values (shown by the accumulating points) aligns with the theoretical <span class="math inline">N(0,1)</span> density curve.</p>
 <div class="cell fig-cap-location-top">
 <div class="cell-output-display">
-<div id="fig-aniz-true" class="quarto-float quarto-figure quarto-figure-center" data-cap-location="top">
-<figure class="quarto-float quarto-float-fig"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-aniz-true-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure 1: Z-residuals under the true model. <strong>Top Plot:</strong> A value <span class="math inline">y_i</span> is randomly drawn from a Negative Binomial distribution (<span class="math inline">\mu=5</span>, dispersion parameter size <span class="math inline">=5</span>). The <strong>dark blue</strong> area represents the survival probability <span class="math inline">S(y_i)</span>, while the <strong>light blue</strong> area represents the random jitter <span class="math inline">U_i p(y_i)</span>. The combined shaded area equals the <span class="math inline">RSP_i</span>. <strong>Bottom Plot:</strong> This total area (probability mass) is mapped to the upper tail of the standard normal distribution. The resulting <span class="math inline">z_i</span> is marked by a red dot.
-</figcaption><div aria-describedby="fig-aniz-true-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="z_residual_anim-true.gif">
+<div id="fig-aniz-correct" class="quarto-float quarto-figure quarto-figure-center" data-cap-location="top">
+<figure class="quarto-float quarto-float-fig"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-aniz-correct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 1: Z-residuals under a correctly specified model. <strong>Meters:</strong> Top and bottom bars show identical probability structures. <strong>Top Plot:</strong> Data <span class="math inline">y_i</span> generated from the True Model (<span class="math inline">\mu=3</span>) are evaluated against the same Postulated Model (<span class="math inline">\mu=3</span>). <strong>Bottom Plot:</strong> Because the model is correct, the Z-residuals (red dots) follow the Standard Normal density.
+</figcaption><div aria-describedby="fig-aniz-correct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="z_residual_anim-correct.gif">
 </div>
 </figure>
 </div>
 </div>
 </div>
-<hr></section><section class="level2"><h2 id="z-residuals-of-a-wrong-model">Z-residuals of a Wrong Model<a class="anchor" aria-label="anchor" href="#z-residuals-of-a-wrong-model"></a>
+</section><section class="level2"><h2 id="z-residuals-of-a-wrong-model">Z-residuals of a Wrong Model<a class="anchor" aria-label="anchor" href="#z-residuals-of-a-wrong-model"></a>
 </h2>
 <p>The animation in <strong><a href="#fig-aniz-wrong" class="quarto-xref">Figure 2</a></strong> demonstrates the behavior of Z-residuals when the model is misspecified. Here, the data <span class="math inline">y_i</span> are simulated from a <strong>True Model</strong> (Negative Binomial with <span class="math inline">\mu=3</span>), but the residuals are calculated based on a <strong>Postulated Model</strong> (Negative Binomial with <span class="math inline">\mu=5</span>).</p>
 <p>The plotting window is fixed to the <strong>Postulated Model</strong> (the expectation). You can see that the observed data (solid bars) fall systematically to the left of the expected distribution (dashed bars). Because the observed values are smaller than expected, the calculated <span class="math inline">RSP</span> values are consistently high (upper tail area is large), resulting in <span class="math inline">z_i</span> values that drift toward the negative side of the standard normal distribution.</p>
@@ -97,7 +97,7 @@ Figure 1: Z-residuals under the true model. <strong>Top Plot:</strong> A value 
 <div class="cell-output-display">
 <div id="fig-aniz-wrong" class="quarto-float quarto-figure quarto-figure-center" data-cap-location="top">
 <figure class="quarto-float quarto-float-fig"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-aniz-wrong-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure 2: Z-residuals under a misspecified model. <strong>Top Plot:</strong> Data <span class="math inline">y_i</span> are drawn from the True Model (<span class="math inline">\mu=3</span>, solid bars), but RSP is calculated using the Postulated Model (<span class="math inline">\mu=5</span>, dashed bars). The mismatch causes the <strong>Bottom Plot</strong> to show <span class="math inline">z_i</span> values (red dots) systematically drifting to the left of the standard normal density.
+Figure 2: Z-residuals under a misspecified model. <strong>Meters:</strong> Top bar shows True generating probabilities; bottom bar shows RSP calculation. <strong>Top Plot:</strong> Data <span class="math inline">y_i</span> are generated from the True Model (<span class="math inline">\mu=3</span>, solid) but evaluated against the Postulated Model (<span class="math inline">\mu=5</span>, dashed). Consequently, observed counts consistently fall in the lower tail of the postulated distribution. <strong>Bottom Plot:</strong> This mismatch biases the cumulative probabilities downward, causing the Z-residuals (red dots) to drift systematically to the left of the Standard Normal density.
 </figcaption><div aria-describedby="fig-aniz-wrong-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="z_residual_anim-wrong.gif">
 </div>
@@ -105,6 +105,7 @@ Figure 2: Z-residuals under a misspecified model. <strong>Top Plot:</strong> Da
 </div>
 </div>
 </div>
+<p>```</p>
 </section><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
