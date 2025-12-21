@@ -38,30 +38,25 @@
 
   - The structure of the workflow is as follows:
 
-    - Frequentist models:
+    model -\> log_pointpred_family_pkg -\> log_pred_pkg -\> Zresidual
+    -\> Diagnose
 
-      model -\> log_pred_family_pkg -\> log_pred_pkg -\> Zresidual -\>
-      Diangnose
-
-    - Bayesian models:
-
-      model -\> log_mcmcpred_family_pkg -\> log_mcmcpred_pkg -\>
-      log_pred_pkg -\> Zresidual -\> Diagnose
-
-  - **The steps from log_pred_pkg -\> Zresidual -\> Diagnose is generic.
-    What’s difference is computing the obj in log_pred_pkg for different
-    family. The naming of the functions should be standardized so that
-    the upper-level function/method Zresidual will cascadely search the
-    functions for computing log_pred for each family and each pkg.**
+    Notes: the difference between log_pointpred_family_pkg and
+    log_pred_pkg is for Bayesian models represented by MCMC sample. We
+    need to summarize with posterior or ISCV to obtain the final
+    aggregated predictive CDF and PMF. For frequentist models, the
+    output (log_cdf, log_pmf) of log_pointpred_family_pkg are two
+    vectors. Therefore the summmary stay the same. However, we can use
+    this unified procedure in coding.
 
   - To refactor Zresidual to use the above workflow, we will need to do
     these:
 
     - Rewrite and rename the lowest level functions to compute log_pred
       given pkg and family, eg,
-      log_pred_bern_brms,log_pred_hurdleNB_brms,
-      log_pred_coxph,log_pred_weibull_survreg. The family name and pkg
-      names and be retrieve from the model object.
+      log_pointpred_bern_brms,log_pointpred_hurdleNB_brms,
+      log_pointpred_coxph,log_pointpred_weibull_survreg. The family name
+      and pkg names and be retrieve from the model object.
 
     - Rewrite the method Zresidual to take input from class `log_pred`:
       (`log_cdf`, `log_pmf`, both **vectors**, and optional `data`,
@@ -80,15 +75,15 @@
 
     - If the obj to Zresidual is a specific model (e.g, brms for hurdle
       etc.), find or call lower level functions directly, such as
-      log_pred.brms, to compute Z-residuals. Before finishing the whole
-      refactoring process, we can leave hard-redirction to a specific
-      function so that the current code work. Remove these
+      log_pointpred.brms, to compute Z-residuals. Before finishing the
+      whole refactoring process, we can leave hard-redirction to a
+      specific function so that the current code work. Remove these
       hard-redirection after refactoring of the lower-level functions
       are done.
 
     - The argument “type” and “method” are only for the
-      `log_pred_hurdle_brms` functions, not for Zresidual. The Zresidual
-      method essential only repeat the calculation of multiple
+      `log_pointpred_hurdle_brms` functions, not for Zresidual. The
+      Zresidual method essential only repeat the calculation of multiple
       Z-residuals by using repeated random draws of U_i. But these
       arguments can be passed down to lower-level functions if it is
       called with Zresidual(model, …). The `type` should be renamed as
@@ -131,12 +126,12 @@
 - Refactor Bayesian workflow
 
   The function post_logrpp, iscv_logrpp etc need to be changed with U_i
-  removed and merged into log_pred.brms, which will return only
+  removed and merged into log_pred_pkg, which will return only
   log_cdf/log_pmf (post or iscv), which will then be passed to Zresidual
   to generate replicated Z-residual with random draws of U_i. Once
   Zresidual method is modified to take only log_cdf and log_pmf as
   inputs, the following calculation is fast.
 
 - Make generic function to compute Z-residual-based PPC p-values for
-  Bayesian log_pred_mcmc object, which is an object of log_cdf and
-  log_pmf for each MCMC samples
+  log_pointpred object, which is an object of log_cdf and log_pmf for
+  each MCMC samples
