@@ -15,6 +15,7 @@
 <link href="demo_coxph_survival_files/libs/quarto-html/light-border.css" rel="stylesheet">
 <!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <script src="../extra.js"></script><meta property="og:title" content="Z-residual diagnostic tool for assessing covariate functional form in shared frailty models">
+<meta property="og:image" content="https://tiw150.github.io/Zresidual/logo.png">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -48,11 +49,10 @@
 </nav><div class="container template-quarto">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
+      <img src="../logo.png" class="logo" alt=""><h1>Z-residual diagnostic tool for assessing covariate functional form in shared frailty models</h1>
 
-      <h1>Z-residual diagnostic tool for assessing covariate functional form in shared frailty models</h1>
 
-
-      <p class="date">2025-12-21</p>
+      <p class="date">2025-12-22</p>
 
       <small class="dont-index">Source: <a href="https://github.com/tiw150/Zresidual/blob/HEAD/vignettes/demo_coxph_survival.qmd" class="external-link"><code>vignettes/demo_coxph_survival.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
@@ -301,14 +301,14 @@ Figure 2: Figure 3: Scatter plots and box plots of Z-residuals against covariat
 <span><span class="va">homogeneity_tests</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">aov.wbc.lp</span>,<span class="va">aov.lwbc.lp</span>,<span class="va">bl.wbc.lp</span>,<span class="va">bl.lwbc.lp</span>,</span>
 <span>                              <span class="va">aov.wbc</span>,<span class="va">aov.lwbc</span>,<span class="va">bl.wbc</span>,<span class="va">bl.lwbc</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">homogeneity_tests</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://gt.rstudio.com/reference/tab_header.html" class="external-link">tab_header</a></span><span class="op">(</span></span>
+<span><span class="va">homogeneity_tests</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
+<span>  <span class="fu">gt</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">tab_header</span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="st">"Summary of Residual Homogeneity Tests"</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://gt.rstudio.com/reference/fmt_number.html" class="external-link">fmt_number</a></span><span class="op">(</span></span>
-<span>    columns <span class="op">=</span> <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">fmt_number</span><span class="op">(</span></span>
+<span>    columns <span class="op">=</span> <span class="fu">everything</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    decimals <span class="op">=</span> <span class="fl">4</span> </span>
 <span>  <span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output-display">

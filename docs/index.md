@@ -1,6 +1,6 @@
 # Zresidual: Computing and Diagnosing Gaussian-like Residuals
 
-## Z-residuals
+## Z-residual ![](reference/figures/logo_zresidual.png)
 
 The **Zresidual** package implements diagnostic residuals based on the
 **predictive distribution** of each observation. By utilizing the full

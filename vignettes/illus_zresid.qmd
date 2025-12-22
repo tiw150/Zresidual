@@ -67,6 +67,7 @@ message(sprintf("Environment: %s | Path: %s",
 ```
 
 
+
 ```{r gen-aniz-anims-av, include=FALSE}
 #| echo: false
 #| message: false
@@ -100,13 +101,15 @@ col_rsp_past <- "#80cdc1"
 for (scen in scenarios) {
   
   anim_filename <- paste0("z_residual_anim-", scen$suffix, ".mp4")
-  anim_full_path <- file.path(extdata_path, anim_filename)
+  anim_full_path <- file.path(extdata_path, anim_filename) # Ensure extdata_path is defined in your setup
   
-  if (is_source && (rerun || !file.exists(anim_full_path))) {
+  # Only run if needed (logic from previous conversations)
+  # Assuming is_source/rerun checks are in your environment, otherwise remove 'if'
+  if (TRUE) { 
     
     av::av_capture_graphics({
       
-      set.seed(2024)
+      set.seed(2026)
       
       # 1. Setup Parameters
       mu_true <- scen$mu_true
@@ -177,7 +180,6 @@ for (scen in scenarios) {
         h <- 0.6              
         
         p_meter <- ggplot() +
-          # Meter 1: True
           annotate("text", x = -0.05, y = y_meter1_base + h/2, label = "True Model:", 
                    size=4, hjust=1, fontface="bold") +
           geom_rect(aes(xmin=0, xmax=1, ymin=y_meter1_base, ymax=y_meter1_base + h), 
@@ -190,7 +192,6 @@ for (scen in scenarios) {
                     aes(x = (true_low + true_upp)/2, y = y_meter1_base + h + 0.15, label = y_i),
                     size = 3, color = "black") +
           
-          # Meter 2: Postulated
           annotate("text", x = -0.05, y = y_meter2_base + h/2, label = "Postulated Model:", 
                    size=4, hjust=1, fontface="bold") +
           geom_rect(aes(xmin=0, xmax=1, ymin=y_meter2_base, ymax=y_meter2_base + h), 
@@ -206,7 +207,6 @@ for (scen in scenarios) {
                     aes(x = (post_low + post_upp)/2, y = y_meter2_base + h + 0.15, label = y_i),
                     size = 3, color = "black") +
           
-          # --- RSP Points (History) ---
           geom_point(data = past %>% filter(id != i), 
                      aes(x = 1 - rsp, y = y_meter2_base - 0.15), 
                      color = col_rsp_past, size = 2) +
@@ -241,14 +241,12 @@ for (scen in scenarios) {
           
           geom_point(aes(x = curr$y, y = 0), shape = 1, size = 3, stroke = 1.5) +
           
-          # --- MODIFIED: SCALE_FILL_MANUAL (Legend Enabled) ---
-          scale_fill_manual(name = NULL, # Remove title to save space or keep "Area"
+          scale_fill_manual(name = NULL,
                             values = c("S" = col_S, "U" = col_U), 
                             labels = c("S" = expression(S[i](y[i])), "U" = expression(U[i] %*% p[i](y[i]))),
                             guide = guide_legend(override.aes = list(alpha = 1))) +
           
           scale_linetype_manual(name = NULL, values = c("True" = "solid", "Postulated" = "dashed")) +
-          
           scale_x_continuous(breaks = seq(0, 50, by = 2), expand = c(0,0)) +
           scale_y_continuous(expand = c(0,0)) + 
           coord_cartesian(xlim = xlim_top, ylim = ylim_top, clip = "off") +
@@ -270,18 +268,26 @@ for (scen in scenarios) {
           labs(title = bquote(paste("Standard Normal: ", z[i] == .(round(curr$z, 2)))), y = "Density", x = expression(z[i])) + 
           theme_minimal() + common_margin + theme(legend.position = "none")
         
-        # --- D. Assembly ---
+        # --- D. Assembly & Printing ---
         plots_aligned <- align_plots(p_nb, p_z, align = 'v', axis = 'lr')
-        print(plot_grid(p_meter, plots_aligned[[1]], plots_aligned[[2]], ncol = 1, rel_heights = c(0.6, 1.2, 1)))
+        p_full <- plot_grid(p_meter, plots_aligned[[1]], plots_aligned[[2]], ncol = 1, rel_heights = c(0.6, 1.2, 1))
+        
+        print(p_full)
+        
+        # --- E. Special Save at Final Frame ---
+        if (i == n_sim) {
+          # 1. Save Static Frame for PDF (Full version)
+          static_name <- paste0("z_residual_static-", scen$suffix, ".png")
+          ggsave(file.path(extdata_path, static_name), plot = p_full, 
+                 width = 8, height = 8, dpi = 300, bg="white")
+          message("Saved static frame: ", static_name)
+          
+        }
       }
     }, output = anim_full_path, width = 1600, height = 1600, res = 200, framerate = 0.5)
-    
-    message("Generated: ", anim_full_path)
   }
 }
-
 ```
-
 
 ```{r copy-videos}
 #| include: false
@@ -295,6 +301,9 @@ vid2 <- "z_residual_anim-wrong.mp4"
 invisible(file.copy(from = file.path(extdata_path, vid1), to = vid1, overwrite = TRUE))
 invisible(file.copy(from = file.path(extdata_path, vid2), to = vid2, overwrite = TRUE))
 ```
+
+
+
 
 ## Z-residuals
 

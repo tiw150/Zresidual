@@ -101,3 +101,7 @@ pkgdown::build_news()
 pkgdown::build_article("illus_zresid")
 ```
 
+```{r}
+pkgdown::build_favicons()
+```
+

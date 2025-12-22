@@ -1,0 +1,140 @@
+---
+title: "logo"
+format: html
+---
+
+
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(cowplot)
+library(hexSticker)
+library(showtext)
+library(rprojroot)
+
+# --- 1. Setup ---
+project_root <- find_rstudio_root_file()
+target_dir <- file.path(project_root, "man", "figures")
+if (!dir.exists(target_dir)) dir.create(target_dir, recursive = TRUE)
+
+# --- 2. Data & Parameters ---
+set.seed(2026) 
+n_sim <- 50; size_val <- 5
+mu_true <- 5; mu_postulated <- 5; nb_center <- 5
+
+col_S <- "#253494"; col_U <- "#41b6c4"; col_Z <- "#225ea8"
+col_curr <- "#d7191c"; col_past <- "#fdae61"
+
+sim_data <- data.frame(id = 1:n_sim, y = rnbinom(n_sim, mu = mu_true, size = size_val), u = runif(n_sim)) %>%
+  mutate(
+    S_y = pnbinom(y, mu = mu_postulated, size = size_val, lower.tail = FALSE),
+    p_y = dnbinom(y, mu = mu_postulated, size = size_val),
+    rsp = S_y + u * p_y,
+    z = qnorm(1 - rsp)
+  )
+
+curr <- sim_data[n_sim, ]; past <- sim_data[1:n_sim, ]
+
+x_nb <- 0:18; df_post <- data.frame(x = x_nb, prob = dnbinom(x_nb, mu = mu_postulated, size = size_val))
+df_true <- data.frame(x = x_nb, prob = dnbinom(x_nb, mu = mu_true, size = size_val))
+x_norm <- seq(-6, 6, length.out = 500); df_norm <- data.frame(x = x_norm, dens = dnorm(x_norm))
+
+xlim_top <- c(nb_center - 10, nb_center + 10) 
+xlim_bot <- c(-10, 10) 
+ylim_top <- c(0, max(df_true$prob, df_post$prob) * 1.1) 
+
+# --- 3. Clean Plots (HEAVIER WEIGHTS) ---
+
+# Theme with explicit transparency
+theme_transparent <- theme_minimal() + 
+  theme(
+    axis.text = element_blank(),
+    axis.title = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_blank(),
+    legend.position = "none",
+    plot.background = element_rect(fill = "transparent", color = NA),
+    panel.background = element_rect(fill = "transparent", color = NA)
+  )
+
+# Top Plot (NB Histogram)
+shade_S <- df_post %>% filter(x > curr$y)
+rect_U <- data.frame(xmin = (curr$y + 0.5) - curr$u, xmax = curr$y + 0.5, ymin = 0, ymax = dnbinom(curr$y, mu = mu_postulated, size = size_val))
+
+p_nb_clean <- ggplot() +
+  geom_rect(data = shade_S, aes(xmin=x-0.5, xmax=x+0.5, ymin=0, ymax=prob), fill = col_S, color = NA) +
+  geom_rect(data = rect_U, aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax), fill = col_U, color = NA) +
+  
+  # BOLD: Histogram outlines size=1
+  geom_rect(data = df_post, aes(xmin=x-0.5, xmax=x+0.5, ymin=0, ymax=prob), fill = NA, color = "black", size = 1.0) + 
+  
+  # BOLD: Point stroke=2
+  geom_point(aes(x = curr$y, y = 0), shape = 1, size = 3.5, stroke = 2.0) +
+  
+  scale_x_continuous(breaks = seq(0, 50, by = 2), expand = c(0,0)) +
+  scale_y_continuous(expand = c(0,0)) + 
+  coord_cartesian(xlim = xlim_top, ylim = ylim_top, clip = "off") +
+  
+  theme_transparent +
+  theme(
+    # BOLD: X-axis line size=1.2
+    axis.line.x = element_line(color = "black", size = 1.2),
+    axis.line.y = element_blank(),
+    plot.margin = margin(t = 5, r = 5, b = -10, l = 5) 
+  )
+
+# Bottom Plot (Z Normal)
+shade_norm <- df_norm %>% filter(x >= curr$z)
+
+p_z_clean <- ggplot() +
+  # BOLD: Curve line size=2
+  geom_line(data = df_norm, aes(x = x, y = dens), size = 2.0) +
+  geom_area(data = shade_norm, aes(x = x, y = dens), fill = col_Z) +
+  
+  # BOLD: Past points size=3, Current point size=5
+  geom_point(data = past %>% filter(id != n_sim), aes(x = z, y = 0), color = col_past, size = 3) +
+  geom_point(aes(x = curr$z, y = 0), color = col_curr, size = 5) +
+  
+  scale_x_continuous(limits = xlim_bot, expand = c(0,0)) +
+  coord_cartesian(xlim = c(-3, 3), ylim = c(-0.02, 0.45), clip = "off") + 
+  
+  theme_transparent +
+  theme(
+    axis.line = element_blank(),
+    plot.margin = margin(t = -10, r = 5, b = 20, l = 5)
+  )
+
+# --- 4. Assembly & Saving Source ---
+
+plots_aligned <- align_plots(p_nb_clean, p_z_clean, align = 'v', axis = 'lr')
+p_combined <- plot_grid(plots_aligned[[1]], plots_aligned[[2]], ncol = 1, rel_heights = c(1.2, 1)) +
+  # CRITICAL: Force the combined cowplot object to be transparent
+  theme(plot.background = element_rect(fill = "transparent", color = NA))
+
+source_file <- file.path(target_dir, "logo_source.png")
+ggsave(source_file, plot = p_combined, width = 6.5, height = 5, dpi = 300, bg = "transparent")
+message("Updated source image: ", source_file)
+
+# --- 5. Generate Hexagon ---
+final_file <- file.path(target_dir, "logo.png")
+
+sticker(
+  subplot = source_file,
+  package = "Z-residual", 
+  p_size = 11,
+  p_y = 1.70,
+  p_color = "#253494",    
+  
+  s_x = 1.02,              # Shift slightly RIGHT to uncover left border
+  s_y = 1,            
+  s_width = 0.8,          # Keep width constrained
+  
+  h_fill = "#ffffff", h_color = "#253494", h_size = 1.5,
+  filename = final_file,
+  dpi = 300
+)
+
+message("Hexagon sticker saved to: ", final_file)
+```
+
