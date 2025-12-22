@@ -147,19 +147,19 @@ This vignette explains how to use the Zresidual package to calculate Z-residuals
 
 ## Definition of Z-residual
 We use Z-residual to diagnose shared frailty models in a Cox proportional hazard setting with a baseline function unspecified. Suppose there are $g$ groups of individuals, with each group containing $n_i$ individuals, indexed as $i$ = 1, 2, \ldots , $g$ in the case of clustered failure survival data. Let $y_{ij}$ be a possibly right-censored observation for the $j$th individual from the $i$th group, and $\delta_{ij}$ be the indicator for being uncensored. The normalized randomized survival probabilities (RSPs) for $y_{ij}$ in the shared frailty model is defined as:
-\begin{equation}
+$$
 S_{ij}^{R}(y_{ij}, \delta_{ij}, U_{ij}) =
 \left\{
 \begin{array}{rl}
-S_{ij}(y_{ij}), & \text{if $y_{ij}$ is uncensored, i.e., $\delta_{ij}=1$,}\\
-U_{ij}\,S_{ij}(y_{ij}), & \text{if $y_{ij}$ is censored, i.e., $\delta_{ij}=0$,} 
+S_{ij}(y_{ij}), & \text{if } y_{ij} \text{ is uncensored, i.e., } \delta_{ij}=1, \\
+U_{ij}\,S_{ij}(y_{ij}), & \text{if } y_{ij} \text{ is censored, i.e., } \delta_{ij}=0, 
 \end{array}
-\right. \label{rsp} 
-\end{equation}
+\right.
+$$ {#eq-rsp}
 where $U_{ij}$ is a uniform random number on $(0, 1)$, and $S_{ij}(\cdot)$ is the postulated survival function for $t_{ij}$ given $x_{ij}$. $S_{ij}^{R}(y_{ij}, \delta_{ij}, U_{ij})$ is a random number between $0$ and $S_{ij}(y_{ij})$ when $y_{ij}$ is censored. It is proved that the RSPs are uniformly distributed on $(0,1)$ given $x_{i}$ under the true model \citep{LiLonghai2021Mdfc}. Therefore, the RSPs can be transformed into residuals with any desired distribution. We prefer to transform them with the normal quantile:
-\begin{equation}
-r_{ij}^{Z}(y_{ij}, \delta_{ij}, U_{ij})=-\Phi^{-1} (S_{ij}^R(y_{ij}, \delta_{ij}, U_{ij})),\label{zresid}
-\end{equation}
+$$
+r_{ij}^{Z}(y_{ij}, \delta_{ij}, U_{ij})=-\Phi^{-1} (S_{ij}^R(y_{ij}, \delta_{ij}, U_{ij}))
+$$ {#eq-zresid}
 which is normally distributed under the true model, so that we can conduct model diagnostics with Z-residuals for censored data in the same way as conducting model diagnostics for a normal regression model. There are a few advantages of transforming RSPs into Z-residuals. First, the diagnostics methods for checking normal regression are rich in the literature. Second, transforming RSPs into normal deviates facilitates the identification of extremely small and large RSPs. The frequency of such small RSPs may be too small to be highlighted by  the plots of RSPs. However, the presence of such extreme SPs, even very few, is indicative of model misspecification. Normal transformation can highlight such extreme RSPs.
 
 ## Examples for Illustration and Demonstration
