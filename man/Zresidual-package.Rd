@@ -5,6 +5,8 @@
 \alias{Zresidual-package}
 \title{Zresidual: Diagnostics with Z-residuals}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 Provides a unified framework for computing and analyzing Z-residuals across a diverse range of statistical models. The package facilitates model diagnostics by transforming outputs from popular modeling frameworks—including 'coxph', 'survreg', 'glmmTMB', and 'brms'—into standardized Z-residuals. These tools enable researchers to assess model fit, identify outliers, and detect misspecification. In addition to standard residuals, the package implements cross-validatory variants to support robust predictive assessments and model validation workflows.
 }
 \seealso{

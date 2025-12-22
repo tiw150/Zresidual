@@ -3,9 +3,6 @@
 
 ## Z-residual
 
-<img src="man/figures/logo.png" style="width:25.0%"
-data-fig-align="right" />
-
 The **Zresidual** package implements diagnostic residuals based on the
 **predictive distribution** of each observation. By utilizing the full
 probabilistic information of the model, the package generates residuals

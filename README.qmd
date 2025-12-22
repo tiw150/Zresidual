@@ -45,10 +45,7 @@ message(sprintf("Environment: %s | Path: %s",
 ```
 
 
-## Z-residual <img src="man/figures/logo.png" align="right" height="139"/>
-
-
-
+## Z-residual
 
 The **Zresidual** package implements diagnostic residuals based on the **predictive distribution** of each observation. By utilizing the full probabilistic information of the model, the package generates residuals that are approximately normally distributed, enabling further standard diagnostics for Pearson's residuals for OLS. 
 

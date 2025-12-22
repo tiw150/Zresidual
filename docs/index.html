@@ -61,7 +61,6 @@
 <div class="section level2">
 <h2 id="z-residual">Z-residual<a class="anchor" aria-label="anchor" href="#z-residual"></a>
 </h2>
-<p><img src="reference/figures/logo.png" style="width:25.0%" data-fig-align="right"></p>
 <p>The <strong>Zresidual</strong> package implements diagnostic residuals based on the <strong>predictive distribution</strong> of each observation. By utilizing the full probabilistic information of the model, the package generates residuals that are approximately normally distributed, enabling further standard diagnostics for Pearson’s residuals for OLS.</p>
 <p>The foundation of this approach is the <strong>Randomized Survival Probability (RSP)</strong>. For a given observation <span class="math inline">y_i</span>, the RSP represents the value of the predictive cumulative distribution function (CDF) at <span class="math inline">y_i</span>, with a randomization term to ensure continuity for discrete outcomes. It is defined as:</p>
 <p><span class="math display">RSP_i(y_i \mid \theta) = S_i(y_i \mid \theta) + U_i \, p_i(y_i \mid \theta)</span></p>

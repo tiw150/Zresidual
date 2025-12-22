@@ -6,6 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Z-residual diagnostic tool for assessing covariate functional form in shared frailty models • Zresidual</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <!-- katex math --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script><script src="../katex-auto.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
@@ -157,10 +162,10 @@ r_{ij}^{Z}(y_{ij}, \delta_{ij}, U_{ij})=-\Phi^{-1} (S_{ij}^R(y_{ij}, \delta_{ij}
 <p>We fitted two shared frailty models, one with covariates wbc, age, sex and tpi, which is labelled as the wbc model, and the other with log(wbc) replacing wbc, which is labelled as the lwbc model.</p>
 <div class="cell" data-layout-align="center">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit_LeukSurv_wbc</span> <span class="op">&lt;-</span> <span class="fu">coxph</span><span class="op">(</span><span class="fu">Surv</span><span class="op">(</span><span class="va">time</span>, <span class="va">cens</span><span class="op">)</span> <span class="op">~</span> <span class="va">age</span>  <span class="op">+</span><span class="va">sex</span><span class="op">+</span> <span class="va">wbc</span> <span class="op">+</span><span class="va">tpi</span>  <span class="op">+</span></span>
-<span>          <span class="fu">frailty</span><span class="op">(</span><span class="va">district</span>, distribution<span class="op">=</span><span class="st">"gamma"</span><span class="op">)</span>, data<span class="op">=</span> <span class="va">LeukSurv</span><span class="op">)</span></span>
-<span><span class="va">fit_LeukSurv_logwbc</span>  <span class="op">&lt;-</span> <span class="fu">coxph</span><span class="op">(</span><span class="fu">Surv</span><span class="op">(</span><span class="va">time</span>, <span class="va">cens</span><span class="op">)</span> <span class="op">~</span> <span class="va">age</span> <span class="op">+</span><span class="va">sex</span> <span class="op">+</span> <span class="va">logwbc</span> <span class="op">+</span> <span class="va">tpi</span> <span class="op">+</span></span>
-<span>          <span class="fu">frailty</span><span class="op">(</span><span class="va">district</span>, distribution<span class="op">=</span><span class="st">"gamma"</span><span class="op">)</span>, data<span class="op">=</span> <span class="va">LeukSurv</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">fit_LeukSurv_wbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">cens</span><span class="op">)</span> <span class="op">~</span> <span class="va">age</span>  <span class="op">+</span><span class="va">sex</span><span class="op">+</span> <span class="va">wbc</span> <span class="op">+</span><span class="va">tpi</span>  <span class="op">+</span></span>
+<span>          <span class="fu"><a href="https://rdrr.io/pkg/survival/man/frailty.html" class="external-link">frailty</a></span><span class="op">(</span><span class="va">district</span>, distribution<span class="op">=</span><span class="st">"gamma"</span><span class="op">)</span>, data<span class="op">=</span> <span class="va">LeukSurv</span><span class="op">)</span></span>
+<span><span class="va">fit_LeukSurv_logwbc</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/coxph.html" class="external-link">coxph</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">time</span>, <span class="va">cens</span><span class="op">)</span> <span class="op">~</span> <span class="va">age</span> <span class="op">+</span><span class="va">sex</span> <span class="op">+</span> <span class="va">logwbc</span> <span class="op">+</span> <span class="va">tpi</span> <span class="op">+</span></span>
+<span>          <span class="fu"><a href="https://rdrr.io/pkg/survival/man/frailty.html" class="external-link">frailty</a></span><span class="op">(</span><span class="va">district</span>, distribution<span class="op">=</span><span class="st">"gamma"</span><span class="op">)</span>, data<span class="op">=</span> <span class="va">LeukSurv</span><span class="op">)</span></span></code></pre></div>
 </details>
 </div>
 </section><section class="level3" data-number="4.3"><h3 data-number="4.3" id="computing-z-residuals">
@@ -301,14 +306,14 @@ Figure 2: Figure 3: Scatter plots and box plots of Z-residuals against covariat
 <span><span class="va">homogeneity_tests</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">aov.wbc.lp</span>,<span class="va">aov.lwbc.lp</span>,<span class="va">bl.wbc.lp</span>,<span class="va">bl.lwbc.lp</span>,</span>
 <span>                              <span class="va">aov.wbc</span>,<span class="va">aov.lwbc</span>,<span class="va">bl.wbc</span>,<span class="va">bl.lwbc</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">homogeneity_tests</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
-<span>  <span class="fu">gt</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">tab_header</span><span class="op">(</span></span>
+<span><span class="va">homogeneity_tests</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
+<span>  <span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://gt.rstudio.com/reference/tab_header.html" class="external-link">tab_header</a></span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="st">"Summary of Residual Homogeneity Tests"</span></span>
-<span>  <span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">fmt_number</span><span class="op">(</span></span>
-<span>    columns <span class="op">=</span> <span class="fu">everything</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://gt.rstudio.com/reference/fmt_number.html" class="external-link">fmt_number</a></span><span class="op">(</span></span>
+<span>    columns <span class="op">=</span> <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    decimals <span class="op">=</span> <span class="fl">4</span> </span>
 <span>  <span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output-display">

@@ -74,14 +74,14 @@ library("Zresidual")
 ## Build the whole Site
 ```{r}
 #devtools::document()
-#pkgdown::clean_site()
-#unlink("docs", recursive = TRUE)
+ pkgdown::clean_site()
+unlink("docs", recursive = TRUE)
 # 3. Build fresh
 pkgdown::build_site(
     lazy=TRUE,
     preview=TRUE,
     devel=TRUE, 
-    install=TRUE)
+    install=FALSE)
 ```
 
 
