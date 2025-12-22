@@ -13,6 +13,7 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="illus_zresid_files/libs/quarto-html/popper.min.js"></script><script src="illus_zresid_files/libs/quarto-html/tippy.umd.min.js"></script><link href="illus_zresid_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="illus_zresid_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<script src="illus_zresid_files/libs/quarto-contrib/videojs/video.min.js"></script><link href="illus_zresid_files/libs/quarto-contrib/videojs/video-js.css" rel="stylesheet">
 <!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <script src="../extra.js"></script><meta property="og:title" content="An Animation to Understand Z-residuals">
 </head>
@@ -76,36 +77,27 @@
 <p><strong>Intuition:</strong> Think of the Z-residual as the <strong>distance to the median</strong>, but <strong>rescaled</strong> to account for skewness and <strong>smoothed</strong> to handle discreteness. This ensures that a residual of <span class="math inline">+2</span> always implies the same degree of ‘extremeness’, regardless of the original distribution’s shape.</p>
 </section><section class="level2"><h2 id="z-residuals-of-a-true-model">Z-residuals of a True Model<a class="anchor" aria-label="anchor" href="#z-residuals-of-a-true-model"></a>
 </h2>
-<p>The animation in <strong><strong>?@fig-aniz-true</strong></strong> demonstrates this transformation for <span class="math inline">y_i</span> using its true predictive distribution. As more points are simulated, the distribution of <span class="math inline">z_i</span> values (shown by the accumulating points) aligns with the theoretical <span class="math inline">N(0,1)</span> density curve.</p>
-<div class="cell fig-cap-location-top">
-<div class="cell-output-display">
-<div id="fig-aniz-correct" class="quarto-float quarto-figure quarto-figure-center" data-cap-location="top">
-<figure class="quarto-float quarto-float-fig"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-aniz-correct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure 1: Z-residuals under a correctly specified model. <strong>Meters:</strong> Top and bottom bars show identical probability structures. <strong>Top Plot:</strong> Data <span class="math inline">y_i</span> generated from the True Model (<span class="math inline">\mu=3</span>) are evaluated against the same Postulated Model (<span class="math inline">\mu=3</span>). <strong>Bottom Plot:</strong> Because the model is correct, the Z-residuals (red dots) follow the Standard Normal density.
-</figcaption><div aria-describedby="fig-aniz-correct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="z_residual_anim-correct.gif">
+<p>The animation in <strong><a href="#fig-aniz-true" class="quarto-xref">Figure 1</a></strong> demonstrates this transformation for <span class="math inline">y_i</span> using its true predictive distribution. As more points are simulated, the distribution of <span class="math inline">z_i</span> values (shown by the accumulating points) aligns with the theoretical <span class="math inline">N(0,1)</span> density curve.</p>
+<div id="fig-aniz-true" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-aniz-true-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-video"><video id="video_shortcode_videojs_video1" class="video-js vjs-default-skin vjs-fluid" controls="" preload="auto" data-setup="{}" title=""><source src="z_residual_anim-correct.mp4" srcset="NA"></source></video></div>
 </div>
-</figure>
-</div>
-</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-aniz-true-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 1: Animation of Z-residuals of a correct model. The meters compare the <strong>True Generation</strong> (<span class="math inline">\mu=5</span>) with the <strong>Postulated Model</strong> (<span class="math inline">\mu=5</span>). The blue bar represents the <strong>RSP</strong> (upper-tail area), calculated as the survival probability <span class="math inline">S(y)</span> plus a random fraction of the probability mass <span class="math inline">p(y)</span>. Because the models match, the resulting Z-residuals (red dots) map perfectly to the standard normal distribution, confirming the model fit.
+</figcaption></figure>
 </div>
 </section><section class="level2"><h2 id="z-residuals-of-a-wrong-model">Z-residuals of a Wrong Model<a class="anchor" aria-label="anchor" href="#z-residuals-of-a-wrong-model"></a>
 </h2>
-<p>The animation in <strong><a href="#fig-aniz-wrong" class="quarto-xref">Figure 2</a></strong> demonstrates the behavior of Z-residuals when the model is misspecified. Here, the data <span class="math inline">y_i</span> are simulated from a <strong>True Model</strong> (Negative Binomial with <span class="math inline">\mu=3</span>), but the residuals are calculated based on a <strong>Postulated Model</strong> (Negative Binomial with <span class="math inline">\mu=5</span>).</p>
-<p>The plotting window is fixed to the <strong>Postulated Model</strong> (the expectation). You can see that the observed data (solid bars) fall systematically to the left of the expected distribution (dashed bars). Because the observed values are smaller than expected, the calculated <span class="math inline">RSP</span> values are consistently high (upper tail area is large), resulting in <span class="math inline">z_i</span> values that drift toward the negative side of the standard normal distribution.</p>
-<div class="cell fig-cap-location-top">
-<div class="cell-output-display">
-<div id="fig-aniz-wrong" class="quarto-float quarto-figure quarto-figure-center" data-cap-location="top">
-<figure class="quarto-float quarto-float-fig"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-fig" id="fig-aniz-wrong-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure 2: Z-residuals under a misspecified model. <strong>Meters:</strong> Top bar shows True generating probabilities; bottom bar shows RSP calculation. <strong>Top Plot:</strong> Data <span class="math inline">y_i</span> are generated from the True Model (<span class="math inline">\mu=3</span>, solid) but evaluated against the Postulated Model (<span class="math inline">\mu=5</span>, dashed). Consequently, observed counts consistently fall in the lower tail of the postulated distribution. <strong>Bottom Plot:</strong> This mismatch biases the cumulative probabilities downward, causing the Z-residuals (red dots) to drift systematically to the left of the Standard Normal density.
-</figcaption><div aria-describedby="fig-aniz-wrong-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="z_residual_anim-wrong.gif">
+<p>The animation in <strong><a href="#fig-aniz-wrong" class="quarto-xref">Figure 2</a></strong> demonstrates the behavior of Z-residuals when the model is misspecified. Here, the data <span class="math inline">y_i</span> are simulated from a <strong>True Model</strong> (Negative Binomial with <span class="math inline">\mu=2</span>), but the residuals are calculated based on a <strong>Postulated Model</strong> (Negative Binomial with <span class="math inline">\mu=5</span>).</p>
+<p>We can see that the observed data (solid bars) fall systematically to the left of the expected distribution (dashed bars). Because the observed values are smaller than expected, the calculated <span class="math inline">RSP</span> values are consistently high (upper tail area is large), resulting in <span class="math inline">z_i</span> values that drift toward the negative side of the standard normal distribution.</p>
+<div id="fig-aniz-wrong" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-aniz-wrong-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-video"><video id="video_shortcode_videojs_video2" class="video-js vjs-default-skin vjs-fluid" controls="" preload="auto" data-setup="{}" title=""><source src="z_residual_anim-wrong.mp4" srcset="NA"></source></video></div>
 </div>
-</figure>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-aniz-wrong-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 2: Animation of Z-residual of a wrong model. Data is generated from a True Model with <span class="math inline">\mu=2</span>, but residuals are calculated using a Postulated Model with <span class="math inline">\mu=5</span>. The observed values <span class="math inline">y_i</span> are more likely smaller than expected, resulting in <strong>RSP values</strong> (blue bars) that are too large for the assumed distribution. Consequently, the Z-residuals drift systematically to the left (negative bias), signaling that the model overestimates the mean.
+</figcaption></figure>
 </div>
-</div>
-</div>
-<p>```</p>
 </section><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
@@ -189,7 +181,7 @@ Figure 2: Z-residuals under a misspecified model. <strong>Meters:</strong> Top 
       }
     }
   });
-  </script></main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+  </script><script>videojs(video_shortcode_videojs_video1);</script><script>videojs(video_shortcode_videojs_video2);</script></main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>
 
