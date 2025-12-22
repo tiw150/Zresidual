@@ -19,7 +19,7 @@
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="demo_coxph_survival_files/libs/quarto-html/popper.min.js"></script><script src="demo_coxph_survival_files/libs/quarto-html/tippy.umd.min.js"></script><link href="demo_coxph_survival_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="demo_coxph_survival_files/libs/quarto-html/light-border.css" rel="stylesheet">
 <!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<script src="../extra.js"></script><meta property="og:title" content="Z-residual diagnostic tool for assessing covariate functional form in shared frailty models">
+<meta property="og:title" content="Z-residual diagnostic tool for assessing covariate functional form in shared frailty models">
 <meta property="og:image" content="https://tiw150.github.io/Zresidual/logo.png">
 </head>
 <body>
@@ -123,17 +123,17 @@
 </section><section class="level2" data-number="3"><h2 data-number="3" id="definition-of-z-residual">
 <span class="header-section-number">3</span> Definition of Z-residual<a class="anchor" aria-label="anchor" href="#definition-of-z-residual"></a>
 </h2>
-<p>We use Z-residual to diagnose shared frailty models in a Cox proportional hazard setting with a baseline function unspecified. Suppose there are <span class="math inline">g</span> groups of individuals, with each group containing <span class="math inline">n_i</span> individuals, indexed as <span class="math inline">i</span> = 1, 2, , <span class="math inline">g</span> in the case of clustered failure survival data. Let <span class="math inline">y_{ij}</span> be a possibly right-censored observation for the <span class="math inline">j</span>th individual from the <span class="math inline">i</span>th group, and <span class="math inline">\delta_{ij}</span> be the indicator for being uncensored. The normalized randomized survival probabilities (RSPs) for <span class="math inline">y_{ij}</span> in the shared frailty model is defined as: <span class="math display">\begin{equation}
+<p>We use Z-residual to diagnose shared frailty models in a Cox proportional hazard setting with a baseline function unspecified. Suppose there are <span class="math inline">g</span> groups of individuals, with each group containing <span class="math inline">n_i</span> individuals, indexed as <span class="math inline">i</span> = 1, 2, , <span class="math inline">g</span> in the case of clustered failure survival data. Let <span class="math inline">y_{ij}</span> be a possibly right-censored observation for the <span class="math inline">j</span>th individual from the <span class="math inline">i</span>th group, and <span class="math inline">\delta_{ij}</span> be the indicator for being uncensored. The normalized randomized survival probabilities (RSPs) for <span class="math inline">y_{ij}</span> in the shared frailty model is defined as: <span id="eq-rsp"><span class="math display">
 S_{ij}^{R}(y_{ij}, \delta_{ij}, U_{ij}) =
 \left\{
 \begin{array}{rl}
-S_{ij}(y_{ij}), &amp; \text{if $y_{ij}$ is uncensored, i.e., $\delta_{ij}=1$,}\\
-U_{ij}\,S_{ij}(y_{ij}), &amp; \text{if $y_{ij}$ is censored, i.e., $\delta_{ij}=0$,}
+S_{ij}(y_{ij}), &amp; \text{if } y_{ij} \text{ is uncensored, i.e., } \delta_{ij}=1, \\
+U_{ij}\,S_{ij}(y_{ij}), &amp; \text{if } y_{ij} \text{ is censored, i.e., } \delta_{ij}=0,
 \end{array}
-\right. \label{rsp}
-\end{equation}</span> where <span class="math inline">U_{ij}</span> is a uniform random number on <span class="math inline">(0, 1)</span>, and <span class="math inline">S_{ij}(\cdot)</span> is the postulated survival function for <span class="math inline">t_{ij}</span> given <span class="math inline">x_{ij}</span>. <span class="math inline">S_{ij}^{R}(y_{ij}, \delta_{ij}, U_{ij})</span> is a random number between <span class="math inline">0</span> and <span class="math inline">S_{ij}(y_{ij})</span> when <span class="math inline">y_{ij}</span> is censored. It is proved that the RSPs are uniformly distributed on <span class="math inline">(0,1)</span> given <span class="math inline">x_{i}</span> under the true model . Therefore, the RSPs can be transformed into residuals with any desired distribution. We prefer to transform them with the normal quantile: <span class="math display">\begin{equation}
-r_{ij}^{Z}(y_{ij}, \delta_{ij}, U_{ij})=-\Phi^{-1} (S_{ij}^R(y_{ij}, \delta_{ij}, U_{ij})),\label{zresid}
-\end{equation}</span> which is normally distributed under the true model, so that we can conduct model diagnostics with Z-residuals for censored data in the same way as conducting model diagnostics for a normal regression model. There are a few advantages of transforming RSPs into Z-residuals. First, the diagnostics methods for checking normal regression are rich in the literature. Second, transforming RSPs into normal deviates facilitates the identification of extremely small and large RSPs. The frequency of such small RSPs may be too small to be highlighted by the plots of RSPs. However, the presence of such extreme SPs, even very few, is indicative of model misspecification. Normal transformation can highlight such extreme RSPs.</p>
+\right.
+\tag{1}</span></span> where <span class="math inline">U_{ij}</span> is a uniform random number on <span class="math inline">(0, 1)</span>, and <span class="math inline">S_{ij}(\cdot)</span> is the postulated survival function for <span class="math inline">t_{ij}</span> given <span class="math inline">x_{ij}</span>. <span class="math inline">S_{ij}^{R}(y_{ij}, \delta_{ij}, U_{ij})</span> is a random number between <span class="math inline">0</span> and <span class="math inline">S_{ij}(y_{ij})</span> when <span class="math inline">y_{ij}</span> is censored. It is proved that the RSPs are uniformly distributed on <span class="math inline">(0,1)</span> given <span class="math inline">x_{i}</span> under the true model . Therefore, the RSPs can be transformed into residuals with any desired distribution. We prefer to transform them with the normal quantile: <span id="eq-zresid"><span class="math display">
+r_{ij}^{Z}(y_{ij}, \delta_{ij}, U_{ij})=-\Phi^{-1} (S_{ij}^R(y_{ij}, \delta_{ij}, U_{ij}))
+\tag{2}</span></span> which is normally distributed under the true model, so that we can conduct model diagnostics with Z-residuals for censored data in the same way as conducting model diagnostics for a normal regression model. There are a few advantages of transforming RSPs into Z-residuals. First, the diagnostics methods for checking normal regression are rich in the literature. Second, transforming RSPs into normal deviates facilitates the identification of extremely small and large RSPs. The frequency of such small RSPs may be too small to be highlighted by the plots of RSPs. However, the presence of such extreme SPs, even very few, is indicative of model misspecification. Normal transformation can highlight such extreme RSPs.</p>
 </section><section class="level2" data-number="4"><h2 data-number="4" id="examples-for-illustration-and-demonstration">
 <span class="header-section-number">4</span> Examples for Illustration and Demonstration<a class="anchor" aria-label="anchor" href="#examples-for-illustration-and-demonstration"></a>
 </h2>
@@ -306,14 +306,14 @@ Figure 2: Figure 3: Scatter plots and box plots of Z-residuals against covariat
 <span><span class="va">homogeneity_tests</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">aov.wbc.lp</span>,<span class="va">aov.lwbc.lp</span>,<span class="va">bl.wbc.lp</span>,<span class="va">bl.lwbc.lp</span>,</span>
 <span>                              <span class="va">aov.wbc</span>,<span class="va">aov.lwbc</span>,<span class="va">bl.wbc</span>,<span class="va">bl.lwbc</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">homogeneity_tests</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://gt.rstudio.com/reference/tab_header.html" class="external-link">tab_header</a></span><span class="op">(</span></span>
+<span><span class="va">homogeneity_tests</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
+<span>  <span class="fu">gt</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">tab_header</span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="st">"Summary of Residual Homogeneity Tests"</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://gt.rstudio.com/reference/fmt_number.html" class="external-link">fmt_number</a></span><span class="op">(</span></span>
-<span>    columns <span class="op">=</span> <span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html" class="external-link">everything</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">fmt_number</span><span class="op">(</span></span>
+<span>    columns <span class="op">=</span> <span class="fu">everything</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    decimals <span class="op">=</span> <span class="fl">4</span> </span>
 <span>  <span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output-display">
