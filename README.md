@@ -41,7 +41,7 @@ these residuals:
 
 #### Frequentist Models
 
-For frequentist models (e.g., `survival::coxph`, `glmmTMB`), the package
+For frequentist models (e.g., `survival`, `glmmTMB`), the package
 computes residuals by plugging in the estimated parameters
 $\hat{\theta}$. Furthermore, for `coxph` models, the package provides
 cross-validatory Z-residuals to allow for more rigorous validation of
