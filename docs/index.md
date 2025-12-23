@@ -41,12 +41,11 @@ these residuals:
 
 #### Frequentist Models
 
-For frequentist models (e.g.,
-[`survival::coxph`](https://rdrr.io/pkg/survival/man/coxph.html),
-`glmmTMB`), the package computes residuals by plugging in the estimated
-parameters \hat{\theta}. Furthermore, for `coxph` models, the package
-provides cross-validatory Z-residuals to allow for more rigorous
-validation of survival models within the frequentist framework.
+For frequentist models (e.g., `survival`, `glmmTMB`), the package
+computes residuals by plugging in the estimated parameters \hat{\theta}.
+Furthermore, for `coxph` models, the package provides cross-validatory
+Z-residuals to allow for more rigorous validation of survival models
+within the frequentist framework.
 
 #### Bayesian Models
 

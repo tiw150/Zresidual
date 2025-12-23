@@ -10,12 +10,6 @@ format:
     page-layout: full
     code-fold: true
     html-math-method: mathjax
-    css: 
-      - mystyles.css
-      - pkgdown/extra.css
-    include-after-body: 
-      - pagetoc.js
-      - pkgdown/extra.js
 execute:
   echo: true
   warning: false

@@ -41,12 +41,11 @@ these residuals:
 
 #### Frequentist Models
 
-For frequentist models (e.g.,
-[`survival::coxph`](https://rdrr.io/pkg/survival/man/coxph.html),
-`glmmTMB`), the package computes residuals by plugging in the estimated
-parameters \hat{\theta}. Furthermore, for `coxph` models, the package
-provides cross-validatory Z-residuals to allow for more rigorous
-validation of survival models within the frequentist framework.
+For frequentist models (e.g., `survival`, `glmmTMB`), the package
+computes residuals by plugging in the estimated parameters \hat{\theta}.
+Furthermore, for `coxph` models, the package provides cross-validatory
+Z-residuals to allow for more rigorous validation of survival models
+within the frequentist framework.
 
 #### Bayesian Models
 
@@ -245,9 +244,9 @@ devtools::install_github("tiw150/Zresidual")
 
 ### Demontration
 
-- [Z-residual diagnostic tool for assessing covariate functional form in
-  shared frailty
-  models](https://tiw150.github.io/Zresidual/articles/demo_coxph_survival.md):
+- [Z-residual Diagnostic Tool for Assessing Covariate Functional Form in
+  Shared Frailty
+  Models](https://tiw150.github.io/Zresidual/articles/demo_coxph_survival.md):
 - [Demo of Cross-validatory Z-Residual for Diagnosing Shared Frailty
   Models](https://tiw150.github.io/Zresidual/articles/demo_cv_zresidual_survival.md):
 - [Demo of Component-wise Z-residual Diagnosis for Bayesian Hurdle
