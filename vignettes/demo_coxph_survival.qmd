@@ -304,7 +304,7 @@ if (!is.null(local_wbc)) knitr::include_graphics(local_wbc)
 
 ### Quantitative Evaluation of Homogeneity
 
-The table below summarizes ANOVA (Z-AOV) and Bartlett (Z-BL) test results for the first 10 repetitions.
+The table below show test results for the first 10 repetitions.
 
 ```{r linear_model_Zresid_tests}
 sw.wbc<-sw.test.zresid(Zresid.LeukSurv.wbc); sw.lwbc<-sw.test.zresid(Zresid.LeukSurv.logwbc)
@@ -327,16 +327,31 @@ homogeneity_tests <- data.frame(aov.wbc.lp, aov.lwbc.lp, bl.wbc.lp, bl.lwbc.lp, 
 homogeneity_tests %>% head(10) %>% gt() %>% tab_header(title = "Summary of Residual Homogeneity Tests") %>% fmt_number(columns = everything(), decimals = 4)
 ```
 
-### Histogram of Replicated P-values
+### Summary of Minimum P-values ($p_{min}$)
 
-The red vertical lines indicate $p_{min}$, the upper bound summary of the replicated p-values.
-
-```{r echo=FALSE}
+```{r pmin-table, echo=FALSE}
 pmin.sw.wbc<-pvalue.min(pv=sw.wbc); pmin.sw.lwbc<-pvalue.min(pv=sw.lwbc)
 pmin.sf.wbc<-pvalue.min(pv=sf.wbc); pmin.sf.lwbc<-pvalue.min(pv=sf.lwbc)
 pmin.aov.lp.wbc<-pvalue.min(pv=aov.wbc.lp); pmin.aov.lp.lwbc<-pvalue.min(pv=aov.lwbc.lp)
 pmin.aov.wbc<-pvalue.min(pv=aov.wbc); pmin.aov.lwbc<-pvalue.min(pv=aov.lwbc)
+
+pmin_wide <- data.frame(
+  Test = c("Shapiro-Wilk", "Shapiro-Francia", "ANOVA (lp)", "ANOVA (Variable)"),
+  WBC_Val = c(pmin.sw.wbc, pmin.sf.wbc, pmin.aov.lp.wbc, pmin.aov.wbc),
+  LWBC_Val = c(pmin.sw.lwbc, pmin.sf.lwbc, pmin.aov.lp.lwbc, pmin.aov.lwbc)
+)
+
+pmin_wide %>%
+  gt() %>%
+  tab_header(title = md("**Summary of Minimum P-values**"), subtitle = "Diagnostic test results for LeukSurv models") %>%
+  tab_spanner(label = "WBC Model", columns = c(WBC_Val)) %>%
+  tab_spanner(label = "Log-WBC Model", columns = c(LWBC_Val)) %>%
+  fmt_number(columns = c(WBC_Val, LWBC_Val), decimals = 4) %>%
+  tab_style(style = cell_text(color = "red", weight = "bold"), locations = cells_body(columns = WBC_Val, rows = WBC_Val < 0.05)) %>%
+  tab_style(style = cell_text(color = "red", weight = "bold"), locations = cells_body(columns = LWBC_Val, rows = LWBC_Val < 0.05))
 ```
+
+### Histograms of Replicated P-values
 
 ```{r}
 #| label: fig-zresid-hist-pvalues
@@ -355,7 +370,6 @@ hist(aov.lwbc.lp, main = "Z-AOV (LP): log-WBC Model", breaks = 20); abline(v = p
 hist(aov.wbc, main = "Z-AOV (WBC): WBC Model", breaks = 20); abline(v = pmin.aov.wbc, col = "red")
 hist(aov.lwbc, main = "Z-AOV (log-WBC): log-WBC Model", breaks = 20); abline(v = pmin.aov.lwbc, col = "red")
 ```
-
 ## Other Residual Analysis
 
 ### Censored Z-residuals
