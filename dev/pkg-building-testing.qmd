@@ -97,9 +97,15 @@ pkgdown::build_news()
 ```
 
 ## Build an artile
+
 ```{r}
 pkgdown::build_article("illus_zresid")
 ```
+
+```{r}
+pkgdown::build_article("demo_coxph_survival")
+```
+
 
 ```{r}
 pkgdown::build_favicons()
