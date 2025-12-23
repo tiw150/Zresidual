@@ -11,3 +11,4 @@ src/*.dll
 inst/doc
 renv
 renv.lock
+.RDataTmp
