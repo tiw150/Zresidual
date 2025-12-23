@@ -1354,11 +1354,6 @@ Figure 2
 }
 </style>
 <table class="table gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
 <thead>
 <tr class="gt_heading header">
 <th colspan="3" class="gt_heading gt_title gt_font_normal"><strong>Summary of Minimum P-values</strong></th>
@@ -1366,18 +1361,10 @@ Figure 2
 <tr class="gt_heading even">
 <th colspan="3" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border">Diagnostic test results for LeukSurv models</th>
 </tr>
-<tr class="gt_col_headings gt_spanner_row header">
-<th rowspan="2" id="Test" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Test</th>
-<th id="WBC Model" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="col"><div class="gt_column_spanner">
-WBC Model
-</div></th>
-<th id="Log-WBC Model" class="gt_center gt_columns_top_border gt_column_spanner_outer" data-quarto-table-cell-role="th" scope="col"><div class="gt_column_spanner">
-Log-WBC Model
-</div></th>
-</tr>
-<tr class="gt_col_headings even">
-<th id="WBC_Val" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">WBC_Val</th>
-<th id="LWBC_Val" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">LWBC_Val</th>
+<tr class="gt_col_headings header">
+<th id="Test" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Test</th>
+<th id="WBC_Val" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">WBC Model</th>
+<th id="LWBC_Val" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Log-WBC Model</th>
 </tr>
 </thead>
 <tbody class="gt_table_body">
@@ -1440,22 +1427,71 @@ Figure 3: Histograms of 1000 replicated p-values for WBC and log-WBC models.
 <div class="cell" data-layout-align="center">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">censored.Zresid.wbc</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/surv_residuals.html">surv_residuals</a></span><span class="op">(</span>fit.object<span class="op">=</span><span class="va">fit_LeukSurv_wbc</span>, data<span class="op">=</span><span class="va">LeukSurv</span>, residual.type<span class="op">=</span><span class="st">"censored Z-residual"</span><span class="op">)</span></span>
+<span><span class="va">censored.Zresid.lwbc</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/surv_residuals.html">surv_residuals</a></span><span class="op">(</span>fit.object<span class="op">=</span><span class="va">fit_LeukSurv_logwbc</span>, data<span class="op">=</span><span class="va">LeukSurv</span>, residual.type<span class="op">=</span><span class="st">"censored Z-residual"</span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu"><a href="../reference/gof.censored.zresidual.html">gof.censored.zresidual</a></span><span class="op">(</span>censored.Zresidual<span class="op">=</span><span class="va">censored.Zresid.wbc</span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.5702324</code></pre>
 </div>
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/gof.censored.zresidual.html">gof.censored.zresidual</a></span><span class="op">(</span>censored.Zresidual<span class="op">=</span><span class="va">censored.Zresid.lwbc</span><span class="op">)</span></span></code></pre></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.07535993</code></pre>
 </div>
-</section><section class="level3" data-number="6.2"><h3 data-number="6.2" id="comparison-with-cox-snell-and-martingale-residuals">
-<span class="header-section-number">6.2</span> Comparison with Cox-Snell and Martingale Residuals<a class="anchor" aria-label="anchor" href="#comparison-with-cox-snell-and-martingale-residuals"></a>
+</div>
+</section><section class="level3" data-number="6.2"><h3 data-number="6.2" id="cox-snell-residuals">
+<span class="header-section-number">6.2</span> Cox-Snell Residuals<a class="anchor" aria-label="anchor" href="#cox-snell-residuals"></a>
 </h3>
 <div class="cell" data-layout-align="center">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb15"><pre class="downlit sourceCode r">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ucs.wbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/surv_residuals.html">surv_residuals</a></span><span class="op">(</span>fit.object <span class="op">=</span> <span class="va">fit_LeukSurv_wbc</span>, data<span class="op">=</span> <span class="va">LeukSurv</span>, residual.type <span class="op">=</span> <span class="st">"Cox-Snell"</span> <span class="op">)</span></span>
 <span><span class="va">ucs.lwbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/surv_residuals.html">surv_residuals</a></span><span class="op">(</span>fit.object <span class="op">=</span> <span class="va">fit_LeukSurv_logwbc</span>, data<span class="op">=</span> <span class="va">LeukSurv</span>, residual.type <span class="op">=</span> <span class="st">"Cox-Snell"</span> <span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>; <span class="fu"><a href="../reference/plot.cs.residual.html">plot.cs.residual</a></span><span class="op">(</span><span class="va">ucs.wbc</span>, main.title <span class="op">=</span> <span class="st">"CS Residuals: WBC Model"</span><span class="op">)</span>; <span class="fu"><a href="../reference/plot.cs.residual.html">plot.cs.residual</a></span><span class="op">(</span><span class="va">ucs.lwbc</span>, main.title <span class="op">=</span> <span class="st">"CS Residuals: log-WBC Model"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure><p><img src="demo_coxph_survival_files/figure-html/unnamed-chunk-3-1.png" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section class="level3" data-number="6.3"><h3 data-number="6.3" id="martingale-residuals">
+<span class="header-section-number">6.3</span> Martingale Residuals<a class="anchor" aria-label="anchor" href="#martingale-residuals"></a>
+</h3>
+<div class="cell" data-layout-align="center">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">martg.wbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/surv_residuals.html">surv_residuals</a></span><span class="op">(</span>fit.object <span class="op">=</span> <span class="va">fit_LeukSurv_wbc</span>, data<span class="op">=</span> <span class="va">LeukSurv</span>, residual.type <span class="op">=</span> <span class="st">"martingale"</span><span class="op">)</span></span>
+<span><span class="va">martg.lwbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/surv_residuals.html">surv_residuals</a></span><span class="op">(</span>fit.object <span class="op">=</span> <span class="va">fit_LeukSurv_logwbc</span>, data<span class="op">=</span> <span class="va">LeukSurv</span>, residual.type <span class="op">=</span> <span class="st">"martingale"</span><span class="op">)</span></span></code></pre></div>
+</details>
+</div>
+<div class="cell" data-layout-align="center">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plot.martg.resid.html">plot.martg.resid</a></span><span class="op">(</span><span class="va">martg.wbc</span>, x_axis_var<span class="op">=</span><span class="st">"wbc"</span>, main.title <span class="op">=</span> <span class="st">"Martingale Residuals: WBC Model"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plot.martg.resid.html">plot.martg.resid</a></span><span class="op">(</span><span class="va">martg.lwbc</span>, x_axis_var<span class="op">=</span><span class="st">"logwbc"</span>, main.title <span class="op">=</span> <span class="st">"Martingale Residuals: log-WBC Model"</span><span class="op">)</span></span></code></pre></div>
+</details><div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_coxph_survival_files/figure-html/unnamed-chunk-4-1.png" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section class="level3" data-number="6.4"><h3 data-number="6.4" id="deviance-residuals">
+<span class="header-section-number">6.4</span> Deviance Residuals<a class="anchor" aria-label="anchor" href="#deviance-residuals"></a>
+</h3>
+<div class="cell" data-layout-align="center">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dev.wbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/surv_residuals.html">surv_residuals</a></span><span class="op">(</span>fit.object <span class="op">=</span> <span class="va">fit_LeukSurv_wbc</span>, data<span class="op">=</span> <span class="va">LeukSurv</span>, residual.type <span class="op">=</span> <span class="st">"deviance"</span><span class="op">)</span></span>
+<span><span class="va">dev.lwbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/surv_residuals.html">surv_residuals</a></span><span class="op">(</span>fit.object <span class="op">=</span> <span class="va">fit_LeukSurv_logwbc</span>, data<span class="op">=</span> <span class="va">LeukSurv</span>, residual.type <span class="op">=</span> <span class="st">"deviance"</span><span class="op">)</span></span></code></pre></div>
+</details>
+</div>
+<div class="cell" data-layout-align="center">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plot.dev.resid.html">plot.dev.resid</a></span><span class="op">(</span><span class="va">dev.wbc</span>, x_axis_var<span class="op">=</span><span class="st">"wbc"</span>, main.title <span class="op">=</span> <span class="st">"Deviance Residuals: WBC Model"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plot.dev.resid.html">plot.dev.resid</a></span><span class="op">(</span><span class="va">dev.lwbc</span>, x_axis_var<span class="op">=</span><span class="st">"logwbc"</span>, main.title <span class="op">=</span> <span class="st">"Deviance Residuals: log-WBC Model"</span><span class="op">)</span></span></code></pre></div>
+</details><div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_coxph_survival_files/figure-html/unnamed-chunk-5-1.png" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
 </figure>
 </div>
 </div>

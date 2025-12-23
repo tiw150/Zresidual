@@ -115,7 +115,6 @@ library(Zresidual)
 ### Loading R Packages used in this Demo
 
 ```{r loading-packages}
-#| label: loading-packages
 pkgs <- c(
   "survival", "EnvStats", "foreach", "statip", "VGAM", "plotrix", "actuar",
   "stringr", "Rlab", "dplyr", "rlang", "tidyr",
@@ -344,13 +343,14 @@ pmin_wide <- data.frame(
 pmin_wide %>%
   gt() %>%
   tab_header(title = md("**Summary of Minimum P-values**"), subtitle = "Diagnostic test results for LeukSurv models") %>%
-  tab_spanner(label = "WBC Model", columns = c(WBC_Val)) %>%
-  tab_spanner(label = "Log-WBC Model", columns = c(LWBC_Val)) %>%
+  cols_label(
+    WBC_Val = "WBC Model",
+    LWBC_Val = "Log-WBC Model"
+  ) %>%
   fmt_number(columns = c(WBC_Val, LWBC_Val), decimals = 4) %>%
   tab_style(style = cell_text(color = "red", weight = "bold"), locations = cells_body(columns = WBC_Val, rows = WBC_Val < 0.05)) %>%
   tab_style(style = cell_text(color = "red", weight = "bold"), locations = cells_body(columns = LWBC_Val, rows = LWBC_Val < 0.05))
 ```
-
 ### Histograms of Replicated P-values
 
 ```{r}
@@ -370,19 +370,48 @@ hist(aov.lwbc.lp, main = "Z-AOV (LP): log-WBC Model", breaks = 20); abline(v = p
 hist(aov.wbc, main = "Z-AOV (WBC): WBC Model", breaks = 20); abline(v = pmin.aov.wbc, col = "red")
 hist(aov.lwbc, main = "Z-AOV (log-WBC): log-WBC Model", breaks = 20); abline(v = pmin.aov.lwbc, col = "red")
 ```
+
+
 ## Other Residual Analysis
 
 ### Censored Z-residuals
 ```{r}
 censored.Zresid.wbc<-surv_residuals(fit.object=fit_LeukSurv_wbc, data=LeukSurv, residual.type="censored Z-residual")
+censored.Zresid.lwbc<-surv_residuals(fit.object=fit_LeukSurv_logwbc, data=LeukSurv, residual.type="censored Z-residual")
+
 gof.censored.zresidual(censored.Zresidual=censored.Zresid.wbc)
+gof.censored.zresidual(censored.Zresidual=censored.Zresid.lwbc)
 ```
 
-### Comparison with Cox-Snell and Martingale Residuals
+### Cox-Snell Residuals
 ```{r fig.width=14, fig.height=6, out.width="100%", fig.align="center"}
 ucs.wbc <- surv_residuals(fit.object = fit_LeukSurv_wbc, data= LeukSurv, residual.type = "Cox-Snell" )
 ucs.lwbc <- surv_residuals(fit.object = fit_LeukSurv_logwbc, data= LeukSurv, residual.type = "Cox-Snell" )
 par(mfrow = c(1, 2)); plot.cs.residual(ucs.wbc, main.title = "CS Residuals: WBC Model"); plot.cs.residual(ucs.lwbc, main.title = "CS Residuals: log-WBC Model")
+```
+
+### Martingale Residuals
+```{r martingale-residuals}
+martg.wbc <- surv_residuals(fit.object = fit_LeukSurv_wbc, data= LeukSurv, residual.type = "martingale")
+martg.lwbc <- surv_residuals(fit.object = fit_LeukSurv_logwbc, data= LeukSurv, residual.type = "martingale")
+```
+
+```{r fig.width=14, fig.height=6, out.width="100%", fig.align="center"}
+par(mfrow = c(1, 2))
+plot.martg.resid(martg.wbc, x_axis_var="wbc", main.title = "Martingale Residuals: WBC Model")
+plot.martg.resid(martg.lwbc, x_axis_var="logwbc", main.title = "Martingale Residuals: log-WBC Model")
+```
+
+### Deviance Residuals
+```{r deviance-residuals}
+dev.wbc <- surv_residuals(fit.object = fit_LeukSurv_wbc, data= LeukSurv, residual.type = "deviance")
+dev.lwbc <- surv_residuals(fit.object = fit_LeukSurv_logwbc, data= LeukSurv, residual.type = "deviance")
+```
+
+```{r fig.width=14, fig.height=6, out.width="100%", fig.align="center"}
+par(mfrow = c(1, 2))
+plot.dev.resid(dev.wbc, x_axis_var="wbc", main.title = "Deviance Residuals: WBC Model")
+plot.dev.resid(dev.lwbc, x_axis_var="logwbc", main.title = "Deviance Residuals: log-WBC Model")
 ```
 
 ## References
