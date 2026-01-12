@@ -86,7 +86,8 @@ implementation includes:
 - **`stats`**: Support for standard Generalized Linear Models (`glm`).
   (still incomplete)
 - **Custom Models:** Support for any user-defined framework by providing
-  log_cdf and log_pmf arguments to the generic `Zresidual` method.
+  log_cdf and log_pmf arguments to the generic `Zresidual` method. (in
+  progress)
 
 ## Installation
 

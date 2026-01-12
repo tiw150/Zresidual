@@ -57,7 +57,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Demo of Component-wise Z-residual Diagnosis for Bayesian Hurdle Models</h1>
 
 
-      <p class="date">2025-12-23</p>
+      <p class="date">2026-01-12</p>
 
       <small class="dont-index">Source: <a href="https://github.com/tiw150/Zresidual/blob/HEAD/vignettes/demo_hurdle_brms.qmd" class="external-link"><code>vignettes/demo_hurdle_brms.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
@@ -148,70 +148,66 @@ Using Bayesian estimation (e.g., via the <code>brms</code> package), we draw <sp
 <span class="header-section-number">3.0.1</span> <strong>Hurdle Model:</strong>
 <a class="anchor" aria-label="anchor" href="#hurdle-model"></a>
 </h4>
-<p><span class="math display">\begin{equation}
+<p><span class="math display">
 p_i^{\text{post}, \pi^o_irdle}(y_i^\text{obs}) = \frac{1}{T} \sum_{t=1}^T
 \begin{cases}
 {\pi^o_i}^{(t)} &amp; \text{if } y_i^\text{obs} = 0, \\
 (1 - {\pi^o_i}^{(t)}) \cdot\frac{p_i^\text{UT}(y_i^\text{obs} | \theta^{(t)})}{1 - p_i^\text{UT}(0 | \theta^{(t)})} &amp; \text{if } y_i^\text{obs} =1, 2, \ldots,\\
 0 &amp; \text{otherwise.}
 \end{cases}
-\end{equation}</span> <span class="math display">\begin{equation}
+</span></p>
+<p><span class="math display">
 S_i^{\text{post}, \pi^o_irdle}(y_i^\text{obs}) = \frac{1}{T} \sum_{t=1}^T
 \begin{cases}
 1 &amp; \text{if } y_i^\text{obs} &lt; 0, \\
 1-{\pi^o_i}^{(t)} &amp; \text{if } 0 \le y_i^\text{obs} &lt; 1, \\
 (1 - {\pi^o_i}^{(t)}) \cdot \frac{S_i^\text{UT}(y_i^\text{obs} \mid \theta^{(t)})}{1-p_i^\text{UT}(0 \mid \theta^{(t)})} &amp; \text{if } y_i^\text{obs} \ge 1.
 \end{cases}
-\end{equation}</span></p>
+</span></p>
 </section><section class="level4" data-number="3.0.2"><h4 data-number="3.0.2" id="logistic-component">
 <span class="header-section-number">3.0.2</span> <strong>Logistic Component:</strong>
 <a class="anchor" aria-label="anchor" href="#logistic-component"></a>
 </h4>
-<p><span class="math display">\begin{equation}
-\label{componentwise_logistic_pmf}
+<p><span id="eq-componentwise_logistic_pmf"><span class="math display">
 p_i^{\text{post}, \text{logit}}(c_i^\text{obs}) = \frac{1}{T} \sum_{t=1}^T
 \begin{cases}
 {\pi^o_i}^{(t)} &amp; \text{if } c_i^\text{obs} = 0, \\
 1 - {\pi^o_i}^{(t)} &amp; \text{if } c_i^\text{obs} = 1,\\
 0 &amp; \text{otherwise.}
 \end{cases}
-\end{equation}</span></p>
-<p><span class="math display">\begin{equation}
-\label{componentwise_logistic_survival}
+\tag{1}</span></span></p>
+<p><span id="eq-componentwise_logistic_survival"><span class="math display">
 S_i^{\text{post}, \text{logit}}(c_i^\text{obs}) = \frac{1}{T} \sum_{t=1}^T
 \begin{cases}
 1 &amp; \text{if } c_i^\text{obs} &lt; 0, \\
 1-{\pi^o_i}^{(t)} &amp; \text{if } 0 \le c_i^\text{obs} &lt; 1, \\
 0, &amp; \text{if } c_i^\text{obs} \ge 1.
 \end{cases}
-\end{equation}</span></p>
+\tag{2}</span></span></p>
 </section><section class="level4" data-number="3.0.3"><h4 data-number="3.0.3" id="count-compoenent">
 <span class="header-section-number">3.0.3</span> <strong>Count Compoenent:</strong>
 <a class="anchor" aria-label="anchor" href="#count-compoenent"></a>
 </h4>
-<p><span class="math display">\begin{equation}
-\label{componentwise_count_pmf}
+<p><span id="eq-componentwise_count_pmf"><span class="math display">
 p_i^{\text{post},\text{count}}({y_i^+}^\text{obs}) = \frac{1}{T} \sum_{t=1}^T
 \begin{cases}
     \frac{p_i^\text{UT}({y_i^+}^\text{obs} \mid \theta^{(t)})}{1 - p_i^\text{UT}(0 \mid \theta^{(t)})}, &amp; \text{ for } {y_i^{+}}^\text{obs} = 1,2,\ldots,\\
     0 &amp; \text{ otherwise.}
 \end{cases}
-\end{equation}</span></p>
-<p><span class="math display">\begin{equation}
-\label{componentwise_count_survival}
+\tag{3}</span></span></p>
+<p><span id="eq-componentwise_count_survival"><span class="math display">
 S_i^{\text{post}, \text{count}}({y_i^+}^\text{obs}) = \frac{1}{T} \sum_{t=1}^T
 \begin{cases}
     1 &amp; \text{ if } {y_i^+}^\text{obs} &lt; 1 \\
     \frac{S_i^\text{UT}({y_i^+}^\text{obs} \mid \theta^{(t)})}{1-p_i^\text{UT}(0 \mid \theta^{(t)})}, &amp; \text{ if } {y_i^+}^\text{obs} \ge 1
 \end{cases}
-\end{equation}</span></p>
+\tag{4}</span></span></p>
 <p>where <span class="math inline">p_i^\text{UT}(. \mid \theta^{(t)})</span> and <span class="math inline">S_i^\text{UT}(. \mid \theta^{(t)})</span> denote the <abbr title="Probability Mass Function">PMF</abbr> and survival function of the untruncated count distribution, given the component-specific posterior parameters <span class="math inline">\theta^{(t)}</span>.</p>
-<p>For any observed value <span class="math inline">y_i^\text{obs}</span>, we define: <span class="math display">\begin{equation}
-\label{eq:post_rpp}\text{rpp}_i(y_i^\text{obs} | \theta^{(t)}) = S_i(y_i^\text{obs} | \theta^{(t)}) + U_i \times p_i(y_i^\text{obs} | \theta^{(t)})
-\end{equation}</span> where <span class="math inline">U_i \sim \text{Uniform}(0,1)</span>. Here, <span class="math inline">y_i^\text{obs}</span> is the observed value, which can refer to either the binary response <span class="math inline">C_i</span> or the positive count <span class="math inline">{y_i^+}^\text{obs}</span>, depending on the component being evaluated. Then, the Z-residual of a discrete response variable is, <span class="math display">\begin{equation}
-\label{eq:z_residual}
+<p>For any observed value <span class="math inline">y_i^\text{obs}</span>, we define: <span id="eq-post_rpp"><span class="math display">
+\text{rpp}_i(y_i^\text{obs} | \theta^{(t)}) = S_i(y_i^\text{obs} | \theta^{(t)}) + U_i \times p_i(y_i^\text{obs} | \theta^{(t)})
+\tag{5}</span></span> where <span class="math inline">U_i \sim \text{Uniform}(0,1)</span>. Here, <span class="math inline">y_i^\text{obs}</span> is the observed value, which can refer to either the binary response <span class="math inline">C_i</span> or the positive count <span class="math inline">{y_i^+}^\text{obs}</span>, depending on the component being evaluated. Then, the Z-residual of a discrete response variable is, <span id="eq-z_residual"><span class="math display">
 z_i = -\Phi^{-1}(\text{rpp}_i(y_i^\text{obs}|\theta)) \sim N(0, 1)
-\end{equation}</span> where (^{-1}(.)) is the quantile function of standard normal distribution.</p>
+\tag{6}</span></span> where (^{-1}(.)) is the quantile function of standard normal distribution.</p>
 </section></section><section class="level2" data-number="4"><h2 data-number="4" id="a-simulation-example">
 <span class="header-section-number">4</span> A Simulation Example<a class="anchor" aria-label="anchor" href="#a-simulation-example"></a>
 </h2>

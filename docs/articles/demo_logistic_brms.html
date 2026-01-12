@@ -57,7 +57,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Demo of Z-residual Diagnosis for Bayesian Logistic Regression</h1>
 
 
-      <p class="date">2025-12-23</p>
+      <p class="date">2026-01-12</p>
 
       <small class="dont-index">Source: <a href="https://github.com/tiw150/Zresidual/blob/HEAD/vignettes/demo_logistic_brms.qmd" class="external-link"><code>vignettes/demo_logistic_brms.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
@@ -128,28 +128,28 @@
 <p>Let <span class="math inline">y_i \in \{0, 1\}</span>, where <span class="math inline">y_i = 1</span> indicates a success, and <span class="math inline">y_i = 0</span> indicates a failure for the <span class="math inline">i^th</span> observations.</p>
 <p>Using Bayesian estimation (e.g., via the <code>brms</code> package), we draw <span class="math inline">T</span> samples from the posterior distribution. Let <span class="math inline">\theta^{(t)}</span> denote the <span class="math inline">t^{th}</span> posterior draw.</p>
 <p>For a given observation <span class="math inline">y_i^\text{obs}</span>, the posterior predictive <abbr title="Probability Mass Function">PMF</abbr> and survival functions are defined below.</p>
-<p><span class="math display">\begin{equation}
+<p><span class="math display">
 p_i^{\text{post}, \text{logit}}(y_i^\text{obs}) = \frac{1}{T} \sum_{t=1}^T
 \begin{cases}
 {\pi^o_i}^{(t)} &amp; \text{if } y_i^\text{obs} = 1, \\
 1 - {\pi^o_i}^{(t)} &amp; \text{if } y_i^\text{obs} = 0,\\
 0 &amp; \text{otherwise.}
 \end{cases}
-\end{equation}</span></p>
-<p><span class="math display">\begin{equation}
+</span></p>
+<p><span class="math display">
 S_i^{\text{post}, \text{logit}}(y_i^\text{obs}) = \frac{1}{T} \sum_{t=1}^T
 \begin{cases}
 1 &amp; \text{if } y_i^\text{obs} &lt; 0, \\
 1-{\pi^o_i}^{(t)} &amp; \text{if } 0 \le y_i^\text{obs} &lt; 1, \\
 0, &amp; \text{if } y_i^\text{obs} \ge 1.
 \end{cases}
-\end{equation}</span></p>
-<p>For any observed value <span class="math inline">y_i^\text{obs}</span>, we define: <span class="math display">\begin{equation}
-\label{eq:post_rpp}\text{rpp}_i(y_i^\text{obs} | \theta^{(t)}) = S_i(y_i^\text{obs} | \theta^{(t)}) + U_i \times p_i(y_i^\text{obs} | \theta^{(t)})
-\end{equation}</span> where <span class="math inline">U_i \sim \text{Uniform}(0,1)</span>. Here, <span class="math inline">y_i^\text{obs}</span> is the observed value, which can refer to either success or failure. Then, the Z-residual of the response variable is, <span class="math display">\begin{equation}
-\label{eq:z_residual}
+</span></p>
+<p>For any observed value <span class="math inline">y_i^\text{obs}</span>, we define: <span id="eq-post_rpp"><span class="math display">
+\text{rpp}_i(y_i^\text{obs} | \theta^{(t)}) = S_i(y_i^\text{obs} | \theta^{(t)}) + U_i \times p_i(y_i^\text{obs} | \theta^{(t)})
+\tag{1}</span></span></p>
+<p>where <span class="math inline">U_i \sim \text{Uniform}(0,1)</span>. Here, <span class="math inline">y_i^\text{obs}</span> is the observed value, which can refer to either success or failure. Then, the Z-residual of the response variable is, <span id="eq-z_residual"><span class="math display">
 z_i = -\Phi^{-1}(\text{rpp}_i(y_i^\text{obs}|\theta)) \sim N(0, 1)
-\end{equation}</span> where (^{-1}(.)) is the quantile function of standard normal distribution.</p>
+\tag{2}</span></span> where (^{-1}(.)) is the quantile function of standard normal distribution.</p>
 </section><section class="level2" data-number="4"><h2 data-number="4" id="a-simulation-example">
 <span class="header-section-number">4</span> A Simulation Example<a class="anchor" aria-label="anchor" href="#a-simulation-example"></a>
 </h2>

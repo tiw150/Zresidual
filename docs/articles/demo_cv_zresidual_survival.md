@@ -65,31 +65,33 @@ failure survival data. Let y\_{ij} be a possibly right-censored
 observation for the jth individual from the ith group, and \delta\_{ij}
 be the indicator for being uncensored. The normalized randomized
 survival probabilities (RSPs) for y\_{ij} in the shared frailty model is
-defined as: \begin{equation} S\_{ij}^{R}(y\_{ij}, \delta\_{ij}, U\_{ij})
-= \left\\ \begin{array}{rl} S\_{ij}(y\_{ij}), & \text{if \$y\_{ij}\$ is
-uncensored, i.e., \$\delta\_{ij}=1\$,}\\ U\_{ij}\\S\_{ij}(y\_{ij}), &
-\text{if \$y\_{ij}\$ is censored, i.e., \$\delta\_{ij}=0\$,} \end{array}
-\right. \label{rsp} \end{equation} where U\_{ij} is a uniform random
-number on (0, 1), and S\_{ij}(\cdot) is the postulated survival function
-for t\_{ij} given x\_{ij}. S\_{ij}^{R}(y\_{ij}, \delta\_{ij}, U\_{ij})
-is a random number between 0 and S\_{ij}(y\_{ij}) when y\_{ij} is
-censored. It is proved that the RSPs are uniformly distributed on (0,1)
-given x\_{i} under the true model. Therefore, the RSPs can be
-transformed into residuals with any desired distribution. We prefer to
-transform them with the normal quantile: \begin{equation}
-r\_{ij}^{Z}(y\_{ij}, \delta\_{ij}, U\_{ij})=-\Phi^{-1}
-(S\_{ij}^R(y\_{ij}, \delta\_{ij}, U\_{ij})),\label{zresid}
-\end{equation} which is normally distributed under the true model, so
-that we can conduct model diagnostics with Z-residuals for censored data
-in the same way as conducting model diagnostics for a normal regression
-model. There are a few advantages of transforming RSPs into Z-residuals.
-First, the diagnostics methods for checking normal regression are rich
-in the literature. Second, transforming RSPs into normal deviates
-facilitates the identification of extremely small and large RSPs. The
-frequency of such small RSPs may be too small to be highlighted by the
-plots of RSPs. However, the presence of such extreme SPs, even very few,
-is indicative of model misspecification. Normal transformation can
-highlight such extreme RSPs.
+defined as:
+
+S\_{ij}^{R}(y\_{ij}, \delta\_{ij}, U\_{ij}) = \left\\ \begin{array}{rl}
+S\_{ij}(y\_{ij}), & \text{if \$y\_{ij}\$ is uncensored, i.e.,
+\$\delta\_{ij}=1\$,}\\ U\_{ij}\\S\_{ij}(y\_{ij}), & \text{if \$y\_{ij}\$
+is censored, i.e., \$\delta\_{ij}=0\$,} \end{array} \right. \tag{1}
+
+where U\_{ij} is a uniform random number on (0, 1), and S\_{ij}(\cdot)
+is the postulated survival function for t\_{ij} given x\_{ij}.
+S\_{ij}^{R}(y\_{ij}, \delta\_{ij}, U\_{ij}) is a random number between 0
+and S\_{ij}(y\_{ij}) when y\_{ij} is censored. It is proved that the
+RSPs are uniformly distributed on (0,1) given x\_{i} under the true
+model. Therefore, the RSPs can be transformed into residuals with any
+desired distribution. We prefer to transform them with the normal
+quantile: r\_{ij}^{Z}(y\_{ij}, \delta\_{ij}, U\_{ij})=-\Phi^{-1}
+(S\_{ij}^R(y\_{ij}, \delta\_{ij}, U\_{ij})), \tag{2} which is normally
+distributed under the true model, so that we can conduct model
+diagnostics with Z-residuals for censored data in the same way as
+conducting model diagnostics for a normal regression model. There are a
+few advantages of transforming RSPs into Z-residuals. First, the
+diagnostics methods for checking normal regression are rich in the
+literature. Second, transforming RSPs into normal deviates facilitates
+the identification of extremely small and large RSPs. The frequency of
+such small RSPs may be too small to be highlighted by the plots of RSPs.
+However, the presence of such extreme SPs, even very few, is indicative
+of model misspecification. Normal transformation can highlight such
+extreme RSPs.
 
 In our study, we employ both leave-one-out cross-validation (LOOCV) and
 10-fold cross-validation (10-fold CV) techniques to compute
@@ -100,18 +102,19 @@ parameter estimation in the shared frailty model. Fitting the model to
 the training dataset produces the estimated regression coefficients,
 \hat{\beta'}, and frailty effects, \hat{z_i}. The Breslow estimator
 helps estimate the cumulative baseline hazard (\hat{H_0}). The survival
-function \hat{S}{ij} (y{ij}) for the test observation y\_{ij}^{test} is
-computed using: \begin{equation} \hat{S}\_{ij}(y\_{ij}^{test}) = \exp
-\\- \hat{z_i} \exp(\hat{\beta'} x\_{ij}) \hat{H}\_0(y\_{ij}^{test}) \\.
-\end{equation} Subsequently, the RSP for the observed t\_{ij} is defined
-as: \begin{equation} \hat{S}\_{ij}^{R}(t\_{ij}^{test}, d\_{ij},
-U\_{ij})= \left\\ \begin{array}{rl} \hat{S}\_{ij}(t\_{ij}^{test}), &
-\text{if \$t\_{ij}^{test}\$ is uncensored, i.e., \$d\_{ij}=1\$,}\\
+function \hat{S}\_{ij}(y\_{ij}) for the test observation y\_{ij}^{test}
+is computed using: \hat{S}\_{ij}(y\_{ij}^{test}) = \exp \\- \hat{z_i}
+\exp(\hat{\beta'} x\_{ij}) \hat{H}\_0(y\_{ij}^{test}) \\. Subsequently,
+the RSP for the observed t\_{ij} is defined as:
+\hat{S}\_{ij}^{R}(t\_{ij}^{test}, d\_{ij}, U\_{ij})= \left\\
+\begin{array}{rl} \hat{S}\_{ij}(t\_{ij}^{test}), & \text{if
+\$t\_{ij}^{test}\$ is uncensored, i.e., \$d\_{ij}=1\$,}\\
 U\_{ij}\\\hat{S}\_{ij}(t\_{ij}^{test}), & \text{if \$t\_{ij}^{test}\$ is
-censored, i.e., \$d\_{ij}=0\$.} \end{array} \right. \end{equation}
-Resulting in the Z-residual for t\_{ij}^{test}: \begin{equation}
+censored, i.e., \$d\_{ij}=0\$.} \end{array} \right. \tag{3}
+
+Resulting in the Z-residual for t\_{ij}^{test}:
 \hat{z}\_{ij}(t\_{ij}^{test}, d\_{ij}, U\_{ij})=-\Phi^{-1}
-(\hat{S}\_{ij}^R(t\_{ij}^{test}, d\_{ij}, U\_{ij})). \end{equation} By
+(\hat{S}\_{ij}^R(t\_{ij}^{test}, d\_{ij}, U\_{ij})). \tag{4} By
 repeating these steps for each observation (n times), a LOOCV predictive
 Z-residual is calculated for each observation.
 

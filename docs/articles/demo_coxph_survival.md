@@ -303,7 +303,14 @@ homogeneity_tests %>% head(10) %>% gt() %>% tab_header(title = "Summary of Resid
 
 ### 5.2 Summary of Minimum P-values (p\_{min})
 
-[TABLE]
+| **Summary of Minimum P-values**             |           |               |
+|---------------------------------------------|-----------|---------------|
+| Diagnostic test results for LeukSurv models |           |               |
+| Test                                        | WBC Model | Log-WBC Model |
+| Shapiro-Wilk                                | 0.4964    | 0.5793        |
+| Shapiro-Francia                             | 0.6920    | 0.7133        |
+| ANOVA (lp)                                  | 0.9908    | 0.9749        |
+| ANOVA (Variable)                            | 0.7865    | 0.0000        |
 
 ### 5.3 Histograms of Replicated P-values
 
@@ -334,12 +341,22 @@ Code
 
 ``` r
 censored.Zresid.wbc<-surv_residuals(fit.object=fit_LeukSurv_wbc, data=LeukSurv, residual.type="censored Z-residual")
+censored.Zresid.lwbc<-surv_residuals(fit.object=fit_LeukSurv_logwbc, data=LeukSurv, residual.type="censored Z-residual")
+
 gof.censored.zresidual(censored.Zresidual=censored.Zresid.wbc)
 ```
 
     [1] 0.5702324
 
-### 6.2 Comparison with Cox-Snell and Martingale Residuals
+Code
+
+``` r
+gof.censored.zresidual(censored.Zresidual=censored.Zresid.lwbc)
+```
+
+    [1] 0.07535993
+
+### 6.2 Cox-Snell Residuals
 
 Code
 
@@ -350,6 +367,44 @@ par(mfrow = c(1, 2)); plot.cs.residual(ucs.wbc, main.title = "CS Residuals: WBC 
 ```
 
 ![](demo_coxph_survival_files/figure-html/unnamed-chunk-3-1.png)
+
+### 6.3 Martingale Residuals
+
+Code
+
+``` r
+martg.wbc <- surv_residuals(fit.object = fit_LeukSurv_wbc, data= LeukSurv, residual.type = "martingale")
+martg.lwbc <- surv_residuals(fit.object = fit_LeukSurv_logwbc, data= LeukSurv, residual.type = "martingale")
+```
+
+Code
+
+``` r
+par(mfrow = c(1, 2))
+plot.martg.resid(martg.wbc, x_axis_var="wbc", main.title = "Martingale Residuals: WBC Model")
+plot.martg.resid(martg.lwbc, x_axis_var="logwbc", main.title = "Martingale Residuals: log-WBC Model")
+```
+
+![](demo_coxph_survival_files/figure-html/unnamed-chunk-4-1.png)
+
+### 6.4 Deviance Residuals
+
+Code
+
+``` r
+dev.wbc <- surv_residuals(fit.object = fit_LeukSurv_wbc, data= LeukSurv, residual.type = "deviance")
+dev.lwbc <- surv_residuals(fit.object = fit_LeukSurv_logwbc, data= LeukSurv, residual.type = "deviance")
+```
+
+Code
+
+``` r
+par(mfrow = c(1, 2))
+plot.dev.resid(dev.wbc, x_axis_var="wbc", main.title = "Deviance Residuals: WBC Model")
+plot.dev.resid(dev.lwbc, x_axis_var="logwbc", main.title = "Deviance Residuals: log-WBC Model")
+```
+
+![](demo_coxph_survival_files/figure-html/unnamed-chunk-5-1.png)
 
 ## 7 References
 
