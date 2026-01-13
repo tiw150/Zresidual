@@ -1,4 +1,4 @@
-# Demo of Cross-validatory Z-Residual for Diagnosing Shared Frailty Models
+# Cross-validatory Z-Residual for Diagnosing Shared Frailty Models
 
 ## 1 Installing Zresidual and Other packages
 

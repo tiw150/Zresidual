@@ -42,6 +42,7 @@ plot(
   outlier.set = list(),
   xlab = NULL,
   my.mar = c(5, 4, 4, 6) + 0.1,
+  add_lowess = FALSE,
   ...
 )
 ```

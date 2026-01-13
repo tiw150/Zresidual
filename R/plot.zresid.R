@@ -30,6 +30,7 @@
 #'   outlier.set = list(),
 #'   xlab = NULL,
 #'   my.mar = c(5, 4, 4, 6) + 0.1,
+#'   add_lowess = FALSE,
 #'   ...
 #' )
 #'
@@ -123,7 +124,7 @@ plot.zresid <- function(x, irep = 1:ncol(x), ylab = "Z-Residual",
                                                   attr(x, "type"))),
                         outlier.return = TRUE, outlier.value = 3.5,
                         category = NULL, outlier.set = list(), xlab = NULL,
-                        my.mar=c(5,4,4,6)+0.1, ...) {
+                        my.mar=c(5,4,4,6)+0.1, add_lowess = FALSE, ...) {
   Zresidual <- x
   X <- x_axis_var
 
@@ -137,7 +138,32 @@ plot.zresid <- function(x, irep = 1:ncol(x), ylab = "Z-Residual",
     label.x[is.infinite(x)] <- "Inf"
     label.x
   }
+  
   args <- list(...)
+  
+  add_lowess_line <- function(xv, yv, args) {
+    if (!isTRUE(add_lowess)) return(invisible(NULL))
+    
+    log_opt <- args[["log"]]
+    log_x <- !is.null(log_opt) && grepl("x", log_opt)
+    
+    ok <- is.finite(xv) & is.finite(yv)
+    if (log_x) ok <- ok & (xv > 0)
+    
+    if (sum(ok) < 3L) return(invisible(NULL))
+    
+    if (log_x) {
+      lx <- log10(xv[ok])
+      lw <- stats::lowess(x = lx, y = yv[ok])
+      graphics::lines(x = 10^lw$x, y = lw$y, col = "red", lwd = 3)
+    } else {
+      lw <- stats::lowess(x = xv[ok], y = yv[ok])
+      graphics::lines(lw$x, lw$y, col = "red", lwd = 3)
+    }
+    
+    invisible(NULL)
+  }
+
   var.call <- match.call()
   unique.cats <- NULL
   default.legend.title <- NULL
@@ -290,6 +316,7 @@ plot.zresid <- function(x, irep = 1:ncol(x), ylab = "Z-Residual",
                                       main = main.title,
                                       xlab = current_xlab, font.lab = 2), args)
       do.call(plot, c(list(x = xvec, y = Zresidual[, j]), default.plot))
+      add_lowess_line(xvec, Zresidual[, j], args)
 
       plot_limits <- par("usr")
       plot_lim_convert <- setNames(c(1:2, 3:4, 1:4), c("x", "x", "y", "y", "xy", "xy", "xy", "xy"))
@@ -459,6 +486,7 @@ plot.zresid <- function(x, irep = 1:ncol(x), ylab = "Z-Residual",
     if (X == "lp") {
       fitted.value <- attr(Zresidual, "linear.pred")
       do.call(plot, c(list(x = fitted.value, y = Zresidual[, j]), default.plot))
+      add_lowess_line(fitted.value, Zresidual[, j], args)
 
       plot_limits <- par("usr")
       plot_lim_convert <- setNames(c(1:2, 3:4, 1:4), c("x", "x", "y", "y", "xy", "xy", "xy", "xy"))
@@ -503,6 +531,7 @@ plot.zresid <- function(x, irep = 1:ncol(x), ylab = "Z-Residual",
         cov.name <- variable.names(fitted.value)
         i <- if (X == "covariate") 1 else which(cov.name == X)
         do.call(plot, c(list(x = fitted.value[, i], y = Zresidual[, j]), default.plot))
+        add_lowess_line(fitted.value[, i], Zresidual[, j], args)
 
         plot_limits <- par("usr")
         plot_lim_convert <- setNames(c(1:2, 3:4, 1:4), c("x", "x", "y", "y", "xy", "xy", "xy", "xy"))

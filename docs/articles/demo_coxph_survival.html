@@ -191,7 +191,8 @@ r_{ij}^{Z}(y_{ij}, \delta_{ij}, U_{ij})=-\Phi^{-1} (S_{ij}^R(y_{ij}, \delta_{ij}
 </section><section class="level3" data-number="4.4"><h3 data-number="4.4" id="inspecting-the-normality-of-z-residuals-for-checking-overall-gof">
 <span class="header-section-number">4.4</span> Inspecting the Normality of Z-Residuals for Checking Overall GOF<a class="anchor" aria-label="anchor" href="#inspecting-the-normality-of-z-residuals-for-checking-overall-gof"></a>
 </h3>
-<p>A QQ plot based on Z-residuals graphically assesses the model’s overall GOF. Numerical checks are performed using Shapiro-Wilk (SW) or Shapiro-Francia (SF) normality tests.</p>
+<p>Under a correctly specified shared frailty model, Z-residuals should be approximately standard normal, so a Q–Q plot should closely follow the 45° reference line. Because Z-residuals are generated from randomized survival probabilities for censored observations, the realized Z-residual set (and any normality-test p-value) can vary from one randomization replicate to another.</p>
+<p>To assess overall goodness-of-fit (GOF), we primarily use Q–Q plots, and we report the replicate-specific Shapiro–Wilk (Z-SW) normality-test p-value as a compact numerical summary. The animation below shows the first 10 randomization replicates for both candidate models.</p>
 <div class="cell" data-layout-align="center">
 <details class="code-fold"><summary>GIF Generation Code (Folded)</summary><div class="sourceCode cell-code" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gif_qq_name</span> <span class="op">&lt;-</span> <span class="st">"qqplot_anim.gif"</span></span>
@@ -219,17 +220,22 @@ r_{ij}^{Z}(y_{ij}, \delta_{ij}, U_{ij})=-\Phi^{-1} (S_{ij}^R(y_{ij}, \delta_{ij}
 <span>  <span class="fu"><a href="../reference/qqnorm.zresid.html">qqnorm.zresid</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.logwbc</span>, irep <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </details><div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure><p><img src="demo_coxph_survival_savedfiles/qqplot_anim.gif" class="quarto-figure quarto-figure-center"></p>
-</figure>
+<div id="fig-qqplot-animation" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center" alt="Animated QQ plots of Z-residuals comparing WBC and log-WBC Cox frailty models.">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-qqplot-animation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="demo_coxph_survival_savedfiles/qqplot_anim.gif" class="quarto-figure quarto-figure-center" alt="Animated QQ plots of Z-residuals comparing WBC and log-WBC Cox frailty models.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-qqplot-animation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 1: Z-residual Q–Q plots for overall GOF (animation over 10 randomization replicates). Left: WBC model; right: log-WBC model. Each frame corresponds to one regenerated Z-residual set; the panel title reports the replicate-specific Z-SW p-value.
+</figcaption></figure>
 </div>
 </div>
 </div>
-<p>The QQ plots align well with the <span class="math inline">45^\circ</span> diagonal line, and numerical Z-SW tests yield large p-values, indicating adequate overall GOF for both models.</p>
+<p>Across frames, both models show QQ patterns close to the diagonal with no obvious tail inflation. In this LeukSurv example, the overall GOF check alone does not distinguish the two competing functional forms (raw WBC vs log-WBC); the more targeted covariate-specific diagnostics in Sections 4.5–4.6 are needed.</p>
 </section><section class="level3" data-number="4.5"><h3 data-number="4.5" id="assessing-homogeneity-of-grouped-z-residuals">
 <span class="header-section-number">4.5</span> Assessing Homogeneity of Grouped Z-Residuals<a class="anchor" aria-label="anchor" href="#assessing-homogeneity-of-grouped-z-residuals"></a>
 </h3>
-<p>We partition Z-residuals into <span class="math inline">k</span> groups based on the linear predictor (LP) to assess whether they are homogeneously distributed. Scatterplots show that the LOWESS lines remain close to zero, and boxplots suggest equal means and variances across groups.</p>
+<p>A key Z-residual diagnostic for model adequacy is <strong>homogeneity</strong>: after sorting observations by the linear predictor (LP) and splitting into (k) groups, the grouped Z-residuals should have (approximately) the same mean and variance across LP groups if the model is adequate. Graphically, we expect: - the LOWESS smooth in the Z-residual scatterplot vs LP to stay close to the horizontal line at 0, and - the grouped boxplots to show similar centers and spreads.</p>
+<p>We report two replicate-specific p-values to summarize the LP-group homogeneity checks. <strong>Z-AOV-LP</strong> is the ANOVA F-test p-value for equality of the <em>group means</em>, and <strong>Z-BL-LP</strong> is the Bartlett’s test p-value for equality of the <em>group variances</em>. In the LeukSurv example, across randomization replicates both the WBC and log-WBC models typically produce relatively large Z-AOV-LP and Z-BL-LP p-values, consistent with the visual impression that the LOWESS smooth stays near 0 and the grouped boxplots have comparable centers and spreads. Overall, LP-based grouping does not provide strong evidence of lack of fit for either model in this dataset.</p>
 <div class="cell" data-layout-align="center">
 <details class="code-fold"><summary>GIF Generation Code (Folded)</summary><div class="sourceCode cell-code" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gif_lp_name</span> <span class="op">&lt;-</span> <span class="st">"lp_anim.gif"</span></span>
@@ -240,8 +246,8 @@ r_{ij}^{Z}(y_{ij}, \delta_{ij}, U_{ij})=-\Phi^{-1} (S_{ij}^R(y_{ij}, \delta_{ij}
 <span>    expr <span class="op">=</span> <span class="op">{</span></span>
 <span>      <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span> <span class="op">{</span></span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>, mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">1.5</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.wbc</span>, x_axis_var<span class="op">=</span><span class="st">"lp"</span>, main.title <span class="op">=</span> <span class="st">"Scatter: WBC Model"</span>, irep<span class="op">=</span><span class="va">i</span><span class="op">)</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.logwbc</span>, x_axis_var<span class="op">=</span><span class="st">"lp"</span>, main.title <span class="op">=</span> <span class="st">"Scatter: log-WBC Model"</span>, irep<span class="op">=</span><span class="va">i</span><span class="op">)</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.wbc</span>, x_axis_var<span class="op">=</span><span class="st">"lp"</span>, main.title <span class="op">=</span> <span class="st">"Scatter: WBC Model"</span>, irep<span class="op">=</span><span class="va">i</span>,add_lowess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.logwbc</span>, x_axis_var<span class="op">=</span><span class="st">"lp"</span>, main.title <span class="op">=</span> <span class="st">"Scatter: log-WBC Model"</span>, irep<span class="op">=</span><span class="va">i</span>,add_lowess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.wbc</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, main.title <span class="op">=</span> <span class="st">"Boxplot: WBC Model"</span>, irep<span class="op">=</span><span class="va">i</span><span class="op">)</span></span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.logwbc</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, main.title <span class="op">=</span> <span class="st">"Boxplot: log-WBC Model"</span>, irep<span class="op">=</span><span class="va">i</span><span class="op">)</span></span>
 <span>      <span class="op">}</span></span>
@@ -253,20 +259,23 @@ r_{ij}^{Z}(y_{ij}, \delta_{ij}, U_{ij})=-\Phi^{-1} (S_{ij}^R(y_{ij}, \delta_{ij}
 <span><span class="va">local_lp</span> <span class="op">&lt;-</span> <span class="fu">get_local_asset</span><span class="op">(</span><span class="va">gif_lp_name</span>, <span class="va">extdata_path</span>, <span class="va">local_assets_dir</span><span class="op">)</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">local_lp</span><span class="op">)</span><span class="op">)</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html" class="external-link">include_graphics</a></span><span class="op">(</span><span class="va">local_lp</span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output-display">
-<div id="fig-zresid-scatter-box" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<div id="fig-zresid-scatter-box" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center" alt="Animated scatterplots and boxplots of Z-residuals versus linear predictor for WBC and log-WBC models.">
 <figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-zresid-scatter-box-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="demo_coxph_survival_savedfiles/lp_anim.gif" id="fig-zresid-scatter-box" class="quarto-figure quarto-figure-center">
+<img src="demo_coxph_survival_savedfiles/lp_anim.gif" class="quarto-figure quarto-figure-center" alt="Animated scatterplots and boxplots of Z-residuals versus linear predictor for WBC and log-WBC models.">
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-zresid-scatter-box-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure 1
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zresid-scatter-box-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 2: Homogeneity check by grouping Z-residuals over the linear predictor (LP) (animation over 10 randomization replicates). Top row: scatterplots with LOWESS smooth; bottom row: grouped boxplots. Each frame reports replicate-specific Z-AOV-LP (ANOVA for equal means) and Z-BL-LP (Bartlett’s test for equal variances) p-values.
 </figcaption></figure>
 </div>
 </div>
 </div>
+<p>In this dataset, the LP-based homogeneity diagnostic does not clearly separate the two candidate models. We therefore proceed to covariate-specific diagnostics to assess whether the functional form of the WBC effect is misspecified.</p>
 </section><section class="level3" data-number="4.6"><h3 data-number="4.6" id="identifying-misspecification-of-functional-form">
 <span class="header-section-number">4.6</span> Identifying Misspecification of Functional Form<a class="anchor" aria-label="anchor" href="#identifying-misspecification-of-functional-form"></a>
 </h3>
-<p>Inspecting Z-residuals against specific covariates reveals potential misspecification. In the <strong>lwbc model</strong>, scatterplots and boxplots against <code>logwbc</code> show a non-linear LOWESS trend. A very significant Z-AOV p-value for <code>logwbc</code> strongly suggests that the log transformation is inappropriate for modeling survival time in this context.</p>
+<p>To diagnose <strong>functional-form misspecification</strong> for a specific covariate, we inspect Z-residuals against that covariate (or its transformed version) and test whether grouped residual means differ across covariate intervals. If the functional form is adequate, the LOWESS curve should remain near 0 and grouped boxplots should have similar centers.</p>
+<p>Here we directly compare the WBC model plotted against <strong>wbc</strong>, and the log-WBC (lwbc) model plotted against <strong>logwbc</strong>.</p>
+<p>In the LeukSurv data, when diagnosing the functional form against log(wbc), the log-WBC model typically shows a pronounced systematic (non-linear) pattern in the LOWESS smooth and clear differences in grouped means, leading to consistently small <strong>Z-AOV-log(wbc)</strong> p-values across randomization replicates (e.g., &lt; 0.01 in the real-data analysis). By contrast, the WBC model does not show comparably strong evidence of misspecification in this view: its replicated Z-AOV p-values are generally much larger, in line with a flatter smooth around zero and more homogeneous grouped boxplots. This contrast remains stable across many randomization replicates (see Sections 5.2–5.3).</p>
 <div class="cell" data-layout-align="center">
 <details class="code-fold"><summary>GIF Generation Code (Folded)</summary><div class="sourceCode cell-code" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gif_wbc_name</span> <span class="op">&lt;-</span> <span class="st">"wbc_anim.gif"</span></span>
@@ -277,10 +286,11 @@ Figure 1
 <span>    expr <span class="op">=</span> <span class="op">{</span></span>
 <span>      <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span> <span class="op">{</span></span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>, mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">1.5</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.wbc</span>, x_axis_var <span class="op">=</span> <span class="st">"wbc"</span>, main.title <span class="op">=</span> <span class="st">"Scatter: WBC Model"</span>, irep<span class="op">=</span><span class="va">i</span><span class="op">)</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.logwbc</span>, x_axis_var <span class="op">=</span> <span class="st">"logwbc"</span>, main.title <span class="op">=</span> <span class="st">"Scatter: log-WBC Model"</span>, irep<span class="op">=</span><span class="va">i</span><span class="op">)</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.wbc</span>, x_axis_var <span class="op">=</span> <span class="st">"wbc"</span>, main.title <span class="op">=</span> <span class="st">"Scatter: WBC Model"</span>,</span>
+<span>        irep<span class="op">=</span><span class="va">i</span>,add_lowess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.logwbc</span>, x_axis_var <span class="op">=</span> <span class="st">"log(wbc)"</span>, main.title <span class="op">=</span> <span class="st">"Scatter: log-WBC Model"</span>,          irep<span class="op">=</span><span class="va">i</span>,add_lowess <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.wbc</span>, x_axis_var <span class="op">=</span> <span class="st">"wbc"</span>, main.title <span class="op">=</span> <span class="st">"Boxplot: WBC Model"</span>, irep<span class="op">=</span><span class="va">i</span><span class="op">)</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.logwbc</span>, x_axis_var <span class="op">=</span> <span class="st">"logwbc"</span>, main.title <span class="op">=</span> <span class="st">"Boxplot: log-WBC Model"</span>, irep<span class="op">=</span><span class="va">i</span><span class="op">)</span></span>
+<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.logwbc</span>, x_axis_var <span class="op">=</span> <span class="st">"log(wbc)"</span>, main.title <span class="op">=</span> <span class="st">"Boxplot: log-WBC Model"</span>, irep<span class="op">=</span><span class="va">i</span><span class="op">)</span></span>
 <span>      <span class="op">}</span></span>
 <span>    <span class="op">}</span>,</span>
 <span>    gif_file <span class="op">=</span> <span class="va">gif_wbc_path</span>, width <span class="op">=</span> <span class="fl">900</span>, height <span class="op">=</span> <span class="fl">900</span>, res <span class="op">=</span> <span class="fl">96</span>, delay <span class="op">=</span> <span class="fl">1</span></span>
@@ -290,12 +300,12 @@ Figure 1
 <span><span class="va">local_wbc</span> <span class="op">&lt;-</span> <span class="fu">get_local_asset</span><span class="op">(</span><span class="va">gif_wbc_name</span>, <span class="va">extdata_path</span>, <span class="va">local_assets_dir</span><span class="op">)</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">local_wbc</span><span class="op">)</span><span class="op">)</span> <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html" class="external-link">include_graphics</a></span><span class="op">(</span><span class="va">local_wbc</span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output-display">
-<div id="fig-zresid-scatter-box-wbc" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<div id="fig-zresid-scatter-box-wbc" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center" alt="Animated scatterplots and boxplots of Z-residuals versus WBC and log(WBC) for competing models.">
 <figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-zresid-scatter-box-wbc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="demo_coxph_survival_savedfiles/wbc_anim.gif" id="fig-zresid-scatter-box-wbc" class="quarto-figure quarto-figure-center">
+<img src="demo_coxph_survival_savedfiles/wbc_anim.gif" class="quarto-figure quarto-figure-center" alt="Animated scatterplots and boxplots of Z-residuals versus WBC and log(WBC) for competing models.">
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-zresid-scatter-box-wbc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure 2
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zresid-scatter-box-wbc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 3: Covariate-specific functional-form diagnostic (animation over 10 randomization replicates). Left column (WBC model): Z-residuals vs wbc; right column (log-WBC model): Z-residuals vs logwbc. Top row: scatterplots with LOWESS smooth; bottom row: grouped boxplots with replicate-specific Z-AOV (covariate) p-values reported in the titles.
 </figcaption></figure>
 </div>
 </div>
@@ -306,28 +316,14 @@ Figure 2
 <section class="level3" data-number="5.1"><h3 data-number="5.1" id="quantitative-evaluation-of-homogeneity">
 <span class="header-section-number">5.1</span> Quantitative Evaluation of Homogeneity<a class="anchor" aria-label="anchor" href="#quantitative-evaluation-of-homogeneity"></a>
 </h3>
-<p>The table below show test results for the first 10 repetitions.</p>
+<p>To quantify the homogeneity of grouped Z-residuals, we test whether the grouped residuals are “homogeneously distributed” by examining equality of group means using an ANOVA F-test (Z-AOV). In addition, we report Z-BL p-values from Bartlett’s test as a complementary check for equality of variances across the same groups.</p>
+<p>Table 1 summarizes the first 10 randomization repetitions. In these repetitions, the LP-grouping diagnostics (Z-AOV-LP and Z-BL-LP) yield predominantly non-small p-values for both models, consistent with no strong evidence of non-homogeneity against the linear predictor. In contrast, the covariate-grouping test for the log-WBC specification (aov.lwbc) is consistently near zero, indicating strong group-mean differences across log(wbc) intervals.</p>
 <div class="cell" data-layout-align="center">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sw.wbc</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/sw.test.zresid.html">sw.test.zresid</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.wbc</span><span class="op">)</span>; <span class="va">sw.lwbc</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/sw.test.zresid.html">sw.test.zresid</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.logwbc</span><span class="op">)</span></span>
-<span><span class="va">sf.wbc</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/sf.test.zresid.html">sf.test.zresid</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.wbc</span><span class="op">)</span>; <span class="va">sf.lwbc</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/sf.test.zresid.html">sf.test.zresid</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.logwbc</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">aov.wbc.lp</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/aov.test.zresid.html">aov.test.zresid</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.wbc</span>, X<span class="op">=</span><span class="st">"lp"</span>, k.anova<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
-<span><span class="va">aov.lwbc.lp</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/aov.test.zresid.html">aov.test.zresid</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.logwbc</span>, X<span class="op">=</span><span class="st">"lp"</span>, k.anova<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">bl.wbc.lp</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/bartlett.test.zresid.html">bartlett.test.zresid</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.wbc</span>, X<span class="op">=</span><span class="st">"lp"</span>, k.bl<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
-<span><span class="va">bl.lwbc.lp</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/bartlett.test.zresid.html">bartlett.test.zresid</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.logwbc</span>, X<span class="op">=</span><span class="st">"lp"</span>, k.bl<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">aov.wbc</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/aov.test.zresid.html">aov.test.zresid</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.wbc</span>, X<span class="op">=</span><span class="st">"wbc"</span>, k.anova<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
-<span><span class="va">aov.lwbc</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/aov.test.zresid.html">aov.test.zresid</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.logwbc</span>, X<span class="op">=</span><span class="st">"logwbc"</span>, k.anova<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">bl.wbc</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/bartlett.test.zresid.html">bartlett.test.zresid</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.wbc</span>, X<span class="op">=</span><span class="st">"wbc"</span>, k.bl<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
-<span><span class="va">bl.lwbc</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/bartlett.test.zresid.html">bartlett.test.zresid</a></span><span class="op">(</span><span class="va">Zresid.LeukSurv.logwbc</span>, X<span class="op">=</span><span class="st">"logwbc"</span>, k.bl<span class="op">=</span><span class="fl">10</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">homogeneity_tests</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">aov.wbc.lp</span>, <span class="va">aov.lwbc.lp</span>, <span class="va">bl.wbc.lp</span>, <span class="va">bl.lwbc.lp</span>, <span class="va">aov.wbc</span>, <span class="va">aov.lwbc</span>, <span class="va">bl.wbc</span>, <span class="va">bl.lwbc</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">homogeneity_tests</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">gt</span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">tab_header</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Summary of Residual Homogeneity Tests"</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">fmt_number</span><span class="op">(</span>columns <span class="op">=</span> <span class="fu">everything</span><span class="op">(</span><span class="op">)</span>, decimals <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div>
-</details><div class="cell-output-display">
+<div id="tbl-homo-first10" class="cell quarto-float quarto-figure quarto-figure-center" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-homo-first10-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 1: Summary of residual homogeneity tests for the first 10 randomization repetitions. Z-AOV are ANOVA F-test p-values for equality of grouped Z-residual means; Z-BL are Bartlett’s test p-values for equality of variances. Suffix “.lp” indicates grouping by the linear predictor; columns without “.lp” indicate grouping by the covariate scale used in the diagnostic.
+</figcaption><div aria-describedby="tbl-homo-first10-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
 <div id="djhqulskwe" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#djhqulskwe table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
@@ -777,7 +773,7 @@ Figure 2
   height: 0px !important;
 }
 </style>
-<table class="table gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<table class="table gt_table do-not-create-environment cell caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
 <thead>
 <tr class="gt_heading header">
 <th colspan="8" class="gt_heading gt_title gt_font_normal gt_bottom_border">Summary of Residual Homogeneity Tests</th>
@@ -899,10 +895,18 @@ Figure 2
 </div>
 </div>
 </div>
+</figure>
+</div>
+</div>
 </section><section class="level3" data-number="5.2"><h3 data-number="5.2" id="summary-of-minimum-p-values-p_min">
 <span class="header-section-number">5.2</span> Summary of Minimum P-values (<span class="math inline">p_{min}</span>)<a class="anchor" aria-label="anchor" href="#summary-of-minimum-p-values-p_min"></a>
 </h3>
+<p>To connect the above visuals to the replicated-test summary used in the paper, the following compact table reproduces the LeukSurv comparison (AIC, CZ-CSF p-value, and <span class="math inline">p_{min}</span> summaries over 1000 replicates). Notably, the log-WBC model fails the Z-AOV-log(wbc) diagnostic decisively, even though some overall-fit diagnostics (e.g., CZ-CSF and normality-based tests) do not flag this inadequacy.</p>
 <div class="cell" data-layout-align="center">
+<div id="tbl-leuksurv-summary" class="cell quarto-float quarto-figure quarto-figure-center" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-leuksurv-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 2: LeukSurv model comparison and replicated-test summaries (AIC, CZ-CSF p-value, and <span class="math inline">p_{min}</span> across 1000 randomization replicates).
+</figcaption><div aria-describedby="tbl-leuksurv-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
 <div id="mzwkvxpoki" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#mzwkvxpoki table {
@@ -1353,52 +1357,58 @@ Figure 2
   height: 0px !important;
 }
 </style>
-<table class="table gt_table caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-<thead>
-<tr class="gt_heading header">
-<th colspan="3" class="gt_heading gt_title gt_font_normal"><strong>Summary of Minimum P-values</strong></th>
-</tr>
-<tr class="gt_heading even">
-<th colspan="3" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border">Diagnostic test results for LeukSurv models</th>
-</tr>
-<tr class="gt_col_headings header">
-<th id="Test" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Test</th>
-<th id="WBC_Val" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">WBC Model</th>
-<th id="LWBC_Val" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Log-WBC Model</th>
-</tr>
-</thead>
+<table class="table gt_table do-not-create-environment cell caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead><tr class="gt_col_headings header">
+<th id="Model" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Model</th>
+<th id="AIC" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">AIC</th>
+<th id="CZ-CSF-(p-value)" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">CZ-CSF (p-value)</th>
+<th id="Z-SW-(p_min)" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Z-SW (p_min)</th>
+<th id="Z-SF-(p_min)" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Z-SF (p_min)</th>
+<th id="Z-AOV-LP-(p_min)" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Z-AOV-LP (p_min)</th>
+<th id="Z-AOV-log(wbc)-(p_min)" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Z-AOV-log(wbc) (p_min)</th>
+</tr></thead>
 <tbody class="gt_table_body">
 <tr class="odd">
-<td class="gt_row gt_left" headers="Test">Shapiro-Wilk</td>
-<td class="gt_row gt_right" headers="WBC_Val">0.4964</td>
-<td class="gt_row gt_right" headers="LWBC_Val">0.5793</td>
+<td class="gt_row gt_left" headers="Model">WBC model</td>
+<td class="gt_row gt_right" headers="AIC">3,111.669</td>
+<td class="gt_row gt_right" headers="CZ-CSF (p-value)">0.255</td>
+<td class="gt_row gt_right" headers="Z-SW (p_min)">0.495</td>
+<td class="gt_row gt_right" headers="Z-SF (p_min)">0.693</td>
+<td class="gt_row gt_right" headers="Z-AOV-LP (p_min)">0.703</td>
+<td class="gt_row gt_right" headers="Z-AOV-log(wbc) (p_min)">0.074</td>
 </tr>
 <tr class="even">
-<td class="gt_row gt_left" headers="Test">Shapiro-Francia</td>
-<td class="gt_row gt_right" headers="WBC_Val">0.6920</td>
-<td class="gt_row gt_right" headers="LWBC_Val">0.7133</td>
-</tr>
-<tr class="odd">
-<td class="gt_row gt_left" headers="Test">ANOVA (lp)</td>
-<td class="gt_row gt_right" headers="WBC_Val">0.9908</td>
-<td class="gt_row gt_right" headers="LWBC_Val">0.9749</td>
-</tr>
-<tr class="even">
-<td class="gt_row gt_left" headers="Test">ANOVA (Variable)</td>
-<td class="gt_row gt_right" headers="WBC_Val">0.7865</td>
-<td class="gt_row gt_right" headers="LWBC_Val" style="color: #FF0000; font-weight: bold">0.0000</td>
+<td class="gt_row gt_left" headers="Model">log-WBC model</td>
+<td class="gt_row gt_right" headers="AIC">3,132.105</td>
+<td class="gt_row gt_right" headers="CZ-CSF (p-value)">0.305</td>
+<td class="gt_row gt_right" headers="Z-SW (p_min)">0.579</td>
+<td class="gt_row gt_right" headers="Z-SF (p_min)">0.781</td>
+<td class="gt_row gt_right" headers="Z-AOV-LP (p_min)">0.978</td>
+<td class="gt_row gt_right" headers="Z-AOV-log(wbc) (p_min)">&lt;1e-5</td>
 </tr>
 </tbody>
+<tfoot><tr class="gt_sourcenotes odd">
+<td colspan="7" class="gt_sourcenote">$p_{min}$ is a conservative upper-bound summary for replicated p-values; a practical failure cutoff can be much larger than 0.05 (e.g., 0.25).</td>
+</tr></tfoot>
 </table>
 </div>
+</div>
+</div>
+</figure>
 </div>
 </div>
 </section><section class="level3" data-number="5.3"><h3 data-number="5.3" id="histograms-of-replicated-p-values">
 <span class="header-section-number">5.3</span> Histograms of Replicated P-values<a class="anchor" aria-label="anchor" href="#histograms-of-replicated-p-values"></a>
 </h3>
+<p>These histograms reveal that the Z-SW, Z-SF, and Z-AOV-LP tests for both models have a substantial proportion of p-values greater than 0.05, leading to large pmin values. In contrast, the replicated Z-AOV-log(wbc) p-values for the lwbc model are nearly all smaller than 0.001, providing strong evidence that the log transformation of wbc is inappropriate for modelling the survival time.</p>
 <div class="cell" data-layout-align="center">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">2</span><span class="op">)</span>, mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">pmin.sw.wbc</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/pvalue.min.html">pvalue.min</a></span><span class="op">(</span>pv<span class="op">=</span><span class="va">sw.wbc</span><span class="op">)</span>; <span class="va">pmin.sw.lwbc</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/pvalue.min.html">pvalue.min</a></span><span class="op">(</span>pv<span class="op">=</span><span class="va">sw.lwbc</span><span class="op">)</span></span>
+<span><span class="va">pmin.sf.wbc</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/pvalue.min.html">pvalue.min</a></span><span class="op">(</span>pv<span class="op">=</span><span class="va">sf.wbc</span><span class="op">)</span>; <span class="va">pmin.sf.lwbc</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/pvalue.min.html">pvalue.min</a></span><span class="op">(</span>pv<span class="op">=</span><span class="va">sf.lwbc</span><span class="op">)</span></span>
+<span><span class="va">pmin.aov.lp.wbc</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/pvalue.min.html">pvalue.min</a></span><span class="op">(</span>pv<span class="op">=</span><span class="va">aov.wbc.lp</span><span class="op">)</span>; <span class="va">pmin.aov.lp.lwbc</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/pvalue.min.html">pvalue.min</a></span><span class="op">(</span>pv<span class="op">=</span><span class="va">aov.lwbc.lp</span><span class="op">)</span></span>
+<span><span class="va">pmin.aov.wbc</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/pvalue.min.html">pvalue.min</a></span><span class="op">(</span>pv<span class="op">=</span><span class="va">aov.wbc</span><span class="op">)</span>; <span class="va">pmin.aov.lwbc</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/pvalue.min.html">pvalue.min</a></span><span class="op">(</span>pv<span class="op">=</span><span class="va">aov.lwbc</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">2</span><span class="op">)</span>, mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">sw.wbc</span>, main <span class="op">=</span> <span class="st">"Z-SW: WBC Model"</span>, breaks <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">pmin.sw.wbc</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">sw.lwbc</span>, main <span class="op">=</span> <span class="st">"Z-SW: log-WBC Model"</span>, breaks <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">pmin.sw.lwbc</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">sf.wbc</span>, main <span class="op">=</span> <span class="st">"Z-SF: WBC Model"</span>, breaks <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="va">pmin.sf.wbc</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span>
@@ -1413,7 +1423,7 @@ Figure 2
 <img src="demo_coxph_survival_files/figure-html/fig-zresid-hist-pvalues-1.png" class="quarto-figure quarto-figure-center" width="864">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zresid-hist-pvalues-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure 3: Histograms of 1000 replicated p-values for WBC and log-WBC models.
+Figure 4: Histograms of 1000 replicated Z-residual test p-values for the wbc model (left panels) and the lwbc model (right panels). The vertical red lines indicate pmin for the 1000 replicated p-values. Note that the upper limit of the x-axis for Z-AOV-log(wbc) p-values for the lwbc model is 0.005, and 1 for others.
 </figcaption></figure>
 </div>
 </div>
@@ -1424,75 +1434,551 @@ Figure 3: Histograms of 1000 replicated p-values for WBC and log-WBC models.
 <section class="level3" data-number="6.1"><h3 data-number="6.1" id="censored-z-residuals">
 <span class="header-section-number">6.1</span> Censored Z-residuals<a class="anchor" aria-label="anchor" href="#censored-z-residuals"></a>
 </h3>
+<p>We first report the <strong>CZ-CSF</strong> p-values, where “censored Z-residuals” are defined by <span class="math display">
+r^{n}_{ij}(t_{ij}) = -\Phi^{-1}\!\left(\widehat{S}_{ij}(t_{ij})\right),
+</span> and normality is assessed using the SF test for multiply censored data (EnvStats::gofTestCensored).</p>
+<p>As an overall goodness-of-fit check, CZ-CSF evaluates the residual distribution but does not assess specific model assumptions such as the functional form of covariates.</p>
 <div class="cell" data-layout-align="center">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">censored.Zresid.wbc</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/surv_residuals.html">surv_residuals</a></span><span class="op">(</span>fit.object<span class="op">=</span><span class="va">fit_LeukSurv_wbc</span>, data<span class="op">=</span><span class="va">LeukSurv</span>, residual.type<span class="op">=</span><span class="st">"censored Z-residual"</span><span class="op">)</span></span>
-<span><span class="va">censored.Zresid.lwbc</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/surv_residuals.html">surv_residuals</a></span><span class="op">(</span>fit.object<span class="op">=</span><span class="va">fit_LeukSurv_logwbc</span>, data<span class="op">=</span><span class="va">LeukSurv</span>, residual.type<span class="op">=</span><span class="st">"censored Z-residual"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="../reference/gof.censored.zresidual.html">gof.censored.zresidual</a></span><span class="op">(</span>censored.Zresidual<span class="op">=</span><span class="va">censored.Zresid.wbc</span><span class="op">)</span></span></code></pre></div>
-</details><div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.5702324</code></pre>
+<div id="tbl-czcsf" class="cell quarto-float quarto-figure quarto-figure-center" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-czcsf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table 3: CZ-CSF p-values (SF normality test for censored Z-residuals) for the wbc and lwbc models.
+</figcaption><div aria-describedby="tbl-czcsf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div id="pojguwnjqb" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#pojguwnjqb table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#pojguwnjqb thead, #pojguwnjqb tbody, #pojguwnjqb tfoot, #pojguwnjqb tr, #pojguwnjqb td, #pojguwnjqb th {
+  border-style: none;
+}
+
+#pojguwnjqb p {
+  margin: 0;
+  padding: 0;
+}
+
+#pojguwnjqb .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#pojguwnjqb .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#pojguwnjqb .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#pojguwnjqb .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#pojguwnjqb .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#pojguwnjqb .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pojguwnjqb .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#pojguwnjqb .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#pojguwnjqb .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#pojguwnjqb .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#pojguwnjqb .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#pojguwnjqb .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#pojguwnjqb .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#pojguwnjqb .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#pojguwnjqb .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#pojguwnjqb .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#pojguwnjqb .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#pojguwnjqb .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#pojguwnjqb .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pojguwnjqb .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#pojguwnjqb .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#pojguwnjqb .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#pojguwnjqb .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pojguwnjqb .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#pojguwnjqb .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#pojguwnjqb .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pojguwnjqb .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pojguwnjqb .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#pojguwnjqb .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pojguwnjqb .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#pojguwnjqb .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#pojguwnjqb .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#pojguwnjqb .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pojguwnjqb .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#pojguwnjqb .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#pojguwnjqb .gt_left {
+  text-align: left;
+}
+
+#pojguwnjqb .gt_center {
+  text-align: center;
+}
+
+#pojguwnjqb .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#pojguwnjqb .gt_font_normal {
+  font-weight: normal;
+}
+
+#pojguwnjqb .gt_font_bold {
+  font-weight: bold;
+}
+
+#pojguwnjqb .gt_font_italic {
+  font-style: italic;
+}
+
+#pojguwnjqb .gt_super {
+  font-size: 65%;
+}
+
+#pojguwnjqb .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#pojguwnjqb .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#pojguwnjqb .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#pojguwnjqb .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#pojguwnjqb .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#pojguwnjqb .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#pojguwnjqb .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#pojguwnjqb .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#pojguwnjqb div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+<table class="table gt_table do-not-create-environment cell caption-top" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead><tr class="gt_col_headings header">
+<th id="Model" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Model</th>
+<th id="CZ-CSF-p-value" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">CZ-CSF p-value</th>
+</tr></thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="Model">wbc model</td>
+<td class="gt_row gt_right" headers="CZ-CSF p-value">0.5702</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Model">lwbc model</td>
+<td class="gt_row gt_right" headers="CZ-CSF p-value">0.0754</td>
+</tr>
+</tbody>
+</table>
 </div>
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/gof.censored.zresidual.html">gof.censored.zresidual</a></span><span class="op">(</span>censored.Zresidual<span class="op">=</span><span class="va">censored.Zresid.lwbc</span><span class="op">)</span></span></code></pre></div>
-</details><div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.07535993</code></pre>
+</div>
+</div>
+</figure>
 </div>
 </div>
 </section><section class="level3" data-number="6.2"><h3 data-number="6.2" id="cox-snell-residuals">
 <span class="header-section-number">6.2</span> Cox-Snell Residuals<a class="anchor" aria-label="anchor" href="#cox-snell-residuals"></a>
 </h3>
+<p>The Cox–Snell residual is defined as <span class="math display">
+r^{CS}_{ij}(t_{ij}) = -\log\!\left(\widehat{S}_{ij}(t_{ij})\right).
+</span></p>
+<p>Overall GOF checks based on CS residuals are commonly used, but they may not provide sufficient information about specific model inadequacies (e.g., the functional form of a covariate).</p>
 <div class="cell" data-layout-align="center">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb17"><pre class="downlit sourceCode r">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ucs.wbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/surv_residuals.html">surv_residuals</a></span><span class="op">(</span>fit.object <span class="op">=</span> <span class="va">fit_LeukSurv_wbc</span>, data<span class="op">=</span> <span class="va">LeukSurv</span>, residual.type <span class="op">=</span> <span class="st">"Cox-Snell"</span> <span class="op">)</span></span>
 <span><span class="va">ucs.lwbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/surv_residuals.html">surv_residuals</a></span><span class="op">(</span>fit.object <span class="op">=</span> <span class="va">fit_LeukSurv_logwbc</span>, data<span class="op">=</span> <span class="va">LeukSurv</span>, residual.type <span class="op">=</span> <span class="st">"Cox-Snell"</span> <span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>; <span class="fu"><a href="../reference/plot.cs.residual.html">plot.cs.residual</a></span><span class="op">(</span><span class="va">ucs.wbc</span>, main.title <span class="op">=</span> <span class="st">"CS Residuals: WBC Model"</span><span class="op">)</span>; <span class="fu"><a href="../reference/plot.cs.residual.html">plot.cs.residual</a></span><span class="op">(</span><span class="va">ucs.lwbc</span>, main.title <span class="op">=</span> <span class="st">"CS Residuals: log-WBC Model"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure><p><img src="demo_coxph_survival_files/figure-html/unnamed-chunk-3-1.png" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
-</figure>
+<div id="fig-Cox-Snell_Residuals" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-Cox-Snell_Residuals-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="demo_coxph_survival_files/figure-html/fig-Cox-Snell_Residuals-1.png" class="quarto-figure quarto-figure-center" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-Cox-Snell_Residuals-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 5: Cumulative hazard plot of Cox–Snell (CS) residuals for the wbc and lwbc models. With censoring, the Kaplan–Meier estimate of the survivor function of CS residuals is compared against the 45° straight line as an overall diagnostic.
+</figcaption></figure>
 </div>
 </div>
 </div>
 </section><section class="level3" data-number="6.3"><h3 data-number="6.3" id="martingale-residuals">
 <span class="header-section-number">6.3</span> Martingale Residuals<a class="anchor" aria-label="anchor" href="#martingale-residuals"></a>
 </h3>
+<p>To gain further insights, residual scatterplots are often augmented with LOWESS lines; however, the visual interpretation can still be subjective, and numerical tests are difficult to derive because these residuals lack a reference distribution under censoring.</p>
 <div class="cell" data-layout-align="center">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb18"><pre class="downlit sourceCode r">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">martg.wbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/surv_residuals.html">surv_residuals</a></span><span class="op">(</span>fit.object <span class="op">=</span> <span class="va">fit_LeukSurv_wbc</span>, data<span class="op">=</span> <span class="va">LeukSurv</span>, residual.type <span class="op">=</span> <span class="st">"martingale"</span><span class="op">)</span></span>
-<span><span class="va">martg.lwbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/surv_residuals.html">surv_residuals</a></span><span class="op">(</span>fit.object <span class="op">=</span> <span class="va">fit_LeukSurv_logwbc</span>, data<span class="op">=</span> <span class="va">LeukSurv</span>, residual.type <span class="op">=</span> <span class="st">"martingale"</span><span class="op">)</span></span></code></pre></div>
-</details>
-</div>
-<div class="cell" data-layout-align="center">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">martg.lwbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/surv_residuals.html">surv_residuals</a></span><span class="op">(</span>fit.object <span class="op">=</span> <span class="va">fit_LeukSurv_logwbc</span>, data<span class="op">=</span> <span class="va">LeukSurv</span>, residual.type <span class="op">=</span> <span class="st">"martingale"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot.martg.resid.html">plot.martg.resid</a></span><span class="op">(</span><span class="va">martg.wbc</span>, x_axis_var<span class="op">=</span><span class="st">"wbc"</span>, main.title <span class="op">=</span> <span class="st">"Martingale Residuals: WBC Model"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot.martg.resid.html">plot.martg.resid</a></span><span class="op">(</span><span class="va">martg.lwbc</span>, x_axis_var<span class="op">=</span><span class="st">"logwbc"</span>, main.title <span class="op">=</span> <span class="st">"Martingale Residuals: log-WBC Model"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure><p><img src="demo_coxph_survival_files/figure-html/unnamed-chunk-4-1.png" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
-</figure>
+<div id="fig-Martingale_Residuals" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-Martingale_Residuals-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="demo_coxph_survival_files/figure-html/fig-Martingale_Residuals-1.png" class="quarto-figure quarto-figure-center" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-Martingale_Residuals-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 6: Martingale residual plots against wbc and log(wbc) for the wbc and lwbc models, with a LOWESS smooth. Martingale residuals are commonly used for visually assessing covariate functional form, but they are asymmetric and lack a lower bound; moreover, deriving numerical tests is challenging due to censoring and the lack of a reference distribution.
+</figcaption></figure>
 </div>
 </div>
 </div>
 </section><section class="level3" data-number="6.4"><h3 data-number="6.4" id="deviance-residuals">
 <span class="header-section-number">6.4</span> Deviance Residuals<a class="anchor" aria-label="anchor" href="#deviance-residuals"></a>
 </h3>
+<p>Although deviance residuals reduce skewness relative to martingale residuals and can improve visual assessment, objective numerical measures remain hard to construct under censoring because these residuals do not admit a convenient reference distribution.</p>
 <div class="cell" data-layout-align="center">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb20"><pre class="downlit sourceCode r">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dev.wbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/surv_residuals.html">surv_residuals</a></span><span class="op">(</span>fit.object <span class="op">=</span> <span class="va">fit_LeukSurv_wbc</span>, data<span class="op">=</span> <span class="va">LeukSurv</span>, residual.type <span class="op">=</span> <span class="st">"deviance"</span><span class="op">)</span></span>
-<span><span class="va">dev.lwbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/surv_residuals.html">surv_residuals</a></span><span class="op">(</span>fit.object <span class="op">=</span> <span class="va">fit_LeukSurv_logwbc</span>, data<span class="op">=</span> <span class="va">LeukSurv</span>, residual.type <span class="op">=</span> <span class="st">"deviance"</span><span class="op">)</span></span></code></pre></div>
-</details>
-</div>
-<div class="cell" data-layout-align="center">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">dev.lwbc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/surv_residuals.html">surv_residuals</a></span><span class="op">(</span>fit.object <span class="op">=</span> <span class="va">fit_LeukSurv_logwbc</span>, data<span class="op">=</span> <span class="va">LeukSurv</span>, residual.type <span class="op">=</span> <span class="st">"deviance"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot.dev.resid.html">plot.dev.resid</a></span><span class="op">(</span><span class="va">dev.wbc</span>, x_axis_var<span class="op">=</span><span class="st">"wbc"</span>, main.title <span class="op">=</span> <span class="st">"Deviance Residuals: WBC Model"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot.dev.resid.html">plot.dev.resid</a></span><span class="op">(</span><span class="va">dev.lwbc</span>, x_axis_var<span class="op">=</span><span class="st">"logwbc"</span>, main.title <span class="op">=</span> <span class="st">"Deviance Residuals: log-WBC Model"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output-display">
-<div class="quarto-figure quarto-figure-center">
-<figure><p><img src="demo_coxph_survival_files/figure-html/unnamed-chunk-5-1.png" class="quarto-figure quarto-figure-center" style="width:100.0%"></p>
-</figure>
+<div id="fig-Deviance_Residuals" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-Deviance_Residuals-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="demo_coxph_survival_files/figure-html/fig-Deviance_Residuals-1.png" class="quarto-figure quarto-figure-center" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-Deviance_Residuals-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure 7: Deviance residual plots against wbc and log(wbc) for the wbc and lwbc models, with a LOWESS smooth. Deviance residuals are a normalized transformation of martingale residuals that aim to achieve symmetry; when the fitted model is appropriate, they have mean zero and are approximately symmetrically distributed around zero.
+</figcaption></figure>
 </div>
 </div>
 </div>
