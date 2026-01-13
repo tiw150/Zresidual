@@ -4,7 +4,7 @@
 \alias{Zresidual.coxph.survival}
 \title{Z-residuals for Cox proportional hazards models (survival package)}
 \usage{
-\method{Zresidual}{coxph.survival}(object, nrep = 1, data = NULL, type = NULL, method = NULL, ...)
+\method{Zresidual}{coxph.survival}(object, nrep = 1, data = NULL, type = "survival", method = NULL, ...)
 }
 \arguments{
 \item{object}{A fitted \code{\link[survival]{coxph}} model. Supports

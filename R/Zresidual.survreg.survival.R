@@ -39,7 +39,7 @@
 #'
 #' @method Zresidual survreg.survival
 #' @export
-Zresidual.survreg.survival <- function(object,nrep = 1,data = NULL,type = NULL, method=NULL,
+Zresidual.survreg.survival <- function(object,nrep = 1,data = NULL,type = "survival", method=NULL,
                                        ...) {
 
   out <- Zresidual_survreg_survival(

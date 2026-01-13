@@ -93,7 +93,7 @@
 Zresidual.coxph.survival <- function(object,
                                      nrep = 1,
                                      data = NULL,
-                                     type   = NULL,
+                                     type   = "survival",
                                      method = NULL,...) {
 
   frailty_terms <- attr(object$terms, "specials")$frailty
@@ -321,7 +321,8 @@ Zresidual_coxph_frailty_survival <-
           linear.pred = lp,
           covariates = fix_var,
           censored.status = censored.status,
-          object.model.frame = mf
+          object.model.frame = mf,
+          type = "survival"
         )
       )
     }

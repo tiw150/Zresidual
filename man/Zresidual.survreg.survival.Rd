@@ -4,7 +4,7 @@
 \alias{Zresidual.survreg.survival}
 \title{Z-residuals for parametric survival regression models (survival)}
 \usage{
-\method{Zresidual}{survreg.survival}(object, nrep = 1, data = NULL, type = NULL, method = NULL, ...)
+\method{Zresidual}{survreg.survival}(object, nrep = 1, data = NULL, type = "survival", method = NULL, ...)
 }
 \arguments{
 \item{object}{A fitted \code{\link[survival:survreg]{survival::survreg()}} model.}

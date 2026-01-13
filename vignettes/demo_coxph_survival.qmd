@@ -262,6 +262,7 @@ We report two replicate-specific p-values to summarize the LP-group homogeneity 
 #| code-fold: true
 #| fig-alt: "Animated scatterplots and boxplots of Z-residuals versus linear predictor for WBC and log-WBC models."
 
+
 gif_lp_name <- "lp_anim.gif"
 gif_lp_path <- file.path(extdata_path, gif_lp_name)
 
@@ -269,9 +270,11 @@ if (is_dev && (force_rerun || !file.exists(gif_lp_path))) {
   gifski::save_gif(
     expr = {
       for (i in 1:10) {
-        par(mfrow = c(2, 2), mar = c(4, 4, 1.5, 2))
-        plot(Zresid.LeukSurv.wbc, x_axis_var="lp", main.title = "Scatter: WBC Model", irep=i,add_lowess = TRUE)
-        plot(Zresid.LeukSurv.logwbc, x_axis_var="lp", main.title = "Scatter: log-WBC Model", irep=i,add_lowess = TRUE)
+        par(mfrow = c(2, 2))
+        plot(Zresid.LeukSurv.wbc, x_axis_var="lp", main.title = "Scatter: WBC Model", 
+             irep=i,add_lowess = TRUE)
+        plot(Zresid.LeukSurv.logwbc, x_axis_var="lp", main.title = "Scatter: log-WBC Model",
+             irep=i,add_lowess = TRUE)
         boxplot(Zresid.LeukSurv.wbc, x_axis_var = "lp", main.title = "Boxplot: WBC Model", irep=i)
         boxplot(Zresid.LeukSurv.logwbc, x_axis_var = "lp", main.title = "Boxplot: log-WBC Model", irep=i)
       }
@@ -314,9 +317,9 @@ if (is_dev && (force_rerun || !file.exists(gif_wbc_path))) {
         par(mfrow = c(2, 2), mar = c(4, 4, 1.5, 2))
         plot(Zresid.LeukSurv.wbc, x_axis_var = "wbc", main.title = "Scatter: WBC Model",
         irep=i,add_lowess = TRUE)
-        plot(Zresid.LeukSurv.logwbc, x_axis_var = "log(wbc)", main.title = "Scatter: log-WBC Model",          irep=i,add_lowess = TRUE)
+        plot(Zresid.LeukSurv.logwbc, x_axis_var = "logwbc", main.title = "Scatter: log-WBC Model",          irep=i,add_lowess = TRUE)
         boxplot(Zresid.LeukSurv.wbc, x_axis_var = "wbc", main.title = "Boxplot: WBC Model", irep=i)
-        boxplot(Zresid.LeukSurv.logwbc, x_axis_var = "log(wbc)", main.title = "Boxplot: log-WBC Model", irep=i)
+        boxplot(Zresid.LeukSurv.logwbc, x_axis_var = "logwbc", main.title = "Boxplot: log-WBC Model", irep=i)
       }
     },
     gif_file = gif_wbc_path, width = 900, height = 900, res = 96, delay = 1
@@ -363,7 +366,7 @@ homogeneity_tests %>% head(10) %>% gt() %>% tab_header(title = "Summary of Resid
 
 ### Summary of Minimum P-values ($p_{min}$)
 To connect the above visuals to the replicated-test summary used in the paper, the following compact table reproduces the LeukSurv comparison (AIC, CZ-CSF p-value, and $p_{min}$ summaries over 1000 replicates). Notably, the log-WBC model fails the Z-AOV-log(wbc) diagnostic decisively, even though some overall-fit diagnostics (e.g., CZ-CSF and normality-based tests) do not flag this inadequacy.
-```{r pmin-table, echo=FALSE}
+```{r}
 #| label: tbl-leuksurv-summary
 #| echo: false
 #| tbl-cap: "LeukSurv model comparison and replicated-test summaries (AIC, CZ-CSF p-value, and $p_{min}$ across 1000 randomization replicates)."
@@ -481,7 +484,7 @@ $$
 
 Overall GOF checks based on CS residuals are commonly used, but they may not provide sufficient information about specific model inadequacies (e.g., the functional form of a covariate).
 
-```{r Cox-Snell Residuals}
+```{r}
 #| label: fig-Cox-Snell_Residuals
 #| fig-cap: "Cumulative hazard plot of Cox–Snell (CS) residuals for the wbc and lwbc models. With censoring, the Kaplan–Meier estimate of the survivor function of CS residuals is compared against the 45° straight line as an overall diagnostic."
 #| fig-align: center
@@ -495,7 +498,7 @@ par(mfrow = c(1, 2)); plot.cs.residual(ucs.wbc, main.title = "CS Residuals: WBC 
 ### Martingale Residuals
 To gain further insights, residual scatterplots are often augmented with LOWESS lines; however, the visual interpretation can still be subjective, and numerical tests are difficult to derive because these residuals lack a reference distribution under censoring.
 
-```{r martingale-residuals}
+```{r }
 #| label: fig-Martingale_Residuals
 #| fig-cap: "Martingale residual plots against wbc and log(wbc) for the wbc and lwbc models, with a LOWESS smooth. Martingale residuals are commonly used for visually assessing covariate functional form, but they are asymmetric and lack a lower bound; moreover, deriving numerical tests is challenging due to censoring and the lack of a reference distribution."
 #| fig-align: center
@@ -511,7 +514,7 @@ plot.martg.resid(martg.lwbc, x_axis_var="logwbc", main.title = "Martingale Resid
 ### Deviance Residuals
 Although deviance residuals reduce skewness relative to martingale residuals and can improve visual assessment, objective numerical measures remain hard to construct under censoring because these residuals do not admit a convenient reference distribution. 
 
-```{r deviance-residuals}
+```{r }
 #| label: fig-Deviance_Residuals
 #| fig-cap: "Deviance residual plots against wbc and log(wbc) for the wbc and lwbc models, with a LOWESS smooth. Deviance residuals are a normalized transformation of martingale residuals that aim to achieve symmetry; when the fitted model is appropriate, they have mean zero and are approximately symmetrically distributed around zero."
 #| fig-align: center

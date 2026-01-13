@@ -127,6 +127,11 @@ plot.zresid <- function(x, irep = 1:ncol(x), ylab = "Z-Residual",
                         my.mar=c(5,4,4,6)+0.1, add_lowess = FALSE, ...) {
   Zresidual <- x
   X <- x_axis_var
+  
+  op_mar <- graphics::par("mar")
+  op_xpd <- graphics::par("xpd")
+  on.exit(graphics::par(mar = op_mar, xpd = op_xpd), add = TRUE)
+  
 
   sign.na <- function(x) {
     sign.x <- sign(x)
@@ -164,12 +169,87 @@ plot.zresid <- function(x, irep = 1:ncol(x), ylab = "Z-Residual",
     invisible(NULL)
   }
 
-  var.call <- match.call()
+  # --- draw both legends OUTSIDE the plot region (right side), aligned in x, stacked in y ---
+  draw_legends_outside_right <- function(legend.args, test.legend,
+                                         mar_right_min = 8, gap_factor = 0.8) {
+    if (is.null(legend.args) && is.null(test.legend)) return(invisible(NULL))
+    
+    # make sure we have right margin
+    mar <- graphics::par("mar")
+    if (mar[4] < mar_right_min) graphics::par(mar = c(mar[1], mar[2], mar[3], mar_right_min))
+    
+    old_xpd <- graphics::par("xpd")
+    on.exit(graphics::par(xpd = old_xpd), add = TRUE)
+    graphics::par(xpd = TRUE)  # allow into margin, but stay in current panel figure
+    
+    usr <- graphics::par("usr")
+    x_anchor <- usr[2] + (usr[2] - usr[1]) * 0.02
+    y_top    <- usr[4]
+    
+    lg1 <- NULL
+    if (!is.null(legend.args)) {
+      la <- legend.args
+      
+      # remove any existing plot/inset/x/y to avoid duplicates
+      la$plot  <- NULL
+      la$inset <- NULL
+      la$x <- NULL
+      la$y <- NULL
+      
+      la$xpd <- TRUE
+      
+      lg1 <- do.call(graphics::legend, c(
+        list(x = x_anchor, y = y_top, xjust = 0, yjust = 1, plot = FALSE),
+        la
+      ))
+      
+      do.call(graphics::legend, c(
+        list(x = x_anchor, y = y_top, xjust = 0, yjust = 1),
+        la
+      ))
+    }
+    
+    
+    if (!is.null(test.legend)) {
+      tl <- test.legend
+      
+      tl$plot  <- NULL
+      tl$inset <- NULL
+      tl$x <- NULL
+      tl$y <- NULL
+      
+      tl$xpd <- TRUE
+      tl$bg <- "white"
+      tl$box.col <- NA
+      
+      x2 <- x_anchor
+      y2 <- y_top
+      
+      # if type legend exists, put p-values right under it (same left edge)
+      if (!is.null(lg1)) {
+        gap <- graphics::strheight("M", units = "user") * gap_factor
+        x2  <- lg1$rect$left
+        y2  <- lg1$rect$top - lg1$rect$h - gap
+      }
+      
+      do.call(graphics::legend, c(
+        list(x = x2, y = y2, xjust = 0, yjust = 1),
+        tl
+      ))
+    }
+    
+    
+    invisible(NULL)
+  }
+  
+  
+  #####################
+ # var.call <- match.call()
   unique.cats <- NULL
   default.legend.title <- NULL
   type <- attr(Zresidual, "type")
   zero.id <- attr(Zresidual, "zero_id")
-  test.pv <- NULL # Initialize test.pv outside the loop
+  #test.pv <- NULL # Initialize test.pv outside the loop
 
   ## --- choose colors/pchs & legend defaults (fixed) ---
   legend_colors <- NULL
@@ -245,7 +325,7 @@ plot.zresid <- function(x, irep = 1:ncol(x), ylab = "Z-Residual",
       legend = unique.cats,
       col = legend_colors,
       pch = legend_pchs,
-      cex = 1, xpd = TRUE, bty = "n",
+      cex = 0.9, xpd = TRUE, bty = "n",
       title = if (!hasArg("title")) default.legend.title else title,
       horiz = FALSE, y.intersp = 1
     )
@@ -254,6 +334,7 @@ plot.zresid <- function(x, irep = 1:ncol(x), ylab = "Z-Residual",
     legend.args <- modifyList(default.legend, user_legend_overrides)
     legend.args <- legend.args[names(legend.args) %in% formalArgs(legend)]
   }
+  # --- validate x_axis_var ---
   choices <- c("index", "covariate", "lp")
   n_obs   <- NROW(Zresidual)
   is_uservec <- (length(X) == n_obs)
@@ -317,18 +398,21 @@ plot.zresid <- function(x, irep = 1:ncol(x), ylab = "Z-Residual",
                                       xlab = current_xlab, font.lab = 2), args)
       do.call(plot, c(list(x = xvec, y = Zresidual[, j]), default.plot))
       add_lowess_line(xvec, Zresidual[, j], args)
+      # legends OUTSIDE
+      draw_legends_outside_right(legend.args, test.legend)
 
-      plot_limits <- par("usr")
-      plot_lim_convert <- setNames(c(1:2, 3:4, 1:4), c("x", "x", "y", "y", "xy", "xy", "xy", "xy"))
-      if(!is.null(args[["log"]])) plot_limits[names(plot_lim_convert)==args[["log"]]] <- 10^(plot_limits[names(plot_lim_convert)==args[["log"]]])
-
-      if (!is.null(legend.args)) {
-        do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
-      }
-      if (!is.null(test.legend)) {
-        do.call(legend, c(list(x = plot_limits[2]+0.5 - (par("usr")[2] - par("usr")[1]) * 0.05,
-                               y = plot_limits[4] * 0.7), test.legend))
-      }
+      # plot_limits <- par("usr")
+      # plot_lim_convert <- setNames(c(1:2, 3:4, 1:4), c("x", "x", "y", "y", "xy", "xy", "xy", "xy"))
+      # if(!is.null(args[["log"]])) plot_limits[names(plot_lim_convert)==args[["log"]]] <- 10^(plot_limits[names(plot_lim_convert)==args[["log"]]])
+      # 
+      # if (!is.null(legend.args)) {
+      #   do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
+      # }
+      # if (!is.null(test.legend)) {
+      #   
+      #   do.call(legend, c(list(x = plot_limits[2]+0.5 - (par("usr")[2] - par("usr")[1]) * 0.05,
+      #                          y = plot_limits[4] * 0.7), test.legend))
+      # }
 
       if (isTRUE(outlier.return)) {
         if (!identical(id.outlier, integer(0))) {
@@ -388,13 +472,7 @@ plot.zresid <- function(x, irep = 1:ncol(x), ylab = "Z-Residual",
       test.legend <- list(legend = c(expression(bold("P-value:")), current_test_pv),
                           cex = 1, bty = "n", xpd = TRUE, adj = c(0, 0.5))
     }
-    # default.legend <- list(legend = unique.cats, col = legend_colors,pch = legend_pchs,
-    #                        #  col = unique(col),pch = unique(pch),
-    #                        cex = 1, xpd = TRUE, bty = "n",
-    #                        title = if (!hasArg("title")) default.legend.title else title,
-    #                        horiz = FALSE, y.intersp = 1)
-    # legend.args <- modifyList(default.legend, args[!names(args) %in% c("col", "pch")])
-    # legend.args <- legend.args[names(legend.args) %in% formalArgs(legend)]
+    
     default.outlier <- list(pos = 4, labels = id.outlier, cex = 0.8,
                             col = "darkolivegreen4", add = TRUE, inches = FALSE,
                             circles = rep((par("usr")[2] - par("usr")[1]) * 0.03,
@@ -441,17 +519,16 @@ plot.zresid <- function(x, irep = 1:ncol(x), ylab = "Z-Residual",
     if (X == "index") {
       do.call(plot.default, c(list(x = Zresidual[, j]), default.plot))
 
-      plot_limits <- par("usr")
-      plot_lim_convert <- setNames(c(1:2, 3:4, 1:4), c("x", "x", "y", "y", "xy", "xy", "xy", "xy"))
-      if(!is.null(args[["log"]])) plot_limits[names(plot_lim_convert)==args[["log"]]] <- 10^(plot_limits[names(plot_lim_convert)==args[["log"]]])
+     # plot_limits <- par("usr")
+    #  plot_lim_convert <- setNames(c(1:2, 3:4, 1:4), c("x", "x", "y", "y", "xy", "xy", "xy", "xy"))
+    #  if(!is.null(args[["log"]])) plot_limits[names(plot_lim_convert)==args[["log"]]] <- 10^(plot_limits[names(plot_lim_convert)==args[["log"]]])
+     # if (!is.null(unique.cats)) {
+      #  do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))}
 
-      if (!is.null(unique.cats)) {
-        do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
-
-      }
-
-      #do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
-      if (!is.null(test.legend)) do.call(legend, c(list(x = plot_limits[2]+0.5 - (par("usr")[2] - par("usr")[1]) * 0.05, y = plot_limits[4] * 0.7), test.legend))
+     # if (!is.null(test.legend)) do.call(legend, c(list(x = plot_limits[2]+0.5 - (par("usr")[2] - par("usr")[1]) * 0.05, y = plot_limits[4] * 0.7), test.legend))
+        
+      draw_legends_outside_right(legend.args, test.legend)
+      
       if (isTRUE(outlier.return)) {
         if (!identical(id.outlier, integer(0))) {
           # Recalculate circles based on current par("usr")
@@ -488,15 +565,19 @@ plot.zresid <- function(x, irep = 1:ncol(x), ylab = "Z-Residual",
       do.call(plot, c(list(x = fitted.value, y = Zresidual[, j]), default.plot))
       add_lowess_line(fitted.value, Zresidual[, j], args)
 
-      plot_limits <- par("usr")
-      plot_lim_convert <- setNames(c(1:2, 3:4, 1:4), c("x", "x", "y", "y", "xy", "xy", "xy", "xy"))
-      if(!is.null(args[["log"]])) plot_limits[names(plot_lim_convert)==args[["log"]]] <- 10^(plot_limits[names(plot_lim_convert)==args[["log"]]])
-
-      if (!is.null(legend.args)) {
-        do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
-      }
-
-      if (!is.null(test.legend)) do.call(legend, c(list(x = plot_limits[2]+0.5 - (par("usr")[2] - par("usr")[1]) * 0.05, y = plot_limits[4] * 0.7), test.legend))
+      # plot_limits <- par("usr")
+      # plot_lim_convert <- setNames(c(1:2, 3:4, 1:4), c("x", "x", "y", "y", "xy", "xy", "xy", "xy"))
+      # if(!is.null(args[["log"]])) plot_limits[names(plot_lim_convert)==args[["log"]]] <- 10^(plot_limits[names(plot_lim_convert)==args[["log"]]])
+      # 
+      # if (!is.null(legend.args)) {
+      #   do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
+      # }
+      # 
+      # if (!is.null(test.legend)) do.call(legend, c(list(x = plot_limits[2]+0.5 - (par("usr")[2] - par("usr")[1]) * 0.05, y = plot_limits[4] * 0.7), test.legend))
+      # 
+      draw_legends_outside_right(legend.args, test.legend)
+      
+      
       if (isTRUE(outlier.return)) {
         if (!identical(id.outlier, integer(0))) {
           outlier.circles <- rep((par("usr")[2] - par("usr")[1]) * 0.03, length(id.outlier))
@@ -533,14 +614,17 @@ plot.zresid <- function(x, irep = 1:ncol(x), ylab = "Z-Residual",
         do.call(plot, c(list(x = fitted.value[, i], y = Zresidual[, j]), default.plot))
         add_lowess_line(fitted.value[, i], Zresidual[, j], args)
 
-        plot_limits <- par("usr")
-        plot_lim_convert <- setNames(c(1:2, 3:4, 1:4), c("x", "x", "y", "y", "xy", "xy", "xy", "xy"))
-        if(!is.null(args[["log"]])) plot_limits[names(plot_lim_convert)==args[["log"]]] <- 10^(plot_limits[names(plot_lim_convert)==args[["log"]]])
-
-        if (!is.null(legend.args)) {
-          do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
-        }
-        if (!is.null(test.legend)) do.call(legend, c(list(x = plot_limits[2]+0.5 - (par("usr")[2] - par("usr")[1]) * 0.05, y = plot_limits[4] * 0.7), test.legend))
+        # plot_limits <- par("usr")
+        # plot_lim_convert <- setNames(c(1:2, 3:4, 1:4), c("x", "x", "y", "y", "xy", "xy", "xy", "xy"))
+        # if(!is.null(args[["log"]])) plot_limits[names(plot_lim_convert)==args[["log"]]] <- 10^(plot_limits[names(plot_lim_convert)==args[["log"]]])
+        # 
+        # if (!is.null(legend.args)) {
+        #   do.call(legend, c(list(x = plot_limits[2], y = plot_limits[4]), legend.args))
+        # }
+        # if (!is.null(test.legend)) do.call(legend, c(list(x = plot_limits[2]+0.5 - (par("usr")[2] - par("usr")[1]) * 0.05, y = plot_limits[4] * 0.7), test.legend))
+        # 
+        draw_legends_outside_right(legend.args, test.legend)
+       
         if (isTRUE(outlier.return)) {
           if (!identical(id.outlier, integer(0))) {
             # Recalculate circles based on current par("usr")
@@ -585,7 +669,7 @@ plot.zresid <- function(x, irep = 1:ncol(x), ylab = "Z-Residual",
       invisible(list(outliers = id.outlier))
     }
   }
-  par(mar = c(5, 4, 4, 2) + 0.1)
+ # par(mar = c(5, 4, 4, 2) + 0.1)
 }
 
 
