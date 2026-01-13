@@ -1,5 +1,5 @@
 ---
-title: "Demo of Cross-validatory Z-Residual for Diagnosing Shared Frailty Models"
+title: "Cross-validatory Z-Residual for Diagnosing Shared Frailty Models"
 date: today
 format:
   html:
