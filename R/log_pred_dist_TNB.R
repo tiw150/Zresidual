@@ -13,9 +13,9 @@
 #' @details
 #' For each posterior draw and observation, the function computes:
 #' \itemize{
-#'   \item \code{lpmf_hat}: Log predictive mass function values using \code{pdf.tnb()}.
+#'   \item \code{lpmf_hat}: Log predictive mass function values using \code{dtruncnb()}.
 #'   \item \code{lcdf_hat}: Log cumulative distribution function values
-#'   using \code{p_tnb()} with \code{lower.tail = FALSE}.
+#'   using \code{ptruncnb()} with \code{lower.tail = FALSE}.
 #' }
 #'
 #' @return A list with the following components:
@@ -72,8 +72,8 @@ log_pred_dist_TNB <- function(fit){
   lcdf_hat <- matrix(NA, mc_used, n)
 
   for (i in count.id){
-    lpmf_hat[,i] <- pdf.tnb(sim.y[i], mu = mu[,i], size = shape[,i], log.p = TRUE)
-    lcdf_hat[,i] <- p_tnb(sim.y[i], mu = mu[,i], size = shape[,i], lower.tail = FALSE, log.p = TRUE)
+    lpmf_hat[,i] <- dtruncnb(sim.y[i], mu = mu[,i], size = shape[,i], log.p = TRUE)
+    lcdf_hat[,i] <- ptruncnb(sim.y[i], mu = mu[,i], size = shape[,i], lower.tail = FALSE, log.p = TRUE)
   }
 
   pred_dist <- list(lpmf_hat = lpmf_hat, lcdf_hat = lcdf_hat, zero_id = zero_id)

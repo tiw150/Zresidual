@@ -31,14 +31,16 @@
   : A function to calculate Bartlett of Zresidual
 - [`boxplot(`*`<zresid>`*`)`](https://tiw150.github.io/Zresidual/reference/boxplot.zresid.md)
   : Boxplot of Z-Residuals
-- [`cdf.tp()`](https://tiw150.github.io/Zresidual/reference/cdf.tp.md) :
-  Cumulative Distribution Function (CDF) of Zero-Truncated Poisson
-  Distribution
-- [`dhurdle.nb()`](https://tiw150.github.io/Zresidual/reference/dhurdle.nb.md)
+- [`dhurdlenb()`](https://tiw150.github.io/Zresidual/reference/dhurdlenb.md)
   : Probability Mass Function of the Hurdle Negative Binomial
   Distribution
-- [`dhurdle.pois()`](https://tiw150.github.io/Zresidual/reference/dhurdle.pois.md)
+- [`dhurdlepois()`](https://tiw150.github.io/Zresidual/reference/dhurdlepois.md)
   : Probability Mass Function of the Hurdle Poisson Distribution
+- [`dtruncnb()`](https://tiw150.github.io/Zresidual/reference/dtruncnb.md)
+  : Probability Mass Function of the Zero-Truncated Negative Binomial
+  Distribution
+- [`dtruncpois()`](https://tiw150.github.io/Zresidual/reference/dtruncpois.md)
+  : Probability Mass Function of the Zero-Truncated Poisson Distribution
 - [`gof.censored.zresidual()`](https://tiw150.github.io/Zresidual/reference/gof.censored.zresidual.md)
   : Goodness-of-fit test for censored Z-residuals
 - [`iscv_logrpp()`](https://tiw150.github.io/Zresidual/reference/iscv_logrpp.md)
@@ -70,18 +72,10 @@
 - [`log_pred_dist_zero()`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_zero.md)
   : A function to calculate log predictive distribution (pmf and cdf) of
   logistic component of a 'brm' fit
-- [`p_tnb()`](https://tiw150.github.io/Zresidual/reference/p_tnb.md) :
-  Cumulative Distribution Function (CDF) of Zero-Truncated Negative
-  Binomial Distribution
-- [`pdf.tnb()`](https://tiw150.github.io/Zresidual/reference/pdf.tnb.md)
-  : Probability Mass Function of the Zero-Truncated Negative Binomial
-  Distribution
-- [`pdf.tp()`](https://tiw150.github.io/Zresidual/reference/pdf.tp.md) :
-  Probability Mass Function of the Zero-Truncated Poisson Distribution
-- [`phurdle.nb()`](https://tiw150.github.io/Zresidual/reference/phurdle.nb.md)
+- [`phurdlenb()`](https://tiw150.github.io/Zresidual/reference/phurdlenb.md)
   : Cumulative Distribution Function of the Hurdle Negative Binomial
   Distribution
-- [`phurdle.pois()`](https://tiw150.github.io/Zresidual/reference/phurdle.pois.md)
+- [`phurdlepois()`](https://tiw150.github.io/Zresidual/reference/phurdlepois.md)
   : Cumulative Distribution Function of the Hurdle Poisson Distribution
 - [`plot(`*`<cs.residual>`*`)`](https://tiw150.github.io/Zresidual/reference/plot.cs.residual.md)
   : Cox–Snell residual plot for survival models
@@ -98,6 +92,12 @@
   : Compute Posterior Log Randomized Predictive p-values (Log-RPP)
 - [`posterior.pred()`](https://tiw150.github.io/Zresidual/reference/posterior.pred.md)
   : Extract Posterior Predicted Parameters from a Hurdle or Count Model
+- [`ptruncnb()`](https://tiw150.github.io/Zresidual/reference/ptruncnb.md)
+  : Cumulative Distribution Function (CDF) of Zero-Truncated Negative
+  Binomial Distribution
+- [`ptruncpois()`](https://tiw150.github.io/Zresidual/reference/ptruncpois.md)
+  : Cumulative Distribution Function (CDF) of Zero-Truncated Poisson
+  Distribution
 - [`pvalue.min()`](https://tiw150.github.io/Zresidual/reference/pvalue.min.md)
   : A function to calculate the min p-value
 - [`qqnorm(`*`<zresid>`*`)`](https://tiw150.github.io/Zresidual/reference/qqnorm.zresid.md)

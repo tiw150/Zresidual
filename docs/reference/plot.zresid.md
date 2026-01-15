@@ -116,6 +116,10 @@ plot(
 
   A numeric vector passed to `par(mar=...)` to adjust plot margins.
 
+- add_lowess:
+
+  Logical. If TRUE, add a LOWESS smooth to the plot.
+
 - ...:
 
   Additional graphical arguments passed to

@@ -52,6 +52,7 @@ Suggests:
     DT,
     pkgdown,
     gifski,
+    av,
     animation,
     png,
     pacman,

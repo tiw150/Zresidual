@@ -13,9 +13,9 @@
 #' @details
 #' For each posterior draw and each observation, the function computes:
 #' \itemize{
-#'   \item \code{lpmf_hat}: Log predictive mass function values using \code{dhurdle.nb()}.
+#'   \item \code{lpmf_hat}: Log predictive mass function values using \code{dhurdlenb()}.
 #'   \item \code{lcdf_hat}: Log cumulative distribution function values
-#'   using \code{phurdle.nb()} with \code{lower.tail = FALSE}.
+#'   using \code{phurdlenb()} with \code{lower.tail = FALSE}.
 #' }
 #'
 #'
@@ -63,8 +63,8 @@ log_pred_dist_HNB <- function(fit){
 
   for (i in 1:n){
     #lpmf_hat[,i] <- dhurdle_negbinomial(sim.y[i], mu[,i], shape[,i], hu[,i], log = TRUE)
-    lpmf_hat[,i] <- dhurdle.nb(y=sim.y[i], mu=mu[,i], size=shape[,i], pi=hu[,i], log = TRUE)
-    lcdf_hat[,i] <- phurdle.nb(sim.y[i], mu[,i], shape[,i], hu[,i], lower.tail=FALSE, log.p = TRUE)
+    lpmf_hat[,i] <- dhurdlenb(y=sim.y[i], mu=mu[,i], size=shape[,i], pi=hu[,i], log = TRUE)
+    lcdf_hat[,i] <- phurdlenb(sim.y[i], mu[,i], shape[,i], hu[,i], lower.tail=FALSE, log.p = TRUE)
   }
 
   pred_dist <- list(lpmf_hat = lpmf_hat, lcdf_hat = lcdf_hat, zero_id = zero_id, count_id = count_id)

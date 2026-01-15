@@ -345,7 +345,7 @@ Table 1 summarizes the first 10 randomization repetitions. In these repetitions,
 #| tbl-cap: "Summary of residual homogeneity tests for the first 10 randomization repetitions. Z-AOV are ANOVA F-test p-values for equality of grouped Z-residual means; Z-BL are Bartlett’s test p-values for equality of variances. Suffix “.lp” indicates grouping by the linear predictor; columns without “.lp” indicate grouping by the covariate scale used in the diagnostic."
 
 sw.wbc<-sw.test.zresid(Zresid.LeukSurv.wbc); sw.lwbc<-sw.test.zresid(Zresid.LeukSurv.logwbc)
-sf.wbc<-sf.test.zresid(Zresid.LeukSurv.wbc); sf.lwbc<-sf.test.zresid(Zresid.LeukSurv.logwbc)
+sf.wbc<-sf_test.zresid(Zresid.LeukSurv.wbc); sf.lwbc<-sf_test.zresid(Zresid.LeukSurv.logwbc)
 
 aov.wbc.lp<-aov.test.zresid(Zresid.LeukSurv.wbc, X="lp", k.anova=10)
 aov.lwbc.lp<-aov.test.zresid(Zresid.LeukSurv.logwbc, X="lp", k.anova=10)

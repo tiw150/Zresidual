@@ -28,9 +28,9 @@ and evaluates the predictive distributions across all posterior draws.
 \details{
 For each posterior draw and observation, the function computes:
 \itemize{
-\item \code{lpmf_hat}: Log predictive mass function values using \code{pdf.tnb()}.
+\item \code{lpmf_hat}: Log predictive mass function values using \code{dtruncnb()}.
 \item \code{lcdf_hat}: Log cumulative distribution function values
-using \code{p_tnb()} with \code{lower.tail = FALSE}.
+using \code{ptruncnb()} with \code{lower.tail = FALSE}.
 }
 }
 \examples{

@@ -13,9 +13,9 @@
 #' @details
 #' For each posterior draw and observation, the function computes:
 #' \itemize{
-#'   \item \code{lpmf_hat}: Log predictive mass function values using \code{dhurdle.pois()}.
+#'   \item \code{lpmf_hat}: Log predictive mass function values using \code{dhurdlepois()}.
 #'   \item \code{lcdf_hat}: Log cumulative distribution function values
-#'   using \code{phurdle.pois()} with \code{lower.tail = FALSE}.
+#'   using \code{phurdlepois()} with \code{lower.tail = FALSE}.
 #' }
 #'
 #' The function also identifies indices of zero and positive count responses.
@@ -61,8 +61,8 @@ log_pred_dist_HP <- function(fit){
   lambda <- posterior.pred(fit, dpar = "mu")
 
   for (i in 1:n){
-    lpmf_hat[,i] <- dhurdle.pois(sim.y[i], lambda = lambda[,i], pi = hu[,i], log = TRUE)
-    lcdf_hat[,i] <- phurdle.pois(sim.y[i], lambda = lambda[,i], pi = hu[,i], lower.tail=FALSE, log.p = TRUE)
+    lpmf_hat[,i] <- dhurdlepois(sim.y[i], lambda = lambda[,i], pi = hu[,i], log = TRUE)
+    lcdf_hat[,i] <- phurdlepois(sim.y[i], lambda = lambda[,i], pi = hu[,i], lower.tail=FALSE, log.p = TRUE)
   }
 
   pred_dist <- list(lpmf_hat = lpmf_hat, lcdf_hat = lcdf_hat, zero_id = zero_id, count_id = count_id)

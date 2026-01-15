@@ -60,6 +60,8 @@ which will be interpreted via \strong{latex2exp} (if installed).}
 
 \item{my.mar}{A numeric vector passed to \code{par(mar=...)} to adjust plot margins.}
 
+\item{add_lowess}{Logical. If TRUE, add a LOWESS smooth to the plot.}
+
 \item{...}{Additional graphical arguments passed to \code{plot()}, \code{legend()}, \code{symbols()},
 and \code{text()}.}
 }

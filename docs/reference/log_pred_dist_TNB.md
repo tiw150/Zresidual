@@ -38,10 +38,10 @@ A list with the following components:
 For each posterior draw and observation, the function computes:
 
 - `lpmf_hat`: Log predictive mass function values using
-  [`pdf.tnb()`](https://tiw150.github.io/Zresidual/reference/pdf.tnb.md).
+  [`dtruncnb()`](https://tiw150.github.io/Zresidual/reference/dtruncnb.md).
 
 - `lcdf_hat`: Log cumulative distribution function values using
-  [`p_tnb()`](https://tiw150.github.io/Zresidual/reference/p_tnb.md)
+  [`ptruncnb()`](https://tiw150.github.io/Zresidual/reference/ptruncnb.md)
   with `lower.tail = FALSE`.
 
 ## Examples

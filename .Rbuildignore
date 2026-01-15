@@ -21,6 +21,10 @@
 ^vignettes/.*\.js$
 ^vignettes/.*\.html$
 
+^vignettes/_freeze$
+^vignettes/.*_savedfiles$
+^vignettes/.*\.(gif|mp4|png|json)$
+
 
 ^data-raw$
 ^\\.github$

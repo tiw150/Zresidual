@@ -45,10 +45,10 @@ A list with the following components:
 For each posterior draw and each observation, the function computes:
 
 - `lpmf_hat`: Log predictive mass function values using
-  [`dhurdle.nb()`](https://tiw150.github.io/Zresidual/reference/dhurdle.nb.md).
+  [`dhurdlenb()`](https://tiw150.github.io/Zresidual/reference/dhurdlenb.md).
 
 - `lcdf_hat`: Log cumulative distribution function values using
-  [`phurdle.nb()`](https://tiw150.github.io/Zresidual/reference/phurdle.nb.md)
+  [`phurdlenb()`](https://tiw150.github.io/Zresidual/reference/phurdlenb.md)
   with `lower.tail = FALSE`.
 
 ## Examples

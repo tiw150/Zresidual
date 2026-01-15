@@ -45,10 +45,10 @@ A list with the following components:
 For each posterior draw and observation, the function computes:
 
 - `lpmf_hat`: Log predictive mass function values using
-  [`dhurdle.pois()`](https://tiw150.github.io/Zresidual/reference/dhurdle.pois.md).
+  [`dhurdlepois()`](https://tiw150.github.io/Zresidual/reference/dhurdlepois.md).
 
 - `lcdf_hat`: Log cumulative distribution function values using
-  [`phurdle.pois()`](https://tiw150.github.io/Zresidual/reference/phurdle.pois.md)
+  [`phurdlepois()`](https://tiw150.github.io/Zresidual/reference/phurdlepois.md)
   with `lower.tail = FALSE`.
 
 The function also identifies indices of zero and positive count

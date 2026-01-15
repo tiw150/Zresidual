@@ -201,8 +201,8 @@ library(tibble)
 library(dplyr)
 sw.kidney<-sw.test.zresid(Zresid.kidney)
 sw.kidney.cv<-sw.test.zresid(CVZresid.kidney)
-sf.kidney<-sf.test.zresid(Zresid.kidney)
-sf.kidney.cv<-sf.test.zresid(CVZresid.kidney)
+sf.kidney<-sf_test.zresid(Zresid.kidney)
+sf.kidney.cv<-sf_test.zresid(CVZresid.kidney)
 gof_tests<-data.frame(sw.kidney,sw.kidney.cv,sf.kidney,sf.kidney.cv)
 gof_tests_table <- gof_tests %>%
   rownames_to_column(var = "Metric") %>%

@@ -74,9 +74,9 @@ The model must include the distributional parameter <code>mu</code> (mean parame
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>For each posterior draw and observation, the function computes:</p><ul><li><p><code>lpmf_hat</code>: Log predictive mass function values using <code><a href="pdf.tp.html">pdf.tp()</a></code>.</p></li>
+    <p>For each posterior draw and observation, the function computes:</p><ul><li><p><code>lpmf_hat</code>: Log predictive mass function values using <code><a href="dtruncpois.html">dtruncpois()</a></code>.</p></li>
 <li><p><code>lcdf_hat</code>: Log cumulative distribution function values
-using <code>cdf.tp.li()</code> with <code>lower.tail = FALSE</code>.</p></li>
+using <code><a href="ptruncpois.html">ptruncpois()</a></code> with <code>lower.tail = FALSE</code>.</p></li>
 </ul></div>
 
     <div class="section level2">

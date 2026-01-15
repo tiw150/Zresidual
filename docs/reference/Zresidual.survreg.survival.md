@@ -17,7 +17,7 @@ directly rather than calling `Zresidual.survreg.survival()`.
 
 ``` r
 # S3 method for class 'survreg.survival'
-Zresidual(object, nrep = 1, data = NULL, type = NULL, method = NULL, ...)
+Zresidual(object, nrep = 1, data = NULL, type = "survival", method = NULL, ...)
 ```
 
 ## Arguments

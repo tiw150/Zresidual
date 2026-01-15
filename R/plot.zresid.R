@@ -80,7 +80,7 @@
 #'
 #' @param my.mar
 #' A numeric vector passed to `par(mar=...)` to adjust plot margins.
-#'
+#' @param add_lowess Logical. If TRUE, add a LOWESS smooth to the plot.
 #' @param ...
 #' Additional graphical arguments passed to `plot()`, `legend()`, `symbols()`,
 #' and `text()`.

@@ -232,9 +232,11 @@ if (is_dev && (force_rerun || !file.exists(gif_lp_path))) {
   gifski::save_gif(
     expr = {
       for (i in 1:10) {
-        par(mfrow = c(2, 2), mar = c(4, 4, 1.5, 2))
-        plot(Zresid.LeukSurv.wbc, x_axis_var="lp", main.title = "Scatter: WBC Model", irep=i,add_lowess = TRUE)
-        plot(Zresid.LeukSurv.logwbc, x_axis_var="lp", main.title = "Scatter: log-WBC Model", irep=i,add_lowess = TRUE)
+        par(mfrow = c(2, 2))
+        plot(Zresid.LeukSurv.wbc, x_axis_var="lp", main.title = "Scatter: WBC Model", 
+             irep=i,add_lowess = TRUE)
+        plot(Zresid.LeukSurv.logwbc, x_axis_var="lp", main.title = "Scatter: log-WBC Model",
+             irep=i,add_lowess = TRUE)
         boxplot(Zresid.LeukSurv.wbc, x_axis_var = "lp", main.title = "Boxplot: WBC Model", irep=i)
         boxplot(Zresid.LeukSurv.logwbc, x_axis_var = "lp", main.title = "Boxplot: log-WBC Model", irep=i)
       }
@@ -298,9 +300,9 @@ if (is_dev && (force_rerun || !file.exists(gif_wbc_path))) {
         par(mfrow = c(2, 2), mar = c(4, 4, 1.5, 2))
         plot(Zresid.LeukSurv.wbc, x_axis_var = "wbc", main.title = "Scatter: WBC Model",
         irep=i,add_lowess = TRUE)
-        plot(Zresid.LeukSurv.logwbc, x_axis_var = "log(wbc)", main.title = "Scatter: log-WBC Model",          irep=i,add_lowess = TRUE)
+        plot(Zresid.LeukSurv.logwbc, x_axis_var = "logwbc", main.title = "Scatter: log-WBC Model",          irep=i,add_lowess = TRUE)
         boxplot(Zresid.LeukSurv.wbc, x_axis_var = "wbc", main.title = "Boxplot: WBC Model", irep=i)
-        boxplot(Zresid.LeukSurv.logwbc, x_axis_var = "log(wbc)", main.title = "Boxplot: log-WBC Model", irep=i)
+        boxplot(Zresid.LeukSurv.logwbc, x_axis_var = "logwbc", main.title = "Boxplot: log-WBC Model", irep=i)
       }
     },
     gif_file = gif_wbc_path, width = 900, height = 900, res = 96, delay = 1

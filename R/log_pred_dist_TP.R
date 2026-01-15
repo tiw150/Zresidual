@@ -12,9 +12,9 @@
 #' @details
 #' For each posterior draw and observation, the function computes:
 #' \itemize{
-#'   \item \code{lpmf_hat}: Log predictive mass function values using \code{pdf.tp()}.
+#'   \item \code{lpmf_hat}: Log predictive mass function values using \code{dtruncpois()}.
 #'   \item \code{lcdf_hat}: Log cumulative distribution function values
-#'   using \code{cdf.tp.li()} with \code{lower.tail = FALSE}.
+#'   using \code{ptruncpois()} with \code{lower.tail = FALSE}.
 #' }
 #'
 #' @return A list with the following components:
@@ -70,8 +70,8 @@ log_pred_dist_TP <- function(fit){
   lcdf_hat <- matrix(NA, mc_used, n)
 
   for (i in count.id){
-    lpmf_hat[,i] <- pdf.tp(sim.y[i], lambda = lambda[,i], log.p = TRUE)
-    lcdf_hat[,i] <- cdf.tp(sim.y[i], lambda = lambda[,i], lower.tail = FALSE, log.p = TRUE)
+    lpmf_hat[,i] <- dtruncpois(sim.y[i], lambda = lambda[,i], log.p = TRUE)
+    lcdf_hat[,i] <- ptruncpois(sim.y[i], lambda = lambda[,i], lower.tail = FALSE, log.p = TRUE)
   }
 
   pred_dist <- list(lpmf_hat = lpmf_hat, lcdf_hat = lcdf_hat, zero_id = zero_id)

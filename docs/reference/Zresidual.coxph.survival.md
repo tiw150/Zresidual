@@ -16,7 +16,7 @@ diagnostics and model assessment.
 
 ``` r
 # S3 method for class 'coxph.survival'
-Zresidual(object, nrep = 1, data = NULL, type = NULL, method = NULL, ...)
+Zresidual(object, nrep = 1, data = NULL, type = "survival", method = NULL, ...)
 ```
 
 ## Arguments
