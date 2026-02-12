@@ -1,166 +1,157 @@
-#' Compute Z-residuals via an S3 generic
-#'
-#' @description
-#' `Zresidual()` is an S3 generic for computing Z-residuals for a range of
-#' survival and regression models. It currently supports Cox proportional
-#' hazards models (`coxph`) with or without frailty terms, parametric survival
-#' regression models (`survreg`), and Bayesian regression models fitted with
-#' **brms** (`brmsfit`) for several common count and hurdle families.
-#'
-#' The function inspects the fitted object, assigns an internal
-#' model– and package–specific class (e.g. `"coxph.survival"`,
-#' `"survreg.survival"`, `"poisson.brms"`, `"hurdle_poisson.brms"`),
-#' and dispatches to the corresponding `Zresidual.*()` method.
-#'
-#' @param object A fitted model object. Currently supported objects include:
-#'   * `"coxph"` – Cox proportional hazards model (from **survival**)
-#'   * `"survreg"` – Parametric survival regression (from **survival**)
-#'   * `"brmsfit"` – Bayesian regression model (from **brms**) with one of the
-#'     supported families listed under **Details**.
-#'
-#' @param nrep Integer. Number of replicated Z-residual samples to compute.
-#'   Default is `1`.
-#'
-#' @param data Optional data frame used for generating model predictions and
-#'   residuals. For some models (e.g. `coxph` with frailty terms) this should
-#'   match the data used to fit the model.
-#'
-#' @param type Optional character string. Residual type for hurdle and count
-#'   models (mainly used for **brms** and other Bayesian/count-model
-#'   interfaces). The interpretation of this argument is model-specific.
-#'
-#' @param method Character string indicating which predictive p-value
-#'   scheme to use when computing Z-residuals for Bayesian or simulation-based
-#'   models. Common options include `"iscv"` (importance-sampling
-#'   cross-validated), `"loocv"`, and `"posterior"`. The default is `"iscv"`.
-#'
-#' @param ... Further arguments passed on to model-specific methods
-#'   such as `Zresidual.coxph.survival()`,
-#'   `Zresidual.survreg.survival()`,
-#'   `Zresidual.poisson.brms()`, etc.
-#'
-#' @details
-#' Internally, `Zresidual()` modifies the class of `object` to encode both the
-#' model type and the fitting package, and then uses S3 method dispatch:
-#'
-#' * For **survival** models
-#'   - `coxph` objects receive the class `"coxph.survival"` and are handled by
-#'     `Zresidual.coxph.survival()`, which further distinguishes between models
-#'     with and without frailty terms.
-#'   - `survreg` objects receive the class `"survreg.survival"` and are handled
-#'     by `Zresidual.survreg.survival()`.
-#'
-#' * For **brms** models
-#'   - The family is obtained via `family(object)$family`.
-#'   - Currently supported families include
-#'     `"hurdle_negbinomial"`, `"hurdle_poisson"`,
-#'     `"negbinomial"`, `"poisson"`, and `"bernoulli"`.
-#'   - Each supported family is mapped to a class of the form
-#'     `"<family>.brms"`, and dispatched to a method such as
-#'     `Zresidual.hurdle_poisson.brms()`,
-#'     `Zresidual.negbinomial.brms()`,
-#'     `Zresidual.poisson.brms()`,
-#'     or `Zresidual.bernoulli.brms()`.
-#'
-#' Additional model classes (e.g. `glmmTMB` fits) can be supported by defining
-#' new S3 methods such as `Zresidual.poisson.glmmTMB()` and ensuring that
-#' `Zresidual()` assigns the corresponding internal class
-#' (for example `"poisson.glmmTMB"`).
-#'
-#' If `object` does not match any supported model class, or if a `brmsfit`
-#' object uses an unsupported family, `Zresidual()` raises an error.
-#'
-#' @return
-#' An object of class `"zresid"` with additional class information inherited
-#' from the model-specific method. The object contains the computed Z-residuals
-#' and any model-specific diagnostic quantities returned by the underlying
-#' `Zresidual.*()` implementation.
-#'
-#' @examples
-#' \dontrun{
-#' ## Cox proportional hazards model
-#' library(survival)
-#' fit_cox <- coxph(Surv(time, status) ~ age + sex, data = lung)
-#' z_cox <- Zresidual(fit_cox, nrep = 10, data = lung)
-#'
-#' ## Parametric survival regression
-#' fit_surv <- survreg(Surv(time, status) ~ age + sex,
-#'                     data = lung, dist = "weibull")
-#' z_surv <- Zresidual(fit_surv, nrep = 5, data = lung)
-#'
-#' ## Bayesian Poisson regression with brms
-#' library(brms)
-#' fit_brms <- brm(count ~ x, data = df, family = poisson)
-#' z_brms <- Zresidual(fit_brms, method = "posterior")
-#' }
-#'
-#' @seealso
-#' Zresidual.coxph.survival(),
-#' Zresidual.survreg.survival(),
-#' Zresidual.hurdle_poisson.brms(),
-#' Zresidual.hurdle_negbinomial.brms(),
-#' Zresidual.negbinomial.brms(),
-#' Zresidual.poisson.brms(),
-#' Zresidual.bernoulli.brms(),
-#' and related model-specific methods.
-#'
-#' @export
-Zresidual <- function(object,
-                      nrep   = 1,
-                      data   = NULL,
-                      type   = NULL,
-                      method = "iscv",
-                      ...) {
-
-  orig_class <- class(object)
-
-  if (inherits(object, "coxph")) {
-    class(object) <- c("coxph.survival", orig_class)
-
-  } else if (inherits(object, "survreg")) {
-    class(object) <- c("survreg.survival", orig_class)
-
-  } else if (inherits(object, "brmsfit")) {
-    fam <- family(object)$family
-    supported_brms <- c("hurdle_negbinomial", "hurdle_poisson",
-                        "negbinomial", "poisson", "bernoulli")
-    if (fam %in% supported_brms) {
-      class(object) <- c(paste0(fam, ".brms"), orig_class)
+get_logpre <- function(fit = NULL,
+                       data = NULL,
+                       log_pointpred = NULL,
+                       logpred = NULL,
+                       config = NULL,
+                       ...) {
+  
+  `%||%` <- function(x, y) if (!is.null(x)) x else y
+  
+  if (is.null(fit)) stop("get_logpre: `fit` is required.", call. = FALSE)
+  if (!is.null(log_pointpred) && !is.null(logpred)) {
+    stop("get_logpre: provide only one of `log_pointpred` or `logpred`.", call. = FALSE)
+  }
+  
+  # resolve function input: function object or single name string
+  resolve_fun <- function(f) {
+    if (is.null(f)) return(NULL)
+    if (is.function(f)) return(f)
+    if (is.character(f) && length(f) == 1L) {
+      out <- get0(f, envir = parent.frame(), inherits = TRUE)
+      if (is.null(out)) out <- get0(f, envir = asNamespace(utils::packageName()), inherits = FALSE)
+      if (!is.function(out)) stop("get_logpre: cannot resolve function: ", f, call. = FALSE)
+      return(out)
     }
+    stop("get_logpre: function must be a function or a single character name.", call. = FALSE)
+  }
+  
+  config <- config %||% list()
+  
+  # Case A: user provides log_pointpred (already standardized)
+  if (!is.null(log_pointpred)) {
+    lp_fn <- resolve_fun(log_pointpred)
+    return(log_summary_pred(fit, data = data, config = config, log_pointpred_fn = lp_fn, ...))
+  }
+  
+  # Case B: user provides logpred (nonstandard). Adapt it to log_pointpred output.
+  if (!is.null(logpred)) {
+    user_fn <- resolve_fun(logpred)
+    
+    lp_fn <- function(fit, data = NULL, config = list(), ...) {
+      out <- user_fn(fit = fit, data = data, config = config, ...)
+      
+      # if already standardized
+      if (is.list(out) && !is.null(out$lsf_hat) && !is.null(out$lpmf_hat) && !is.null(out$y_type)) {
+        return(out)
+      }
+      
+      # accept log_sf/log_pmf/y_type (or log_cdf)
+      if (!is.list(out) || is.null(out$y_type)) {
+        stop("logpred adapter: output must be a list and contain y_type.", call. = FALSE)
+      }
+      
+      log_sf <- out$log_sf
+      if (is.null(log_sf) && !is.null(out$log_cdf)) {
+        cdf <- exp(out$log_cdf)
+        log_sf <- log1p(-cdf)
+      }
+      
+      if (is.null(log_sf)) stop("logpred adapter: missing log_sf (or log_cdf).", call. = FALSE)
+      
+      list(
+        lsf_hat  = log_sf,
+        lpmf_hat = out$log_pmf %||% NA_real_,
+        y_type   = out$y_type
+      )
+    }
+    
+    return(log_summary_pred(fit, data = data, config = config, log_pointpred_fn = lp_fn, ...))
+  }
+  
+  # Case C: default path (use your package dispatcher log_pointpred)
+  log_summary_pred(fit, data = data, config = config, log_pointpred_fn = NULL, ...)
+}
 
-  } else if (inherits(object, "glmmTMB")) {
-    fam <- family(object)$family
-    supported_glmmTMB <- c("gaussian","poisson", "nbinom1", "nbinom2","truncated_poisson", "truncated_nbinom2")
-    if (fam %in% supported_glmmTMB) {
-      class(object) <- c(paste0(fam, ".glmmTMB"), orig_class)
+#' @export 
+Zresidual <- function(fit,
+                      data = NULL,
+                      log_pointpred = NULL,
+                      logpred = NULL,
+                      config = list(),
+                      randomized = TRUE,
+                      nrep = 30,
+                      eps = 1e-12,
+                      seed = NULL,
+                      ...) {
+  
+  if (!is.null(seed)) set.seed(seed)
+  
+  .log_add_exp2 <- function(a, b) {
+    m <- pmax(a, b)
+    m + log(exp(a - m) + exp(b - m))
+  }
+  
+  .clip_logprob <- function(logp, eps = 1e-12) {
+    lo <- log(eps)
+    hi <- log1p(-eps)
+    pmin(pmax(logp, lo), hi)
+  }
+  
+  # 1) get summarized predictions (vectors)
+  pre <- get_logpre(
+    fit = fit, data = data,
+    log_pointpred = log_pointpred,
+    logpred = logpred,
+    config = config,
+    ...
+  )
+  
+  logS <- as.numeric(pre$log_surv_hat)
+  logp <- as.numeric(pre$log_pmf_hat)
+  y_type <- pre$y_type
+  
+  n <- length(logS)
+  if (n < 1L) stop("Zresidual: empty prediction.", call. = FALSE)
+  
+  # 2) determine whether pmf is available (discrete) or not (continuous)
+  pmf_available <- !(is.null(logp) || all(is.na(logp)))
+  
+  # 3) Monte Carlo replications for randomized residuals
+  if (!randomized) nrep <- 1L
+  nrep <- as.integer(nrep)
+  if (nrep < 1L) stop("Zresidual: nrep must be >= 1.", call. = FALSE)
+  
+  logS <- .clip_logprob(logS, eps = eps)
+  
+  log_rsp <- matrix(NA_real_, nrow = n, ncol = nrep)
+  
+  for (r in seq_len(nrep)) {
+    u <- if (randomized) runif(n) else rep(0.5, n)
+    logu <- log(pmax(u, .Machine$double.xmin))
+    
+    if (pmf_available) {
+      # discrete: rsp = S + u * p  (log-space)
+      log_rsp[, r] <- .clip_logprob(.log_add_exp2(logS, logp + logu), eps = eps)
+    } else {
+      # continuous survival: event => rsp=S; censored => rsp=u*S
+      lr <- logS
+      if (!is.null(y_type) && length(y_type) == n && all(stats::na.omit(unique(y_type)) %in% c(0, 1))) {
+        cens_id <- which(y_type == 0L)
+        if (length(cens_id)) lr[cens_id] <- logS[cens_id] + logu[cens_id]
+      }
+      log_rsp[, r] <- .clip_logprob(lr, eps = eps)
     }
   }
-
-  UseMethod("Zresidual", object)
+  
+  rsp <- exp(log_rsp)
+  z <- -qnorm(rsp)
+  
+  if (!is.matrix(z)) z <- matrix(z, nrow = n, ncol = nrep)
+  colnames(z) <- paste0("rep", seq_len(nrep))
+  
+  class(z) <- c("zresid", class(z))
+ # attr(z, "log_rsp") <- log_rsp
+  attr(z, "rsp") <- rsp
+  attr(z, "y_type") <- y_type
+  z
 }
-
-#' @export
-Zresidual.default <- function(object, nrep, data, type, method, ...) {
-  stop("Objects of class '",
-       paste(class(object), collapse = "', '"),
-       "' are not supported by Zresidual().",
-       call. = FALSE)
-}
-
-# else if (inherits(fit.object, "glmmTMB")) {
-#
-#   distr <- family(fit.object)$family
-#
-#   if (distr %in% c("gaussian", "poisson", "nbinom2")) {
-#
-#     Zresid_fun <- Zresidual.ZI(fit_ZI = fit.object,n.rep = nrep)
-#
-#   } else if (distr %in% c("truncated_poisson", "truncated_nbinom2")) {
-#
-#     Zresid_fun <- Zresidual.hurdle(fit_hd=fit.object,n.rep = nrep)
-#
-#   } else {
-#     stop("The distribution '", distr, "' from the glmmTMB object is not supported.")
-#   }
-# }
-

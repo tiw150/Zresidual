@@ -1,7 +1,5 @@
 #' An internal S3 method for model.matrix.
 #' @keywords internal
-#'
-#'
 model.frame.survreg <- function (formula, ...) {
     dots <- list(...)
     nargs <- dots[match(c("data", "na.action", "subset"),
