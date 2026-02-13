@@ -2,20 +2,37 @@
 % Please edit documentation in R/bartlett.test.zresid.R
 \name{bartlett.test.zresid}
 \alias{bartlett.test.zresid}
-\title{A function to calculate Bartlett of Zresidual}
+\title{Bartlett test p-values for each column of a Z-residual matrix}
 \usage{
-\method{bartlett.test}{zresid}(x, X = c("lp", "covariate"), k.bl = 10, ...)
+\method{bartlett.test}{zresid}(x, X = c("lp", "covariate"), k.bl = 10, zcov = NULL, ...)
 }
 \arguments{
-\item{x}{A Z-residual object (with class 'zresid').}
+\item{x}{A numeric matrix of Z-residuals (n x p). Class "zresid" is allowed.}
 
-\item{X}{Linear predictor or covariate. Must be (1) a length-n vector,
-(2) 'lp'/'covariate', or (3) a covariate name in attr(x, 'covariates').}
+\item{X}{X-axis specification. One of:
+\itemize{
+\item "index", "lp", "covariate"
+\item a covariate name in \code{zcov$covariates}
+\item a user-supplied vector of length nrow(x)
+}}
 
-\item{k.bl}{Number of bins if applicable for continuous covariates. Default is 10.}
+\item{k.bl}{Integer. Number of bins for numeric covariates (default 10).}
 
-\item{...}{Further arguments passed to or from other methods.}
+\item{zcov}{Optional metadata returned by Zcov(). Should contain:
+\itemize{
+\item \code{linear_pred} (or \code{linear.pred})
+\item \code{covariates} (data.frame)
+}}
+
+\item{...}{Reserved for forward compatibility.}
+}
+\value{
+A numeric vector of Bartlett-test p-values, length = ncol(x).
 }
 \description{
-A function to calculate Bartlett of Zresidual
+Plan A (Zresidual + metadata separated):
+\itemize{
+\item Provide covariates / linear predictor via \code{zcov} returned by Zcov().
+\item Backward compatible with legacy attributes on Zresidual.
+}
 }

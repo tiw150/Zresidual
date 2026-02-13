@@ -1,424 +1,341 @@
 #' Normal Q-Q Plot for Z-Residuals with Outlier Detection and Normality Diagnostics
 #'
-#' Produces a normal Q-Q plot for Z-residuals, with optional
-#' Shapiro–Wilk normality testing, automatic handling of infinite and extreme values,
-#' axis breaks for very large residuals, and visual annotation of detected outliers.
-#' This diagnostic is designed for checking the normality assumption of Z-residuals
-#' obtained from Bayesian predictive model checks (posterior, LOOCV, ISCV, etc.).
+#' Produces a normal Q-Q plot for Z-residuals, with optional Shapiro–Wilk normality testing,
+#' automatic handling of non-finite values, optional axis compression for very large residuals,
+#' and visual annotation of detected outliers (indices refer to the original observation order).
 #'
-#' @param y A numeric matrix of Z-residuals where each column corresponds
-#'   to an iteration or predictive draw. The function also uses the attribute
-#'   \code{"type"} (optional model name) to construct default titles.
-#' @param irep Integer or vector of integers indicating which column(s) of
-#'   \code{Zresidual} to plot. Defaults to \code{1}.
+#' This diagnostic is designed for checking the normality assumption of Z-residuals obtained
+#' from Bayesian predictive model checks (posterior, LOOCV, ISCV, etc.).
+#'
+#' @usage
+#' \method{qqnorm}{zresid}(
+#'   y,
+#'   info = NULL,
+#'   irep = 1,
+#'   diagnosis.test = "SW",
+#'   main.title = ifelse(is.null(attr(y, "type")),
+#'                       "Normal Q-Q Plot",
+#'                       paste("Normal Q-Q Plot -", attr(y, "type"))),
+#'   xlab = "Theoretical Quantiles",
+#'   ylab = "Sample Quantiles",
+#'   outlier.return = TRUE,
+#'   outlier.value = 3.5,
+#'   outlier.set = list(),
+#'   my.mar = c(5, 4, 4, 6) + 0.1,
+#'   legend.settings = list(),
+#'   clip.extreme = TRUE,
+#'   clip.threshold = 6,
+#'   ...
+#' )
+#'
+#' @param y A numeric matrix of Z-residuals where each column corresponds to an iteration/draw.
+#'   The function may use attribute \code{"type"} to build default titles.
+#'
+#' @param info Optional metadata (typically output of \code{Zcov()} or an equivalent list).
+#'   When provided (or attached via \code{attr(y,"info")}/\code{attr(y,"zcov")}/\code{attr(y,"Zcov")}),
+#'   this method can fill legacy attributes (e.g., \code{"type"}) for compatibility.
+#'
+#' @param irep Integer or integer vector selecting which column(s) of \code{y} to plot.
+#'
 #' @param diagnosis.test Character string indicating the normality test to perform.
-#'   Currently only \code{"SW"} (Shapiro–Wilk test; using \code{sw.test.zresid()})
-#'   is supported.
-#' @param main.title Main title of the plot. If missing, it is automatically
-#'   constructed using the \code{"type"} attribute of \code{Zresidual}.
+#'   Currently supports \code{"SW"} (Shapiro–Wilk). If helper \code{sw.test.zresid()} exists,
+#'   it will be used; otherwise a fallback \code{shapiro.test()} is applied per column.
+#'
+#' @param main.title Main title of the plot. If missing, it is automatically constructed using
+#'   \code{attr(y, "type")}.
+#'
 #' @param xlab,ylab Axis labels for the Q-Q plot.
-#' @param outlier.return Logical; if \code{TRUE}, the function prints and returns
-#'   the indices of detected outliers.
-#' @param outlier.value Numeric threshold used to classify an observation as
-#'   an outlier based on \code{|Zresidual| > outlier.value}. Default is \code{3.5}.
-#' @param outlier.set Optional named list of graphical parameters passed to
-#'   \code{\link[graphics]{symbols}} and \code{\link[graphics]{text}} for customizing
-#'   the outlier annotation.
-#' @param my.mar Numeric vector giving margin sizes, passed internally to
-#'   \code{par(mar = ...)}. Default is \code{c(5, 4, 4, 6) + 0.1}.
-#' @param legend.settings Optional named list of parameters to override default
-#'   legend appearance settings.
-#' @param ... Additional graphical arguments passed to \code{\link[stats]{qqnorm}}
-#'   and \code{\link[graphics]{plot}}.
 #'
-#' @details
-#' This function extends the base R Q-Q plot to better handle typical behavior
-#' of Z-residuals in Bayesian predictive checking:
+#' @param outlier.return Logical; if \code{TRUE}, the function prints and returns outlier indices.
 #'
-#' \itemize{
-#'   \item Infinite values (\code{Inf}/\code{-Inf}) are replaced with large finite
-#'         values and trigger a warning.
-#'   \item Very large Z-residuals (\code{|Z| > 6}) are shown using axis breaks to
-#'         avoid plot distortion.
-#'   \item Outliers (\code{|Z| > outlier.value}) are highlighted and labeled.
-#'   \item Column-wise Shapiro–Wilk tests assess normality.
-#'   \item Legends summarize model type, selected Q-Q lines, and diagnostic results.
-#' }
+#' @param outlier.value Numeric threshold used to classify an observation as an outlier based on
+#'   \code{|Z| > outlier.value}. Default is \code{3.5}.
 #'
-#' This diagnostic is suitable for Z-residuals such as randomized quantile
-#' residuals, posterior predictive Z-residuals, LOOCV/ISCV Z-residuals, and
-#' residuals from hurdle or zero-inflated Bayesian models.
+#' @param outlier.set Optional named list of graphical parameters passed to \code{symbols()} and
+#'   \code{text()} for customizing outlier circles/labels.
 #'
-#' @return
-#' Invisibly returns a list with:
+#' @param my.mar Numeric vector passed to \code{par(mar = ...)}.
+#'
+#' @param legend.settings Optional named list to override default legend appearance.
+#'
+#' @param clip.extreme Logical. If \code{TRUE}, very large residuals are visually compressed
+#'   onto the plot boundary (with optional axis break marks if available).
+#'
+#' @param clip.threshold Numeric. Threshold for extreme-value clipping (default 6).
+#'
+#' @param ... Additional graphical arguments passed to \code{plot()} (for Q-Q points).
+#'
+#' @return Invisibly returns a list with:
 #' \describe{
-#'   \item{outliers}{An integer vector containing the indices of detected outliers.}
+#'   \item{outliers}{Integer vector of detected outlier indices (original observation indices).}
 #' }
-#' If no outliers are detected, an empty integer vector is returned.
-#'
-#' A Q-Q plot is produced as a side effect.
-#'
-#' @references
-#' Dunn, P. K., & Smyth, G. K. (1996). Randomized quantile residuals.
-#' \emph{Journal of Computational and Graphical Statistics}, 5(3), 236–244.
-#'
-#' Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B.,
-#' Vehtari, A., & Rubin, D. B. (2013).
-#' \emph{Bayesian Data Analysis}. CRC Press.
-#'
-#' @seealso
-#'   \code{\link{boxplot.zresid}},
-#'   \code{\link[stats]{qqnorm}},
-#'   \code{\link[stats]{qqline}},
-#'   \code{\link[graphics]{plot}}.
-#'
-#' @examples
-#' library(Zresidual)
-#' set.seed(1)
-#' Z <- matrix(rnorm(200), ncol = 2)
-#' attr(Z, "type") <- "Example Model"
-#'
-#' # Basic Q-Q plot
-#' qqnorm.zresid(Z)
-#'
-#' # Use the second column with custom outlier threshold
-#' qqnorm.zresid(Z, irep = 2, outlier.value = 2.5)
-#'
-#' # Modify legend settings
-#' qqnorm.zresid(Z, legend.settings = list(cex = 0.8))
 #'
 #' @method qqnorm zresid
 #' @export qqnorm.zresid
-qqnorm.zresid <- function (y, irep=1, diagnosis.test = "SW",
-                           #X.anova = c("lp", "covariate"),k.anova=10,
-                           main.title = ifelse(is.null(attr(y, "type")),
-                                               "Normal Q-Q Plot",
-                                               paste("Normal Q-Q Plot -", attr(y, "type"))),
-                           xlab = "Theoretical Quantiles", ylab = "Sample Quantiles",
-                           outlier.return=TRUE, outlier.value = 3.5, outlier.set = list(),
-                           my.mar = c(5, 4, 4, 6) + 0.1,legend.settings = list(), ...)
-{
-  #i<-index
-
+qqnorm.zresid <- function(y, info = NULL, irep = 1, diagnosis.test = "SW",
+                          main.title = ifelse(is.null(attr(y, "type")),
+                                              "Normal Q-Q Plot",
+                                              paste("Normal Q-Q Plot -", attr(y, "type"))),
+                          xlab = "Theoretical Quantiles", ylab = "Sample Quantiles",
+                          outlier.return = TRUE, outlier.value = 3.5, outlier.set = list(),
+                          my.mar = c(5, 4, 4, 6) + 0.1, legend.settings = list(),
+                          clip.extreme = TRUE, clip.threshold = 6, ...) {
+  
   Zresidual <- y
-  if(missing(diagnosis.test)) diagnosis.test <- "SW"
-#  if(missing(X.anova) && diagnosis.test == "ANOVA") X.anova <- "lp"
-  # test <- list("SW" = shapiro.test,
-  #              "ANOVA" = aov.test.zresid)
-  if(diagnosis.test == "SW") test <- sw.test.zresid(Zresidual)
-
-  for (i in irep) {
-    par(mar = my.mar)
-    # Get the range of the QQ plot data to set the plot window
-    qq_x <- qqnorm(Zresidual[,i], plot.it = FALSE)$x
-    qq_y <- qqnorm(Zresidual[,i], plot.it = FALSE)$y
-    xlim0_qq <- c(min(qq_x, na.rm = TRUE) - 0.5, max(qq_x, na.rm = TRUE) + 0.6)
-    ylim0_qq <- range(qq_y, na.rm = TRUE) # Use the actual range of QQ values
-
-    plot.window(xlim = xlim0_qq, ylim = ylim0_qq) # Explicitly set the plot window
-
-   # type <- attr(Zresidual, "type")
-    id.negtv.inf <- which(is.infinite(Zresidual[,i]) & Zresidual[,i] < 0)
-    id.pos.inf <- which(is.infinite(Zresidual[,i]) & Zresidual[,i] > 0)
-    Zresidual[,i][id.negtv.inf]<- -1e10
-    Zresidual[,i][id.pos.inf]<- 1e10
-
-    id.nan <- which(is.nan(Zresidual[,i]))
-    id.infinity <- which (is.infinite(Zresidual[,i]))
-    id.outlier <- which(abs(Zresidual[,i]) > outlier.value)
-
-    if (length(id.infinity) > 0L) message("Non-finite Zresiduals exist! The model or the fitting process has a problem!")
-    if(length(id.nan) > 0L) message("NaNs exist! The model or the fitting process has a problem!")
-
-    test.pv <- test[i]
-    ### Diagnosis Test
-    #default.test.args <- list(Zresidual, X.anova, k.anova)
-    #test.pv <- do.call(test[[diagnosis.test]], default.test.args[!sapply(default.test.args, is.null)])[i]
-    #shapiro.test(Zresidual[,i])$p.value
-
-    ### Legend
+  
+  # ---- Compatibility layer: support "new" format where metadata is separated (e.g., from Zcov()) ----
+  info0 <- info
+  if (is.null(info0)) {
+    info0 <- attr(Zresidual, "info")
+    if (is.null(info0)) info0 <- attr(Zresidual, "zcov")
+    if (is.null(info0)) info0 <- attr(Zresidual, "Zcov")
+  }
+  
+  .fill_attr_if_missing <- function(obj, nm, value) {
+    if (is.null(attr(obj, nm)) && !is.null(value)) attr(obj, nm) <- value
+    obj
+  }
+  
+  .map_type_from_info <- function(info) {
+    if (!is.null(info$type)) return(info$type)
+    kind <- info$y_type_kind
+    if (is.null(kind)) return(NULL)
+    if (identical(kind, "censor")) return("survival")
+    if (identical(kind, "hurdle")) return("hurdle")
+    if (identical(kind, "trunc"))  return("count")
+    if (identical(kind, "plain"))  return(NULL)
+    NULL
+  }
+  
+  if (!is.null(info0)) {
+    if (is.null(attr(Zresidual, "type"))) {
+      attr(Zresidual, "type") <- .map_type_from_info(info0)
+    }
+  }
+  
+  if (missing(main.title)) {
+    main.title <- ifelse(is.null(attr(Zresidual, "type")),
+                         "Normal Q-Q Plot",
+                         paste("Normal Q-Q Plot -", attr(Zresidual, "type")))
+  }
+  
+  # ---- helpers ----
+  .safe_sw_pvalue <- function(zcol) {
+    zf <- zcol[is.finite(zcol)]
+    if (length(zf) < 3) return(NA_real_)
+    out <- try(stats::shapiro.test(zf)$p.value, silent = TRUE)
+    if (inherits(out, "try-error")) NA_real_ else out
+  }
+  
+  .get_sw_vec <- function(Z) {
+    # Prefer package helper if present
+    if (exists("sw.test.zresid", mode = "function")) {
+      tt <- try(sw.test.zresid(Z), silent = TRUE)
+      if (!inherits(tt, "try-error")) return(tt)
+    }
+    apply(Z, 2, .safe_sw_pvalue)
+  }
+  
+  .draw_legends_outside_right <- function(leg1, leg2, gap_factor = 0.8) {
+    old_xpd <- graphics::par("xpd")
+    on.exit(graphics::par(xpd = old_xpd), add = TRUE)
+    graphics::par(xpd = TRUE)
+    
+    usr <- graphics::par("usr")
+    x_anchor <- usr[2] + (usr[2] - usr[1]) * 0.02
+    y_top <- usr[4]
+    
+    lg1 <- NULL
+    if (!is.null(leg1)) {
+      lg1 <- do.call(graphics::legend, c(list(x = x_anchor, y = y_top, xjust = 0, yjust = 1, plot = FALSE), leg1))
+      do.call(graphics::legend, c(list(x = x_anchor, y = y_top, xjust = 0, yjust = 1), leg1))
+    }
+    
+    if (!is.null(leg2)) {
+      x2 <- x_anchor
+      y2 <- y_top
+      if (!is.null(lg1)) {
+        gap <- graphics::strheight("M", units = "user") * gap_factor
+        x2 <- lg1$rect$left
+        y2 <- lg1$rect$top - lg1$rect$h - gap
+      }
+      do.call(graphics::legend, c(list(x = x2, y = y2, xjust = 0, yjust = 1), leg2))
+    }
+  }
+  
+  # Optional axis break (plotrix::axis.break) if available
+  .axis_break <- NULL
+  if (exists("axis.break", mode = "function")) {
+    .axis_break <- get("axis.break", mode = "function")
+  } else if (requireNamespace("plotrix", quietly = TRUE)) {
+    .axis_break <- plotrix::axis.break
+  }
+  
+  # ---- input checks ----
+  irep <- unique(as.integer(irep))
+  irep <- irep[irep >= 1 & irep <= ncol(Zresidual)]
+  if (!length(irep)) stop("irep does not select any valid column in `y`.")
+  
+  # ---- normality test vector (column-wise) ----
+  test_vec <- NULL
+  diagnosis.test <- if (missing(diagnosis.test) || is.null(diagnosis.test)) "SW" else diagnosis.test
+  if (identical(diagnosis.test, "SW")) {
+    test_vec <- .get_sw_vec(Zresidual)
+  }
+  
+  for (col_id in irep) {
+    graphics::par(mar = my.mar)
+    
+    z <- Zresidual[, col_id]
+    
+    # Track non-finite before replacement
+    id_nonfinite <- which(!is.finite(z) & !is.na(z))
+    id_nan <- which(is.nan(z))
+    
+    if (length(id_nonfinite) > 0L) {
+      # Replace Inf/-Inf with large finite values near max finite magnitude
+      finite_abs_max <- suppressWarnings(max(abs(z[is.finite(z)]), na.rm = TRUE))
+      if (!is.finite(finite_abs_max)) finite_abs_max <- 0
+      z[id_nonfinite] <- sign(z[id_nonfinite]) * (finite_abs_max + 0.1)
+      message("Non-finite Zresiduals exist! The model or the fitting process has a problem!")
+    }
+    if (length(id_nan) > 0L) message("NaNs exist! The model or the fitting process has a problem!")
+    
+    # Outliers defined on ORIGINAL index (after non-finite replacement for plotting)
+    id.outlier <- which(abs(z) > outlier.value & !is.na(z))
+    
+    # Q-Q data (order-statistic based)
+    qq <- stats::qqnorm(z, plot.it = FALSE)
+    x_values <- qq$x
+    y_values <- qq$y
+    
+    # Map original indices -> QQ positions
+    ord <- order(z, na.last = NA)          # indices of sorted z (drops NA)
+    pos_out <- match(id.outlier, ord)      # positions in QQ vectors
+    pos_out <- pos_out[!is.na(pos_out)]
+    x_out <- if (length(pos_out)) x_values[pos_out] else numeric(0)
+    y_out <- if (length(pos_out)) y_values[pos_out] else numeric(0)
+    
+    # Determine if we need compression for extremes
+    ymax <- suppressWarnings(max(y_values, na.rm = TRUE))
+    ymin <- suppressWarnings(min(y_values, na.rm = TRUE))
+    need_clip <- isTRUE(clip.extreme) && (is.finite(ymax) && (ymax > clip.threshold) ||
+                                            is.finite(ymin) && (ymin < -clip.threshold))
+    
+    # Build y for plotting (possibly clipped)
+    y_plot <- y_values
+    if (need_clip) {
+      upper <- clip.threshold + 0.5
+      lower <- -clip.threshold - 0.5
+      y_plot[y_plot >  clip.threshold] <- upper
+      y_plot[y_plot < -clip.threshold] <- lower
+    }
+    
+    # --- Base plot (use plot(), not qqnorm()) so we control y clipping correctly ---
+    default_plot_args <- list(x = x_values, y = y_plot,
+                              main = main.title, xlab = xlab, ylab = ylab,
+                              pch = 1)
+    user_args <- list(...)
+    # allow user to override pch/cex/etc
+    plot_args <- modifyList(default_plot_args, user_args)
+    do.call(graphics::plot, plot_args)
+    
+    # Reference lines
+    stats::qqline(z, col = "black", lwd = 1.5)
+    graphics::abline(a = 0, b = 1, col = "green")
+    
+    # Optional axis break marks / labels for clipped extremes
+    if (need_clip) {
+      # annotate actual extremes on y-axis
+      usr <- graphics::par("usr")
+      upper <- clip.threshold + 0.5
+      lower <- -clip.threshold - 0.5
+      
+      # Add ticks at clipped positions with labels = true max/min
+      if (is.finite(ymax) && ymax > clip.threshold) {
+        graphics::axis(2, at = upper, labels = sprintf("%.1f", ymax), las = 1)
+        graphics::axis(4, at = upper, labels = sprintf("%.1f", ymax), las = 1)
+        if (!is.null(.axis_break)) {
+          .axis_break(2, clip.threshold, style = "slash")
+          .axis_break(4, clip.threshold, style = "slash")
+        }
+      }
+      if (is.finite(ymin) && ymin < -clip.threshold) {
+        graphics::axis(2, at = lower, labels = sprintf("%.1f", ymin), las = 1)
+        graphics::axis(4, at = lower, labels = sprintf("%.1f", ymin), las = 1)
+        if (!is.null(.axis_break)) {
+          .axis_break(2, -clip.threshold, style = "slash")
+          .axis_break(4, -clip.threshold, style = "slash")
+        }
+      }
+    }
+    
+    # --- Legends (outside right) ---
+    test.pv <- if (!is.null(test_vec) && length(test_vec) >= col_id) test_vec[col_id] else NA_real_
+    
     default.legend1 <- list(
-      x = grconvertX(1.02, "npc", "user"),
-      y = grconvertY(0.65, "npc", "user"),
-      legend = c("qqline", "45\u00B0 Line") ,
+      legend = c("qqline", "45\u00B0 line"),
       col = c("black", "green"),
       lty = c(1, 1),
       lwd = 1.5,
       cex = 0.6,
       bty = "n",
-      xpd = NA,
       seg.len = 1.5,
       adj = 0
     )
-
+    
+    pv_str <- if (is.finite(test.pv)) sprintf("%.2f", test.pv) else "NA"
     default.legend2 <- list(
-      x = grconvertX(0.99, "npc", "user"),
-      y = grconvertY(0.4, "npc", "user"),
       legend = c(expression(bold("P-value:")),
-                 paste0("Z-", diagnosis.test, " = ", sprintf("%.2f", test.pv))),
+                 paste0("Z-", diagnosis.test, " = ", pv_str)),
       cex = 0.6,
       bty = "n",
-      xpd = NA,
       adj = 0
     )
+    
     legend.args1 <- modifyList(default.legend1, legend.settings)
     legend.args2 <- modifyList(default.legend2, legend.settings)
-
-    ### outlier
-    default.outlier <- list(
-      pos = 4,
-      labels = id.outlier,
-      cex = 0.8,
-      col = "red",
-      add = T,
-      inches = F,
-      circles = rep((par("usr")[2]-par("usr")[1])*0.027, length(id.outlier)),
-      fg = "red"
-    )
-
-    # Add user-provided `...` arguments, overwriting defaults if necessary
-    outlier.args <- modifyList(default.outlier, outlier.set)
-
-    # Extract necessary arguments seperately for text() and symbols()
-    text.args <- outlier.args[names(outlier.args) %in% names(formals(text.default))]
-    symbols.args <- outlier.args[names(outlier.args) %in% names(formals(symbols))]
-
-    if(max(abs(Zresidual[,i]), na.rm = T)<6){
-      xlim0<-c(min(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]], na.rm = T)-0.5,
-               max(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]], na.rm = T)+0.6)
-      x_values<-qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]]
-      y_values<-qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]]
-      outlier_points <- (y_values > 3.5) | (y_values < -3.5)
-      qqnorm(Zresidual[,i],main=main.title,xlab=xlab, ylab=ylab,xlim=xlim0, ...)
-      qqline(Zresidual[,i],col=1)
-      abline(a=0,b=1,col=3)
-      do.call(legend, legend.args1)
-      do.call(legend, legend.args2)
-
-      if(isTRUE(outlier.return)){
-        if(identical(id.outlier, integer(0))){
-          #return(invisible(NULL))
-          next
-        } else {
-          points(x_values[outlier_points], y_values[outlier_points], pch = 16)
-          x.outlier<-(qqnorm(Zresidual[,i],plot.it=FALSE)$x)[id.outlier]
-          y.outlier<-(qqnorm(Zresidual[,i],plot.it=FALSE)$y)[id.outlier]
-
-          do.call(symbols, c(list(x=x.outlier,y=y.outlier), symbols.args))
-          do.call(text, c(list(x=x.outlier,y=y.outlier), text.args))
-        }
-        }
+    
+    .draw_legends_outside_right(legend.args1, legend.args2)
+    
+    # --- Outlier annotation (circles + labels) ---
+    if (isTRUE(outlier.return) && length(id.outlier)) {
+      # default outlier settings (need par("usr") after plot)
+      default.outlier <- list(
+        pos = 4,
+        labels = id.outlier,
+        cex = 0.8,
+        col = "red",
+        add = TRUE,
+        inches = FALSE,
+        circles = rep((graphics::par("usr")[2] - graphics::par("usr")[1]) * 0.027, length(id.outlier)),
+        fg = "red"
+      )
+      outlier.args <- modifyList(default.outlier, outlier.set)
+      
+      text.args <- outlier.args[names(outlier.args) %in% names(formals(graphics::text.default))]
+      symbols.args <- outlier.args[names(outlier.args) %in% names(formals(graphics::symbols))]
+      
+      # y positions must match plotted y (clipped if necessary)
+      y_out_plot <- y_out
+      if (need_clip && length(y_out_plot)) {
+        upper <- clip.threshold + 0.5
+        lower <- -clip.threshold - 0.5
+        y_out_plot[y_out_plot >  clip.threshold] <- upper
+        y_out_plot[y_out_plot < -clip.threshold] <- lower
+      }
+      
+      # draw emphasis points
+      graphics::points(x_out, y_out_plot, pch = 16)
+      
+      # circles + labels
+      do.call(graphics::symbols, c(list(x = x_out, y = y_out_plot), symbols.args))
+      do.call(graphics::text,    c(list(x = x_out, y = y_out_plot), text.args))
     }
-
-    if(max(abs(Zresidual[,i]), na.rm = T)>=6){
-      max.values<-which(Zresidual[,i]>=6)
-      min.values<-which(Zresidual[,i] < -6)
-
-      if(identical(min.values, integer(0))){
-        gap=c(6,max(abs(Zresidual[,i]), na.rm = T))
-        gapsize1 <- gap[2] - gap[1]
-        ylim0<-c(min(Zresidual[,i][-max.values], na.rm = T),7)
-        xlim0<-c(min(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]], na.rm = T)-0.5,
-                 max(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]], na.rm = T)+0.6)
-        x_values<-qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]]
-        y_values<-qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]]
-        outlier_points <- (y_values > 3.5 & y_values < 6) | (y_values < -3.5 & y_values > -6 )
-        plot(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]][-max.values],
-             qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]][-max.values],
-             xlim=xlim0,ylim=ylim0,main=main.title,xlab=xlab, ylab=ylab, ...)
-        axis(2, at=7 ,labels=round(max(Zresidual[,i], na.rm = T),1))
-        qqline(Zresidual[,i],col=1)
-        abline(a=0,b=1,col=3)
-        points(x_values[outlier_points], y_values[outlier_points])
-        axis.break(2,6,style="gap")
-        axis.break(2, 6, breakcol="snow", style="gap")
-        axis.break(2, 6,breakcol="black", style="slash")
-        axis.break(4, 6,breakcol="black", style="slash")
-        points(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]][max.values],
-               pmax(qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]][max.values]-gapsize1+1,6.5))
-        do.call(legend, legend.args1)
-        do.call(legend, legend.args2)
-
-        if(isTRUE(outlier.return)){
-          if(identical(id.outlier, integer(0))){
-            #return(invisible(NULL))
-            next
-          } else {
-            points(x_values[outlier_points], y_values[outlier_points], pch = 16)
-            points(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]][max.values],
-                   pmax(qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]][max.values]-gapsize1+1,6.5),
-                   col="black",pch=16)
-            x.outlier<-(qqnorm(Zresidual[,i],plot.it=FALSE)$x)[id.outlier]
-            y.outlier<-(qqnorm(Zresidual[,i],plot.it=FALSE)$y)[id.outlier]
-
-            if(any(y.outlier > 6)) {
-              idx_max <- which(y.outlier > 6)
-              y.outlier[idx_max] <- pmax(y.outlier[idx_max] - gapsize1 + 1, 6.5)
-            }
-
-            do.call(symbols, c(list(x=x.outlier,y=y.outlier), symbols.args))
-            do.call(text, c(list(x=x.outlier,y=y.outlier), text.args))
-          }
-        }
-
-      }
-
-      if(identical(max.values, integer(0))){
-        gap=c(min(Zresidual[,i], na.rm = T),-6)
-        gapsize2 <- gap[2] + gap[1]
-        ylim0<-c(-7 ,max(Zresidual[,i][-min.values], na.rm = T))
-        xlim0<-c(min(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]], na.rm = T)-0.5,
-                 max(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]], na.rm = T)+0.6)
-        x_values<-qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]]
-        y_values<-qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]]
-        outlier_points <- (y_values > 3.5 & y_values < 6) | (y_values < -3.5 & y_values > -6 )
-        plot(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]][-min.values],
-             qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]][-min.values],
-             xlim=xlim0,ylim=ylim0,main=main.title,xlab=xlab, ylab=ylab, ...)
-        qqline(Zresidual[,i],col=1)
-        abline(a=0,b=1,col=3)
-        points(x_values[outlier_points], y_values[outlier_points])
-        axis(2, at= -7 ,labels=round(min(Zresidual[,i], na.rm = T),1))
-        axis.break(2,-6.1,style="gap")
-        axis.break(2, -6.1, breakcol="snow", style="gap")
-        axis.break(2, -6.1,breakcol="black", style="slash")
-        axis.break(4, -6.1, breakcol="black", style="slash")
-        points(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]][min.values],
-               pmin(qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]][min.values]-gapsize2-1,-6.5))
-        do.call(legend, legend.args1)
-        do.call(legend, legend.args2)
-
-        if(isTRUE(outlier.return)){
-          if(identical(id.outlier, integer(0))){
-            #return(invisible(NULL))
-            next
-          } else {
-            points(x_values[outlier_points], y_values[outlier_points], pch = 16)
-            points(qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]][min.values],
-                   pmin(qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]][min.values]-gapsize2-1,-6.5),
-                   col="black",pch=16)
-
-            x.outlier<-(qqnorm(Zresidual[,i],plot.it=FALSE)$x)[id.outlier]
-            y.outlier<-(qqnorm(Zresidual[,i],plot.it=FALSE)$y)[id.outlier]
-
-            if (any(y.outlier < -6)) {
-              idx_min <- which(y.outlier< -6)
-              y.outlier[idx_min] <- pmin(y.outlier[idx_min] - gapsize2 - 1, -6.5)
-            }
-
-            do.call(symbols, c(list(x=x.outlier,y=y.outlier), symbols.args))
-            do.call(text, c(list(x=x.outlier,y=y.outlier), text.args))
-          }
-        }
-
-      }
-
-      if(!identical(max.values, integer(0)) && !identical(min.values, integer(0))){
-        gap1=c(6,max(Zresidual[,i],na.rm=T))
-        gapsize3 <- gap1[2] - gap1[1]
-        gap2=c(min(Zresidual[,i],na.rm=T),6)
-        gapsize4 <- gap2[2] + gap2[1]
-        x_values<-qqnorm(Zresidual[,i],plot.it = FALSE)[["x"]]
-        y_values<-qqnorm(Zresidual[,i],plot.it = FALSE)[["y"]]
-        ylim0<-c(-7.5,7.5)
-        xlim0<-c(min(x_values, na.rm = T)-0.5,
-                 max(x_values, na.rm = T)+0.6)
-        outlier_points <- (y_values > 3.5 & y_values < 6) | (y_values < -3.5 & y_values > -6 )
-        plot(x_values[-c(max.values,min.values)],y_values[-c(max.values,min.values)],
-             xlim=xlim0,ylim=ylim0,main=main.title,xlab=xlab, ylab=ylab,
-             pch = 1, ...)
-        points(x_values[outlier_points], y_values[outlier_points])
-        qqline(Zresidual[,i],col=1)
-        abline(a=0,b=1,col=3)
-        axis(2, at=7 ,labels=round(max(Zresidual[,i], na.rm = T),1))
-        axis.break(2,6,style="gap")
-        axis.break(2, 6, breakcol="snow", style="gap")
-        axis.break(2, 6,breakcol="black", style="slash")
-        axis.break(4, 6,breakcol="black", style="slash")
-        points(x_values[max.values],
-               pmax(y_values[max.values]-gapsize3+1,6.5))
-
-        axis(2, at= -7 ,labels=round(min(Zresidual[,i], na.rm = T),1))
-        axis.break(2,-6.1,style="gap")
-        axis.break(2, -6.1, breakcol="snow", style="gap")
-        axis.break(2, -6.1,breakcol="black", style="slash")
-        axis.break(4, -6.1, breakcol="black", style="slash")
-        points(x_values[min.values],
-               pmin(y_values[min.values]-gapsize4-1,-6.5))
-
-        ### Legend
-        default.legend1 <- list(
-          x = grconvertX(1.02, "npc", "user"),
-          y = grconvertY(0.65, "npc", "user"),
-          legend = c("qqline", "Diagonal Line"),
-          col = c("black", "green"),
-          lty = c(1, 1),
-          lwd = 1.5,
-          cex = 0.6,
-          bty = "n",
-          xpd = NA,
-          seg.len = 1.5,
-          adj = 0
-        )
-
-        default.legend2 <- list(
-          x = grconvertX(0.99, "npc", "user"),
-          y = grconvertY(0.4, "npc", "user"),
-          legend = c(expression(bold("P-value:")),
-                     paste0("Z-", diagnosis.test, " = ", sprintf("%.2f", test.pv))),
-          cex = 0.6,
-          bty = "n",
-          xpd = NA,
-          adj = 0
-        )
-        legend.args1 <- modifyList(default.legend1, legend.settings)
-        legend.args2 <- modifyList(default.legend2, legend.settings)
-
-        do.call(legend, legend.args1)
-        do.call(legend, legend.args2)
-
-        if(isTRUE(outlier.return)){
-          if(identical(id.outlier, integer(0))){
-            #return(invisible(NULL))
-            next
-          } else {
-            points(x_values[outlier_points], y_values[outlier_points], pch = 16)
-            points(x_values[max.values],
-                   pmax(y_values[max.values]-gapsize3+1,6.5),
-                   col="black",pch=16)
-            points(x_values[min.values],
-                   pmin(y_values[min.values]-gapsize4-1,-6.5),
-                   col="black",pch=16)
-
-            x.outlier<-(qqnorm(Zresidual[,i],plot.it=FALSE)$x)[id.outlier]
-            y.outlier<-(qqnorm(Zresidual[,i],plot.it=FALSE)$y)[id.outlier]
-
-            if(any(y.outlier > 6)) {
-              idx_max <- which(y.outlier > 6)
-              y.outlier[idx_max] <- pmax(y.outlier[idx_max] - gapsize3 + 1, 6.5)
-            }
-
-            if (any(y.outlier < -6)) {
-              idx_min <- which(y.outlier< -6)
-              y.outlier[idx_min] <- pmin(y.outlier[idx_min] - gapsize4 - 1, -6.5)
-            }
-
-            do.call(symbols, c(list(x=x.outlier,y=y.outlier), symbols.args))
-            do.call(text, c(list(x=x.outlier,y=y.outlier), text.args))
-          }
-        }
-
-      }
-
-    }
-
-
-    if(outlier.return){
+    
+    if (isTRUE(outlier.return)) {
       cat("Outlier Indices :", id.outlier, "\n")
-      invisible(list(outliers=id.outlier))
+      invisible(list(outliers = id.outlier))
     }
-
   }
-
 }
-

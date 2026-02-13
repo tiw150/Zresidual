@@ -6,8 +6,9 @@
 \usage{
 \method{boxplot}{zresid}(
   x,
+  info = NULL,
   irep = 1,
-  x_axis_var = c("lp", "covariate"),
+  x_axis_var = "lp",
   num.bin = 10,
   normality.test = c("SW", "AOV", "BL"),
   k.test = 10,
@@ -18,27 +19,27 @@
 )
 }
 \arguments{
-\item{x}{A matrix of Z-residuals with one column per MCMC iteration.
-Must contain attributes:
-\describe{
-\item{\code{"type"}}{Model type used to generate residuals (e.g., hurdle, truncated).}
-\item{\code{"fitted.value"}}{Vector of fitted values for the model.}
-\item{\code{"covariates"}}{Optional data frame of covariates.}
-\item{\code{"zero_id"}}{Indices of zero observations (if applicable).}
-}}
+\item{x}{A numeric matrix of Z-residuals with one column per MCMC iteration (or replicate),
+of class \code{"zresid"}. The method may use attributes such as \code{"type"}, \code{"zero_id"},
+\code{"covariates"}, and \code{"linear.pred"} if present.}
 
-\item{irep}{Integer vector indicating which columns of
-\code{Zresidual} to plot. Default is \code{1}.}
+\item{info}{Optional metadata (typically output of \code{Zcov()} or an equivalent list). When provided,
+this method can fill legacy attributes (e.g., \code{"covariates"}, \code{"linear.pred"}, \code{"zero_id"},
+\code{"type"}) to remain compatible with older plot workflows.}
 
-\item{x_axis_var}{Character string specifying the x-axis variable:
+\item{irep}{Integer vector indicating which columns of \code{x} to plot. Default is \code{1}.}
+
+\item{x_axis_var}{Specifies x-axis values for binning. Supported inputs:
 \itemize{
-\item \code{"fitted.value"} (default): Bin fitted values.
-\item \code{"covariate"}: Display a list of covariate names.
-\item A specific covariate name present in \code{attr(Zresidual, "covariates")}.
+\item A keyword: \code{"lp"} or \code{"covariate"}.
+\item A covariate name present in \code{attr(x, "covariates")}.
+\item A length-\eqn{n} vector (numeric / \code{Date} / \code{POSIXct} / factor / character), e.g., time.
+\item A function \code{function(z, info) ...} returning a length-\eqn{n} vector; optionally it can return
+\verb{list(values = <vector>, label = <character>)} to set an automatic x-axis label.
 }}
 
-\item{num.bin}{Integer. Number of bins for grouping fitted values or selected
-covariate. Defaults to \code{10}.}
+\item{num.bin}{Integer. Number of bins used for grouping numeric x-axis values. Defaults to \code{10}.
+For factor-like x-axis values, binning is not applied (levels are used directly).}
 
 \item{normality.test}{Character vector specifying which normality tests to report:
 \itemize{
@@ -48,63 +49,48 @@ covariate. Defaults to \code{10}.}
 }
 Defaults to \code{c("SW","AOV","BL")}.}
 
-\item{k.test}{Integer. Number of groups to use for ANOVA/Bartlett-type tests.
-Default is \code{10}.}
+\item{k.test}{Integer. Number of groups to use for ANOVA/Bartlett-type tests. Default is \code{10}.}
 
-\item{main.title}{Character. Main title of the plot. Default includes the model
-type automatically.}
+\item{main.title}{Character. Main title of the plot. Default includes model type automatically if available.}
 
-\item{outlier.return}{Logical. If \code{TRUE}, returns the index of Z-residual
-values exceeding the threshold defined by \code{outlier.value}. Default is
-\code{FALSE}.}
+\item{outlier.return}{Logical. If \code{TRUE}, returns the index of Z-residual values exceeding the threshold
+defined by \code{outlier.value}. Default is \code{FALSE}.}
 
-\item{outlier.value}{Numeric. Threshold for defining outliers based on absolute
-Z-residual magnitude. Default is \code{3.5}.}
+\item{outlier.value}{Numeric. Threshold for defining outliers based on absolute Z-residual magnitude.
+Default is \code{3.5}.}
 
-\item{...}{Additional graphical parameters passed to \code{\link[graphics]{plot}}
-or \code{\link[graphics]{legend}}.}
+\item{...}{Additional graphical parameters passed to \code{plot()} or \code{legend()}.}
 }
 \value{
 If \code{outlier.return = TRUE}, returns a list containing:
 \itemize{
-\item \code{outliers} - vector of indices where \code{|Zresidual| > outlier.value}.
+\item \code{outliers} - vector of indices where \verb{|Zresidual| > outlier.value}.
 }
-Otherwise, the function returns \code{NULL} (invisible) and produces a diagnostic plot.
+Otherwise, returns \code{NULL} (invisible) and produces a diagnostic plot.
 }
 \description{
-Produces a boxplot of Z-residuals grouped by binned fitted values or a selected
-covariate. This diagnostic plot supports other count-data models (e.g. Bayesian
-hurdle, zero-truncated) by visualizing residual distribution, detecting outliers,
-and evaluating normality assumptions using Shapiro-Wilk, ANOVA, or Bartlett-type
-tests for Z-residuals.
+Produces a boxplot of Z-residuals grouped by binned x-axis values (e.g., fitted
+values / linear predictors, covariates, or any user-specified vector such as time).
+This diagnostic plot supports count-data models (e.g., Bayesian hurdle, zero-truncated)
+by visualizing residual distribution, detecting outliers, and reporting normality
+diagnostics using Shapiro-Wilk, ANOVA, or Bartlett-type tests for Z-residuals.
 }
 \details{
-The function generates boxplots of Z-residuals across binned fitted values (or a
-selected covariate), which helps detect lack of fit, heteroscedasticity,
-and model misspecification.
+The function generates boxplots of Z-residuals across binned x-axis values, which helps
+detect lack of fit, heteroscedasticity, and model misspecification.
 
-Infinite and non-finite residuals are automatically replaced with a maximal
-finite value (with preserved sign), and a warning message is displayed.
+Infinite and non-finite residuals are automatically replaced with a maximal finite value
+(with preserved sign), and a warning message is displayed.
 
-When \code{x_axis_var="covariate"}, users may supply any covariate name available in the
-\code{"covariates"} attribute. If a covariate contains too few unique bins,
-fitted values are transformed using \code{log()} to stabilize binning, with a
-message provided.
-
-Normality diagnostics are displayed in the plot legend. Internally, the function
-calls:
-\code{sw.test.zresid()}, \code{aov.test.zresid()}, and
-\code{bartlett.test.zresid()}.
+Normality diagnostics are displayed in the plot legend. Internally, the function calls:
+\code{sw.test.zresid()}, \code{aov.test.zresid()}, and \code{bartlett.test.zresid()}.
+If \code{x_axis_var} is non-numeric (e.g., \code{Date}, \code{POSIXct}, factor), some tests may return \code{NA}.
 }
 \examples{
 \dontrun{
-# Assuming 'zres' is a Z-residual matrix produced by a model-fitting function:
-boxplot.zresid(zres)
-
-# Plot against a specific covariate
-boxplot.zresid(zres, x_axis_var = "age")
-
-# Return outliers
+boxplot.zresid(zres)                       # default: binned linear predictor
+boxplot.zresid(zres, x_axis_var = "age")   # plot against a covariate
+boxplot.zresid(zres, x_axis_var = timevec) # plot against time (length n)
 box.out <- boxplot.zresid(zres, outlier.return = TRUE)
 }
 

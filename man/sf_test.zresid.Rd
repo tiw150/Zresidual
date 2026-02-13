@@ -7,7 +7,7 @@
 sf_test.zresid(Zresidual)
 }
 \arguments{
-\item{Zresidual}{A Z-residual.}
+\item{Zresidual}{A matrix (n x p) of Z-residuals.}
 }
 \description{
 A function to calculate Shapiro-Francia test of Zresidual

@@ -6,11 +6,12 @@
 \usage{
 \method{plot}{zresid}(
   x,
+  info = NULL,
   irep = 1:ncol(x),
   ylab = "Z-Residual",
   normality.test = c("SW", "AOV", "BL"),
   k.test = 10,
-  x_axis_var = c("index", "covariate", "lp"),
+  x_axis_var = "index",
   main.title = ifelse(is.null(attr(x, "type")),
                       "Z-residual Scatterplot",
                       paste("Z-residual Scatterplot -", attr(x, "type"))),
@@ -25,94 +26,78 @@
 )
 }
 \arguments{
-\item{x}{A numeric matrix of Z-residuals (dimensions: \emph{n} × \emph{m}) of class \code{"zresid"}.
-Attributes used by the function include: \code{"type"}, \code{"zero_id"}, \code{"censored.status"},
-\code{"covariates"}, and \code{"linear.pred"}.}
+\item{x}{A numeric matrix of Z-residuals (dimensions: \eqn{n \times m}) of class \code{"zresid"}.
+The method may use attributes such as \code{"type"}, \code{"zero_id"}, \code{"censored.status"},
+\code{"covariates"}, and \code{"linear.pred"} if present.}
 
-\item{irep}{A vector specifying the residual column(s) (iterations) to plot. Defaults to
-all columns of \strong{\code{x}}.}
+\item{info}{Optional metadata (typically the output of \code{Zcov()} or an equivalent list).
+When provided, this method can fill legacy attributes (e.g., \code{"covariates"}, \code{"linear.pred"},
+\code{"zero_id"}, \code{"censored.status"}, \code{"type"}) without changing the plotting behavior.}
+
+\item{irep}{A vector specifying which residual column(s) to plot. Defaults to all columns.}
 
 \item{ylab}{Label for the y-axis.}
 
-\item{normality.test}{A character vector specifying normality tests applied per iteration: \code{"SW"},
-\code{"AOV"}, or \code{"BL"}. Helper functions (e.g., \code{sw.test.zresid}) must exist and
-accept inputs (\code{x}, \code{x_axis_var}, \code{k.test}).}
+\item{normality.test}{Character vector specifying which normality tests to compute per iteration:
+\code{"SW"} (Shapiro-Wilk), \code{"AOV"} (ANOVA-based), \code{"BL"} (Bartlett-based).
+Note: if \code{x_axis_var} is non-numeric (e.g., \code{Date}, \code{POSIXct}, factor), some tests
+may return \code{NA} or be skipped depending on helper implementations.}
 
-\item{k.test}{Bin size for normality tests (used for grouping continuous predictors).}
+\item{k.test}{Bin size used by normality tests when grouping a continuous x-axis predictor.}
 
-\item{x_axis_var}{Specifies the x-axis values. Options include: \code{"index"}, \code{"covariate"}, \code{"lp"},
-a covariate name present in \code{attr(x, "covariates")}, or a numeric vector of length \emph{n}.}
+\item{x_axis_var}{Specifies x-axis values. Supported inputs:
+\itemize{
+\item A keyword: \code{"index"}, \code{"lp"}, or \code{"covariate"}.
+\item A covariate name present in \code{attr(x, "covariates")}.
+\item A length-\eqn{n} vector (numeric / \code{Date} / \code{POSIXct} / factor / character), e.g., time.
+\item A function \code{function(z, info) ...} returning a length-\eqn{n} vector; optionally it can return
+\verb{list(values = <vector>, label = <character>)} to set an automatic x-axis label.
+}}
 
-\item{main.title}{Title of the plot. Defaults to a type-based informative title.}
+\item{main.title}{Plot title. Defaults to a type-based informative title if available.}
 
-\item{outlier.return}{If \code{TRUE}, outliers are printed to console and returned invisibly.}
+\item{outlier.return}{If \code{TRUE}, prints outlier indices to console and returns them invisibly.}
 
 \item{outlier.value}{Threshold above which a residual is flagged as an outlier. Defaults to \code{3.5}.}
 
-\item{category}{Optional vector categorizing observations (length \emph{n}). Used for coloring and
-shaping points in scatterplots.}
+\item{category}{Optional vector categorizing observations (length \eqn{n}), used for coloring/shaping points.}
 
-\item{outlier.set}{A named list of arguments passed to \code{symbols()} and \code{text()} for marking and
-labeling outliers. Overrides defaults.}
+\item{outlier.set}{A named list of arguments passed to \code{symbols()} / \code{text()} for marking and labeling outliers.}
 
-\item{xlab}{Label for the x-axis. May include LaTeX syntax using the form \code{tex("...")},
-which will be interpreted via \strong{latex2exp} (if installed).}
+\item{xlab}{Label for the x-axis. If given as \code{tex("...")}, it will be interpreted via \code{latex2exp} if installed.}
 
-\item{my.mar}{A numeric vector passed to \code{par(mar=...)} to adjust plot margins.}
+\item{my.mar}{Plot margins passed to \code{par(mar = ...)}.}
 
-\item{add_lowess}{Logical. If TRUE, add a LOWESS smooth to the plot.}
+\item{add_lowess}{Logical. If \code{TRUE}, add a LOWESS smooth (only applicable when x is numeric / \code{Date} / \code{POSIXct};
+otherwise the smooth may be skipped).}
 
-\item{...}{Additional graphical arguments passed to \code{plot()}, \code{legend()}, \code{symbols()},
-and \code{text()}.}
+\item{...}{Additional graphical arguments passed to \code{plot()}, \code{legend()}, \code{symbols()}, and \code{text()}.}
 }
 \value{
-Invisibly returns (when \code{outlier.return = TRUE}) a list:
-\item{outliers}{Vector of outlier indices}
-Otherwise returns \code{NULL}. Always produces a scatterplot as its primary output.
+Invisibly returns (when \code{outlier.return = TRUE}) a list with:
+\describe{
+\item{outliers}{Integer vector of outlier indices.}
+}
+Otherwise returns \code{NULL}. Always produces a scatterplot.
 }
 \description{
 Produces diagnostic scatterplots of Z-residuals for a wide range of model
 types, including hurdle models, zero models, count models, and survival models.
-This function is designed to be compatible with Z-residual matrices generated
-from Bayesian models (e.g., \strong{brms}, Stan-based models) as well as classical models.
 
-The function supports:
-\itemize{
-\item Plotting residuals against index, covariates, linear predictors, or user-specified vectors.
-\item Visual outlier detection with customizable coloring, emphasis, and labels.
-\item Automatic handling of censored/un-censored and hurdle count/zero classifications.
-\item Multiple normality tests (Shapiro-Wilk, ANOVA, Bartlett) with per-iteration reporting.
-\item Extensive customization through graphical parameters.
-}
+This method supports plotting Z-residuals against index, covariates, linear predictors,
+or any user-specified x-axis vector (e.g., time).
 }
 \details{
-This function employs S3 method dispatch. The input \code{x} must be an object of
-class \code{"zresid"}.
-\subsection{\strong{Model-Type-Specific Behavior}}{
-\subsection{\strong{Hurdle models}}{
+S3 method for objects of class \code{"zresid"}.
+
+Model-type behavior:
 \itemize{
-\item Zeros and counts are colored differently (\code{red} vs \code{blue}).
-}
-}
-
-\subsection{\strong{Survival models}}{
-\itemize{
-\item Censored and uncensored observations are visually separated.
-}
+\item Hurdle models: zeros and counts can be colored differently.
+\item Survival models: censored and uncensored observations can be separated.
 }
 
-}
-
-\subsection{\strong{Outlier Detection}}{
-
-Outliers are defined as:
-
-\deqn{|Z| > \mbox{outlier.value} \hspace{1em} \mbox{or non-finite values}}
-
-They are marked, labeled, and returned to the user if \code{outlier.return = TRUE}.
-}
+Outliers are defined as \eqn{|Z| > outlier.value} or non-finite values.
 }
 \note{
-This function modifies graphical parameters (\code{par(mar=...)}) during execution
-and resets them at the end.
+This function temporarily modifies graphical parameters and restores them on exit.
 }

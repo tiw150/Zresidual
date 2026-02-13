@@ -2,17 +2,48 @@
 % Please edit documentation in R/aov.test.zresid.R
 \name{aov.test.zresid}
 \alias{aov.test.zresid}
-\title{A function to calculate ANOVA of Zresidual}
+\title{ANOVA Test for Z-Residuals (supports separated Zresidual + metadata via Zcov)}
 \usage{
-aov.test.zresid(Zresidual, X = c("lp", "covariate"), k.anova = 10)
+aov.test.zresid(
+  Zresidual,
+  X = c("lp", "covariate"),
+  k.anova = 10,
+  zcov = NULL,
+  ...
+)
 }
 \arguments{
-\item{Zresidual}{A Z-residual.}
+\item{Zresidual}{A numeric matrix of Z-residuals (n x p). Class "zresid" is allowed.}
 
-\item{X}{Linear predictor or covariate}
+\item{X}{X-axis specification. One of:
+\itemize{
+\item "index", "lp", "covariate"
+\item a covariate name in \code{zcov$covariates}
+\item a user-supplied vector of length nrow(Zresidual)
+}}
 
-\item{k.anova}{Number of bins if applicable}
+\item{k.anova}{Maximum number of bins for numeric covariates (default 10).}
+
+\item{zcov}{Optional metadata returned by Zcov(). Should contain at least:
+\itemize{
+\item \code{linear_pred} (or \code{linear.pred}) for X="lp"
+\item \code{covariates} for X="covariate" or covariate-name usage
+}}
+
+\item{...}{Reserved for forward compatibility.}
+}
+\value{
+A numeric vector of length ncol(Zresidual) containing p-values (NA if failed).
 }
 \description{
-A function to calculate ANOVA of Zresidual
+This function computes an ANOVA-style diagnostic p-value for each column of a
+Z-residual matrix, testing whether residuals differ across bins/levels of an
+x-axis variable (linear predictor, covariate, index, or user-supplied vector).
+}
+\details{
+Key change (Plan A):
+\itemize{
+\item Zresidual no longer needs to carry covariates / linear predictor as attributes.
+\item Provide them via \code{zcov} returned by Zcov().
+}
 }

@@ -10,7 +10,11 @@ sw.test.zresid(Zresidual, ...)
 \item{Zresidual}{A numeric matrix of Z-residuals, where each column represents
 a separate set of residuals (e.g., from different posterior predictive draws or variables).}
 
-\item{...}{Additional arguments.}
+\item{...}{Additional arguments (ignored unless named):
+\describe{
+\item{max_n}{Integer. Maximum sample size passed to \code{shapiro.test} (default 5000).}
+\item{seed}{Integer. Optional random seed used when subsampling is needed.}
+}}
 }
 \value{
 A numeric vector of Shapiro-Wilk p-values, one for each column of \code{Zresidual}.
@@ -19,16 +23,8 @@ A numeric vector of Shapiro-Wilk p-values, one for each column of \code{Zresidua
 Performs the Shapiro-Wilk test for normality on each column of a matrix of Z-residuals.
 }
 \details{
-Infinite or non-finite values are handled by replacing negative infinity with -1e10
-and positive infinity with 1e10. Any NaN or remaining infinite values are reported via messages.
-}
-\examples{
-\dontrun{
-Zres <- matrix(rnorm(100), ncol=5)
-sw.pvals <- sw.test.zresid(Zres)
-}
-
-}
-\seealso{
-\code{\link[stats]{shapiro.test}}, \code{\link{Zresidual}}
+Non-finite values are handled by replacing \code{Inf/-Inf} with a large finite value
+based on the maximum finite magnitude in the same column. \code{NA/NaN} are removed
+before testing. If the column has fewer than 3 finite values, or if the test fails,
+\code{NA} is returned for that column.
 }
