@@ -1,4 +1,4 @@
-log_pointpred_brms_Zero <- function(fit, data = NULL, ...) {
+log_pointpred_brms_hurdle_zero <- function(fit, data = NULL, ...) {
   
   data_in <- if (is.null(data)) fit$data else data
   
