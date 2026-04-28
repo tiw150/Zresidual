@@ -1,11 +1,9 @@
-# Normal Q-Q Plot for Z-Residuals with Outlier Detection and Normality Diagnostics
+# Normal Q-Q plot for Z-residuals
 
-Produces a normal Q-Q plot for Z-residuals, with optional Shapiro–Wilk
-normality testing, automatic handling of infinite and extreme values,
-axis breaks for very large residuals, and visual annotation of detected
-outliers. This diagnostic is designed for checking the normality
-assumption of Z-residuals obtained from Bayesian predictive model checks
-(posterior, LOOCV, ISCV, etc.).
+Produces a normal Q-Q plot for one or more columns of a `"zresid"`
+object. Optional metadata supplied through `info` (or stored in
+attributes of `y`) are used only to fill legacy plotting attributes such
+as `"type"`.
 
 ## Usage
 
@@ -13,6 +11,8 @@ assumption of Z-residuals obtained from Bayesian predictive model checks
 # S3 method for class 'zresid'
 qqnorm(
   y,
+  zcov = NULL,
+  info = NULL,
   irep = 1,
   diagnosis.test = "SW",
   main.title = ifelse(is.null(attr(y, "type")), "Normal Q-Q Plot",
@@ -24,6 +24,8 @@ qqnorm(
   outlier.set = list(),
   my.mar = c(5, 4, 4, 6) + 0.1,
   legend.settings = list(),
+  clip.extreme = TRUE,
+  clip.threshold = 6,
   ...
 )
 ```
@@ -32,130 +34,115 @@ qqnorm(
 
 - y:
 
-  A numeric matrix of Z-residuals where each column corresponds to an
-  iteration or predictive draw. The function also uses the attribute
-  `"type"` (optional model name) to construct default titles.
+  A numeric matrix of Z-residuals, typically returned by
+  [`Zresidual`](https://tiw150.github.io/Zresidual/reference/Zresidual.md),
+  with one column per residual replicate.
+
+- zcov:
+
+  Optional metadata, typically returned by
+  [`Zcov`](https://tiw150.github.io/Zresidual/reference/Zcov.md).
+
+- info:
+
+  Legacy alias for `zcov`. When provided, it is used to fill missing
+  legacy attributes such as `"type"`.
 
 - irep:
 
-  Integer or vector of integers indicating which column(s) of
-  `Zresidual` to plot. Defaults to `1`.
+  Integer vector specifying which column(s) of `y` to plot.
 
 - diagnosis.test:
 
-  Character string indicating the normality test to perform. Currently
-  only `"SW"` (Shapiro–Wilk test; using
-  [`sw.test.zresid()`](https://tiw150.github.io/Zresidual/reference/sw.test.zresid.md))
-  is supported.
+  Character string specifying the normality diagnostic to display.
+  Currently `"SW"` is supported.
 
 - main.title:
 
-  Main title of the plot. If missing, it is automatically constructed
-  using the `"type"` attribute of `Zresidual`.
+  Main title of the plot. If omitted, a default title is constructed
+  from `attr(y, "type")`, when available.
 
-- xlab, ylab:
+- xlab:
 
-  Axis labels for the Q-Q plot.
+  Label for the x-axis.
+
+- ylab:
+
+  Label for the y-axis.
 
 - outlier.return:
 
-  Logical; if `TRUE`, the function prints and returns the indices of
-  detected outliers.
+  Logical; if `TRUE`, mark observations with `|Z| > outlier.value` and
+  invisibly return their indices.
 
 - outlier.value:
 
-  Numeric threshold used to classify an observation as an outlier based
-  on `|Zresidual| > outlier.value`. Default is `3.5`.
+  Numeric threshold used to define outliers.
 
 - outlier.set:
 
-  Optional named list of graphical parameters passed to
+  A named list of graphical arguments passed to
   [`symbols`](https://rdrr.io/r/graphics/symbols.html) and
-  [`text`](https://rdrr.io/r/graphics/text.html) for customizing the
-  outlier annotation.
+  [`text`](https://rdrr.io/r/graphics/text.html) when annotating
+  outliers.
 
 - my.mar:
 
-  Numeric vector giving margin sizes, passed internally to
-  `par(mar = ...)`. Default is `c(5, 4, 4, 6) + 0.1`.
+  Numeric vector passed to
+  [`par`](https://rdrr.io/r/graphics/par.html)`(mar = ...)`.
 
 - legend.settings:
 
-  Optional named list of parameters to override default legend
-  appearance settings.
+  Optional named list used to modify the default legend settings.
+
+- clip.extreme:
+
+  Logical; if `TRUE`, very large residuals are visually clipped to
+  improve readability.
+
+- clip.threshold:
+
+  Numeric threshold used when `clip.extreme = TRUE`.
 
 - ...:
 
   Additional graphical arguments passed to
-  [`qqnorm`](https://rdrr.io/r/stats/qqnorm.html) and
   [`plot`](https://rdrr.io/r/graphics/plot.default.html).
 
 ## Value
 
-Invisibly returns a list with:
-
-- outliers:
-
-  An integer vector containing the indices of detected outliers.
-
-If no outliers are detected, an empty integer vector is returned.
-
-A Q-Q plot is produced as a side effect.
+Invisibly returns a list with component `outliers`, containing the
+indices of observations flagged as outliers for the plotted replicate.
+The main effect of the function is the Q-Q plot.
 
 ## Details
 
-This function extends the base R Q-Q plot to better handle typical
-behavior of Z-residuals in Bayesian predictive checking:
-
-- Infinite values (`Inf`/`-Inf`) are replaced with large finite values
-  and trigger a warning.
-
-- Very large Z-residuals (`|Z| > 6`) are shown using axis breaks to
-  avoid plot distortion.
-
-- Outliers (`|Z| > outlier.value`) are highlighted and labeled.
-
-- Column-wise Shapiro–Wilk tests assess normality.
-
-- Legends summarize model type, selected Q-Q lines, and diagnostic
-  results.
-
-This diagnostic is suitable for Z-residuals such as randomized quantile
-residuals, posterior predictive Z-residuals, LOOCV/ISCV Z-residuals, and
-residuals from hurdle or zero-inflated Bayesian models.
-
-## References
-
-Dunn, P. K., & Smyth, G. K. (1996). Randomized quantile residuals.
-*Journal of Computational and Graphical Statistics*, 5(3), 236–244.
-
-Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., &
-Rubin, D. B. (2013). *Bayesian Data Analysis*. CRC Press.
+The method can optionally report a Shapiro-Wilk normality diagnostic,
+mark observations with large absolute residuals, and visually compress
+extreme values when they would otherwise dominate the plot.
 
 ## See also
 
-[`boxplot.zresid`](https://tiw150.github.io/Zresidual/reference/boxplot.zresid.md),
-[`qqnorm`](https://rdrr.io/r/stats/qqnorm.html),
-[`qqline`](https://rdrr.io/r/stats/qqnorm.html),
-[`plot`](https://rdrr.io/r/graphics/plot.default.html).
+[`Zresidual`](https://tiw150.github.io/Zresidual/reference/Zresidual.md),
+[`Zcov`](https://tiw150.github.io/Zresidual/reference/Zcov.md)
 
 ## Examples
 
 ``` r
-library(Zresidual)
-set.seed(1)
-Z <- matrix(rnorm(200), ncol = 2)
-attr(Z, "type") <- "Example Model"
+if (requireNamespace("survival", quietly = TRUE)) {
+  set.seed(1)
+  n <- 30
+  x <- rnorm(n)
+  t_event <- rexp(n, rate = exp(0.3 * x))
+  t_cens  <- rexp(n, rate = 0.4)
+  status  <- as.integer(t_event <= t_cens)
+  time    <- pmin(t_event, t_cens)
+  dat <- data.frame(time = time, status = status, x = x)
 
-# Basic Q-Q plot
-qqnorm.zresid(Z)
-
-
-# Use the second column with custom outlier threshold
-qqnorm.zresid(Z, irep = 2, outlier.value = 2.5)
-
-
-# Modify legend settings
-qqnorm.zresid(Z, legend.settings = list(cex = 0.8))
+  fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
+  z <- Zresidual(fit, data=dat, nrep = 1, seed = 1)
+  qqnorm(z)
+}
+#> Warning: NaNs produced
 
 ```

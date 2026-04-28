@@ -1,0 +1,257 @@
+---
+title: "Demo of Z-residual Diagnosis for brms Logistic Regression"
+author: "Tingxuan Wu and Longhai Li"
+format: 
+  html:
+    number-sections: false
+    code-fold: true
+vignette: >
+  %\VignetteIndexEntry{Demo of Z-residual diagnosis for logistic regression via brms}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{quarto::html}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  fig.width = 7,
+  fig.height = 5,
+  fig.align = "center"
+)
+set.seed(123)
+
+# Global toggle to force regeneration of heavy computations
+force_rerun <- FALSE
+
+# Ensure the resources directory exists to save heavy computations
+if (!dir.exists("resources")) {
+  dir.create("resources", recursive = TRUE)
+}
+```
+
+```{r load-packages}
+#| code-fold: show
+#| message: false
+#| warning: false
+suppressWarnings(unloadNamespace("Zresidual"))
+library(Zresidual)
+library(brms)
+library(knitr)
+library(kableExtra)
+```
+
+## 1. Simulating a Non-linear Dataset
+
+Because `Zresidual` provides native support for models fitted via the `brms` package, we do not need to construct a custom predictive function. We can jump straight into simulating our dataset. 
+
+We simulate a dataset where the true log-odds follow a sine wave. With $x \in [0, 10]$, the average log-odds are near zero, naturally keeping prevalence $\approx 0.5$.
+
+```{r}
+#| label: simulate-data
+#| code-fold: show
+n <- 200
+x <- runif(n, 0, 10)
+
+# True non-linear relationship (sine wave)
+eta_true <- 2.5 * sin(x) 
+y <- rbinom(n, 1, plogis(eta_true))
+
+dat <- data.frame(y = y, x = x)
+
+cat("Prevalence (proportion of 1s):", mean(dat$y), "\n")
+```
+
+## 2. Fitting Models and Calculating Z-residuals
+
+We compare a **Wrong Model** (assuming a linear relationship) against a **Correct Model** (specifying the sine term) using Bayesian logistic regression via `brms`. By specifying the `file` argument, `brms` will save the fitted model. If `force_rerun` is `TRUE`, it uses `file_refit = "always"` to force a fresh MCMC run.
+
+```{r}
+#| label: fit-brms-models
+#| results: hide
+#| message: false
+#| warning: false
+
+# Determine refit behavior based on the global toggle
+refit_behavior <- ifelse(force_rerun, "always", "on_change")
+
+# 1. Wrong Model (Linear)
+fit_wrong <- brm(
+  y ~ x, 
+  family = bernoulli(), 
+  data = dat,
+  file = "resources/brms_logit_wrong", 
+  file_refit = refit_behavior,
+  refresh = 0,
+  cores = 4
+)
+
+# 2. Correct Model (Non-linear)
+fit_correct <- brm(
+  y ~ sin(x), 
+  family = bernoulli(), 
+  data = dat,
+  file = "resources/brms_logit_correct", 
+  file_refit = refit_behavior,
+  refresh = 0,
+  cores = 4
+)
+```
+
+Next, we calculate the Z-residuals. For `brms` fits, `Zresidual` uses the Importance Sampling Cross-Validation (`iscv`) method by default. We also extract the covariate data using `Zcov()` to facilitate plotting.
+
+```{r}
+#| label: calc-zresiduals
+#| code-fold: show
+
+# Calculate Z-residuals (10 replicates each)
+z_wrong   <- Zresidual(fit_wrong, data = dat, config = list(method = "iscv"), randomized = TRUE, nrep = 10)
+z_correct <- Zresidual(fit_correct, data = dat, config = list(method = "iscv"), randomized = TRUE, nrep = 10)
+
+# Extract Z-covariate information (No need for type = "zero" on standard logistic models)
+info_wrong   <- Zcov(fit_wrong, data = dat)
+info_correct <- Zcov(fit_correct, data = dat)
+```
+
+## 3. Diagnostics with Z-residuals
+
+The plots below display the diagnostics for a single set of Z-residuals.
+
+```{r}
+#| label: diagnosis-comparison
+#| code-fold: true
+#| fig-width: 12
+#| fig-height: 8
+
+# Change this value (1 to 10) to see other replicated plots
+i <- 1
+
+# Set up 2 rows (Wrong vs Correct) and 3 columns (QQ, Scatter, Box)
+par(mfrow = c(2, 3), mar = c(4, 4, 3, 1))
+
+# --- ROW 1: WRONG MODEL (Linear) ---
+# 1. Q-Q Plot
+qqnorm(z_wrong, info = info_wrong, irep = i, main = "Wrong: Z-Resid Q-Q")
+
+# 2. Scatter Plot (Note the wave pattern in the residuals, categorized by binary y)
+plot(z_wrong, info = info_wrong, x_axis_var = "x", 
+     category = dat$y, irep = i, main = "Wrong: Z-Resid vs X")
+
+# 3. Boxplot
+boxplot(z_wrong, info = info_wrong, x_axis_var = "lp", 
+        irep = i, main = "Wrong: Z-Resid vs LP")
+
+# --- ROW 2: CORRECT MODEL (Non-linear) ---
+# 1. Q-Q Plot
+qqnorm(z_correct, info = info_correct, irep = i, main = "Correct: Z-Resid Q-Q")
+
+# 2. Scatter Plot (Residuals look like random noise, categorized by binary y)
+plot(z_correct, info = info_correct, x_axis_var = "x", 
+     category = dat$y, irep = i, main = "Correct: Z-Resid vs X")
+
+# 3. Boxplot
+boxplot(z_correct, info = info_correct, x_axis_var = "lp", 
+        irep = i, main = "Correct: Z-Resid vs LP")
+```
+
+> **Note:** To inspect different realizations of the randomized residuals, change the value of `i` (the `irep` index) in the code chunk above.
+
+**Replicated p-values of the same fitted models**
+```{r}
+#| label: replicated-p-values-spanned
+#| code-fold: true
+
+# 1. Create the data frame 
+res_table <- data.frame(
+  "Replicate" = paste("Rep", 1:ncol(z_wrong)),
+  "SW_W"      = as.numeric(sw.test.zresid(z_wrong)),
+  "AOV_W"     = as.numeric(aov.test.zresid(z_wrong, X = "lp", zcov = info_wrong)),
+  "BL_W"      = as.numeric(bartlett.test.zresid(z_wrong, X = "lp", zcov = info_wrong)),
+  "SW_C"      = as.numeric(sw.test.zresid(z_correct)),
+  "AOV_C"     = as.numeric(aov.test.zresid(z_correct, X = "lp", zcov = info_correct)),
+  "BL_C"      = as.numeric(bartlett.test.zresid(z_correct, X = "lp", zcov = info_correct))
+)
+
+# 2. Render with minimalistic styling and spanning headers
+res_table %>%
+  kable(
+    digits = 4, 
+    col.names = c("Replicate", "SW", "AOV", "Bartlett", "SW", "AOV", "Bartlett"),
+    caption = "Diagnostic Test p-values Across Randomized Replicates",
+    align = "lcccccc"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "condensed"), 
+    full_width = FALSE,
+    position = "center"
+  ) %>%
+  add_header_above(c(" " = 1, "Wrong Model (Linear)" = 3, "Correct Model (Non-linear)" = 3))
+```
+
+## 4. ANOVA Test Distributions of Multiple Simulated Datasets 
+
+We perform a simulation loop to compare the $p$-values produced by the ANOVA diagnostic test. 
+
+*Note: Bayesian MCMC sampling is computationally heavy. To keep compilation times reasonable, we save the results of this loop to the `resources` directory and skip execution on subsequent builds unless `force_rerun` is enabled.*
+
+```{r}
+#| label: replication-verify-anova
+#| code-fold: true
+#| results: hide
+#| message: false
+#| warning: false
+
+n_sim <- 50
+sim_file <- "resources/brms_logit_simulation_results.rds"
+
+if (!force_rerun && file.exists(sim_file)) {
+  # Load pre-computed results if they exist and force_rerun is FALSE
+  sim_res <- readRDS(sim_file)
+  p_c <- sim_res$p_c
+  p_w <- sim_res$p_w
+} else {
+  # Otherwise, execute the heavy simulation loop
+  p_c <- numeric(n_sim)
+  p_w <- numeric(n_sim)
+  n_sample <- 200 
+  
+  for(i in 1:n_sim) {
+    x_sim <- runif(n_sample, 0, 10)
+    
+    # Generate true non-linear data
+    eta_sim <- 2.5 * sin(x_sim)
+    y_sim   <- rbinom(n_sample, 1, plogis(eta_sim))
+    dat_sim <- data.frame(y = y_sim, x = x_sim)
+    
+    # --- Case 1: Wrong Model (Linear) ---
+    fit_w_sim <- update(fit_wrong, newdata = dat_sim, refresh = 0)
+    z_w_sim   <- Zresidual(fit_w_sim, data = dat_sim, config = list(method = "iscv"), randomized = TRUE, nrep = 1)
+    info_w_sim <- Zcov(fit_w_sim, data = dat_sim)
+    
+    p_w[i] <- as.numeric(aov.test.zresid(z_w_sim, X = "lp", zcov = info_w_sim))
+    
+    # --- Case 2: Correct Model (Sine) ---
+    fit_c_sim <- update(fit_correct, newdata = dat_sim, refresh = 0)
+    z_c_sim   <- Zresidual(fit_c_sim, data = dat_sim, config = list(method = "iscv"), randomized = TRUE, nrep = 1)
+    info_c_sim <- Zcov(fit_c_sim, data = dat_sim)
+    
+    p_c[i] <- as.numeric(aov.test.zresid(z_c_sim, X = "lp", zcov = info_c_sim))
+  }
+  
+  # Save the results for future renders
+  saveRDS(list(p_c = p_c, p_w = p_w), sim_file)
+}
+```
+
+```{r}
+#| label: replication-hists
+#| fig-width: 10
+#| fig-height: 5
+#| code-fold: true
+
+par(mfrow = c(1, 2))
+hist(p_c, main = "Correct: Uniform p-values", xlab = "p-value", col = "lightblue", breaks = 10)
+abline(h = n_sim / 10, col = "red", lty = 2)
+
+hist(p_w, main = "Wrong: Small p-values", xlab = "p-value", col = "salmon", breaks = 10)
+```
+
+**Discussion:** For the **Correct Model**, the distribution of $p$-values is relatively uniform, indicating a well-specified model. For the **Wrong Model**, most $p$-values are small (clustered near 0), indicating that the ANOVA test successfully detected the non-linear trend despite the Bayesian sampling constraints.

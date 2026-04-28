@@ -2,19 +2,19 @@
 % Please edit documentation in R/plot.zresid.R
 \name{plot.zresid}
 \alias{plot.zresid}
-\title{Plot Z-Residuals for Bayesian and Frequentist Count / Hurdle / Zero / Survival Models}
+\title{Scatterplot diagnostics for Z-residuals}
 \usage{
 \method{plot}{zresid}(
   x,
+  zcov = NULL,
   info = NULL,
-  irep = 1:ncol(x),
+  irep = 1,
   ylab = "Z-Residual",
   normality.test = c("SW", "AOV", "BL"),
   k.test = 10,
   x_axis_var = "index",
-  main.title = ifelse(is.null(attr(x, "type")),
-                      "Z-residual Scatterplot",
-                      paste("Z-residual Scatterplot -", attr(x, "type"))),
+  main.title = ifelse(is.null(attr(x, "type")), "Z-residual Scatterplot",
+    paste("Z-residual Scatterplot -", attr(x, "type"))),
   outlier.return = TRUE,
   outlier.value = 3.5,
   category = NULL,
@@ -26,78 +26,91 @@
 )
 }
 \arguments{
-\item{x}{A numeric matrix of Z-residuals (dimensions: \eqn{n \times m}) of class \code{"zresid"}.
-The method may use attributes such as \code{"type"}, \code{"zero_id"}, \code{"censored.status"},
-\code{"covariates"}, and \code{"linear.pred"} if present.}
+\item{x}{A numeric matrix of Z-residuals, typically returned by
+\code{\link{Zresidual}}, with one column per residual replicate.}
 
-\item{info}{Optional metadata (typically the output of \code{Zcov()} or an equivalent list).
-When provided, this method can fill legacy attributes (e.g., \code{"covariates"}, \code{"linear.pred"},
-\code{"zero_id"}, \code{"censored.status"}, \code{"type"}) without changing the plotting behavior.}
+\item{zcov}{Optional metadata, typically returned by \code{\link{Zcov}}.}
 
-\item{irep}{A vector specifying which residual column(s) to plot. Defaults to all columns.}
+\item{info}{Legacy alias for \code{zcov}.}
+
+\item{irep}{Integer vector specifying which column(s) of \code{x} to plot.}
 
 \item{ylab}{Label for the y-axis.}
 
-\item{normality.test}{Character vector specifying which normality tests to compute per iteration:
-\code{"SW"} (Shapiro-Wilk), \code{"AOV"} (ANOVA-based), \code{"BL"} (Bartlett-based).
-Note: if \code{x_axis_var} is non-numeric (e.g., \code{Date}, \code{POSIXct}, factor), some tests
-may return \code{NA} or be skipped depending on helper implementations.}
+\item{normality.test}{Character vector specifying which diagnostic p-values
+to display. Supported values are \code{"SW"}, \code{"AOV"}, and
+\code{"BL"}.}
 
-\item{k.test}{Bin size used by normality tests when grouping a continuous x-axis predictor.}
+\item{k.test}{Integer controlling grouping used by the diagnostic tests.}
 
-\item{x_axis_var}{Specifies x-axis values. Supported inputs:
-\itemize{
-\item A keyword: \code{"index"}, \code{"lp"}, or \code{"covariate"}.
-\item A covariate name present in \code{attr(x, "covariates")}.
-\item A length-\eqn{n} vector (numeric / \code{Date} / \code{POSIXct} / factor / character), e.g., time.
-\item A function \code{function(z, info) ...} returning a length-\eqn{n} vector; optionally it can return
-\verb{list(values = <vector>, label = <character>)} to set an automatic x-axis label.
-}}
+\item{x_axis_var}{Variable used on the x-axis. It may be one of
+\code{"index"}, \code{"lp"}, \code{"covariate"}, a covariate name stored
+in \code{attr(x, "covariates")}, a length-\eqn{n} vector, or a function
+returning such a vector.}
 
-\item{main.title}{Plot title. Defaults to a type-based informative title if available.}
+\item{main.title}{Main title of the plot. If omitted, a default title is
+constructed from \code{attr(x, "type")}, when available.}
 
-\item{outlier.return}{If \code{TRUE}, prints outlier indices to console and returns them invisibly.}
+\item{outlier.return}{Logical; if \code{TRUE}, mark observations with
+\code{|Z| > outlier.value} (and non-finite residuals) and invisibly return
+their indices.}
 
-\item{outlier.value}{Threshold above which a residual is flagged as an outlier. Defaults to \code{3.5}.}
+\item{outlier.value}{Numeric threshold used to define outliers.}
 
-\item{category}{Optional vector categorizing observations (length \eqn{n}), used for coloring/shaping points.}
+\item{category}{Optional grouping variable of length \eqn{n} used to modify
+point appearance.}
 
-\item{outlier.set}{A named list of arguments passed to \code{symbols()} / \code{text()} for marking and labeling outliers.}
+\item{outlier.set}{A named list of graphical arguments passed to
+\code{\link[graphics]{symbols}} and \code{\link[graphics]{text}} when
+annotating outliers.}
 
-\item{xlab}{Label for the x-axis. If given as \code{tex("...")}, it will be interpreted via \code{latex2exp} if installed.}
+\item{xlab}{Label for the x-axis. If \code{NULL}, an automatic label is used.}
 
-\item{my.mar}{Plot margins passed to \code{par(mar = ...)}.}
+\item{my.mar}{Numeric vector passed to \code{\link[graphics]{par}(mar = ...)}.}
 
-\item{add_lowess}{Logical. If \code{TRUE}, add a LOWESS smooth (only applicable when x is numeric / \code{Date} / \code{POSIXct};
-otherwise the smooth may be skipped).}
+\item{add_lowess}{Logical; if \code{TRUE}, add a LOWESS smooth when the x-axis
+is numeric.}
 
-\item{...}{Additional graphical arguments passed to \code{plot()}, \code{legend()}, \code{symbols()}, and \code{text()}.}
+\item{...}{Additional graphical arguments passed to plotting functions.}
 }
 \value{
-Invisibly returns (when \code{outlier.return = TRUE}) a list with:
-\describe{
-\item{outliers}{Integer vector of outlier indices.}
-}
-Otherwise returns \code{NULL}. Always produces a scatterplot.
+Invisibly returns a list with component \code{outliers}, containing
+the indices of observations flagged as outliers for the plotted replicate.
+The main effect of the function is the diagnostic scatterplot.
 }
 \description{
-Produces diagnostic scatterplots of Z-residuals for a wide range of model
-types, including hurdle models, zero models, count models, and survival models.
-
-This method supports plotting Z-residuals against index, covariates, linear predictors,
-or any user-specified x-axis vector (e.g., time).
+Produces scatterplots of Z-residuals against observation index, linear
+predictors, model covariates, or a user-supplied x-axis variable. Optional
+metadata supplied through \code{info} (or stored in attributes of
+\code{x}) are used to fill legacy plotting attributes such as
+\code{"covariates"}, \code{"linear.pred"}, \code{"zero_id"}, and
+\code{"censored.status"}.
 }
 \details{
-S3 method for objects of class \code{"zresid"}.
+Depending on the metadata available, the plot can distinguish zero versus
+positive observations for hurdle-type models, or censored versus uncensored
+observations for survival models.
+}
+\examples{
+if (requireNamespace("survival", quietly = TRUE)) {
+  set.seed(1)
+  n <- 30
+  x <- rnorm(n)
+  t_event <- rexp(n, rate = exp(0.3 * x))
+  t_cens  <- rexp(n, rate = 0.4)
+  status  <- as.integer(t_event <= t_cens)
+  time    <- pmin(t_event, t_cens)
+  dat <- data.frame(time = time, status = status, x = x)
 
-Model-type behavior:
-\itemize{
-\item Hurdle models: zeros and counts can be colored differently.
-\item Survival models: censored and uncensored observations can be separated.
+  fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
+  z <- Zresidual(fit, data=dat, nrep = 1, seed = 1)
+  info <- Zcov(fit, data = dat)
+
+  plot(z, info = info, x_axis_var = "index")
+  plot(z, info = info, x_axis_var = "lp")
 }
 
-Outliers are defined as \eqn{|Z| > outlier.value} or non-finite values.
 }
-\note{
-This function temporarily modifies graphical parameters and restores them on exit.
+\seealso{
+\code{\link{Zresidual}}, \code{\link{Zcov}}
 }

@@ -2,25 +2,89 @@
 % Please edit documentation in R/Zcov.r
 \name{Zcov}
 \alias{Zcov}
-\title{Zcov: extract covariates / lp / response / y_type for diagnostics}
+\alias{Zcov.brmsfit}
+\alias{Zcov.coxph}
+\alias{Zcov.survreg}
+\alias{Zcov.glm}
+\title{Extract aligned model metadata for Z-residual diagnostics}
 \usage{
-Zcov(
-  fit,
-  data = NULL,
-  mode = c("auto", "hurdle_zero"),
-  detail = c("basic", "full"),
-  ...
-)
+Zcov(fit, data, detail = c("basic", "full"), type = NULL, ...)
+
+\method{Zcov}{brmsfit}(fit, data, detail = c("basic", "full"), type = NULL, ...)
+
+\method{Zcov}{coxph}(fit, data, detail = c("basic", "full"), type = NULL, ...)
+
+\method{Zcov}{survreg}(fit, data, detail = c("basic", "full"), type = NULL, ...)
+
+\method{Zcov}{glm}(fit, data, detail = c("basic", "full"), type = NULL, ...)
 }
 \arguments{
-\item{fit}{model object (brmsfit, coxph, survreg, ...)}
+\item{fit}{A fitted model object, such as \code{brmsfit},
+\code{survival::coxph}, or \code{survival::survreg}.}
 
-\item{data}{optional newdata}
+\item{data}{Data used to extract aligned metadata. Must be provided.}
 
-\item{mode}{optional; default "auto"}
+\item{detail}{Character string; either \code{"basic"} or \code{"full"}.}
 
-\item{detail}{optional; "basic" or "full"}
+\item{type}{Optional component selector. For example, in \code{brms} hurdle
+models, use \code{type = "zero"} to isolate the binary hurdle component,
+\code{type = "count"} for the positive-count component, and
+\code{type = "hurdle"} for the full hurdle model.}
+
+\item{...}{Additional arguments passed to class-specific methods.}
+}
+\value{
+A named list. Depending on the model and \code{detail}, this typically
+includes aligned response information, response-type metadata, covariates,
+linear predictors, and optional model-frame details.
 }
 \description{
-Zcov: extract covariates / lp / response / y_type for diagnostics
+Extracts model-aligned response information, response type, covariates, and
+linear predictors for use in Z-residual diagnostics and plotting functions.
+The exact components returned depend on the fitted model class and the value
+of \code{detail}.
+}
+\section{Methods (by class)}{
+\itemize{
+\item \code{Zcov(brmsfit)}: Method for \code{brmsfit} objects.
+Currently, the top-level \code{type} argument is
+implemented \strong{only} for hurdle or zero-inflated models.
+For these models, setting \code{type = "zero"} isolates the
+binary zero-inflation/hurdle process, \code{type = "count"} isolates the
+truncated count process, and \code{type = "hurdle"} evaluates the entire model.
+For all other standard families (e.g., standard logistic, Poisson, Gaussian),
+the \code{type} argument is unnecessary and will be ignored with a warning.
+For these standard models, the function simply returns the standard linear
+predictors, covariates, and response.
+
+\item \code{Zcov(coxph)}: Method for \code{coxph} objects from the \pkg{survival} package.
+Extracts the \code{Surv} response, linear predictors, and censoring metadata.
+
+\item \code{Zcov(survreg)}: Method for \code{survreg} objects from the \pkg{survival} package.
+Extracts the \code{Surv} response, linear predictors, distribution scale, and
+censoring metadata.
+
+\item \code{Zcov(glm)}: Method for \code{glm} objects.
+Standard generalized linear models are single-process models.
+Therefore, the \code{type} argument is unnecessary and will be
+ignored with a warning if provided. The function returns the
+standard linear predictors on the link scale, covariates, and response.
+
+}}
+\examples{
+if (requireNamespace("survival", quietly = TRUE)) {
+  set.seed(1)
+  n <- 20
+  x <- rnorm(n)
+  t_event <- rexp(n, rate = exp(0.2 * x))
+  t_cens  <- rexp(n, rate = 0.5)
+  status  <- as.integer(t_event <= t_cens)
+  time    <- pmin(t_event, t_cens)
+  dat <- data.frame(time = time, status = status, x = x)
+
+  fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
+  info <- Zcov(fit, data = dat)
+  names(info)
+}
+
 }

@@ -9,6 +9,26 @@ src/*.dll
 .vscode/
 *.old
 inst/doc
-renv
-renv.lock
 .RDataTmp
+/.quarto/
+**/*.quarto_ipynb
+
+# Ignore the renv directory
+renv/
+# ...but track these specific renv files
+!renv/activate.R
+!renv/settings.json
+!inst/extdata
+_freeze/
+_cache/
+.quarto/
+_extensions/
+figure-pdf/
+*.Rproj
+.ipynb_checkpoints/
+rsconnect/
+*.RData
+*.rdata
+*.rds
+*.RDS
+.positai

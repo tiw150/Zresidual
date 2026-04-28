@@ -1,0 +1,346 @@
+
+
+
+#' Compute Z-residuals from predictive tail probabilities
+#'
+#' Computes Z-residuals by transforming predictive upper-tail probabilities to
+#' the standard normal scale. When predictive point mass at the observed value
+#' is available, randomized Z-residuals are constructed by adding a uniform
+#' perturbation within that mass. This allows the same interface to handle both
+#' continuous-type and discrete-type outcomes.
+#'
+#' Predictive quantities are obtained either from an internal backend chosen
+#' from \code{fit}, or from a user-supplied \code{log_pointpred} function.
+#'
+#' @param fit A fitted model object.
+#' @param data Data used to evaluate predictive quantities. Must be provided.
+#' @param log_pointpred Optional function (or function name) returning
+#'   predictive pointwise quantities. The returned object must contain
+#'   \code{log_surv}, \code{log_like}, and \code{is_discrete}.
+#' @param mcmc_summarize Character string indicating how posterior predictive
+#'   quantities are summarized. Must be one of \code{"post"} or \code{"iscv"}.
+#' @param type Optional component selector used to construct the automatic
+#'   \code{log_pointpred_<backend>_<family>[_<type>]} function name.
+#' @param randomized Logical; if \code{TRUE}, generate randomized Z-residuals
+#'   when point mass or discrete-type contribution is available.
+#' @param nrep Integer giving the number of residual replicates. If
+#'   \code{randomized = FALSE}, a single replicate is returned.
+#' @param eps Small positive constant used to keep probability values away from
+#'   exactly 0 and 1.
+#' @param seed Optional integer seed for reproducible randomization.
+#' @param ... Additional arguments passed to the underlying prediction backend.
+#'
+#' @return A numeric matrix with one row per observation and one column per
+#' residual replicate. The returned object has class \code{"zresid"}.
+#' Attribute \code{"rsp"} stores the probability-scale residuals used to form
+#' the Z-residuals.
+#'
+#' @export
+Zresidual <- function(fit,
+                      data,
+                      log_pointpred = NULL,
+                      mcmc_summarize = c("post", "iscv"),
+                      type = NULL,
+                      randomized = TRUE,
+                      nrep = 30,
+                      eps = 1e-12,
+                      seed = NULL,
+                      ...) {
+  if (!is.null(seed)) set.seed(seed)
+  if (missing(data) || is.null(data)) {
+    stop("Zresidual: `data` must be provided.", call. = FALSE)
+  }
+  
+  mcmc_summarize <- match.arg(tolower(as.character(mcmc_summarize)), c("post", "iscv"))
+  
+  .log_add_exp2 <- function(a, b) {
+    both_ninf <- is.infinite(a) & a < 0 & is.infinite(b) & b < 0
+    m <- pmax(a, b)
+    res <- m + log(exp(a - m) + exp(b - m))
+    res[both_ninf] <- -Inf
+    
+    a_ninf <- is.infinite(a) & a < 0 & !both_ninf
+    res[a_ninf] <- b[a_ninf]
+    
+    b_ninf <- is.infinite(b) & b < 0 & !both_ninf
+    res[b_ninf] <- a[b_ninf]
+    
+    res
+  }
+  
+  .clip_logprob <- function(logp, eps = 1e-12) {
+    lo <- log(eps)
+    hi <- log1p(-eps)
+    pmin(pmax(logp, lo), hi)
+  }
+  
+  .type_from_zcov <- function(zcov) {
+    if (is.null(zcov)) return(NULL)
+    if (!is.null(zcov$type) && nzchar(as.character(zcov$type)[1])) {
+      return(as.character(zcov$type)[1])
+    }
+    kind <- zcov$y_type_kind
+    if (is.null(kind) || length(kind) < 1L) return(NULL)
+    kind <- as.character(kind[1])
+    if (identical(kind, "censor")) return("survival")
+    if (identical(kind, "trunc"))  return("count")
+    if (identical(kind, "hurdle")) return("hurdle")
+    NULL
+  }
+  
+  pre <- get_logpre(
+    fit = fit,
+    data = data,
+    log_pointpred = log_pointpred,
+    mcmc_summarize = mcmc_summarize,
+    type = type,
+    ...
+  )
+  
+  log_surv_hat <- as.numeric(pre$log_surv_hat)
+  log_pmf_hat <- as.numeric(pre$log_pmf_hat)
+  is_discrete <- as.integer(pre$is_discrete)
+  
+  n <- length(log_surv_hat)
+  if (n < 1L) stop("Zresidual: empty prediction.", call. = FALSE)
+  if (length(log_pmf_hat) != n) stop("Zresidual: `log_pmf_hat` length mismatch.", call. = FALSE)
+  if (length(is_discrete) != n) stop("Zresidual: `is_discrete` length mismatch.", call. = FALSE)
+  
+  idx_disc <- which(is_discrete == 1L)
+  if (length(idx_disc) > 0L) {
+    bad <- idx_disc[!is.finite(log_pmf_hat[idx_disc])]
+    if (length(bad) > 0L) {
+      stop("Zresidual: discrete observations require finite `log_pmf_hat`.", call. = FALSE)
+    }
+  }
+  
+  if (!randomized) nrep <- 1L
+  nrep <- as.integer(nrep)
+  if (nrep < 1L) stop("Zresidual: `nrep` must be >= 1.", call. = FALSE)
+  
+  log_rsp <- matrix(NA_real_, nrow = n, ncol = nrep)
+  
+  for (r in seq_len(nrep)) {
+    u <- if (randomized) runif(n) else rep(0.5, n)
+    logu <- log(pmax(u, .Machine$double.xmin))
+    
+    lr <- log_surv_hat
+    if (length(idx_disc) > 0L) {
+      lr[idx_disc] <- .log_add_exp2(
+        log_surv_hat[idx_disc],
+        log_pmf_hat[idx_disc] + logu[idx_disc]
+      )
+    }
+    
+    log_rsp[, r] <- .clip_logprob(lr, eps = eps)
+  }
+  
+  rsp <- exp(log_rsp)
+  z <- -qnorm(rsp)
+  
+  if (!is.matrix(z)) z <- matrix(z, nrow = n, ncol = nrep)
+  colnames(z) <- paste0("rep", seq_len(nrep))
+  
+  class(z) <- c("zresid", class(z))
+  attr(z, "rsp") <- rsp
+  
+  zcov <- tryCatch(
+    Zcov(fit, data = data, type = type),
+    error = function(e) NULL
+  )
+  
+  if (!is.null(zcov)) {
+    attr(z, "zcov") <- zcov
+    attr(z, "linear.pred") <- zcov$linear_pred
+    attr(z, "linear_pred") <- zcov$linear_pred
+    attr(z, "covariates") <- zcov$covariates
+    if (is.null(attr(z, "type"))) attr(z, "type") <- .type_from_zcov(zcov)
+    
+    if (identical(zcov$y_type_kind, "censor") && !is.null(zcov$y_type)) {
+      attr(z, "censored.status") <- as.integer(zcov$y_type == 0L)
+    }
+    if (!is.null(zcov$extra) && !is.null(zcov$extra$zero_id)) {
+      attr(z, "zero_id") <- zcov$extra$zero_id
+    }
+  }
+  
+  z
+}
+
+
+get_logpre <- function(fit,
+                      data,
+                      log_pointpred = NULL,
+                      mcmc_summarize = c("post", "iscv"),
+                      type = NULL,
+                      ...) {
+  if (missing(fit) || is.null(fit)) {
+    stop("get_logpre: `fit` is required.", call. = FALSE)
+  }
+  if (missing(data) || is.null(data)) {
+    stop("get_logpre: `data` must be provided.", call. = FALSE)
+  }
+  
+  resolve_fun <- function(f) {
+    if (is.null(f)) return(NULL)
+    if (is.function(f)) return(f)
+    if (is.character(f) && length(f) == 1L) {
+      out <- get0(f, envir = parent.frame(), inherits = TRUE)
+      if (is.null(out)) out <- get0(f, envir = .GlobalEnv, inherits = FALSE)
+      if (is.null(out)) out <- get0(f, envir = asNamespace(utils::packageName()), inherits = FALSE)
+      if (!is.function(out)) {
+        stop("get_logpre: cannot resolve function: ", f, call. = FALSE)
+      }
+      return(out)
+    }
+    stop("get_logpre: `log_pointpred` must be a function or a single character name.", call. = FALSE)
+  }
+  
+  mcmc_summarize <- match.arg(tolower(as.character(mcmc_summarize)), c("post", "iscv"))
+  lp_fn <- resolve_fun(log_pointpred)
+  
+  log_summary_pred(
+    fit = fit,
+    data = data,
+    mcmc_summarize = mcmc_summarize,
+    type = type,
+    log_pointpred_fn = lp_fn,
+    ...
+  )
+}
+
+
+log_summary_pred <- function(fit,
+                            data,
+                            mcmc_summarize = c("post", "iscv"),
+                            type = NULL,
+                            log_pointpred_fn = NULL,
+                            ...) {
+  if (missing(data) || is.null(data)) {
+    stop("log_summary_pred: `data` must be provided.", call. = FALSE)
+  }
+  
+  mcmc_summarize <- match.arg(tolower(as.character(mcmc_summarize)), c("post", "iscv"))
+  
+  as_mat <- function(z, name) {
+    if (is.null(z)) stop("log_summary_pred: missing `", name, "`.", call. = FALSE)
+    if (is.vector(z)) return(matrix(as.vector(z), nrow = 1L))
+    if (is.matrix(z)) return(z)
+    stop("log_summary_pred: `", name, "` must be vector or matrix.", call. = FALSE)
+  }
+  
+  safe_col_logmeanexp <- function(mat) {
+    if (!requireNamespace("matrixStats", quietly = TRUE)) {
+      stop("log_summary_pred: Bayesian summaries require package 'matrixStats'.", call. = FALSE)
+    }
+    Tdraw <- nrow(mat)
+    out <- matrixStats::colLogSumExps(mat, na.rm = TRUE) - log(Tdraw)
+    out[is.nan(out) | is.na(out)] <- -Inf
+    out
+  }
+  
+  post_hat <- function(log_surv_m, log_like_m, is_discrete) {
+    n <- ncol(log_surv_m)
+    log_pmf_hat <- rep(NA_real_, n)
+    idx_disc <- which(is_discrete == 1L)
+    if (length(idx_disc) > 0L) {
+      log_pmf_hat[idx_disc] <- safe_col_logmeanexp(log_like_m[, idx_disc, drop = FALSE])
+    }
+    list(
+      log_surv_hat = safe_col_logmeanexp(log_surv_m),
+      log_pmf_hat = log_pmf_hat
+    )
+  }
+  
+  iscv_hat <- function(log_surv_m, log_like_m, is_discrete) {
+    if (!requireNamespace("matrixStats", quietly = TRUE)) {
+      stop("log_summary_pred: Bayesian summaries require package 'matrixStats'.", call. = FALSE)
+    }
+    if (anyNA(log_like_m)) {
+      stop("log_summary_pred: `iscv` requires non-NA `log_like`.", call. = FALSE)
+    }
+    
+    all_zero_lik <- apply(log_like_m, 2, function(v) all(is.infinite(v) & v < 0))
+    if (any(all_zero_lik)) {
+      stop("log_summary_pred: `iscv` is not compatible with columns whose likelihood is identically zero.", call. = FALSE)
+    }
+    
+    log_sum_S_over_lik <- matrixStats::colLogSumExps(log_surv_m - log_like_m)
+    log_sum_inv_lik <- matrixStats::colLogSumExps(-log_like_m)
+    log_surv_hat <- log_sum_S_over_lik - log_sum_inv_lik
+    
+    n <- ncol(log_surv_m)
+    log_pmf_hat <- rep(NA_real_, n)
+    idx_disc <- which(is_discrete == 1L)
+    if (length(idx_disc) > 0L) {
+      log_pmf_hat[idx_disc] <- log(nrow(log_like_m)) - log_sum_inv_lik[idx_disc]
+    }
+    
+    list(
+      log_surv_hat = log_surv_hat,
+      log_pmf_hat = log_pmf_hat
+    )
+  }
+  
+  call_log_pointpred <- function(fun, fit, data, type = NULL, ...) {
+    fmls <- tryCatch(names(formals(fun)), error = function(e) character(0))
+    accepts_dots <- "..." %in% fmls
+    accepts_type <- "type" %in% fmls
+    if (accepts_type || accepts_dots) {
+      return(fun(fit, data = data, type = type, ...))
+    }
+    fun(fit, data = data, ...)
+  }
+  
+  lp_fn <- if (is.null(log_pointpred_fn)) log_pointpred else log_pointpred_fn
+  pp <- call_log_pointpred(lp_fn, fit = fit, data = data, type = type, ...)
+  
+  if (!is.list(pp) || is.null(pp$log_surv) || is.null(pp$log_like) || is.null(pp$is_discrete)) {
+    stop("log_summary_pred: log_pointpred must return `log_surv`, `log_like`, and `is_discrete`.", call. = FALSE)
+  }
+  
+  log_surv0 <- as_mat(pp$log_surv, "log_surv")
+  log_like0 <- as_mat(pp$log_like, "log_like")
+  isdisc0 <- as_mat(pp$is_discrete, "is_discrete")
+  
+  if (ncol(log_surv0) != ncol(log_like0)) {
+    stop("log_summary_pred: `log_surv` and `log_like` dimension mismatch.", call. = FALSE)
+  }
+  if (nrow(log_surv0) != nrow(log_like0)) {
+    stop("log_summary_pred: `log_surv` and `log_like` draw dimension mismatch.", call. = FALSE)
+  }
+  if (nrow(isdisc0) != 1L || ncol(isdisc0) != ncol(log_surv0)) {
+    stop("log_summary_pred: `is_discrete` must be length n or a 1 x n matrix.", call. = FALSE)
+  }
+  
+  is_discrete <- as.integer(isdisc0[1, ])
+  is_bayes <- nrow(log_surv0) > 1L
+  
+  if (!is_bayes) {
+    log_pmf_hat <- rep(NA_real_, ncol(log_surv0))
+    idx_disc <- which(is_discrete == 1L)
+    if (length(idx_disc) > 0L) {
+      log_pmf_hat[idx_disc] <- as.numeric(log_like0[1L, idx_disc])
+    }
+    return(list(
+      log_surv_hat = as.numeric(log_surv0[1L, ]),
+      log_pmf_hat = log_pmf_hat,
+      is_discrete = is_discrete
+    ))
+  }
+  
+  hat <- switch(
+    mcmc_summarize,
+    post = post_hat(log_surv0, log_like0, is_discrete),
+    iscv = iscv_hat(log_surv0, log_like0, is_discrete)
+  )
+  
+  list(
+    log_surv_hat = as.numeric(hat$log_surv_hat),
+    log_pmf_hat = as.numeric(hat$log_pmf_hat),
+    is_discrete = is_discrete
+  )
+}
+
+
+

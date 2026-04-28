@@ -1,25 +1,34 @@
-#' ANOVA Test for Z-Residuals (supports separated Zresidual + metadata via Zcov)
+#' ANOVA test diagnostic test for Z-residuals
 #'
-#' This function computes an ANOVA-style diagnostic p-value for each column of a
-#' Z-residual matrix, testing whether residuals differ across bins/levels of an
-#' x-axis variable (linear predictor, covariate, index, or user-supplied vector).
+#' @description
+#' Computes an ANOVA-style diagnostic p-value for each column of a Z-residual
+#' matrix against an index, linear predictor, covariate, or user-supplied
+#' grouping variable.
 #'
-#' Key change (Plan A):
-#' - Zresidual no longer needs to carry covariates / linear predictor as attributes.
-#' - Provide them via `zcov` returned by Zcov().
-#'
-#' @param Zresidual A numeric matrix of Z-residuals (n x p). Class "zresid" is allowed.
-#' @param X X-axis specification. One of:
-#'   - "index", "lp", "covariate"
-#'   - a covariate name in `zcov$covariates`
-#'   - a user-supplied vector of length nrow(Zresidual)
-#' @param k.anova Maximum number of bins for numeric covariates (default 10).
-#' @param zcov Optional metadata returned by Zcov(). Should contain at least:
-#'   - `linear_pred` (or `linear.pred`) for X="lp"
-#'   - `covariates` for X="covariate" or covariate-name usage
+#' @param Zresidual A numeric vector or matrix of Z-residuals.
+#' @param X X-axis specification or grouping variable.
+#' @param k.anova Maximum number of bins for numeric \code{X}.
+#' @param zcov Optional metadata returned by \code{\link{Zcov}}.
 #' @param ... Reserved for forward compatibility.
 #'
-#' @return A numeric vector of length ncol(Zresidual) containing p-values (NA if failed).
+#' @return A numeric vector of p-values.
+#'
+#' @examples
+#' if (requireNamespace("survival", quietly = TRUE)) {
+#'   set.seed(1)
+#'   n <- 30
+#'   x <- rnorm(n)
+#'   t_event <- rexp(n, rate = exp(0.2 * x))
+#'   t_cens  <- rexp(n, rate = 0.5)
+#'   status  <- as.integer(t_event <= t_cens)
+#'   time    <- pmin(t_event, t_cens)
+#'   dat <- data.frame(time = time, status = status, x = x)
+#'   fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
+#'   z <- Zresidual(fit,  data = dat, nrep = 2, seed = 1)
+#'   info <- Zcov(fit, data = dat)
+#'   aov.test.zresid(z, X = "lp", zcov = info)
+#' }
+#'
 #' @export
 aov.test.zresid <- function(Zresidual,
                             X = c("lp", "covariate"),

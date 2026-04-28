@@ -1,49 +1,104 @@
-log_pointpred_brms_hurdle_zero <- function(fit, data = NULL, ...) {
+log_pointpred_brmsfit_hurdle_zero <- function(fit, data, ...) {
+  if (missing(data) || is.null(data)) {
+    stop("log_pointpred_brmsfit_hurdle_zero: `data` must be provided.", call. = FALSE)
+  }
   
-  data_in <- if (is.null(data)) fit$data else data
-  
-  model.data <- model.frame(fit$formula, data = data_in)
-  model.var  <- names(model.data)
-  
+  model.data <- model.frame(fit$formula, data = data)
   response <- fit$formula$resp
-  if (is.null(response) || !response %in% model.var) {
-    response <- all.vars(fit$formula$formula)[1]
+  
+  if (!(response %in% names(model.data))) {
+    stop("log_pointpred_brmsfit_hurdle_zero: response variable not found in `data`.", call. = FALSE)
   }
   
   y <- as.numeric(model.data[[response]])
   n <- length(y)
   
-  # logistic target: 1 if y==0 else 0
-  O_i <- ifelse(y == 0, 1L, 0L)
-  
-  # your unified y_type convention: 0 if y==0 else 1
-  y_type <- ifelse(y == 0, 0L, 1L)
-  
-  posterior_pred_safe <- function(fit, dpar, newdata, ...) {
-    f <- get("posterior.pred", mode = "function")
-    fmls <- names(formals(f))
-    
-    call_args <- list(fit, dpar = dpar)
-    if (!is.null(newdata) && "newdata" %in% fmls) call_args$newdata <- newdata
-    
-    if ("..." %in% fmls) return(do.call(f, c(call_args, list(...))))
-    do.call(f, call_args)
+  if (n < 1L) {
+    stop("log_pointpred_brmsfit_hurdle_zero: empty response vector.", call. = FALSE)
   }
   
-  hu <- posterior_pred_safe(fit, dpar = "zero", newdata = data_in, ...)
-  mc_used <- nrow(hu)
-  
-  lpmf_hat <- matrix(NA_real_, mc_used, n)
-  lsf_hat  <- matrix(NA_real_, mc_used, n)
-  
-  for (i in seq_len(n)) {
-    lpmf_hat[, i] <- dbern(O_i[i], hu[, i], log = TRUE)
-    lsf_hat[, i]  <- pbern(O_i[i], hu[, i], lower.tail = FALSE, log.p = TRUE)
+  if (any(!is.finite(y))) {
+    stop("log_pointpred_brmsfit_hurdle_zero: response contains non-finite values.", call. = FALSE)
   }
+  
+  if (any(y < 0 | abs(y - round(y)) > 1e-8)) {
+    stop("log_pointpred_brmsfit_hurdle_zero: underlying response must be non-negative integers.", call. = FALSE)
+  }
+  
+  O_i <- as.integer(y == 0)
+  
+  hu <- posterior.pred(
+    fit,
+    dpar = "zero",
+    data = data,
+    count.only = FALSE,
+    ...
+  )
+  
+  if (!is.matrix(hu)) {
+    hu <- matrix(hu, nrow = 1L)
+  }
+  
+  if (ncol(hu) != n) {
+    stop("log_pointpred_brmsfit_hurdle_zero: posterior parameter columns must match nrow(data).", call. = FALSE)
+  }
+  
+  if (any(!is.finite(hu))) {
+    stop("log_pointpred_brmsfit_hurdle_zero: `hu` contains non-finite values.", call. = FALSE)
+  }
+  
+  if (any(hu < 0 | hu > 1)) {
+    stop("log_pointpred_brmsfit_hurdle_zero: `hu` must lie in [0, 1].", call. = FALSE)
+  }
+  
+  ndraws <- nrow(hu)
+  
+  o_mat <- matrix(
+    rep(O_i, each = ndraws),
+    nrow = ndraws,
+    ncol = n,
+    byrow = FALSE
+  )
+  
+  log_like <- dbinom(
+    x = o_mat,
+    size = 1L,
+    prob = hu,
+    log = TRUE
+  )
+  
+  log_surv <- pbinom(
+    q = o_mat,
+    size = 1L,
+    prob = hu,
+    lower.tail = FALSE,
+    log.p = TRUE
+  )
+  
+  if (!identical(dim(log_like), dim(hu))) {
+    stop("log_pointpred_brmsfit_hurdle_zero: `log_like` dimension mismatch.", call. = FALSE)
+  }
+  
+  if (!identical(dim(log_surv), dim(hu))) {
+    stop("log_pointpred_brmsfit_hurdle_zero: `log_surv` dimension mismatch.", call. = FALSE)
+  }
+  
+  if (anyNA(log_like)) {
+    stop("log_pointpred_brmsfit_hurdle_zero: `log_like` contains NA.", call. = FALSE)
+  }
+  
+  if (anyNA(log_surv)) {
+    stop("log_pointpred_brmsfit_hurdle_zero: `log_surv` contains NA.", call. = FALSE)
+  }
+  
+  is_discrete <- matrix(1L, nrow = 1L, ncol = n)
   
   list(
-    lpmf_hat = lpmf_hat,
-    lsf_hat  = lsf_hat,
-    y_type   = y_type
+    log_surv = log_surv,
+    log_like = log_like,
+    is_discrete = is_discrete
   )
 }
+
+log_pointpred_brmsfit_hurdle_negbinomial_zero <- log_pointpred_brmsfit_hurdle_zero
+log_pointpred_brmsfit_hurdle_poisson_zero <- log_pointpred_brmsfit_hurdle_zero

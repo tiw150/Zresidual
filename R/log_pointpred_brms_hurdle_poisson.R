@@ -1,52 +1,112 @@
-log_pointpred_brms_hurdle_poisson<- function(fit, data = NULL, ...) {
+log_pointpred_brmsfit_hurdle_poisson <- function(fit, data, ...) {
+  if (missing(data) || is.null(data)) {
+    stop("log_pointpred_brmsfit_hurdle_poisson: `data` must be provided.", call. = FALSE)
+  }
   
-  data_in <- if (is.null(data)) fit$data else data
-  
-  model.data <- model.frame(fit$formula, data = data_in)
-  model.var  <- names(model.data)
-  
+  model.data <- model.frame(fit$formula, data = data)
   response <- fit$formula$resp
-  if (is.null(response) || !response %in% model.var) {
-    response <- all.vars(fit$formula$formula)[1]
+  
+  if (!(response %in% names(model.data))) {
+    stop("log_pointpred_brmsfit_hurdle_poisson: response variable not found in `data`.", call. = FALSE)
   }
   
   sim.y <- as.numeric(model.data[[response]])
   n <- length(sim.y)
-  y_type <- ifelse(sim.y == 0, 0L, 1L)
   
-  count_id <- which(sim.y > 0)
-  zero_id  <- which(sim.y == 0)
-  
-  posterior_pred_safe <- function(fit, dpar, newdata, ...) {
-    f <- get("posterior.pred", mode = "function")
-    fmls <- names(formals(f))
-    
-    call_args <- list(fit, dpar = dpar)
-    if (!is.null(newdata) && "newdata" %in% fmls) call_args$newdata <- newdata
-    
-    if ("..." %in% fmls) {
-      return(do.call(f, c(call_args, list(...))))
-    }
-    do.call(f, call_args)
+  if (n < 1L) {
+    stop("log_pointpred_brmsfit_hurdle_poisson: empty response vector.", call. = FALSE)
   }
   
-  hu     <- posterior_pred_safe(fit, dpar = "zero", newdata = data_in, ...)
-  lambda <- posterior_pred_safe(fit, dpar = "mu",   newdata = data_in, ...)
+  if (any(!is.finite(sim.y))) {
+    stop("log_pointpred_brmsfit_hurdle_poisson: response contains non-finite values.", call. = FALSE)
+  }
   
-  mc_used <- nrow(lambda)
+  if (any(sim.y < 0 | abs(sim.y - round(sim.y)) > 1e-8)) {
+    stop("log_pointpred_brmsfit_hurdle_poisson: response must be non-negative integers.", call. = FALSE)
+  }
   
-  lpmf_hat <- matrix(NA_real_, mc_used, n)
-  lsf_hat  <- matrix(NA_real_, mc_used, n)
+  hu <- posterior.pred(
+    fit,
+    dpar = "zero",
+    data = data,
+    count.only = FALSE,
+    ...
+  )
+  
+  lambda <- posterior.pred(
+    fit,
+    dpar = "mu",
+    data = data,
+    count.only = FALSE,
+    ...
+  )
+  
+  if (!is.matrix(hu)) {
+    hu <- matrix(hu, nrow = 1L)
+  }
+  if (!is.matrix(lambda)) {
+    lambda <- matrix(lambda, nrow = 1L)
+  }
+  
+  if (!identical(dim(hu), dim(lambda))) {
+    stop("log_pointpred_brmsfit_hurdle_poisson: `hu` and `lambda` must have identical dimensions.", call. = FALSE)
+  }
+  
+  if (ncol(lambda) != n) {
+    stop("log_pointpred_brmsfit_hurdle_poisson: posterior parameter columns must match nrow(data).", call. = FALSE)
+  }
+  
+  if (any(!is.finite(hu))) {
+    stop("log_pointpred_brmsfit_hurdle_poisson: `hu` contains non-finite values.", call. = FALSE)
+  }
+  
+  if (any(hu < 0 | hu > 1)) {
+    stop("log_pointpred_brmsfit_hurdle_poisson: `hu` must lie in [0, 1].", call. = FALSE)
+  }
+  
+  if (any(!is.finite(lambda))) {
+    stop("log_pointpred_brmsfit_hurdle_poisson: `lambda` contains non-finite values.", call. = FALSE)
+  }
+  
+  if (any(lambda <= 0)) {
+    stop("log_pointpred_brmsfit_hurdle_poisson: `lambda` must be strictly positive.", call. = FALSE)
+  }
+  
+  ndraws <- nrow(lambda)
+  
+  log_like <- matrix(NA_real_, nrow = ndraws, ncol = n)
+  log_surv <- matrix(NA_real_, nrow = ndraws, ncol = n)
   
   for (i in seq_len(n)) {
-    lpmf_hat[, i] <- dhurdlepois(sim.y[i], lambda = lambda[, i], pi = hu[, i], log = TRUE)
-    lsf_hat[, i]  <- phurdlepois(sim.y[i], lambda = lambda[, i], pi = hu[, i],
-                                 lower.tail = FALSE, log.p = TRUE)
+    log_like[, i] <- dhurdlepois(
+      y = sim.y[i],
+      lambda = lambda[, i],
+      pi = hu[, i],
+      log = TRUE
+    )
+    
+    log_surv[, i] <- phurdlepois(
+      y = sim.y[i],
+      lambda = lambda[, i],
+      pi = hu[, i],
+      lower.tail = FALSE,
+      log.p = TRUE
+    )
   }
   
+  if (anyNA(log_like)) {
+    stop("log_pointpred_brmsfit_hurdle_poisson: `log_like` contains NA.", call. = FALSE)
+  }
+  
+  if (anyNA(log_surv)) {
+    stop("log_pointpred_brmsfit_hurdle_poisson: `log_surv` contains NA.", call. = FALSE)
+  }
+  
+  is_discrete <- matrix(1L, nrow = 1L, ncol = n)
+  
   list(
-    lpmf_hat = lpmf_hat,
-    lsf_hat  = lsf_hat,
-    y_type   = y_type
+    log_surv = log_surv,
+    log_like = log_like,
+    is_discrete = is_discrete
   )
 }

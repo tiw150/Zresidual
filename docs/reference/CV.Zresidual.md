@@ -1,13 +1,38 @@
-# Cross-validated Z-residual diagnostics (generic)
+# Cross-validated Z-residuals
 
-Generic function for cross-validated Z-residual diagnostics. Method
-dispatch is based on the class of `object`. Methods are currently
-provided for survival models such as `coxph` and `survreg`.
+Generic function for computing cross-validated Z-residuals.
 
 ## Usage
 
 ``` r
-CV.Zresidual(object, nfolds, foldlist = NULL, data = NULL, nrep = 1, ...)
+CV.Zresidual(
+  object,
+  nfolds = NULL,
+  foldlist = NULL,
+  data = NULL,
+  nrep = 1,
+  log_pointpred = NULL,
+  mcmc_summarize = c("post", "iscv"),
+  type = NULL,
+  randomized = TRUE,
+  seed = NULL,
+  ...
+)
+
+# S3 method for class 'survreg'
+CV.Zresidual(
+  object,
+  nfolds = NULL,
+  foldlist = NULL,
+  data = NULL,
+  nrep = 1,
+  log_pointpred = NULL,
+  mcmc_summarize = c("post", "iscv"),
+  type = NULL,
+  randomized = TRUE,
+  seed = NULL,
+  ...
+)
 ```
 
 ## Arguments
@@ -18,38 +43,50 @@ CV.Zresidual(object, nfolds, foldlist = NULL, data = NULL, nrep = 1, ...)
 
 - nfolds:
 
-  Integer. Number of folds for cross-validation.
+  Integer number of folds. If `NULL` and `foldlist` is also `NULL`, a
+  default value is chosen.
 
 - foldlist:
 
-  Optional list specifying custom fold assignments. If `NULL`, folds are
-  generated internally by the method.
+  Optional custom list of test-set indices, one element per fold.
 
 - data:
 
-  Optional data frame used to refit the model during cross-validation,
-  when required by the method.
+  Data used for cross-validation refitting. Must be supplied.
 
 - nrep:
 
-  Integer. Number of repeated cross-validations to perform. Default is
-  1.
+  Integer number of Z-residual replicates.
+
+- log_pointpred:
+
+  Optional function or function name passed to
+  [`Zresidual`](https://tiw150.github.io/Zresidual/reference/Zresidual.md).
+
+- mcmc_summarize:
+
+  Posterior summarization method for Bayesian fits.
+
+- type:
+
+  Optional component selector used by
+  [`Zresidual()`](https://tiw150.github.io/Zresidual/reference/Zresidual.md)
+  and [`Zcov()`](https://tiw150.github.io/Zresidual/reference/Zcov.md).
+
+- randomized:
+
+  Logical; whether to generate randomized Z-residuals.
+
+- seed:
+
+  Optional integer seed.
 
 - ...:
 
-  Further arguments passed on to specific methods.
+  Further arguments passed to
+  [`Zresidual`](https://tiw150.github.io/Zresidual/reference/Zresidual.md).
 
 ## Value
 
-An object whose structure depends on the underlying method, typically
-tagged with class `"cvzresid"` in addition to method-specific classes.
-
-## Examples
-
-``` r
-if (FALSE) { # \dontrun{
-  library(survival)
-  fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
-  out <- CV.Zresidual(fit, nfolds = 5, data = lung)
-} # }
-```
+A numeric matrix of class `"cvzresid"` and `"zresid"`, with one row per
+observation and one column per replicate.

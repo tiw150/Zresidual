@@ -2,7 +2,7 @@
 % Please edit documentation in R/aov.test.zresid.R
 \name{aov.test.zresid}
 \alias{aov.test.zresid}
-\title{ANOVA Test for Z-Residuals (supports separated Zresidual + metadata via Zcov)}
+\title{ANOVA test diagnostic test for Z-residuals}
 \usage{
 aov.test.zresid(
   Zresidual,
@@ -13,37 +13,38 @@ aov.test.zresid(
 )
 }
 \arguments{
-\item{Zresidual}{A numeric matrix of Z-residuals (n x p). Class "zresid" is allowed.}
+\item{Zresidual}{A numeric vector or matrix of Z-residuals.}
 
-\item{X}{X-axis specification. One of:
-\itemize{
-\item "index", "lp", "covariate"
-\item a covariate name in \code{zcov$covariates}
-\item a user-supplied vector of length nrow(Zresidual)
-}}
+\item{X}{X-axis specification or grouping variable.}
 
-\item{k.anova}{Maximum number of bins for numeric covariates (default 10).}
+\item{k.anova}{Maximum number of bins for numeric \code{X}.}
 
-\item{zcov}{Optional metadata returned by Zcov(). Should contain at least:
-\itemize{
-\item \code{linear_pred} (or \code{linear.pred}) for X="lp"
-\item \code{covariates} for X="covariate" or covariate-name usage
-}}
+\item{zcov}{Optional metadata returned by \code{\link{Zcov}}.}
 
 \item{...}{Reserved for forward compatibility.}
 }
 \value{
-A numeric vector of length ncol(Zresidual) containing p-values (NA if failed).
+A numeric vector of p-values.
 }
 \description{
-This function computes an ANOVA-style diagnostic p-value for each column of a
-Z-residual matrix, testing whether residuals differ across bins/levels of an
-x-axis variable (linear predictor, covariate, index, or user-supplied vector).
+Computes an ANOVA-style diagnostic p-value for each column of a Z-residual
+matrix against an index, linear predictor, covariate, or user-supplied
+grouping variable.
 }
-\details{
-Key change (Plan A):
-\itemize{
-\item Zresidual no longer needs to carry covariates / linear predictor as attributes.
-\item Provide them via \code{zcov} returned by Zcov().
+\examples{
+if (requireNamespace("survival", quietly = TRUE)) {
+  set.seed(1)
+  n <- 30
+  x <- rnorm(n)
+  t_event <- rexp(n, rate = exp(0.2 * x))
+  t_cens  <- rexp(n, rate = 0.5)
+  status  <- as.integer(t_event <= t_cens)
+  time    <- pmin(t_event, t_cens)
+  dat <- data.frame(time = time, status = status, x = x)
+  fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
+  z <- Zresidual(fit,  data = dat, nrep = 2, seed = 1)
+  info <- Zcov(fit, data = dat)
+  aov.test.zresid(z, X = "lp", zcov = info)
 }
+
 }

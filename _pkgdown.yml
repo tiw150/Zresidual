@@ -3,14 +3,22 @@ template:
   bootstrap: 5
   bootswatch: flatly
   math-rendering: katex
-articles:
-  - title: "Illustration"
-    contents:
-      - starts_with("illus") # Automatically grabs files like 'vignettes/theory-*.Rmd'
 
-  - title: "Demontration"
+articles:
+  - title: "Getting Started"
+    desc: "A quick introduction to the package."
     contents:
-      - starts_with("demo")    # Automatically grabs files like 'vignettes/app-*.Rmd'
+      - "get-started"                 # Matches vignettes/get-started.Rmd
+
+  - title: "Illustration"
+    desc: "Visual illustrations of Z-residuals."
+    contents:
+      - starts_with("articles/illus") # Matches vignettes/articles/illus_*.qmd
+
+  - title: "Demonstration"
+    desc: "Deep-dive demonstrations and model examples."
+    contents:
+      - starts_with("articles/demo") # Matches vignettes/articles/illus_*.qmd
 
 navbar:
   title: "Z-residuals"
@@ -25,78 +33,6 @@ navbar:
     - icon: fa-github fa-lg
       href: https://github.com/tiw150/Zresidual
       aria-label: "GitHub repository"
-
     - icon: fas fa-newspaper
       aria-label: "Changelog"
       href: changelog.html
-
-
-# reference:
-# - title: Z-residual Diagnostics
-#   desc: Functions for calculating, plotting, and testing Z-residuals.
-#   contents:
-#   - '`Zresidual`'
-#   - '`qqnorm.zresid`'
-#   - '`boxplot.zresid`'
-#   - '`plot.zresid`'
-#   - '`bartlett.test.zresid`'
-#   - '`sw.test.zresid`'
-#   - '`sf.test.zresid`'
-#   - '`Zresidual.bernoulli`'
-#   - '`Zresidual.coxph`'
-#   - '`Zresidual.coxph.frailty`'
-#   - '`Zresidual.hurdle.negbinomial`'
-#   - '`Zresidual.hurdle.poisson`'
-#   - '`Zresidual.negbinomial`'
-#   - '`Zresidual.poisson`'
-#   - '`Zresidual.survreg`'
-#   - '`aov.test.zresid`'
-#   - '`iscv_logrpp`'
-#   - '`test.nl.aov`'
-#   - '`test.var.bartl`'
-#   - '`residuals`'
-#
-# - title: Cross-validation Functions
-#   desc: Functions for cross-validation of Z-residual models.
-#   contents:
-#   - '`CV.Zresidual`'
-#   - '`CV.Zresidual.coxph`'
-#   - '`CV.Zresidual.coxph.frailty`'
-#   - '`CV.Zresidual.survreg`'
-#
-# - title: Other Residual Plots
-#   desc: Functions to visualize Cox-Snell, Deviance, and Martingale residuals.
-#   contents:
-#   - '`plot.cs.residual`'
-#   - '`plot.dev.resid`'
-#   - '`plot.martg.resid`'
-#
-# - title: Predictive Log-Distribution Functions
-#   desc: Functions to calculate predictive log-distributions for various brms models.
-#   contents:
-#   - '`log.pred.dist.HNB`'
-#   - '`log.pred.dist.HP`'
-#   - '`log.pred.dist.NB`'
-#   - '`log.pred.dist.TNB`'
-#   - '`log.pred.dist.TP`'
-#   - '`log.pred.dist.bern`'
-#   - '`log.pred.dist.pois`'
-#   - '`log.pred.dist.zero`'
-#   - '`cdf.tnb`'
-#   - '`cdf.tp`'
-#   - '`dhurdle.nb`'
-#   - '`dhurdle.pois`'
-#   - '`pdf.tnb`'
-#   - '`pdf.tp`'
-#   - '`phurdle.nb`'
-#   - '`phurdle.pois`'
-#   - '`post_logrpp`'
-#   - '`iscv_logrpp`'
-#   - '`posterior.pred`'
-#   - '`pvalue.min`'
-#
-# - title: Utilities
-#   desc: Utility functions for various tasks.
-#   contents:
-#   - '`log_diff_exp`'
-#

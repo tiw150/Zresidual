@@ -1,0 +1,222 @@
+---
+title: "Z-residual Diagnostics for `glm` Logistic Regression"
+author: "Tingxuan Wu and Longhai Li"
+format: 
+  html:
+    number-sections: false
+    code-fold: true
+vignette: >
+  %\VignetteIndexEntry{Demo of Z-residual diagnostics for logistic regression via glm}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{quarto::html}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  fig.width = 7,
+  fig.height = 5,
+  fig.align = "center"
+)
+set.seed(2026)
+
+# Set TRUE if you want to force regeneration of heavy computations
+force_rerun <- FALSE
+
+
+# Prefix string for all saved files
+file_prefix <- "resources/glm_binomial/"
+dir.create(file_prefix, recursive = TRUE)
+
+
+```
+
+```{r load-zresidual}
+#| code-fold: show
+#| message: false
+#| warning: false
+
+suppressWarnings(unloadNamespace("Zresidual"))
+library(Zresidual)
+```
+
+## 1. Simulating a Non-linear Dataset
+
+Because `Zresidual` provides native support for models fitted via the base R `glm()` function, we do not need to construct a custom predictive function. We can jump straight into simulating our dataset.
+
+We simulate a dataset where the true log-odds follow a sine wave. With $x \in [0, 10]$, the average log-odds are near zero, naturally keeping prevalence $\approx 0.5$.
+
+```{r}
+#| label: simulate-data
+#| code-fold: show
+
+n <- 200
+
+x <- runif(n, 0, 10)
+# True non-linear relationship (sine wave)
+eta_true <- 2.5 * sin(x) 
+y <- rbinom(n, 1, plogis(eta_true))
+
+dat <- data.frame(y = y, x = x)
+
+cat("Prevalence (proportion of 1s):", mean(dat$y), "\n")
+```
+
+## 2. Fitting Models and Calculating Z-residuals
+
+We compare a **Wrong Model** (assuming a linear relationship) against a **Correct Model** (specifying the sine term).
+
+```{r}
+#| label: fit-and-calc
+
+# 1. Wrong Model (Linear)
+fit_wrong <- glm(y ~ x, family = binomial(), data = dat)
+
+# 2. Correct Model (Non-linear)
+fit_correct <- glm(y ~ sin(x), family = binomial(), data = dat)
+
+# Calculate Z-residuals using the built-in predictive backend (10 replicates each). 
+# Covariates (zcov) are computed internally.
+z_wrong   <- Zresidual(fit_wrong, data = dat, randomized = TRUE, nrep = 10)
+z_correct <- Zresidual(fit_correct, data = dat, randomized = TRUE, nrep = 10)
+```
+
+## 3. Diagnostics with Z-residuals
+
+The plots below display the diagnostics for a single set of Z-residuals. 
+
+```{r}
+#| label: diagnosis-comparison
+#| code-fold: true
+#| fig-width: 12
+#| fig-height: 8
+
+# Change this value (1 to 10) to see other replicated plots
+i <- 1
+
+# Set up 2 rows (Wrong vs Correct) and 3 columns (QQ, Scatter, Box)
+par(mfrow = c(2, 3), mar = c(4, 4, 3, 1))
+
+# --- ROW 1: WRONG MODEL (Linear) ---
+# 1. Q-Q Plot
+qqnorm(z_wrong, irep = i, main = "Wrong: Z-Resid Q-Q")
+qqline(as.vector(z_wrong[, i]), col = "red")
+
+# 2. Scatter Plot (Note the wave pattern in the residuals)
+plot(z_wrong, x_axis_var = "lp", category = dat$y, 
+     irep = i, add_lowess = TRUE, main = "Wrong: Z-Resid vs LP")
+
+# 3. Boxplot
+boxplot(z_wrong, x_axis_var = "x", num.bin = 10, 
+        irep = i, main = "Wrong: Z-Resid vs X")
+
+# --- ROW 2: CORRECT MODEL (Non-linear) ---
+# 1. Q-Q Plot
+qqnorm(z_correct, irep = i, main = "Correct: Z-Resid Q-Q")
+qqline(as.vector(z_correct[, i]), col = "blue")
+
+# 2. Scatter Plot (Residuals look like random noise)
+plot(z_correct, x_axis_var = "lp", category = dat$y, 
+     irep = i, add_lowess = TRUE, main = "Correct: Z-Resid vs LP")
+
+# 3. Boxplot
+boxplot(z_correct, x_axis_var = "x", num.bin = 10, 
+        irep = i, main = "Correct: Z-Resid vs X")
+```
+
+> **Note:** To inspect different realizations of the randomized residuals, change the value of `i` (the `irep` index) in the code chunk above.
+
+**Replicated p-values of the same fitted models**
+```{r}
+#| label: replicated-p-values-spanned
+#| code-fold: true
+
+library(knitr)
+library(kableExtra)
+
+# 1. Create the data frame 
+res_table <- data.frame(
+  "Replicate" = paste("Rep", 1:ncol(z_wrong)),
+  "SW_W"      = as.numeric(sw.test.zresid(z_wrong)),
+  "AOV_W"     = as.numeric(aov.test.zresid(z_wrong, X = "x")),
+  "BL_W"      = as.numeric(bartlett.test.zresid(z_wrong, X = "x")),
+  "SW_C"      = as.numeric(sw.test.zresid(z_correct)),
+  "AOV_C"     = as.numeric(aov.test.zresid(z_correct, X = "x")),
+  "BL_C"      = as.numeric(bartlett.test.zresid(z_correct, X = "x"))
+)
+
+# 2. Render with minimalistic styling and spanning headers
+res_table %>%
+  kable(
+    digits = 4, 
+    # Base column names (the bottom row of the header)
+    col.names = c("Replicate", "SW", "AOV", "Bartlett", "SW", "AOV", "Bartlett"),
+    caption = "Diagnostic Test p-values Across Randomized Replicates",
+    align = "lcccccc"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "condensed"), 
+    full_width = FALSE,
+    position = "center"
+  ) %>%
+  # Add the spanning header (the top row)
+  add_header_above(c(" " = 1, "Wrong Model (Linear)" = 3, "Correct Model (Non-linear)" = 3))
+```
+
+## 4. Sampling Distribution of AOV Nonlinearity Tests
+
+We run a simulation loop to verify that the built-in implementation correctly handles the binomial data and produces appropriate $p$-values.
+
+```{r}
+#| label: replication-verify-anova
+#| code-fold: true
+
+n_sim <- 100
+sim_file <- paste0(file_prefix, "simulation_results.rds")
+
+if (!force_rerun && file.exists(sim_file)) {
+  sim_res <- readRDS(sim_file)
+  p_c <- sim_res$p_c
+  p_w <- sim_res$p_w
+} else {
+  p_c <- numeric(n_sim)
+  p_w <- numeric(n_sim)
+  n_sample <- 200 
+
+  for(i in 1:n_sim) {
+    x_sim <- runif(n_sample, 0, 10)
+    
+    # Generate true non-linear data
+    eta_sim <- 2.5 * sin(x_sim)
+    y_sim   <- rbinom(n_sample, 1, plogis(eta_sim))
+    dat_sim <- data.frame(y = y_sim, x = x_sim)
+    
+    # --- Case 1: Wrong Model (Linear) ---
+    fit_w <- glm(y ~ x, family = binomial(), data = dat_sim)
+    z_w   <- Zresidual(fit_w, data = dat_sim, randomized = TRUE, nrep = 1)
+    p_w[i] <- as.numeric(aov.test.zresid(z_w, X = "x"))
+    
+    # --- Case 2: Correct Model (Sine) ---
+    fit_c <- glm(y ~ sin(x), family = binomial(), data = dat_sim)
+    z_c   <- Zresidual(fit_c, data = dat_sim, randomized = TRUE, nrep = 1)
+    p_c[i] <- as.numeric(aov.test.zresid(z_c, X = "x"))
+  }
+  
+  saveRDS(list(p_c = p_c, p_w = p_w), sim_file)
+}
+```
+
+```{r}
+#| label: replication-hists
+#| fig-width: 10
+#| fig-height: 5
+#| code-fold: true
+
+par(mfrow = c(1, 2))
+hist(p_c, main = "Correct: Uniform p-values", xlab = "p-value", col = "lightblue", breaks = 20)
+abline(h = n_sim / 20, col = "red", lty = 2)
+
+hist(p_w, main = "Wrong: Small p-values", xlab = "p-value", col = "salmon", breaks = 20)
+```
+
+**Discussion:** For the **Correct Model**, the distribution of $p$-values is uniform, indicating a well-specified model. For the **Wrong Model**, most $p$-values are small (clustered near 0), indicating that the ANOVA test successfully detected the non-linear trend.
+

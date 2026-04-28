@@ -1,0 +1,532 @@
+---
+title: "Z-residual Diagnostics for `brms` Poisson Regression"
+author: "Tingxuan Wu and Longhai Li"
+execute: 
+  cache: false
+format: 
+  html:
+    number-sections: true
+    code-fold: true
+vignette: >
+  %\VignetteIndexEntry{Demo of Zresidual API Methods for brms}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{quarto::html}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  fig.width = 7,
+  fig.height = 5,
+  fig.align = "center"
+)
+
+# Define the global toggles to force regeneration of computations
+force_refit <- FALSE   # Controls data simulation and model fitting
+
+if (identical(Sys.getenv("IN_PKGDOWN"), "true")) {
+  force_recalcz <- FALSE  # Turn off for the website build
+} else {
+  force_recalcz <- TRUE   # Leave on for normal execution
+}
+
+#suppressWarnings(unloadNamespace("Zresidual"))
+library(Zresidual)
+library(brms)
+library(knitr)
+library(kableExtra)
+
+#Check if cmdstanr is available
+if (!requireNamespace("cmdstanr", quietly = TRUE)) {
+  stop("This vignette requires the 'cmdstanr' package. Please install it with install.packages('cmdstanr', repos = '[https://stan-dev.github.io/r-packages/](https://stan-dev.github.io/r-packages/)')")
+}
+
+model_dir <- "resources/brms_poission_models"
+dir.create(model_dir, recursive = TRUE)
+
+```
+
+## Preparation: Data Simulation and Model Caching
+
+This vignette demonstrates the three distinct ways you can use `Zresidual` to evaluate Bayesian models fit via `brms`:
+
+1. Passing a **Custom User-Defined Function**.
+2. Triggering the **Simulation-Predictive Function**.
+3. Utilizing the **Built-in Analytic Predictive Function**.
+
+To illustrate these methods effectively, we first generate a consistent testing environment. We simulate 100 datasets (where the true log-rate follows a non-linear sine wave) and fit two models to each: a misspecified linear model and a correctly specified non-linear model. 
+
+Because MCMC sampling is computationally expensive, we execute and cache these 200 model fits to disk. In the subsequent sections, we will instantly load these identical models to demonstrate how the three `Zresidual` calling methods yield identical, reliable diagnostics.
+
+```{r prep-data-and-models}
+#| code-fold: true
+#| message: false
+#| warning: false
+
+if (!dir.exists(model_dir)) {
+  dir.create(model_dir, recursive = TRUE)
+}
+
+n_sim <- 100
+n_sample <- 200 
+sim_data <- vector("list", n_sim)
+
+# Loop through iterations, checking for existing files before simulating/fitting
+for(i in 1:n_sim) {
+  
+  data_file <- paste0(model_dir, "/data_sim_", i, ".rds")
+  wrong_model_file <- paste0(model_dir, "/wrong_sim_", i, ".rds")
+  correct_model_file <- paste0(model_dir, "/correct_sim_", i, ".rds")
+  
+  # --- 1. Check and Handle Data ---
+  if (!force_refit && file.exists(data_file)) {
+    sim_data[[i]] <- readRDS(data_file)
+  } else {
+    x <- runif(n_sample, 0, 10)
+    y <- rpois(n_sample, exp(1.5 * sin(x)))
+    
+    dat_i <- data.frame(y = y, x = x)
+    sim_data[[i]] <- dat_i
+    saveRDS(dat_i, file = data_file)
+  }
+  
+  # --- 2. Check and Fit Wrong Model ---
+  if (force_refit || !file.exists(wrong_model_file)) {
+    brm(
+      y ~ x, 
+      family = poisson(), 
+      data = sim_data[[i]],
+      backend = "cmdstanr",
+      normalize = FALSE,
+      file = paste0(model_dir, "/wrong_sim_", i), 
+      refresh = 0,
+      cores = 4
+    )
+  }
+  
+  # --- 3. Check and Fit Correct Model ---
+  if (force_refit || !file.exists(correct_model_file)) {
+    brm(
+      y ~ sin(x), 
+      family = poisson(), 
+      data = sim_data[[i]],
+      backend = "cmdstanr",
+      normalize = FALSE,
+      file = paste0(model_dir, "/correct_sim_", i), 
+      refresh = 0,
+      cores = 4
+    )
+  }
+}
+```
+
+## `Zresidual` Using a Custom User-Defined `log_pointpred` Function
+
+`Zresidual` is built with a highly extensible architecture. If your specific model family or backend is not natively supported yet, or if you simply want explicit control over the math, you can bypass the internal defaults entirely by passing a custom function to the `log_pointpred` argument.
+
+Below, we define a custom analytical function that leverages `brms::posterior_epred()` to manually extract the expected rates ($\lambda$) and push them through R's native distribution functions.
+
+### Defining a Custom Predictive Function
+
+```{r custom-log-pointpred}
+#| eval: true 
+#| code-fold: show
+
+log_pointpred_brms_pois <- function(fit, data = NULL, ...) {
+  
+  # 1. Resolve data
+  data_in <- if (is.null(data)) fit$data else data
+  
+  # 2. Extract observed response safely
+  model.data <- model.frame(fit$formula, data = data_in)
+  model.var  <- names(model.data)
+  
+  response <- fit$formula$resp
+  if (is.null(response) || !response %in% model.var) {
+    response <- all.vars(fit$formula$formula)[1]
+  }
+  
+  y_obs <- as.numeric(model.data[[response]])
+  n <- length(y_obs)
+  
+  # 3. Extract Posterior Expected Values (lambda)
+  lambda <- brms::posterior_epred(fit, dpar = "mu", newdata = data_in, ...)
+  mc_used <- nrow(lambda)
+  
+  # 4. Calculate Log-PMF and Log-Survival Functions
+  lpmf <- matrix(NA_real_, mc_used, n)
+  lsf  <- matrix(NA_real_, mc_used, n)
+  
+  for (i in seq_len(n)) {
+    lpmf[, i] <- dpois(y_obs[i], lambda = lambda[, i], log = TRUE)
+    lsf[, i]  <- ppois(y_obs[i], lambda = lambda[, i],
+                           lower.tail = FALSE, log.p = TRUE)
+  }
+  
+  list(
+    log_like = lpmf,
+    log_surv  = lsf,
+    is_discrete = rep(1L, n)
+  )
+}
+```
+
+### Single Dataset Evaluation
+
+To evaluate our model, we explicitly map the custom function to the `log_pointpred` argument. `Zresidual` handles the rest of the randomization, prediction extraction, and covariate binding automatically.
+
+```{r}
+set.seed(123) ## for reproducibility
+```
+
+```{r user-single-model-eval}
+#| code-fold: show
+#| results: hide
+#| message: false
+
+# Load the first cached dataset and model pair
+dat <- readRDS(paste0(model_dir, "/data_sim_1.rds"))
+
+fit_wrong <- brm(y ~ x, family = poisson(), data = dat, backend = "cmdstanr", file = paste0(model_dir, "/wrong_sim_1"))
+fit_correct <- brm(y ~ sin(x), family = poisson(), data = dat, backend = "cmdstanr", file = paste0(model_dir, "/correct_sim_1"))
+
+# Call Zresidual explicitly using the custom function
+z_wrong   <- Zresidual(fit_wrong, data = dat, mcmc_summarize = "post", randomized = TRUE, nrep = 10, log_pointpred = log_pointpred_brms_pois)
+z_correct <- Zresidual(fit_correct, data = dat, mcmc_summarize = "post", randomized = TRUE, nrep = 10, log_pointpred = log_pointpred_brms_pois)
+```
+
+### Diagnostics with Z-residuals
+
+```{r user-diagnosis-plots}
+#| code-fold: true
+#| fig-width: 12
+#| fig-height: 8
+
+i <- 1 
+par(mfrow = c(2, 3), mar = c(4, 4, 3, 1))
+
+qqnorm(z_wrong, irep = i, main = "Wrong: Z-Resid Q-Q")
+plot(z_wrong, x_axis_var = "x", category = dat$y, irep = i, main = "Wrong: Z-Resid vs X")
+boxplot(z_wrong, x_axis_var = "lp", irep = i, main = "Wrong: Z-Resid vs LP")
+
+qqnorm(z_correct, irep = i, main = "Correct: Z-Resid Q-Q")
+plot(z_correct, x_axis_var = "x", category = dat$y, irep = i, main = "Correct: Z-Resid vs X")
+boxplot(z_correct, x_axis_var = "lp", irep = i, main = "Correct: Z-Resid vs LP")
+```
+
+**Replicated p-values of the same fitted models**
+```{r user-replicated-p-values-spanned}
+#| code-fold: true
+
+res_table <- data.frame(
+  "Replicate" = paste("Rep", 1:ncol(z_wrong)),
+  "SW_W"      = as.numeric(sw.test.zresid(z_wrong)),
+  "AOV_W"     = as.numeric(aov.test.zresid(z_wrong, X = "lp")),
+  "BL_W"      = as.numeric(bartlett.test.zresid(z_wrong, X = "lp")),
+  "SW_C"      = as.numeric(sw.test.zresid(z_correct)),
+  "AOV_C"     = as.numeric(aov.test.zresid(z_correct, X = "lp")),
+  "BL_C"      = as.numeric(bartlett.test.zresid(z_correct, X = "lp"))
+)
+
+res_table %>%
+  kable(
+    digits = 4, 
+    col.names = c("Replicate", "SW", "AOV", "Bartlett", "SW", "AOV", "Bartlett"),
+    caption = "Diagnostic Test p-values Across Randomized Replicates",
+    align = "lcccccc"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "condensed"), full_width = FALSE, position = "center"
+  ) %>%
+  add_header_above(c(" " = 1, "Wrong Model (Linear)" = 3, "Correct Model (Non-linear)" = 3))
+```
+
+### Checking the Sampling Distribution of ANOVA Nonlinearity Tests p-values
+
+By batching this custom `Zresidual` call across our 100 simulated datasets, we construct a sampling distribution. The uniform $p$-values for the correctly specified model confirm that providing a user-defined function seamlessly integrates with the `Zresidual` statistical pipeline.
+
+```{r user-replication-verify-anova}
+#| code-fold: true
+#| results: hide
+#| message: false
+#| warning: false
+
+user_res_file <- paste0(model_dir, "/user_pvalues.rds")
+
+if (!force_recalcz && file.exists(user_res_file)) {
+  res <- readRDS(user_res_file)
+  p_c <- res$p_c
+  p_w <- res$p_w
+} else {
+  p_c <- numeric(n_sim)
+  p_w <- numeric(n_sim)
+  
+  for(i in 1:n_sim) {
+    dat_sim <- readRDS(paste0(model_dir, "/data_sim_", i, ".rds"))
+    fit_w_sim <- brm(y ~ x, family = poisson(), data = dat_sim, backend = "cmdstanr", file = paste0(model_dir, "/wrong_sim_", i), refresh = 0)
+    z_w_sim <- Zresidual(fit_w_sim, data = dat_sim, mcmc_summarize = "post", randomized = TRUE, nrep = 1, log_pointpred = log_pointpred_brms_pois)
+    p_w[i] <- as.numeric(aov.test.zresid(z_w_sim, X = "lp"))
+    
+    fit_c_sim <- brm(y ~ sin(x), family = poisson(), data = dat_sim, backend = "cmdstanr", file = paste0(model_dir, "/correct_sim_", i), refresh = 0)
+    z_c_sim <- Zresidual(fit_c_sim, data = dat_sim, mcmc_summarize = "post", randomized = TRUE, nrep = 1, log_pointpred = log_pointpred_brms_pois)
+    p_c[i] <- as.numeric(aov.test.zresid(z_c_sim, X = "lp"))
+  }
+  saveRDS(list(p_c = p_c, p_w = p_w), user_res_file)
+}
+```
+
+```{r user-replication-hists}
+#| fig-width: 10
+#| fig-height: 5
+#| code-fold: true
+
+par(mfrow = c(1, 2))
+hist(p_c, main = "Correct: Model P-values", xlab = "p-value", col = "lightblue", breaks = 10)
+abline(h = n_sim / 10, col = "red", lty = 2)
+
+hist(p_w, main = "Wrong: Small p-values", xlab = "p-value", col = "salmon", breaks = 10)
+```
+
+
+## `Zresidual` Using the Simulation-Predictive Method
+
+When an exact analytic mathematical formula is either unknown or computationally prohibitive for a specific model family, `Zresidual` provides a robust simulation mechanism: the **Simulation-Predictive** method. 
+
+By passing `pred_method = "simulation"`, `Zresidual` automatically invokes the model's native `simulate` or `posterior_predict` functions to draw empirical bounds, bypassing the need for explicit PDF/CDF math entirely.
+
+### Single Dataset Evaluation
+
+Notice how we drop the `log_pointpred` argument here and explicitly request the `"simulation"` method. `Zresidual` automatically handles the translation from empirical draws to normalized residuals.
+
+```{r}
+set.seed(123) ## for reproducibility
+```
+
+```{r sim-single-model-eval}
+#| code-fold: show
+#| results: hide
+#| message: false
+
+dat <- readRDS(paste0(model_dir, "/data_sim_1.rds"))
+fit_wrong <- brm(y ~ x, family = poisson(), data = dat, backend = "cmdstanr", file = paste0(model_dir, "/wrong_sim_1"))
+fit_correct <- brm(y ~ sin(x), family = poisson(), data = dat, backend = "cmdstanr", file = paste0(model_dir, "/correct_sim_1"))
+
+# Trigger the Simulation Fallback method
+z_wrong   <- Zresidual(fit_wrong, data = dat, pred_method = "simulation", mcmc_summarize = "iscv", randomized = TRUE, nrep = 10)
+z_correct <- Zresidual(fit_correct, data = dat, pred_method = "simulation", mcmc_summarize = "iscv", randomized = TRUE, nrep = 10)
+```
+
+### Diagnostics with Z-residuals
+
+```{r sim-diagnosis-plots}
+#| code-fold: true
+#| fig-width: 12
+#| fig-height: 8
+
+i <- 1 
+par(mfrow = c(2, 3), mar = c(4, 4, 3, 1))
+
+qqnorm(z_wrong, irep = i, main = "Wrong: Z-Resid Q-Q")
+plot(z_wrong, x_axis_var = "x", category = dat$y, irep = i, main = "Wrong: Z-Resid vs X")
+boxplot(z_wrong, x_axis_var = "lp", irep = i, main = "Wrong: Z-Resid vs LP")
+
+qqnorm(z_correct, irep = i, main = "Correct: Z-Resid Q-Q")
+plot(z_correct, x_axis_var = "x", category = dat$y, irep = i, main = "Correct: Z-Resid vs X")
+boxplot(z_correct, x_axis_var = "lp", irep = i, main = "Correct: Z-Resid vs LP")
+```
+
+**Replicated p-values of the same fitted models**
+```{r sim-replicated-p-values-spanned}
+#| code-fold: true
+
+res_table <- data.frame(
+  "Replicate" = paste("Rep", 1:ncol(z_wrong)),
+  "SW_W"      = as.numeric(sw.test.zresid(z_wrong)),
+  "AOV_W"     = as.numeric(aov.test.zresid(z_wrong, X = "lp")),
+  "BL_W"      = as.numeric(bartlett.test.zresid(z_wrong, X = "lp")),
+  "SW_C"      = as.numeric(sw.test.zresid(z_correct)),
+  "AOV_C"     = as.numeric(aov.test.zresid(z_correct, X = "lp")),
+  "BL_C"      = as.numeric(bartlett.test.zresid(z_correct, X = "lp"))
+)
+
+res_table %>%
+  kable(
+    digits = 4, 
+    col.names = c("Replicate", "SW", "AOV", "Bartlett", "SW", "AOV", "Bartlett"),
+    caption = "Diagnostic Test p-values Across Randomized Replicates",
+    align = "lcccccc"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "condensed"), full_width = FALSE, position = "center"
+  ) %>%
+  add_header_above(c(" " = 1, "Wrong Model (Linear)" = 3, "Correct Model (Non-linear)" = 3))
+```
+
+### Checking the Sampling Distribution of ANOVA Nonlinearity Tests p-values
+
+Batching this approach confirms that the simulation fallback is statistically valid. It generates the identical expected behaviors (uniform distributions for correct models, skewed distributions for structural misspecifications) without requiring a single line of custom analytical code.
+
+```{r sim-sampling-distribution}
+#| code-fold: true
+#| results: hide
+#| message: false
+#| warning: false
+
+sim_res_file <- paste0(model_dir, "/sim_pvalues.rds")
+
+if (!force_recalcz && file.exists(sim_res_file)) {
+  res <- readRDS(sim_res_file)
+  p_c <- res$p_c
+  p_w <- res$p_w
+} else {
+  p_c <- numeric(n_sim)
+  p_w <- numeric(n_sim)
+
+  for(i in 1:n_sim) {
+    dat_sim <- readRDS(paste0(model_dir, "/data_sim_", i, ".rds"))
+    
+    fit_w_sim <- brm(y ~ x, family = poisson(), data = dat_sim, backend = "cmdstanr", file = paste0(model_dir, "/wrong_sim_", i))
+    z_w_sim <- Zresidual(fit_w_sim, data = dat_sim, pred_method = "simulation", mcmc_summarize = "iscv", randomized = TRUE, nrep = 1)
+    p_w[i] <- as.numeric(aov.test.zresid(z_w_sim, X = "lp"))
+    
+    fit_c_sim <- brm(y ~ sin(x), family = poisson(), data = dat_sim, backend = "cmdstanr", file = paste0(model_dir, "/correct_sim_", i))
+    z_c_sim <- Zresidual(fit_c_sim, data = dat_sim, pred_method = "simulation", mcmc_summarize = "iscv", randomized = TRUE, nrep = 1)
+    p_c[i] <- as.numeric(aov.test.zresid(z_c_sim, X = "lp"))
+  }
+  saveRDS(list(p_c = p_c, p_w = p_w), sim_res_file)
+}
+```
+
+```{r sim-hist-plots}
+#| code-fold: true
+#| fig-width: 10
+#| fig-height: 5
+
+par(mfrow = c(1, 2))
+hist(p_c, main = "Correct: Model P-values", xlab = "p-value", col = "lightblue", breaks = 10)
+abline(h = n_sim / 10, col = "red", lty = 2, lwd = 2)
+
+hist(p_w, main = "Wrong: Misspecification P-values", xlab = "p-value", col = "salmon", breaks = 10)
+```
+
+
+## `Zresidual` Using the Built-In Analytical Routing
+
+For standard model families evaluated on fully supported backends (like `brms` and standard `glm`), `Zresidual` aims to require zero configuration. 
+
+By simply omitting the predictive arguments entirely, `Zresidual` automatically queries the model object's class and family string. It then silently routes the computation to highly optimized, natively written routines embedded directly within the package itself.
+
+### Single Dataset Evaluation
+
+The simplest—and generally fastest—way to use `Zresidual` is to provide only the fitted model object and the data.
+
+```{r}
+set.seed(123) ## for reproducibility
+```
+
+```{r ana-single-model-eval}
+#| code-fold: show
+#| results: hide
+#| message: false
+
+dat <- readRDS(paste0(model_dir, "/data_sim_1.rds"))
+fit_wrong <- brm(y ~ x, family = poisson(), data = dat, backend = "cmdstanr", file = paste0(model_dir, "/wrong_sim_1"))
+fit_correct <- brm(y ~ sin(x), family = poisson(), data = dat, backend = "cmdstanr", file = paste0(model_dir, "/correct_sim_1"))
+
+# Calculate Z-residuals using default native routing
+z_wrong   <- Zresidual(fit_wrong, data = dat, mcmc_summarize = "post", randomized = TRUE, nrep = 10)
+z_correct <- Zresidual(fit_correct, data = dat, mcmc_summarize = "post", randomized = TRUE, nrep = 10)
+```
+
+### Diagnostics with Z-residuals
+
+```{r ana-diagnosis-plots}
+#| code-fold: true
+#| fig-width: 12
+#| fig-height: 8
+
+i <- 1 
+par(mfrow = c(2, 3), mar = c(4, 4, 3, 1))
+
+qqnorm(z_wrong, irep = i, main = "Wrong: Z-Resid Q-Q")
+plot(z_wrong, x_axis_var = "x", category = dat$y, irep = i, main = "Wrong: Z-Resid vs X")
+boxplot(z_wrong, x_axis_var = "lp", irep = i, main = "Wrong: Z-Resid vs LP")
+
+qqnorm(z_correct, irep = i, main = "Correct: Z-Resid Q-Q")
+plot(z_correct, x_axis_var = "x", category = dat$y, irep = i, main = "Correct: Z-Resid vs X")
+boxplot(z_correct, x_axis_var = "lp", irep = i, main = "Correct: Z-Resid vs LP")
+```
+
+**Replicated p-values of the same fitted models**
+```{r ana-replicated-p-values-spanned}
+#| code-fold: true
+
+res_table <- data.frame(
+  "Replicate" = paste("Rep", 1:ncol(z_wrong)),
+  "SW_W"      = as.numeric(sw.test.zresid(z_wrong)),
+  "AOV_W"     = as.numeric(aov.test.zresid(z_wrong, X = "lp")),
+  "BL_W"      = as.numeric(bartlett.test.zresid(z_wrong, X = "lp")),
+  "SW_C"      = as.numeric(sw.test.zresid(z_correct)),
+  "AOV_C"     = as.numeric(aov.test.zresid(z_correct, X = "lp")),
+  "BL_C"      = as.numeric(bartlett.test.zresid(z_correct, X = "lp"))
+)
+
+res_table %>%
+  kable(
+    digits = 4, 
+    col.names = c("Replicate", "SW", "AOV", "Bartlett", "SW", "AOV", "Bartlett"),
+    caption = "Diagnostic Test p-values Across Randomized Replicates",
+    align = "lcccccc"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "condensed"), full_width = FALSE, position = "center"
+  ) %>%
+  add_header_above(c(" " = 1, "Wrong Model (Linear)" = 3, "Correct Model (Non-linear)" = 3))
+```
+
+### Checking the Sampling Distribution of ANOVA Nonlinearity Tests p-values
+
+Our final replication confirms that the native built-in routing produces the exact same robust diagnostic sampling distributions as our custom extraction logic, achieving uniform p-values for properly specified models.
+
+```{r ana-replication-verify-anova}
+#| code-fold: true
+#| results: hide
+#| message: false
+#| warning: false
+
+ana_res_file <- paste0(model_dir, "/ana_pvalues.rds")
+
+if (!force_recalcz && file.exists(ana_res_file)) {
+  res <- readRDS(ana_res_file)
+  p_c <- res$p_c
+  p_w <- res$p_w
+} else {
+  p_c <- numeric(n_sim)
+  p_w <- numeric(n_sim)
+  
+  for(i in 1:n_sim) {
+    dat_sim <- readRDS(paste0(model_dir, "/data_sim_", i, ".rds"))
+    
+    fit_w_sim <- brm(y ~ x, family = poisson(), data = dat_sim, backend = "cmdstanr", file = paste0(model_dir, "/wrong_sim_", i), refresh = 0)
+    z_w_sim <- Zresidual(fit_w_sim, data = dat_sim, mcmc_summarize = "post", randomized = TRUE, nrep = 1)
+    p_w[i] <- as.numeric(aov.test.zresid(z_w_sim, X = "lp"))
+    
+    fit_c_sim <- brm(y ~ sin(x), family = poisson(), data = dat_sim, backend = "cmdstanr", file = paste0(model_dir, "/correct_sim_", i), refresh = 0)
+    z_c_sim <- Zresidual(fit_c_sim, data = dat_sim, mcmc_summarize = "post", randomized = TRUE, nrep = 1)
+    p_c[i] <- as.numeric(aov.test.zresid(z_c_sim, X = "lp"))
+  }
+  
+  saveRDS(list(p_c = p_c, p_w = p_w), ana_res_file)
+}
+```
+
+```{r ana-replication-hists}
+#| fig-width: 10
+#| fig-height: 5
+#| code-fold: true
+
+par(mfrow = c(1, 2))
+hist(p_c, main = "Correct: Model P-values", xlab = "p-value", col = "lightblue", breaks = 10)
+abline(h = n_sim / 10, col = "red", lty = 2)
+
+hist(p_w, main = "Wrong: Small p-values", xlab = "p-value", col = "salmon", breaks = 10)
+```

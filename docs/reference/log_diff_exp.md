@@ -18,3 +18,7 @@ log_diff_exp(la, lb)
 - lb:
 
   A log value.
+
+## Value
+
+The logarithm of exp(la) - exp(lb) when la \>= lb; otherwise NaN.

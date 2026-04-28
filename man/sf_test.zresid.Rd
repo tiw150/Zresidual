@@ -2,13 +2,24 @@
 % Please edit documentation in R/sf_test.zresid.R
 \name{sf_test.zresid}
 \alias{sf_test.zresid}
-\title{A function to calculate Shapiro-Francia test of Zresidual}
+\title{Shapiro-Francia normality test for Z-residuals}
 \usage{
 sf_test.zresid(Zresidual)
 }
 \arguments{
-\item{Zresidual}{A matrix (n x p) of Z-residuals.}
+\item{Zresidual}{A numeric vector or matrix of Z-residuals.}
+}
+\value{
+A numeric vector of p-values, one per column.
 }
 \description{
-A function to calculate Shapiro-Francia test of Zresidual
+Applies the Shapiro-Francia test column-wise to a matrix of Z-residuals.
+}
+\examples{
+if (requireNamespace("nortest", quietly = TRUE)) {
+  set.seed(1)
+  z <- matrix(rnorm(60), ncol = 2)
+  sf_test.zresid(z)
+}
+
 }

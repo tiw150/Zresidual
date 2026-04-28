@@ -1,21 +1,34 @@
-#' Bartlett test p-values for each column of a Z-residual matrix
+#' Bartlett variance test for Z-residuals
 #'
-#' Plan A (Zresidual + metadata separated):
-#' - Provide covariates / linear predictor via `zcov` returned by Zcov().
-#' - Backward compatible with legacy attributes on Zresidual.
+#' @description
+#' Computes a Bartlett-style diagnostic p-value for each column of a Z-residual
+#' matrix against an index, linear predictor, covariate, or user-supplied
+#' grouping variable.
 #'
-#' @param x A numeric matrix of Z-residuals (n x p). Class "zresid" is allowed.
-#' @param X X-axis specification. One of:
-#'   - "index", "lp", "covariate"
-#'   - a covariate name in `zcov$covariates`
-#'   - a user-supplied vector of length nrow(x)
-#' @param k.bl Integer. Number of bins for numeric covariates (default 10).
-#' @param zcov Optional metadata returned by Zcov(). Should contain:
-#'   - `linear_pred` (or `linear.pred`)
-#'   - `covariates` (data.frame)
+#' @param x A numeric vector or matrix of Z-residuals.
+#' @param X X-axis specification or grouping variable.
+#' @param k.bl Maximum number of bins for numeric \code{X}.
+#' @param zcov Optional metadata returned by \code{\link{Zcov}}.
 #' @param ... Reserved for forward compatibility.
 #'
-#' @return A numeric vector of Bartlett-test p-values, length = ncol(x).
+#' @return A numeric vector of p-values.
+#'
+#' @examples
+#' if (requireNamespace("survival", quietly = TRUE)) {
+#'   set.seed(1)
+#'   n <- 30
+#'   x <- rnorm(n)
+#'   t_event <- rexp(n, rate = exp(0.2 * x))
+#'   t_cens  <- rexp(n, rate = 0.5)
+#'   status  <- as.integer(t_event <= t_cens)
+#'   time    <- pmin(t_event, t_cens)
+#'   dat <- data.frame(time = time, status = status, x = x)
+#'   fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
+#'   z <- Zresidual(fit, data=dat, nrep = 2, seed = 1)
+#'   info <- Zcov(fit, data = dat)
+#'   bartlett.test.zresid(z, X = "lp", zcov = info)
+#' }
+#'
 #' @method bartlett.test zresid
 #' @export bartlett.test.zresid
 bartlett.test.zresid <- function(x,

@@ -17,22 +17,17 @@ BugReports: https://github.com/tiw150/Zresidual/issues
 Depends: R (>= 3.5.0)
 Imports:
     survival (>= 3.3-1),
-    brms,
     stats,
     graphics,
     grDevices,
     methods,
-    utils,
-    parallel,
-    nortest,
-    EnvStats,
-    doParallel,
-    Rlab,
-    DPQ,
-    latex2exp,
-    matrixStats,
-    rlang
+    utils
 Suggests: 
+    brms,
+    matrixStats,
+    EnvStats,
+    nortest,
+    latex2exp,
     betareg,
     VGAM,
     actuar,
@@ -56,8 +51,10 @@ Suggests:
     animation,
     png,
     pacman,
-    magick
-VignetteBuilder: knitr,quarto
+    magick,
+    plotrix,
+    posterior
+VignetteBuilder: knitr, quarto
 LazyData: true
 RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)

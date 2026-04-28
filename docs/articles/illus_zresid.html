@@ -57,9 +57,9 @@
       <img src="../logo.png" class="logo" alt=""><h1>An Animation for Understanding Z-residuals</h1>
 
       <p class="author"><a href="https://longhaisk.github.io/" class="external-link">Longhai Li</a></p>
-      <p class="date">2025-12-22</p>
 
-      <small class="dont-index">Source: <a href="https://github.com/tiw150/Zresidual/blob/HEAD/vignettes/illus_zresid.qmd" class="external-link"><code>vignettes/illus_zresid.qmd</code></a></small>
+
+      <small class="dont-index">Source: <a href="https://github.com/tiw150/Zresidual/blob/HEAD/vignettes/articles/illus_zresid.qmd" class="external-link"><code>vignettes/articles/illus_zresid.qmd</code></a></small>
       <div class="d-none name"><code></code></div>
     </div>
 
@@ -82,15 +82,14 @@
 <p><span id="eq-zs"><span class="math display">z_i(y_i \mid \theta) = -\Phi^{-1}\left(RSP_i(y_i \mid \theta)\right)= \Psi^{-1}\left(RSP_i(y_i \mid \theta)\right) \tag{2}</span></span></p>
 <p>where <span class="math inline">\Psi^{-1}(p) = -\Phi^{-1}(p) = \Phi^{-1}(1-p)</span> represents the inverse survival function (upper-tailed quantile) of the standard normal distribution <span class="math inline">N(0,1)</span>.</p>
 <p>In words, the Z-residual is simply the <span class="math inline">N(0,1)</span> value that shares the same <strong>upper-tail area (RSP)</strong> as the observed <span class="math inline">y_i</span>. This transformation effectively maps any predictive distribution to the standard normal scale while preserving the tail probabilities. If the model is correct, the resulting Z-residuals follow a standard normal distribution.</p>
-<p><strong>Intuition:</strong></p>
-<p>Think of the Z-residual as the <strong>distance to the median</strong>, but <strong>rescaled</strong> to account for skewness and <strong>smoothed</strong> to handle discreteness. This ensures that a residual of <span class="math inline">+2</span> always implies the same degree of ‘extremeness’, regardless of the original distribution’s shape.</p>
+<p><strong>Intuition:</strong> Think of the Z-residual as the <strong>distance to the median</strong>, but <strong>rescaled</strong> to account for skewness and <strong>smoothed</strong> to handle discreteness. This ensures that a residual of <span class="math inline">+2</span> always implies the same degree of ‘extremeness’, regardless of the original distribution’s shape.</p>
 </section></section><section class="level2"><h2 id="z-residuals-of-a-true-model">Z-residuals of a True Model<a class="anchor" aria-label="anchor" href="#z-residuals-of-a-true-model"></a>
 </h2>
 <p>The animation in <strong><a href="#fig-aniz-true" class="quarto-xref">Figure 1</a></strong> demonstrates this transformation for <span class="math inline">y_i</span> using its true predictive distribution. As more points are simulated, the distribution of <span class="math inline">z_i</span> values (shown by the accumulating points) aligns with the theoretical <span class="math inline">N(0,1)</span> density curve.</p>
 <div id="fig-aniz-true" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-aniz-true-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div style="display: flex; justify-content: center; margin-bottom: 10px;">
-  <video width="80%" controls="" loop="" autoplay="" muted="" playsinline=""><source src="z_residual_anim-correct.mp4" type="video/mp4" srcset="NA"></source></video>
+  <video width="80%" controls="" loop="" autoplay="" muted="" playsinline=""><source src="resources/illusZ/z_residual_anim-correct.mp4" type="video/mp4" srcset="NA"></source></video>
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-aniz-true-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -104,7 +103,7 @@ Figure 1: Animation of Z-residuals of a correct model. The meters compare the <
 <div id="fig-aniz-wrong" class="quarto-float quarto-figure quarto-figure-center">
 <figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-aniz-wrong-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div style="display: flex; justify-content: center; margin-bottom: 10px;">
-  <video width="80%" controls="" loop="" autoplay="" muted="" playsinline=""><source src="z_residual_anim-wrong.mp4" type="video/mp4" srcset="NA"></source></video>
+  <video width="80%" controls="" loop="" autoplay="" muted="" playsinline=""><source src="resources/illusZ/z_residual_anim-wrong.mp4" type="video/mp4" srcset="NA"></source></video>
 </div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-aniz-wrong-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">

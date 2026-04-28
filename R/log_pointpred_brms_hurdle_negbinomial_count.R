@@ -1,48 +1,130 @@
-log_pointpred_brms_hurdle_negbinomial_count <- function(fit, data = NULL, ...) {
+log_pointpred_brmsfit_hurdle_negbinomial_count <- function(fit, data, ...) {
+  if (missing(data) || is.null(data)) {
+    stop("log_pointpred_brmsfit_hurdle_negbinomial_count: `data` must be provided.", call. = FALSE)
+  }
   
-  data_in <- if (is.null(data)) fit$data else data
-  
-  model.data <- model.frame(fit$formula, data = data_in)
-  model.var  <- names(model.data)
-  
+  model.data <- model.frame(fit$formula, data = data)
   response <- fit$formula$resp
-  if (is.null(response) || !response %in% model.var) {
-    response <- all.vars(fit$formula$formula)[1]
+  
+  if (!(response %in% names(model.data))) {
+    stop("log_pointpred_brmsfit_hurdle_negbinomial_count: response variable not found in `data`.", call. = FALSE)
   }
   
-  sim.y <- as.numeric(model.data[[response]])
-  count_id <- which(sim.y > 0)
+  y_all <- as.numeric(model.data[[response]])
+  n_all <- length(y_all)
   
-  posterior_pred_safe <- function(fit, dpar, newdata, ...) {
-    f <- get("posterior.pred", mode = "function")
-    if ("newdata" %in% names(formals(f))) return(f(fit, dpar = dpar, newdata = newdata, ...))
-    f(fit, dpar = dpar, ...)
+  if (n_all < 1L) {
+    stop("log_pointpred_brmsfit_hurdle_negbinomial_count: empty response vector.", call. = FALSE)
   }
   
-  mu_all    <- posterior_pred_safe(fit, dpar = "mu",    newdata = data_in, ...)
-  shape_all <- posterior_pred_safe(fit, dpar = "shape", newdata = data_in, ...)
+  if (any(!is.finite(y_all))) {
+    stop("log_pointpred_brmsfit_hurdle_negbinomial_count: response contains non-finite values.", call. = FALSE)
+  }
   
-  mu    <- if (length(count_id) > 0) mu_all[, count_id, drop = FALSE] else mu_all[, 0, drop = FALSE]
-  shape <- if (length(count_id) > 0) shape_all[, count_id, drop = FALSE] else shape_all[, 0, drop = FALSE]
+  if (any(y_all < 0 | abs(y_all - round(y_all)) > 1e-8)) {
+    stop("log_pointpred_brmsfit_hurdle_negbinomial_count: response must be non-negative integers.", call. = FALSE)
+  }
   
-  y_sub <- sim.y[count_id]
+  count_id <- which(y_all > 0)
+  
+  mu_all <- posterior.pred(
+    fit,
+    dpar = "mu",
+    data = data,
+    count.only = FALSE,
+    ...
+  )
+  
+  shape_all <- posterior.pred(
+    fit,
+    dpar = "shape",
+    data = data,
+    count.only = FALSE,
+    ...
+  )
+  
+  if (!is.matrix(mu_all)) {
+    mu_all <- matrix(mu_all, nrow = 1L)
+  }
+  if (!is.matrix(shape_all)) {
+    shape_all <- matrix(shape_all, nrow = 1L)
+  }
+  
+  if (!identical(dim(mu_all), dim(shape_all))) {
+    stop("log_pointpred_brmsfit_hurdle_negbinomial_count: `mu` and `shape` must have identical dimensions.", call. = FALSE)
+  }
+  
+  if (ncol(mu_all) != n_all) {
+    stop("log_pointpred_brmsfit_hurdle_negbinomial_count: posterior parameter columns must match nrow(data).", call. = FALSE)
+  }
+  
+  if (any(!is.finite(mu_all))) {
+    stop("log_pointpred_brmsfit_hurdle_negbinomial_count: `mu` contains non-finite values.", call. = FALSE)
+  }
+  
+  if (any(mu_all <= 0)) {
+    stop("log_pointpred_brmsfit_hurdle_negbinomial_count: `mu` must be strictly positive.", call. = FALSE)
+  }
+  
+  if (any(!is.finite(shape_all))) {
+    stop("log_pointpred_brmsfit_hurdle_negbinomial_count: `shape` contains non-finite values.", call. = FALSE)
+  }
+  
+  if (any(shape_all <= 0)) {
+    stop("log_pointpred_brmsfit_hurdle_negbinomial_count: `shape` must be strictly positive.", call. = FALSE)
+  }
+  
+  ndraws <- nrow(mu_all)
+  y_sub <- y_all[count_id]
   n_sub <- length(y_sub)
-  mc_used <- nrow(mu)
   
-  lpmf_hat <- matrix(NA_real_, mc_used, n_sub)
-  lsf_hat  <- matrix(NA_real_, mc_used, n_sub)
+  mu <- if (n_sub > 0L) {
+    mu_all[, count_id, drop = FALSE]
+  } else {
+    mu_all[, 0, drop = FALSE]
+  }
   
-  if (n_sub > 0) {
+  shape <- if (n_sub > 0L) {
+    shape_all[, count_id, drop = FALSE]
+  } else {
+    shape_all[, 0, drop = FALSE]
+  }
+  
+  log_like <- matrix(NA_real_, nrow = ndraws, ncol = n_sub)
+  log_surv <- matrix(NA_real_, nrow = ndraws, ncol = n_sub)
+  
+  if (n_sub > 0L) {
     for (j in seq_len(n_sub)) {
-      lpmf_hat[, j] <- dtruncnb(y_sub[j], mu = mu[, j], size = shape[, j], log.p = TRUE)
-      lsf_hat[, j]  <- ptruncnb(y_sub[j], mu = mu[, j], size = shape[, j],
-                                lower.tail = FALSE, log.p = TRUE)
+      log_like[, j] <- dtruncnb(
+        y = y_sub[j],
+        mu = mu[, j],
+        size = shape[, j],
+        log.p = TRUE
+      )
+      
+      log_surv[, j] <- ptruncnb(
+        y = y_sub[j],
+        mu = mu[, j],
+        size = shape[, j],
+        lower.tail = FALSE,
+        log.p = TRUE
+      )
     }
   }
   
+  if (anyNA(log_like)) {
+    stop("log_pointpred_brmsfit_hurdle_negbinomial_count: `log_like` contains NA.", call. = FALSE)
+  }
+  
+  if (anyNA(log_surv)) {
+    stop("log_pointpred_brmsfit_hurdle_negbinomial_count: `log_surv` contains NA.", call. = FALSE)
+  }
+  
+  is_discrete <- matrix(1L, nrow = 1L, ncol = n_sub)
+  
   list(
-    lpmf_hat = lpmf_hat,
-    lsf_hat  = lsf_hat,
-    y_type   = rep.int(1L, n_sub)  # truncated: only positive part
+    log_surv = log_surv,
+    log_like = log_like,
+    is_discrete = is_discrete
   )
 }

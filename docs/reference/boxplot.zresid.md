@@ -1,10 +1,10 @@
-# Boxplot of Z-Residuals
+# Boxplot diagnostics for Z-residuals
 
-Produces a boxplot of Z-residuals grouped by binned fitted values or a
-selected covariate. This diagnostic plot supports other count-data
-models (e.g. Bayesian hurdle, zero-truncated) by visualizing residual
-distribution, detecting outliers, and evaluating normality assumptions
-using Shapiro-Wilk, ANOVA, or Bartlett-type tests for Z-residuals.
+Produces boxplots of Z-residuals grouped by binned x-axis values. The
+x-axis variable can be a linear predictor, a model covariate, or a
+user-supplied vector. Optional metadata supplied through `info` (or
+stored in attributes of `x`) are used to fill legacy plotting attributes
+such as `"covariates"`, `"linear.pred"`, and `"type"`.
 
 ## Usage
 
@@ -12,12 +12,15 @@ using Shapiro-Wilk, ANOVA, or Bartlett-type tests for Z-residuals.
 # S3 method for class 'zresid'
 boxplot(
   x,
+  zcov = NULL,
+  info = NULL,
   irep = 1,
-  x_axis_var = c("lp", "covariate"),
+  x_axis_var = "lp",
   num.bin = 10,
   normality.test = c("SW", "AOV", "BL"),
   k.test = 10,
-  main.title = paste("Z-residual Boxplot -", attr(x, "type")),
+  main.title = ifelse(is.null(attr(x, "type")), "Z-residual Boxplot",
+    paste("Z-residual Boxplot -", attr(x, "type"))),
   outlier.return = FALSE,
   outlier.value = 3.5,
   ...
@@ -28,134 +31,96 @@ boxplot(
 
 - x:
 
-  A matrix of Z-residuals with one column per MCMC iteration. Must
-  contain attributes:
+  A numeric matrix of Z-residuals, typically returned by
+  [`Zresidual`](https://tiw150.github.io/Zresidual/reference/Zresidual.md),
+  with one column per residual replicate.
 
-  `"type"`
+- zcov:
 
-  :   Model type used to generate residuals (e.g., hurdle, truncated).
+  Optional metadata, typically returned by
+  [`Zcov`](https://tiw150.github.io/Zresidual/reference/Zcov.md).
 
-  `"fitted.value"`
+- info:
 
-  :   Vector of fitted values for the model.
-
-  `"covariates"`
-
-  :   Optional data frame of covariates.
-
-  `"zero_id"`
-
-  :   Indices of zero observations (if applicable).
+  Legacy alias for `zcov`.
 
 - irep:
 
-  Integer vector indicating which columns of `Zresidual` to plot.
-  Default is `1`.
+  Integer vector specifying which column(s) of `x` to plot.
 
 - x_axis_var:
 
-  Character string specifying the x-axis variable:
-
-  - `"fitted.value"` (default): Bin fitted values.
-
-  - `"covariate"`: Display a list of covariate names.
-
-  - A specific covariate name present in
-    `attr(Zresidual, "covariates")`.
+  Variable used for grouping on the x-axis. It may be `"lp"`,
+  `"covariate"`, a covariate name stored in `attr(x, "covariates")`, a
+  length-\\n\\ vector, or a function returning such a vector.
 
 - num.bin:
 
-  Integer. Number of bins for grouping fitted values or selected
-  covariate. Defaults to `10`.
+  Integer giving the number of bins used when the x-axis variable is
+  numeric.
 
 - normality.test:
 
-  Character vector specifying which normality tests to report:
-
-  - `"SW"` - Shapiro-Wilk test for Z-residuals.
-
-  - `"AOV"` - ANOVA-based test for variance/mean structure.
-
-  - `"BL"` - Bartlett-type test for variance homogeneity.
-
-  Defaults to `c("SW","AOV","BL")`.
+  Character vector specifying which diagnostic p-values to display.
+  Supported values are `"SW"`, `"AOV"`, and `"BL"`.
 
 - k.test:
 
-  Integer. Number of groups to use for ANOVA/Bartlett-type tests.
-  Default is `10`.
+  Integer controlling grouping used by the diagnostic tests.
 
 - main.title:
 
-  Character. Main title of the plot. Default includes the model type
-  automatically.
+  Main title of the plot. If omitted, a default title is constructed
+  from `attr(x, "type")`, when available.
 
 - outlier.return:
 
-  Logical. If `TRUE`, returns the index of Z-residual values exceeding
-  the threshold defined by `outlier.value`. Default is `FALSE`.
+  Logical; if `TRUE`, invisibly return the indices of observations with
+  `|Z| > outlier.value`.
 
 - outlier.value:
 
-  Numeric. Threshold for defining outliers based on absolute Z-residual
-  magnitude. Default is `3.5`.
+  Numeric threshold used to define outliers.
 
 - ...:
 
-  Additional graphical parameters passed to
-  [`plot`](https://rdrr.io/r/graphics/plot.default.html) or
-  [`legend`](https://rdrr.io/r/graphics/legend.html).
+  Additional graphical arguments passed to plotting functions.
 
 ## Value
 
-If `outlier.return = TRUE`, returns a list containing:
-
-- `outliers` - vector of indices where `|Zresidual| > outlier.value`.
-
-Otherwise, the function returns `NULL` (invisible) and produces a
-diagnostic plot.
+Invisibly returns a list with component `outliers`, containing the
+indices of observations flagged as outliers for the plotted replicate.
+The main effect of the function is the boxplot.
 
 ## Details
 
-The function generates boxplots of Z-residuals across binned fitted
-values (or a selected covariate), which helps detect lack of fit,
-heteroscedasticity, and model misspecification.
-
-Infinite and non-finite residuals are automatically replaced with a
-maximal finite value (with preserved sign), and a warning message is
-displayed.
-
-When `x_axis_var="covariate"`, users may supply any covariate name
-available in the `"covariates"` attribute. If a covariate contains too
-few unique bins, fitted values are transformed using
-[`log()`](https://rdrr.io/r/base/Log.html) to stabilize binning, with a
-message provided.
-
-Normality diagnostics are displayed in the plot legend. Internally, the
-function calls:
-[`sw.test.zresid()`](https://tiw150.github.io/Zresidual/reference/sw.test.zresid.md),
-[`aov.test.zresid()`](https://tiw150.github.io/Zresidual/reference/aov.test.zresid.md),
-and
-[`bartlett.test.zresid()`](https://tiw150.github.io/Zresidual/reference/bartlett.test.zresid.md).
+This plot is useful for checking whether the distribution of Z-residuals
+changes systematically across fitted values or covariates.
 
 ## See also
 
-[`plot`](https://rdrr.io/r/graphics/plot.default.html),
-[`boxplot`](https://rdrr.io/r/graphics/boxplot.html),
-[`legend`](https://rdrr.io/r/graphics/legend.html), `sw.test.zresid`,
-`aov.test.zresid`, `bartlett.test.zresid`
+[`Zresidual`](https://tiw150.github.io/Zresidual/reference/Zresidual.md),
+[`Zcov`](https://tiw150.github.io/Zresidual/reference/Zcov.md)
 
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-# Assuming 'zres' is a Z-residual matrix produced by a model-fitting function:
-boxplot.zresid(zres)
+if (requireNamespace("survival", quietly = TRUE)) {
+  set.seed(1)
+  n <- 30
+  x <- rnorm(n)
+  t_event <- rexp(n, rate = exp(0.3 * x))
+  t_cens  <- rexp(n, rate = 0.4)
+  status  <- as.integer(t_event <= t_cens)
+  time    <- pmin(t_event, t_cens)
+  dat <- data.frame(time = time, status = status, x = x)
 
-# Plot against a specific covariate
-boxplot.zresid(zres, x_axis_var = "age")
+  fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
+  z <- Zresidual(fit,data=dat, nrep = 1, seed = 1)
+  info <- Zcov(fit, data = dat)
 
-# Return outliers
-box.out <- boxplot.zresid(zres, outlier.return = TRUE)
-} # }
+  boxplot(z, info = info, x_axis_var = "lp")
+}
+#> Warning: NaNs produced
+
 ```

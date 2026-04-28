@@ -13,66 +13,83 @@ execute:
 knitr::opts_knit$set(root.dir = rprojroot::find_rstudio_root_file())
 ```
 
-# Code to Find extdata Directory
+
+# Rebuild .Rbuildignore (The "Strict Allow-List" Strategy)
 
 ```{r}
-#| label: setup-extdata-path
-#| include: false
+# ==============================================================================
+# 2. DYNAMIC .Rbuildignore (The "Strict Allow-List" Strategy)
+# ==============================================================================
 
-# 1. Configuration
-pkg_name <- "Zresidual"
+### A. Top-Level Filter
+allowed_top <- c(
+  "DESCRIPTION", "NAMESPACE", "R", "man", "inst", "vignettes", 
+  "data", "tests", "src", "README.md", "NEWS.md", "LICENSE"
+)
 
-# 2. Path Discovery Logic
-# Check if we are in the package source (root or vignettes/ directory)
-is_source <- file.exists("DESCRIPTION") || file.exists("../DESCRIPTION")
-root_dir  <- ifelse(file.exists("DESCRIPTION"), ".", "..")
+all_top_items <- setdiff(list.files(all.files = TRUE, include.dirs = TRUE), c(".", ".."))
+top_to_ignore <- setdiff(all_top_items, allowed_top)
 
-if (is_source) {
-  # Scenario: Local Development or Local pkgdown build
-  extdata_path <- file.path(root_dir, "inst", "extdata")
-  if (!dir.exists(extdata_path)) dir.create(extdata_path, recursive = TRUE)
-  is_dev <- TRUE
-} else {
-  # Scenario: CRAN or User installation
-  extdata_path <- system.file("extdata", package = pkg_name)
-  is_dev <- FALSE
-}
+# Format for .Rbuildignore
+ignore_patterns <- paste0("^", gsub("([.|()\\^{}+$*?]|\\[|\\])", "\\\\\\1", top_to_ignore), "$")
 
-# 3. Helper: Local Asset Copy
-# Ensures knitr can find the file by copying it to the current directory
-get_local_asset <- function(filename, source_dir) {
-  src <- file.path(source_dir, filename)
-  if (!file.exists(src)) return(NULL)
+
+### B. Vignettes Filter (Allow ONLY get-started.Rmd)
+if (dir.exists("vignettes")) {
+  vig_items <- setdiff(list.files("vignettes", all.files = TRUE, include.dirs = TRUE), c(".", ".."))
   
-  # Copy to current directory if it's not already there
-  if (!file.exists(filename) || file.mtime(src) > file.mtime(filename)) {
-    file.copy(src, filename, overwrite = TRUE)
+  # Regex to keep ONLY get-started.Rmd (case-insensitive for the extension)
+  is_valid_vig <- grepl("^get-started\\.[qRr]md$", vig_items)
+  vig_to_ignore <- vig_items[!is_valid_vig]
+  
+  if (length(vig_to_ignore) > 0) {
+    vig_patterns <- paste0("^vignettes/", gsub("([.|()\\^{}+$*?]|\\[|\\])", "\\\\\\1", vig_to_ignore), "$")
+    # Add these to our global ignore list
+    ignore_patterns <- c(ignore_patterns, vig_patterns)
   }
-  return(filename)
 }
 
-# Status for console debugging
-message(sprintf("Environment: %s | Path: %s", 
-                ifelse(is_dev, "Source", "Installed"), 
-                extdata_path))
+
+### C. R Directory Filter (Allow ONLY .R or .r files)
+if (dir.exists("R")) {
+  r_items <- setdiff(list.files("R", all.files = TRUE, include.dirs = TRUE), c(".", ".."))
+  
+  # Regex to keep ONLY files ending in .R or .r
+  is_valid_r <- grepl("\\.[Rr]$", r_items)
+  r_to_ignore <- r_items[!is_valid_r]
+  
+  if (length(r_to_ignore) > 0) {
+    r_patterns <- paste0("^R/", gsub("([.|()\\^{}+$*?]|\\[|\\])", "\\\\\\1", r_to_ignore), "$")
+    # Add these to our global ignore list
+    ignore_patterns <- c(ignore_patterns, r_patterns)
+  }
+}
+
+
+# Write the final strict .Rbuildignore
+writeLines(ignore_patterns, ".Rbuildignore")
+
 ```
 
-# Install the updated package
 
-```{r, eval=FALSE}
-#remove.packages("Zresidual")
+# Reload the package
+
+```{r}
+library(renv)
+
 devtools::document()
+devtools::load_all() # reloading updated documents to current R session
 
-devtools::install(upgrade = "never", build = FALSE, args = c("--no-byte-compile", "--no-test-load"))
-suppressWarnings(unloadNamespace("Zresidual"))
-library("Zresidual")
-
+remove.packages("Zresidual")
+renv::install(".", prompt = FALSE)
 ```
 
-# Build the package site
+
+# Build the package site on Github
 
 ## Build the whole Site
 ```{r}
+#| eval: false
 #devtools::document()
 pkgdown::clean_site()
 unlink("docs", recursive = TRUE)
@@ -84,30 +101,41 @@ pkgdown::build_site(
     install=FALSE)
 ```
 
+## Build Specific Site Pages
 
-## Build home page only
+### Build home page only
 ```{r}
+#| eval: false
 pkgdown::build_home()
 ```
 
 
-## Build home page only
+### Build news only
 ```{r}
+#| eval: false
 pkgdown::build_news()
 ```
 
-## Build an artile
+### Build an article
 
 ```{r}
-pkgdown::build_article("illus_zresid")
+#| eval: false
+pkgdown::build_article("get-started")
 ```
 
 ```{r}
+#| eval: false
 pkgdown::build_article("demo_coxph_survival")
 ```
 
 
 ```{r}
+#| eval: false
 pkgdown::build_favicons()
 ```
 
+
+```{r}
+#| eval: false
+pkgdown::preview_site()
+```

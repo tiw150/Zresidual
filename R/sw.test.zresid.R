@@ -1,24 +1,20 @@
-#' Shapiro-Wilk Normality Test for Z-Residuals
+#' Shapiro-Wilk normality test for Z-residuals
 #'
-#' Performs the Shapiro-Wilk test for normality on each column of a matrix of Z-residuals.
+#' @description
+#' Applies the Shapiro-Wilk test column-wise to a matrix of Z-residuals.
 #'
-#' @param Zresidual A numeric matrix of Z-residuals, where each column represents
-#'   a separate set of residuals (e.g., from different posterior predictive draws or variables).
-#' @param ... Additional arguments (ignored unless named):
-#'   \describe{
-#'     \item{max_n}{Integer. Maximum sample size passed to \code{shapiro.test} (default 5000).}
-#'     \item{seed}{Integer. Optional random seed used when subsampling is needed.}
-#'   }
+#' @param Zresidual A numeric vector or matrix of Z-residuals.
+#' @param ... Optional named arguments. Supported arguments include
+#'   \code{max_n} and \code{seed}.
 #'
-#' @return A numeric vector of Shapiro-Wilk p-values, one for each column of \code{Zresidual}.
+#' @return A numeric vector of p-values, one per column.
 #'
-#' @details
-#' Non-finite values are handled by replacing \code{Inf/-Inf} with a large finite value
-#' based on the maximum finite magnitude in the same column. \code{NA/NaN} are removed
-#' before testing. If the column has fewer than 3 finite values, or if the test fails,
-#' \code{NA} is returned for that column.
+#' @examples
+#' set.seed(1)
+#' z <- matrix(rnorm(60), ncol = 2)
+#' sw.test.zresid(z)
 #'
-#' @export sw.test.zresid
+#' @export
 sw.test.zresid <- function(Zresidual, ...) {
   args <- list(...)
   

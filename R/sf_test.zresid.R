@@ -1,8 +1,25 @@
-#' A function to calculate Shapiro-Francia test of Zresidual
-#' @importFrom nortest sf.test
-#' @param Zresidual A matrix (n x p) of Z-residuals.
+#' Shapiro-Francia normality test for Z-residuals
+#'
+#' @description
+#' Applies the Shapiro-Francia test column-wise to a matrix of Z-residuals.
+#'
+#' @param Zresidual A numeric vector or matrix of Z-residuals.
+#'
+#' @return A numeric vector of p-values, one per column.
+#'
+#' @examples
+#' if (requireNamespace("nortest", quietly = TRUE)) {
+#'   set.seed(1)
+#'   z <- matrix(rnorm(60), ncol = 2)
+#'   sf_test.zresid(z)
+#' }
+#'
 #' @export sf_test.zresid
 sf_test.zresid <- function(Zresidual) {
+  if (!requireNamespace("nortest", quietly = TRUE)) {
+    stop("Package 'nortest' is required for sf_test.zresid().", call. = FALSE)
+  }
+  
   Zresidual <- as.matrix(Zresidual)
   
   id.negtv.inf <- which(is.infinite(Zresidual) & Zresidual < 0)

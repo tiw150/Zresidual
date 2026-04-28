@@ -1,39 +1,24 @@
-#' Probability Mass Function of the Zero-Truncated Poisson Distribution
+#' Zero-truncated Poisson distribution
 #'
-#' Computes the probability mass function (PMF) or log-PMF for the zero-truncated
-#' Poisson (TP) distribution. This version excludes zeros and rescales
-#' the probabilities so that they sum to one over positive counts only.
+#' Density and distribution functions for the zero-truncated Poisson
+#' distribution.
 #'
-#' @param y Numeric vector of observed count values (\code{y > 0}).
-#' @param lambda Numeric vector of rate parameters (mean of the Poisson distribution).
-#' @param log.p Logical; if \code{TRUE}, returns log probabilities instead of probabilities.
+#' @param y Numeric vector of counts.
+#' @param lambda Mean parameter of the Poisson distribution.
+#' @param log.p Logical; if \code{TRUE}, return values on the log scale. For
+#'   \code{dtruncpois()} this returns log-densities; for \code{ptruncpois()} this
+#'   returns log-probabilities.
+#' @param lower.tail Logical; used only by \code{ptruncpois()}. If \code{TRUE},
+#'   return \eqn{P(Y \le y)}; otherwise return \eqn{P(Y > y)}.
 #'
-#' @details
-#' The zero-truncated Poisson probability for an observation \eqn{y > 0} is:
-#' \deqn{
-#' P(Y = y \mid Y > 0) = \frac{P(Y = y)}{1 - P(Y = 0)}
-#' }
-#' where \eqn{P(Y = y)} and \eqn{P(Y = 0)} are evaluated using the standard
-#' Poisson PMF and CDF, respectively. The function uses
-#' \code{\link[stats]{dpois}} and \code{\link[stats]{ppois}} internally.
-#'
-#' This function automatically vectorizes inputs so that each probability
-#' corresponds elementwise to the provided parameter values.
-#'
-#' @return A numeric vector of probabilities (or log-probabilities if \code{log.p = TRUE}).
+#' @return A numeric vector of densities, distribution values, or their
+#' logarithms.
 #'
 #' @examples
-#' # Example: Zero-truncated Poisson probabilities
-#' y <- 1:5
-#' lambda <- 2
-#' dtruncpois(y, lambda)
+#' dtruncpois(1:4, lambda = 2)
+#' ptruncpois(1:4, lambda = 2)
 #'
-#' # Log probabilities
-#' dtruncpois(y, lambda, log.p = TRUE)
-#'
-#' @seealso
-#' \code{\link[stats]{dpois}}, \code{\link[stats]{ppois}},
-#' and \code{\link{ptruncpois}} for the corresponding cumulative function.
+#' @name truncpois
 #' @export
 dtruncpois <- function(y, lambda, log.p = FALSE)
 {

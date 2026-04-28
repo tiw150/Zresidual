@@ -1,0 +1,31 @@
+project:
+  type: default
+
+date: last-modified
+format:
+  html:
+    toc: true
+    number-sections: true
+    format-links: false
+    page-layout: full
+    code-fold: true
+    html-math-method: mathjax
+    include-in-header:
+      text: |
+        <style>
+        main { text-align: justify; hyphens: auto; }
+        h1, h2, h3, h4, h5, h6 { text-align: left}
+        </style>       
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: false
+  freeze: false
+  execute-dir: project 
+
+crossref:
+  eq-prefix: "Equation"
+
+bibliography: ref.bib
+link-citations: true

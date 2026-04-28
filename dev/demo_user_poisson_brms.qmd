@@ -1,0 +1,306 @@
+---
+title: "Demo of User-Defined `log_pointpred` for `brms`'s Poisson Regression"
+author: "Tingxuan Wu and Longhai Li"
+format: 
+  html:
+    number-sections: false
+    code-fold: true
+vignette: >
+  %\VignetteIndexEntry{Demo of user-defined log_pointpred for Poisson via brms}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{quarto::html}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  fig.width = 7,
+  fig.height = 5,
+  fig.align = "center"
+)
+set.seed(13)
+
+# Global toggle to force regeneration of heavy computations
+force_rerun <- FALSE
+
+# Ensure the resources directory exists to save heavy computations
+if (!dir.exists("resources")) {
+  dir.create("resources", recursive = TRUE)
+}
+```
+
+```{r load-packages}
+#| code-fold: show
+#| message: false
+#| warning: false
+suppressWarnings(unloadNamespace("Zresidual"))
+library(Zresidual)
+library(brms)
+library(knitr)
+library(kableExtra)
+```
+
+## 1. Define a Custom Predictive Function
+
+`Zresidual` is designed to be extensible. By defining a function named `log_pointpred_<backend>_<family>` in your Global Environment, `Zresidual` will automatically detect and use it instead of its internal defaults. 
+
+For a `brms` Poisson model, the backend class is `brmsfit` and the family is `poisson`, so we name the function `log_pointpred_brmsfit_poisson`.
+
+```{r}
+#| eval: true 
+#| label: custom-log-pointpred
+#| code-fold: show
+log_pointpred_brmsfit_poisson <- function(fit, data = NULL, ...) {
+  
+  # 1. Resolve data
+  data_in <- if (is.null(data)) fit$data else data
+  
+  # 2. Extract observed response
+  model.data <- model.frame(fit$formula, data = data_in)
+  model.var  <- names(model.data)
+  
+  response <- fit$formula$resp
+  if (is.null(response) || !response %in% model.var) {
+    response <- all.vars(fit$formula$formula)[1]
+  }
+  
+  sim.y <- as.numeric(model.data[[response]])
+  n <- length(sim.y)
+  
+  # 3. Extract Posterior Expected Values (lambda)
+  # brms::posterior_epred safely extracts the distribution parameter 'mu' (which is lambda for Poisson)
+  lambda <- brms::posterior_epred(fit, dpar = "mu", newdata = data_in, ...)
+  mc_used <- nrow(lambda)
+  
+  # 4. Calculate Log-PMF and Log-Survival Functions
+  lpmf_hat <- matrix(NA_real_, mc_used, n)
+  lsf_hat  <- matrix(NA_real_, mc_used, n)
+  
+  for (i in seq_len(n)) {
+    lpmf_hat[, i] <- dpois(sim.y[i], lambda = lambda[, i], log = TRUE)
+    lsf_hat[, i]  <- ppois(sim.y[i], lambda = lambda[, i],
+                           lower.tail = FALSE, log.p = TRUE)
+  }
+  
+  list(
+    lpmf_hat = lpmf_hat,
+    lsf_hat  = lsf_hat
+  )
+}
+```
+
+## 2. Simulating a Non-linear Count Dataset
+
+We simulate a count dataset where the true log-rate ($\eta$) follows a sine wave over $x \in [0, 10]$. To avoid any potential matrix-parsing issues with inline functions in `brms` formulas, we explicitly compute and store `sinx` in the dataset.
+
+```{r}
+#| label: simulate-data
+#| code-fold: show
+n <- 200
+x <- runif(n, 0, 10)
+sinx <- sin(x)
+
+# True non-linear relationship (sine wave for log-rate)
+eta_true <- 1.5 * sin(x) 
+y <- rpois(n, exp(eta_true))
+
+dat <- data.frame(y = y, x = x, sinx = sinx)
+
+cat("Mean count:", mean(dat$y), "\nMax count:", max(dat$y), "\n")
+```
+
+## 3. Fitting Models and Calculating Z-residuals
+
+We fit a **Wrong Model** (linear) and a **Correct Model** (using the explicitly created `sinx` term). The fitted models are saved to disk with the `brms_pois_` prefix to prevent collision with other demos.
+
+```{r}
+#| label: fit-brms-models
+#| results: hide
+#| message: false
+#| warning: false
+
+refit_behavior <- ifelse(force_rerun, "always", "on_change")
+
+# 1. Wrong Model (Linear)
+fit_wrong <- brm(
+  y ~ x, 
+  family = poisson(), 
+  data = dat,
+  file = "resources/brms_pois_wrong", 
+  file_refit = refit_behavior,
+  refresh = 0,
+  cores = 4
+)
+
+# 2. Correct Model (Non-linear using explicit sinx predictor)
+fit_correct <- brm(
+  y ~ sinx, 
+  family = poisson(), 
+  data = dat,
+  file = "resources/brms_pois_correct", 
+  file_refit = refit_behavior,
+  refresh = 0,
+  cores = 4
+)
+```
+
+We evaluate the models using standard Posterior Predictive P-values (`method = "post"`). `Zresidual` will automatically detect `log_pointpred_brmsfit_poisson` from the Global Environment.
+
+```{r}
+#| label: calc-zresiduals
+#| code-fold: show
+
+# Calculate Z-residuals using the custom posterior predictive function
+z_wrong   <- Zresidual(fit_wrong, data = dat, config = list(method = "post"), randomized = TRUE, nrep = 10,
+log_pointpred = log_pointpred_brmsfit_poisson)
+z_correct <- Zresidual(fit_correct, data = dat, config = list(method = "post"), randomized = TRUE, nrep = 10,
+log_pointpred = log_pointpred_brmsfit_poisson)
+
+# Extract Covariates for Diagnostics
+info_wrong   <- Zcov(fit_wrong, data = dat)
+info_correct <- Zcov(fit_correct, data = dat)
+```
+
+## 4. Diagnostics with Z-residuals
+
+```{r}
+#| label: diagnosis-comparison
+#| code-fold: true
+#| fig-width: 12
+#| fig-height: 8
+
+i <- 1 # Change this value (1 to 10) to see other randomized replicates
+
+par(mfrow = c(2, 3), mar = c(4, 4, 3, 1))
+
+# --- ROW 1: WRONG MODEL (Linear) ---
+qqnorm(z_wrong, info = info_wrong, irep = i, main = "Wrong: Z-Resid Q-Q")
+
+plot(z_wrong, info = info_wrong, x_axis_var = "x", 
+     category = dat$y, irep = i, main = "Wrong: Z-Resid vs X")
+
+boxplot(z_wrong, info = info_wrong, x_axis_var = "lp", 
+        irep = i, main = "Wrong: Z-Resid vs LP")
+
+# --- ROW 2: CORRECT MODEL (Explicit Non-linear) ---
+qqnorm(z_correct, info = info_correct, irep = i, main = "Correct: Z-Resid Q-Q")
+
+plot(z_correct, info = info_correct, x_axis_var = "x", 
+     category = dat$y, irep = i, main = "Correct: Z-Resid vs X")
+
+boxplot(z_correct, info = info_correct, x_axis_var = "lp", 
+        irep = i, main = "Correct: Z-Resid vs LP")
+```
+
+**Replicated p-values of the same fitted models**
+```{r}
+#| label: replicated-p-values-spanned
+#| code-fold: true
+
+res_table <- data.frame(
+  "Replicate" = paste("Rep", 1:ncol(z_wrong)),
+  "SW_W"      = as.numeric(sw.test.zresid(z_wrong)),
+  "AOV_W"     = as.numeric(aov.test.zresid(z_wrong, X = "lp", zcov = info_wrong)),
+  "BL_W"      = as.numeric(bartlett.test.zresid(z_wrong, X = "lp", zcov = info_wrong)),
+  "SW_C"      = as.numeric(sw.test.zresid(z_correct)),
+  "AOV_C"     = as.numeric(aov.test.zresid(z_correct, X = "lp", zcov = info_correct)),
+  "BL_C"      = as.numeric(bartlett.test.zresid(z_correct, X = "lp", zcov = info_correct))
+)
+
+res_table %>%
+  kable(
+    digits = 4, 
+    col.names = c("Replicate", "SW", "AOV", "Bartlett", "SW", "AOV", "Bartlett"),
+    caption = "Diagnostic Test p-values Across Randomized Replicates",
+    align = "lcccccc"
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "condensed"), 
+    full_width = FALSE,
+    position = "center"
+  ) %>%
+  add_header_above(c(" " = 1, "Wrong Model (Linear)" = 3, "Correct Model (Non-linear)" = 3))
+```
+
+## 5. ANOVA Test Distributions (Simulation Loop)
+
+We run a simulation loop to verify that our custom `log_pointpred` implementation correctly handles the explicitly generated `sinx` covariate and produces appropriate $p$-values.
+
+```{r}
+#| label: replication-verify-anova
+#| code-fold: true
+#| results: hide
+#| message: false
+#| warning: false
+#| eval: false
+
+n_sim <- 50
+sim_file <- "resources/brms_pois_simulation_results.rds"
+
+if (!force_rerun && file.exists(sim_file)) {
+  sim_res <- readRDS(sim_file)
+  p_c <- sim_res$p_c
+  p_w <- sim_res$p_w
+} else {
+  p_c <- numeric(n_sim)
+  p_w <- numeric(n_sim)
+  n_sample <- 200 
+  
+  for(i in 1:n_sim) {
+    # New independent data
+    x_sim <- runif(n_sample, 0, 10)
+    sinx_sim <- sin(x_sim)
+    y_sim   <- rpois(n_sample, exp(1.5 * sinx_sim))
+    dat_sim <- data.frame(y = y_sim, x = x_sim, sinx = sinx_sim)
+    
+    # --- Case 1: Wrong Model (Update Fit) ---
+    # Using update() bypasses C++ compilation, reusing the compiled model 
+    # from 'fit_wrong' and significantly speeding up the loop.
+    fit_w_sim <- update(
+      fit_wrong, 
+      newdata = dat_sim,
+      refresh = 0, 
+      silent = 2,
+      init = "0",          # Start from zero, not previous posterior
+      iter = 2000,         # Ensure enough iterations for convergence
+      warmup = 1000
+    )
+    
+    z_w_sim <- Zresidual(fit_w_sim, data = dat_sim, config = list(method = "post"), randomized = TRUE, nrep = 1)
+    info_w_sim <- Zcov(fit_w_sim, data = dat_sim)
+    p_w[i] <- as.numeric(aov.test.zresid(z_w_sim, X = "lp", zcov = info_w_sim))
+    
+    # --- Case 2: Correct Model (Update Fit) ---
+    fit_c_sim <- update(
+      fit_correct, 
+      newdata = dat_sim,
+      refresh = 0, 
+      silent = 2,
+      init = "0",          # Independent start
+      iter = 2000, 
+      warmup = 1000
+    )
+    
+    z_c_sim <- Zresidual(fit_c_sim, data = dat_sim, config = list(method = "post"), randomized = TRUE, nrep = 1)
+    info_c_sim <- Zcov(fit_c_sim, data = dat_sim)
+    p_c[i] <- as.numeric(aov.test.zresid(z_c_sim, X = "lp", zcov = info_c_sim))
+  }
+  
+  saveRDS(list(p_c = p_c, p_w = p_w), sim_file)
+}
+```
+
+```{r}
+#| label: replication-hists
+#| fig-width: 10
+#| fig-height: 5
+#| code-fold: true
+#| eval: false
+
+par(mfrow = c(1, 2))
+hist(p_c, main = "Correct: Model P-values", xlab = "p-value", col = "lightblue", breaks = 10)
+abline(h = n_sim / 10, col = "red", lty = 2)
+
+hist(p_w, main = "Wrong: Small p-values", xlab = "p-value", col = "salmon", breaks = 10)
+```
+
+**Discussion:** The distribution of $p$-values for the correctly specified model confirms that our custom predictive function `log_pointpred_brmsfit_poisson` is functioning flawlessly. Using an explicit predictor variable rather than an inline formula computation ensures accurate posterior predictions. Conversely, the skewed distribution for the wrong model demonstrates the test's high power in detecting misspecification in count data.

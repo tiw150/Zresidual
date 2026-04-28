@@ -1,29 +1,60 @@
-# A function to calculate Bartlett of Zresidual
+# Bartlett variance test for Z-residuals
 
-A function to calculate Bartlett of Zresidual
+Computes a Bartlett-style diagnostic p-value for each column of a
+Z-residual matrix against an index, linear predictor, covariate, or
+user-supplied grouping variable.
 
 ## Usage
 
 ``` r
 # S3 method for class 'zresid'
-bartlett.test(x, X = c("lp", "covariate"), k.bl = 10, ...)
+bartlett.test(x, X = c("lp", "covariate"), k.bl = 10, zcov = NULL, ...)
 ```
 
 ## Arguments
 
 - x:
 
-  A Z-residual object (with class 'zresid').
+  A numeric vector or matrix of Z-residuals.
 
 - X:
 
-  Linear predictor or covariate. Must be (1) a length-n vector, (2)
-  'lp'/'covariate', or (3) a covariate name in attr(x, 'covariates').
+  X-axis specification or grouping variable.
 
 - k.bl:
 
-  Number of bins if applicable for continuous covariates. Default is 10.
+  Maximum number of bins for numeric `X`.
+
+- zcov:
+
+  Optional metadata returned by
+  [`Zcov`](https://tiw150.github.io/Zresidual/reference/Zcov.md).
 
 - ...:
 
-  Further arguments passed to or from other methods.
+  Reserved for forward compatibility.
+
+## Value
+
+A numeric vector of p-values.
+
+## Examples
+
+``` r
+if (requireNamespace("survival", quietly = TRUE)) {
+  set.seed(1)
+  n <- 30
+  x <- rnorm(n)
+  t_event <- rexp(n, rate = exp(0.2 * x))
+  t_cens  <- rexp(n, rate = 0.5)
+  status  <- as.integer(t_event <= t_cens)
+  time    <- pmin(t_event, t_cens)
+  dat <- data.frame(time = time, status = status, x = x)
+  fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
+  z <- Zresidual(fit, data=dat, nrep = 2, seed = 1)
+  info <- Zcov(fit, data = dat)
+  bartlett.test.zresid(z, X = "lp", zcov = info)
+}
+#> Warning: NaNs produced
+#> [1] 0.4992451 0.3601000
+```

@@ -1,0 +1,445 @@
+---
+title: "Z-residual Diagnostics for CoxPH Shared Frailty Models"
+author: "Tingxuan Wu and Longhai Li"
+subtitle: "Examples of Checking Functional Forms"
+format:
+  html:
+    code-fold: true
+vignette: >
+  %\VignetteIndexEntry{Z-residual diagnostic for shared frailty models}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{quarto::html}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+ fig.width = 7, fig.height = 5, fig.align = "center"
+)
+set.seed(123)
+
+# Global control to force regeneration of GIFs
+force_rerun <- FALSE 
+
+
+# Prefix string for all saved files
+results_dir <- "resources/coxph_frailty/"
+dir.create(results_dir, recursive = TRUE)
+
+```
+
+**Installing Zresidual and Required Packages**
+
+
+```{r}
+#| label: install-and-load-zresidual
+#| eval: false
+#| code-fold: true
+if (!requireNamespace("Zresidual", quietly = TRUE)) {
+  if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")
+  remotes::install_github("user/Zresidual", upgrade = "never", dependencies = TRUE)
+}
+```
+
+```{r}
+#| code-fold: true
+library(Zresidual)
+```
+
+
+```{r loading-packages}
+#| code-fold: true
+
+pkgs <- c(
+  "survival", "EnvStats", "VGAM", "plotrix", "actuar", "stringr", "Rlab", "dplyr", "rlang", "tidyr",
+  "matrixStats", "timeDate", "katex", "gt")
+
+missing_pkgs <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]
+if (length(missing_pkgs)) {
+  message("Installing missing packages via renv: ", paste(missing_pkgs, collapse = ", "))
+  renv::install(missing_pkgs)
+}
+
+invisible(lapply(pkgs, function(p) {
+  suppressPackageStartupMessages(library(p, character.only = TRUE))
+}))
+```
+
+## Introduction
+
+This vignette explains how to use the `Zresidual` package to calculate Z-residuals based on the output of the `coxph` function from the `survival` package in R. It also demonstrates how Z-residuals can be used to assess the overall goodness of fit (GOF) and identify specific model misspecifications in semi-parametric shared frailty models. It is a compannion to the paper by @Wu2025Zresidual
+
+## Definition of Z-residual
+
+We use Z-residuals to diagnose shared frailty models in a Cox proportional hazards setting where the baseline function is unspecified. For a group $i$ with $n_i$ individuals, let $y_{ij}$ be a possibly right-censored observation and $\delta_{ij}$ be the indicator for being uncensored. The normalized randomized survival probabilities (RSPs) are defined as:
+
+$$
+S_{ij}^{R}(y_{ij}, \delta_{ij}, U_{ij}) =
+\left\{
+\begin{array}{rl}
+S_{ij}(y_{ij}), & \text{if } \delta_{ij}=1, \\
+U_{ij}\,S_{ij}(y_{ij}), & \text{if } \delta_{ij}=0, 
+\end{array}
+\right.
+$$ {#eq-rsp}
+
+where $U_{ij} \sim \text{Uniform}(0, 1)$ and $S_{ij}(\cdot)$ is the postulated survival function. RSPs are transformed into Z-residuals via the normal quantile function:
+
+$$
+r_{ij}^{Z}(y_{ij}, \delta_{ij}, U_{ij})=-\Phi^{-1} (S_{ij}^R(y_{ij}, \delta_{ij}, U_{ij}))
+$$ {#eq-zresid}
+
+Under the true model, Z-residuals are normally distributed. This transformation allows researchers to leverage traditional normal-regression diagnostic tools for censored data. Furthermore, normal transformation highlights extreme RSPs that may indicate model misspecification but could otherwise be overlooked.
+
+## Examples for Illustration and Demonstration
+
+### Load the real Dataset
+
+We utilize data from 411 acute myeloid leukemia patients recorded at the M. D. Anderson Cancer Center (1980–1996). The dataset focuses on patients under 60 from 24 districts. Key variables include survival time, age, sex, white blood cell count (WBC), and the Townsend deprivation score (TPI).
+
+```{r data-read}
+data_path <- system.file("extdata", "LeukSurv.rda", package = "Zresidual")
+
+load(data_path)
+
+LeukSurv <- transform(LeukSurv,
+  district = as.factor(district),
+  sex      = as.factor(sex),
+  logwbc   = log(wbc + 0.001)
+)
+LeukSurv <- LeukSurv[LeukSurv$age < 60, ]
+```
+
+### Fitting Models
+
+We compare two models: the **wbc model** (using raw WBC) and the **lwbc model** (using log-transformed WBC).
+
+```{r fit-models}
+fit_wbc <- coxph(Surv(time, cens) ~ age + sex + wbc + tpi +
+          frailty(district, distribution="gamma"), data = LeukSurv)
+
+fit_logwbc <- coxph(Surv(time, cens) ~ age + sex + logwbc + tpi +
+          frailty(district, distribution="gamma"), data = LeukSurv)
+```
+
+### Computing Z-Residuals 
+
+Once the model is fitted, we calculate Z-residuals for both models using 50 repetitions. We pass `traindata = LeukSurv` to allow the internal predictive functions to reconstruct the baseline hazard.
+
+```{r zresiduals-linear, cache=FALSE}
+zresid_wbc    <- Zresidual(fit = fit_wbc, data = LeukSurv, traindata = LeukSurv, nrep = 1000)
+zresid_logwbc <- Zresidual(fit = fit_logwbc, data = LeukSurv, traindata = LeukSurv, nrep = 1000)
+zcov_wbc      <- Zcov(fit_wbc, data = LeukSurv)
+zcov_logwbc   <- Zcov(fit_logwbc, data = LeukSurv)
+```
+
+### Inspecting the Normality of Z-Residuals for Checking Overall GOF
+
+Under a correctly specified shared frailty model, Z-residuals should be approximately standard normal. The animation below shows the 50 randomization replicates for both candidate models.
+
+
+```{r}
+#| label: fig-qqplot-animation
+#| fig-cap: "Z-residual Q–Q plots for overall GOF (animation over 50 randomization replicates). Left: WBC model; right: log-WBC model."
+#| fig-align: center
+#| code-summary: "GIF Generation Code (Folded)"
+#| code-fold: true
+#| fig-alt: "Animated QQ plots of Z-residuals comparing WBC and log-WBC Cox frailty models."
+
+gif_qq_path <- paste0(results_dir, "qqplot_anim.gif")
+
+if (force_rerun || !file.exists(gif_qq_path)) {
+  gifski::save_gif(
+    expr = {
+      for (i in 1:10) {
+        par(mfrow = c(1, 2), mar = c(4, 4, 2, 2))
+        qqnorm(zresid_wbc, irep = i)
+        qqnorm(zresid_logwbc, irep = i)
+      }
+    },
+    gif_file = gif_qq_path, width = 800, height = 400, res = 72, delay = 0.8
+  )
+}
+
+knitr::include_graphics(gif_qq_path)
+```
+
+### Assessing Homogeneity of Grouped Z-Residuals
+
+A key Z-residual diagnostic for model adequacy is **homogeneity**. After sorting observations by the linear predictor (LP), grouped Z-residuals should have similar mean and variance if the model is adequate.
+
+```{r}
+#| label: fig-zresid-scatter-box
+#| fig-cap: "Homogeneity check by grouping Z-residuals over the linear predictor (LP) (animation over 50 randomization replicates)."
+#| code-summary: "GIF Generation Code (Folded)"
+#| code-fold: true
+#| fig-alt: "Animated scatterplots and boxplots of Z-residuals versus linear predictor for WBC and log-WBC models."
+
+gif_lp_path <- paste0(results_dir, "lp_anim.gif")
+
+if (force_rerun || !file.exists(gif_lp_path)) {
+  gifski::save_gif(
+    expr = {
+      for (i in 1:10) {
+        par(mfrow = c(2, 2))
+        plot(zresid_wbc, info = zcov_wbc, x_axis_var="lp", main.title = "Scatter: WBC Model", 
+             irep=i, add_lowess = TRUE)
+        plot(zresid_logwbc, info = zcov_logwbc, x_axis_var="lp", main.title = "Scatter: log-WBC Model",
+             irep=i, add_lowess = TRUE)
+        boxplot(zresid_wbc, info = zcov_wbc, x_axis_var = "lp", main.title = "Boxplot: WBC Model", irep=i)
+        boxplot(zresid_logwbc, info = zcov_logwbc, x_axis_var = "lp", main.title = "Boxplot: log-WBC Model", irep=i)
+      }
+    },
+    gif_file = gif_lp_path, width = 900, height = 900, res = 96, delay = 1
+  )
+}
+
+knitr::include_graphics(gif_lp_path)
+```
+
+### Identifying Misspecification of Functional Form
+
+To diagnose **functional-form misspecification**, we inspect Z-residuals against a specific covariate. If the functional form is adequate, the LOWESS curve should remain near 0.
+
+```{r}
+#| label: fig-zresid-scatter-box-wbc
+#| fig-cap: "Covariate-specific functional-form diagnostic (animation over 50 randomization replicates)."
+#| code-summary: "GIF Generation Code (Folded)"
+#| code-fold: true
+#| fig-alt: "Animated scatterplots and boxplots of Z-residuals versus WBC and log(WBC) for competing models."
+
+gif_wbc_path <- paste0(results_dir, "wbc_anim.gif")
+
+if (force_rerun || !file.exists(gif_wbc_path)) {
+  gifski::save_gif(
+    expr = {
+      for (i in 1:10) {
+        par(mfrow = c(2, 2), mar = c(4, 4, 1.5, 2))
+        plot(zresid_wbc, info = zcov_wbc, x_axis_var = "wbc", main.title = "Scatter: WBC Model",
+             irep=i, add_lowess = TRUE)
+        plot(zresid_logwbc, info = zcov_logwbc, x_axis_var = "logwbc", main.title = "Scatter: log-WBC Model",        
+             irep=i, add_lowess = TRUE)
+        boxplot(zresid_wbc, info = zcov_wbc, x_axis_var = "wbc", main.title = "Boxplot: WBC Model", irep=i)
+        boxplot(zresid_logwbc, info = zcov_logwbc, x_axis_var = "logwbc", main.title = "Boxplot: log-WBC Model", irep=i)
+      }
+    },
+    gif_file = gif_wbc_path, width = 900, height = 900, res = 96, delay = 1
+  )
+}
+
+knitr::include_graphics(gif_wbc_path)
+```
+
+## Statistical Test Summaries
+
+### Quantitative Evaluation of Homogeneity
+
+Table 1 summarizes the first 10 randomization repetitions for both candidate models.
+
+```{r}
+#| label: tbl-homo-first10
+#| echo: false
+#| tbl-cap: "Diagnostic p-values of 10 replicated Z-residuals."
+
+test_sw_wbc    <- sw.test.zresid(zresid_wbc)
+test_sw_logwbc <- sw.test.zresid(zresid_logwbc)
+test_sf_wbc    <- sf_test.zresid(zresid_wbc)
+test_sf_logwbc <- sf_test.zresid(zresid_logwbc)
+
+aov_wbc_lp     <- aov.test.zresid(zresid_wbc, X="lp", k.anova=10, zcov = zcov_wbc)
+aov_logwbc_lp  <- aov.test.zresid(zresid_logwbc, X="lp", k.anova=10, zcov = zcov_logwbc)
+
+bl_wbc_lp      <- bartlett.test.zresid(zresid_wbc, X="lp", k.bl=10, zcov = zcov_wbc)
+bl_logwbc_lp   <- bartlett.test.zresid(zresid_logwbc, X="lp", k.bl=10, zcov = zcov_logwbc)
+
+aov_wbc        <- aov.test.zresid(zresid_wbc, X="wbc", k.anova=10, zcov = zcov_wbc)
+aov_logwbc     <- aov.test.zresid(zresid_logwbc, X="logwbc", k.anova=10, zcov = zcov_logwbc)
+
+bl_wbc         <- bartlett.test.zresid(zresid_wbc, X="wbc", k.bl=10, zcov = zcov_wbc)
+bl_logwbc      <- bartlett.test.zresid(zresid_logwbc, X="logwbc", k.bl=10, zcov = zcov_logwbc)
+
+# Reordered columns to logically group by model
+homogeneity_tests <- data.frame(
+  aov_wbc_lp, bl_wbc_lp, aov_wbc, bl_wbc,
+  aov_logwbc_lp, bl_logwbc_lp, aov_logwbc, bl_logwbc
+)
+
+homogeneity_tests %>% 
+  head(10) %>% 
+  gt() %>% 
+  tab_header(title = "Summary of Residual Homogeneity Tests") %>% 
+  tab_spanner(
+    label = "WBC Model",
+    columns = c(aov_wbc_lp, bl_wbc_lp, aov_wbc, bl_wbc)
+  ) %>%
+  tab_spanner(
+    label = "log-WBC Model",
+    columns = c(aov_logwbc_lp, bl_logwbc_lp, aov_logwbc, bl_logwbc)
+  ) %>%
+  cols_label(
+    aov_wbc_lp    = "Z-AOV-LP",
+    bl_wbc_lp     = "Z-BL-LP",
+    aov_wbc       = "Z-AOV-wbc",
+    bl_wbc        = "Z-BL-wbc",
+    aov_logwbc_lp = "Z-AOV-LP",
+    bl_logwbc_lp  = "Z-BL-LP",
+    aov_logwbc    = "Z-AOV-logwbc",
+    bl_logwbc     = "Z-BL-logwbc"
+  ) %>%
+  fmt_number(columns = everything(), decimals = 4)
+```
+
+
+### Histograms of Replicated P-values
+
+```{r}
+#| label: fig-zresid-hist-pvalues
+#| fig-height: 9
+#| fig-width: 9
+#| fig-align: center
+#| fig-cap: "Histograms of replicated Z-residual test p-values."
+
+med_pval_sw_wbc      <- upper_bound_pvalue(p_rep = test_sw_wbc)
+med_pval_sw_logwbc   <- upper_bound_pvalue(p_rep = test_sw_logwbc)
+med_pval_sf_wbc      <- upper_bound_pvalue(p_rep = test_sf_wbc)
+med_pval_sf_logwbc   <- upper_bound_pvalue(p_rep = test_sf_logwbc)
+
+med_pval_aov_lp_wbc    <- upper_bound_pvalue(p_rep = aov_wbc_lp)
+med_pval_aov_lp_logwbc <- upper_bound_pvalue(p_rep = aov_logwbc_lp)
+med_pval_aov_wbc       <- upper_bound_pvalue(p_rep = aov_wbc)
+med_pval_aov_logwbc    <- upper_bound_pvalue(p_rep = aov_logwbc)
+
+par(mfrow = c(4, 2), mar = c(4, 4, 2, 2))
+hist(test_sw_wbc, main = "Z-SW: WBC Model", breaks = 20)
+abline(v = med_pval_sw_wbc, col = "red")
+
+hist(test_sw_logwbc, main = "Z-SW: log-WBC Model", breaks = 20)
+abline(v = med_pval_sw_logwbc, col = "red")
+
+hist(test_sf_wbc, main = "Z-SF: WBC Model", breaks = 20)
+abline(v = med_pval_sf_wbc, col = "red")
+
+hist(test_sf_logwbc, main = "Z-SF: log-WBC Model", breaks = 20)
+abline(v = med_pval_sf_logwbc, col = "red")
+
+hist(aov_wbc_lp, main = "Z-AOV-LP: WBC Model", breaks = 20)
+abline(v = med_pval_aov_lp_wbc, col = "red")
+
+hist(aov_logwbc_lp, main = "Z-AOV-LP: log-WBC Model", breaks = 20)
+abline(v = med_pval_aov_lp_logwbc, col = "red")
+
+hist(aov_wbc, main = "Z-AOV-wbc: WBC Model", breaks = 20)
+abline(v = med_pval_aov_wbc, col = "red")
+
+hist(aov_logwbc, main = "Z-AOV-logwbc: log-WBC Model", breaks = 20)
+abline(v = med_pval_aov_logwbc, col = "red")
+```
+### Summary of Median Upper-Bound P-values
+
+```{r}
+#| label: tbl-leuksurv-summary
+#| echo: false
+#| tbl-cap: "LeukSurv model comparison and replicated-test summaries."
+
+# Helper to cleanly extract p-values from htest/custom objects
+extract_pv <- function(obj) {
+  if (inherits(obj, "htest")) return(as.numeric(obj$p.value))
+  if (is.list(obj) && !is.null(obj$p.value)) return(as.numeric(obj$p.value[1]))
+  if (is.numeric(obj) && length(obj) == 1) return(as.numeric(obj))
+  NA_real_
+}
+
+# Calculate CZ-CSF metrics
+cz_wbc    <- gof.censored.zresidual(surv_residuals(fit_wbc, LeukSurv, "censored Z-residual"))
+cz_logwbc <- gof.censored.zresidual(surv_residuals(fit_logwbc, LeukSurv, "censored Z-residual"))
+
+# Build dynamic tibble
+leuksurv_summary <- tibble::tibble(
+  Model            = c("WBC model", "log-WBC model"),
+  AIC              = c(AIC(fit_wbc), AIC(fit_logwbc)),
+  `CZ-CSF`         = c(extract_pv(cz_wbc), extract_pv(cz_logwbc)),
+  `Z-SW`           = c(upper_bound_pvalue(test_sw_wbc), upper_bound_pvalue(test_sw_logwbc)),
+  `Z-SF`           = c(upper_bound_pvalue(test_sf_wbc), upper_bound_pvalue(test_sf_logwbc)),
+  `Z-AOV-LP`       = c(upper_bound_pvalue(aov_wbc_lp), upper_bound_pvalue(aov_logwbc_lp)),
+  `Z-AOV-log(wbc)` = c(upper_bound_pvalue(aov_wbc), upper_bound_pvalue(aov_logwbc))
+)
+
+leuksurv_summary %>%
+  gt::gt() %>%
+  gt::fmt_number(columns = -Model, decimals = 3)
+```
+
+## Other Residual Analysis
+
+### Censored Z-residuals
+
+```{r}
+#| label: tbl-czcsf
+#| echo: false
+#| tbl-cap: "CZ-CSF p-values for the wbc and lwbc models."
+
+censored_zresid_wbc <- surv_residuals(fit_wbc, LeukSurv, "censored Z-residual")
+censored_zresid_logwbc <- surv_residuals(fit_logwbc, LeukSurv, "censored Z-residual")
+
+gof_wbc  <- gof.censored.zresidual(censored.Zresidual = censored_zresid_wbc)
+gof_logwbc <- gof.censored.zresidual(censored.Zresidual = censored_zresid_logwbc)
+
+czcsf_tbl <- tibble::tibble(
+  Model = c("wbc model", "lwbc model"),
+  `CZ-CSF p-value` = c(extract_pv(gof_wbc), extract_pv(gof_logwbc))
+)
+
+czcsf_tbl %>%
+  gt::gt() %>%
+  gt::fmt_number(columns = `CZ-CSF p-value`, decimals = 4)
+```
+
+### Cox-Snell Residuals
+
+```{r}
+#| label: fig-Cox-Snell_Residuals
+#| fig-cap: "Cumulative hazard plot of Cox–Snell (CS) residuals."
+#| fig-align: center
+#| fig-width: 8
+#| fig-height: 4
+
+ucs_wbc    <- surv_residuals(fit_wbc, LeukSurv, "Cox-Snell")
+ucs_logwbc <- surv_residuals(fit_logwbc, LeukSurv, "Cox-Snell")
+
+par(mfrow = c(1, 2))
+plot.cs.residual(ucs_wbc, main.title = "CS Residuals: WBC Model")
+plot.cs.residual(ucs_logwbc, main.title = "CS Residuals: log-WBC Model")
+```
+
+### Martingale Residuals
+
+```{r }
+#| label: fig-Martingale_Residuals
+#| fig-cap: "Martingale residual plots against wbc and log(wbc)."
+#| fig-align: center
+#| fig-width: 8
+#| fig-height: 4
+
+martg_wbc    <- surv_residuals(fit_wbc, LeukSurv, "martingale")
+martg_logwbc <- surv_residuals(fit_logwbc, LeukSurv, "martingale")
+
+par(mfrow = c(1, 2))
+plot.martg.resid(martg_wbc, x_axis_var="wbc", main.title = "Martingale Residuals: WBC Model")
+plot.martg.resid(martg_logwbc, x_axis_var="logwbc", main.title = "Martingale Residuals: log-WBC Model")
+```
+
+### Deviance Residuals
+
+```{r }
+#| label: fig-Deviance_Residuals
+#| fig-cap: "Deviance residual plots against wbc and log(wbc)."
+#| fig-align: center
+#| fig-width: 8
+#| fig-height: 4
+
+dev_wbc    <- surv_residuals(fit_wbc, LeukSurv, "deviance")
+dev_logwbc <- surv_residuals(fit_logwbc, LeukSurv, "deviance")
+
+par(mfrow = c(1, 2))
+plot.dev.resid(dev_wbc, x_axis_var="wbc", main.title = "Deviance Residuals: WBC Model")
+plot.dev.resid(dev_logwbc, x_axis_var="logwbc", main.title = "Deviance Residuals: log-WBC Model")
+```

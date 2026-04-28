@@ -1,26 +1,10 @@
-# Plot Z-Residuals for Bayesian and Frequentist Count / Hurdle / Zero / Survival Models
+# Scatterplot diagnostics for Z-residuals
 
-Produces diagnostic scatterplots of Z-residuals for a wide range of
-model types, including hurdle models, zero models, count models, and
-survival models. This function is designed to be compatible with
-Z-residual matrices generated from Bayesian models (e.g., **brms**,
-Stan-based models) as well as classical models.
-
-The function supports:
-
-- Plotting residuals against index, covariates, linear predictors, or
-  user-specified vectors.
-
-- Visual outlier detection with customizable coloring, emphasis, and
-  labels.
-
-- Automatic handling of censored/un-censored and hurdle count/zero
-  classifications.
-
-- Multiple normality tests (Shapiro-Wilk, ANOVA, Bartlett) with
-  per-iteration reporting.
-
-- Extensive customization through graphical parameters.
+Produces scatterplots of Z-residuals against observation index, linear
+predictors, model covariates, or a user-supplied x-axis variable.
+Optional metadata supplied through `info` (or stored in attributes of
+`x`) are used to fill legacy plotting attributes such as `"covariates"`,
+`"linear.pred"`, `"zero_id"`, and `"censored.status"`.
 
 ## Usage
 
@@ -28,14 +12,15 @@ The function supports:
 # S3 method for class 'zresid'
 plot(
   x,
-  irep = 1:ncol(x),
+  zcov = NULL,
+  info = NULL,
+  irep = 1,
   ylab = "Z-Residual",
   normality.test = c("SW", "AOV", "BL"),
   k.test = 10,
-  x_axis_var = c("index", "covariate", "lp"),
-  main.title = ifelse(is.null(attr(x, "type")),
-                      "Z-residual Scatterplot",
-                      paste("Z-residual Scatterplot -", attr(x, "type"))),
+  x_axis_var = "index",
+  main.title = ifelse(is.null(attr(x, "type")), "Z-residual Scatterplot",
+    paste("Z-residual Scatterplot -", attr(x, "type"))),
   outlier.return = TRUE,
   outlier.value = 3.5,
   category = NULL,
@@ -51,14 +36,22 @@ plot(
 
 - x:
 
-  A numeric matrix of Z-residuals (dimensions: *n* × *m*) of class
-  `"zresid"`. Attributes used by the function include: `"type"`,
-  `"zero_id"`, `"censored.status"`, `"covariates"`, and `"linear.pred"`.
+  A numeric matrix of Z-residuals, typically returned by
+  [`Zresidual`](https://tiw150.github.io/Zresidual/reference/Zresidual.md),
+  with one column per residual replicate.
+
+- zcov:
+
+  Optional metadata, typically returned by
+  [`Zcov`](https://tiw150.github.io/Zresidual/reference/Zcov.md).
+
+- info:
+
+  Legacy alias for `zcov`.
 
 - irep:
 
-  A vector specifying the residual column(s) (iterations) to plot.
-  Defaults to all columns of **`x`**.
+  Integer vector specifying which column(s) of `x` to plot.
 
 - ylab:
 
@@ -66,105 +59,100 @@ plot(
 
 - normality.test:
 
-  A character vector specifying normality tests applied per iteration:
-  `"SW"`, `"AOV"`, or `"BL"`. Helper functions (e.g., `sw.test.zresid`)
-  must exist and accept inputs (`x`, `x_axis_var`, `k.test`).
+  Character vector specifying which diagnostic p-values to display.
+  Supported values are `"SW"`, `"AOV"`, and `"BL"`.
 
 - k.test:
 
-  Bin size for normality tests (used for grouping continuous
-  predictors).
+  Integer controlling grouping used by the diagnostic tests.
 
 - x_axis_var:
 
-  Specifies the x-axis values. Options include: `"index"`,
-  `"covariate"`, `"lp"`, a covariate name present in
-  `attr(x, "covariates")`, or a numeric vector of length *n*.
+  Variable used on the x-axis. It may be one of `"index"`, `"lp"`,
+  `"covariate"`, a covariate name stored in `attr(x, "covariates")`, a
+  length-\\n\\ vector, or a function returning such a vector.
 
 - main.title:
 
-  Title of the plot. Defaults to a type-based informative title.
+  Main title of the plot. If omitted, a default title is constructed
+  from `attr(x, "type")`, when available.
 
 - outlier.return:
 
-  If `TRUE`, outliers are printed to console and returned invisibly.
+  Logical; if `TRUE`, mark observations with `|Z| > outlier.value` (and
+  non-finite residuals) and invisibly return their indices.
 
 - outlier.value:
 
-  Threshold above which a residual is flagged as an outlier. Defaults to
-  `3.5`.
+  Numeric threshold used to define outliers.
 
 - category:
 
-  Optional vector categorizing observations (length *n*). Used for
-  coloring and shaping points in scatterplots.
+  Optional grouping variable of length \\n\\ used to modify point
+  appearance.
 
 - outlier.set:
 
-  A named list of arguments passed to
-  [`symbols()`](https://rdrr.io/r/graphics/symbols.html) and
-  [`text()`](https://rdrr.io/r/graphics/text.html) for marking and
-  labeling outliers. Overrides defaults.
+  A named list of graphical arguments passed to
+  [`symbols`](https://rdrr.io/r/graphics/symbols.html) and
+  [`text`](https://rdrr.io/r/graphics/text.html) when annotating
+  outliers.
 
 - xlab:
 
-  Label for the x-axis. May include LaTeX syntax using the form
-  `tex("...")`, which will be interpreted via **latex2exp** (if
-  installed).
+  Label for the x-axis. If `NULL`, an automatic label is used.
 
 - my.mar:
 
-  A numeric vector passed to `par(mar=...)` to adjust plot margins.
+  Numeric vector passed to
+  [`par`](https://rdrr.io/r/graphics/par.html)`(mar = ...)`.
 
 - add_lowess:
 
-  Logical. If TRUE, add a LOWESS smooth to the plot.
+  Logical; if `TRUE`, add a LOWESS smooth when the x-axis is numeric.
 
 - ...:
 
-  Additional graphical arguments passed to
-  [`plot()`](https://rdrr.io/r/graphics/plot.default.html),
-  [`legend()`](https://rdrr.io/r/graphics/legend.html),
-  [`symbols()`](https://rdrr.io/r/graphics/symbols.html), and
-  [`text()`](https://rdrr.io/r/graphics/text.html).
+  Additional graphical arguments passed to plotting functions.
 
 ## Value
 
-Invisibly returns (when `outlier.return = TRUE`) a list:
-
-- outliers:
-
-  Vector of outlier indices
-
-Otherwise returns `NULL`. Always produces a scatterplot as its primary
-output.
+Invisibly returns a list with component `outliers`, containing the
+indices of observations flagged as outliers for the plotted replicate.
+The main effect of the function is the diagnostic scatterplot.
 
 ## Details
 
-This function employs S3 method dispatch. The input `x` must be an
-object of class `"zresid"`.
+Depending on the metadata available, the plot can distinguish zero
+versus positive observations for hurdle-type models, or censored versus
+uncensored observations for survival models.
 
-### **Model-Type-Specific Behavior**
+## See also
 
-#### **Hurdle models**
+[`Zresidual`](https://tiw150.github.io/Zresidual/reference/Zresidual.md),
+[`Zcov`](https://tiw150.github.io/Zresidual/reference/Zcov.md)
 
-- Zeros and counts are colored differently (`red` vs `blue`).
+## Examples
 
-#### **Survival models**
+``` r
+if (requireNamespace("survival", quietly = TRUE)) {
+  set.seed(1)
+  n <- 30
+  x <- rnorm(n)
+  t_event <- rexp(n, rate = exp(0.3 * x))
+  t_cens  <- rexp(n, rate = 0.4)
+  status  <- as.integer(t_event <= t_cens)
+  time    <- pmin(t_event, t_cens)
+  dat <- data.frame(time = time, status = status, x = x)
 
-- Censored and uncensored observations are visually separated.
+  fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
+  z <- Zresidual(fit, data=dat, nrep = 1, seed = 1)
+  info <- Zcov(fit, data = dat)
 
-### **Outlier Detection**
+  plot(z, info = info, x_axis_var = "index")
+  plot(z, info = info, x_axis_var = "lp")
+}
+#> Warning: NaNs produced
 
-Outliers are defined as:
 
-\$\$\|Z\| \> \mbox{outlier.value} \hspace{1em} \mbox{or non-finite
-values}\$\$
-
-They are marked, labeled, and returned to the user if
-`outlier.return = TRUE`.
-
-## Note
-
-This function modifies graphical parameters (`par(mar=...)`) during
-execution and resets them at the end.
+```

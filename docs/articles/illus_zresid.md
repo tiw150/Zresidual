@@ -46,13 +46,11 @@ effectively maps any predictive distribution to the standard normal
 scale while preserving the tail probabilities. If the model is correct,
 the resulting Z-residuals follow a standard normal distribution.
 
-**Intuition:**
-
-Think of the Z-residual as the **distance to the median**, but
-**rescaled** to account for skewness and **smoothed** to handle
-discreteness. This ensures that a residual of +2 always implies the same
-degree of ‘extremeness’, regardless of the original distribution’s
-shape.
+**Intuition:** Think of the Z-residual as the **distance to the
+median**, but **rescaled** to account for skewness and **smoothed** to
+handle discreteness. This ensures that a residual of +2 always implies
+the same degree of ‘extremeness’, regardless of the original
+distribution’s shape.
 
 ## Z-residuals of a True Model
 

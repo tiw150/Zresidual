@@ -1,0 +1,417 @@
+# Z-residual: A Unified Gaussian-like Residual for Checking Bayesian and Frequentist Models with Continuous, Discrete, and Censored Response
+
+## 1 Parameter-wise Z-residual
+
+The **Zresidual** package implements diagnostic residuals based on the
+**predictive distribution** of each observation. By utilizing the full
+probabilistic information of the model, the package generates residuals
+that are approximately normally distributed, enabling standard graphical
+and numerical diagnostics identical to those used for Gaussian OLS.
+
+### 1.1 Standard Regression Models
+
+The foundation of this approach is the **Randomized Survival Probability
+(RSP)**. For a given observation y_i, the RSP represents the value of
+the predictive survival function at y_i, incorporating a randomization
+term to ensure continuity for discrete outcomes. It is defined in
+[Equation 1](#eq-rsp-std):
+
+\text{RSP}\_i(y_i \| \boldsymbol{\theta}) = S_i(y_i \|
+\boldsymbol{\theta}) + U_i \\ p_i(y_i \| \boldsymbol{\theta}) \tag{1}
+
+Where:
+
+- S_i(y_i \| \boldsymbol{\theta}) = P(Y_i \> y_i \| \boldsymbol{\theta})
+  is the **survival function** (the probability that a new observation
+  would strictly exceed the observed value).
+- p_i(y_i \| \boldsymbol{\theta}) = P(Y_i = y_i \| \boldsymbol{\theta})
+  is the **probability mass function (PMF)**. For continuous outcomes,
+  p_i(y_i) = 0, and this term drops out entirely.
+- U_i \sim \text{Uniform}(0,1) is a random uniform variable. Its role is
+  to continuously “smear” the discrete probability mass, ensuring the
+  resulting RSP does not suffer from discrete steps.
+
+Under a correctly specified model, the RSP follows a uniform U(0,1)
+distribution. The **Z-residual** is then derived by transforming the RSP
+via the inverse standard normal cumulative distribution function
+(\Phi^{-1}), as shown in [Equation 2](#eq-zresid-std):
+
+z_i(y_i \| \boldsymbol{\theta}) = -\Phi^{-1}\[\text{RSP}\_i(y_i \|
+\boldsymbol{\theta})\] \tag{2}
+
+Under correct model specification, these residuals follow a standard
+normal N(0,1) distribution. This mapping allows researchers to assess
+the quality of the predictive distribution—including its mean, variance,
+and shape—using familiar, highly sensitive Gaussian diagnostics.
+
+### 1.2 Survival Models with Right-Censored Observations
+
+In survival analysis, the framework naturally extends by carefully
+defining the predictive distribution of the *observed* outcome. Let T_i
+be the true underlying event time with continuous survival function
+S_i^\*(t \| \boldsymbol{\theta}) = P(T_i \> t \| \boldsymbol{\theta}).
+Let C_i be the censoring time, assumed independent of T_i.
+
+The observed outcome is Y_i = \min(T_i, C_i), and we record an event
+indicator \delta_i = I(T_i \le C_i). Thus, the observed data point is
+y_i, and it has a dual nature depending on \delta_i:
+
+1.  **If the event is observed (\delta_i = 1):** Y_i behaves as a
+    continuous variable. The probability of surviving strictly past y_i
+    is S_i(y_i \| \boldsymbol{\theta}) = S_i^\*(y_i \|
+    \boldsymbol{\theta}). Because the outcome is continuous at this
+    point, the probability mass is zero: p_i(y_i \| \boldsymbol{\theta})
+    = 0.
+2.  **If the event is right-censored (\delta_i = 0):** We only know that
+    T_i \> C_i = y_i. From the perspective of the observed variable Y_i,
+    the point y_i acts as an accumulation of probability mass
+    representing all possible future event times. Therefore, the
+    probability of strictly surviving *past* the censored point is zero:
+    S_i(y_i \| \boldsymbol{\theta}) = 0. The probability mass *at* this
+    point is exactly the probability that the true event happens after
+    the censoring time: p_i(y_i \| \boldsymbol{\theta}) = S_i^\*(y_i \|
+    \boldsymbol{\theta}).
+
+Formally, the predictive survival and probability mass functions for the
+observed outcome Y_i are defined as:
+
+S_i(y_i \| \boldsymbol{\theta}) = \begin{cases} S_i^\*(y_i \|
+\boldsymbol{\theta}), & \text{if } \delta_i = 1 \\ 0, & \text{if }
+\delta_i = 0 \end{cases} \tag{3}
+
+p_i(y_i \| \boldsymbol{\theta}) = \begin{cases} 0, & \text{if } \delta_i
+= 1 \\ S_i^\*(y_i \| \boldsymbol{\theta}), & \text{if } \delta_i = 0
+\end{cases} \tag{4}
+
+By substituting these context-specific definitions of S_i(y_i \|
+\boldsymbol{\theta}) and p_i(y_i \| \boldsymbol{\theta}) back into the
+general RSP equation from [Equation 1](#eq-rsp-std), we obtain the
+unified, piecewise formula for censored data in
+[Equation 5](#eq-rsp-surv):
+
+\text{RSP}(y_i \| \delta_i,\boldsymbol{\theta}) = \left\\
+\begin{array}{rl} S_i^\*(y_i \| \boldsymbol{\theta}), & \text{if }
+\delta_i=1 \\ U_i \\ S_i^\*(y_i \| \boldsymbol{\theta}), & \text{if }
+\delta_i=0 \end{array} \right. \tag{5}
+
+Just as in standard regression, these RSPs are transformed into
+Z-residuals via the normal quantile function, defined in
+[Equation 6](#eq-zresid-surv):
+
+z_i(y_i, \delta_i, U_i) = -\Phi^{-1} (\text{RSP}(y_i\| \delta_i,
+\boldsymbol{\theta})) \tag{6}
+
+Normal transformation highlights extreme RSPs that indicate model
+misspecification (such as proportional hazards violations) which are
+often masked in standard Martingale or Cox-Snell residuals.
+
+## 2 Z-residuals for Estimated Models
+
+In practice, the true parameter vector \boldsymbol{\theta} is unknown
+and must be estimated from the data. The package supports two primary
+paradigms for constructing residuals while accounting for estimation
+uncertainty.
+
+### 2.1 Frequentist Models
+
+For frequentist models (e.g.,
+[`stats::glm`](https://rdrr.io/r/stats/glm.html),
+[`survival::coxph`](https://rdrr.io/pkg/survival/man/coxph.html),
+`glmmTMB`), parameters are treated as fixed unknowns. The package
+computes residuals by simply substituting the maximum likelihood
+estimate (MLE), denoted as \hat{\boldsymbol{\theta}}, directly into the
+predictive distributions:
+
+\text{RSP}\_i(y_i \| \hat{\boldsymbol{\theta}}) = S_i(y_i \|
+\hat{\boldsymbol{\theta}}) + U_i \\ p_i(y_i \|
+\hat{\boldsymbol{\theta}}) \tag{7}
+
+While this plug-in approach is computationally instantaneous, it uses
+the data y twice (once to estimate \hat{\boldsymbol{\theta}} and again
+to calculate the residual for y_i). For specific models like `coxph`,
+the package provides **cross-validatory Z-residuals** to prevent the
+artificial deflation of residual variance that occurs from this
+double-use, allowing for more rigorous validation.
+
+### 2.2 Bayesian Models
+
+In the Bayesian paradigm, parameters \boldsymbol{\theta} are described
+by a posterior distribution \pi(\boldsymbol{\theta} \| y). To account
+for parameter uncertainty, `Zresidual` integrates the point-wise RSP
+over this posterior space.
+
+#### 2.2.1 Posterior Z-residuals
+
+The **posterior RSP** is defined by averaging the predictive survival
+and probability mass functions over the full-data posterior:
+
+\text{RSP}\_i^{\text{post}}(y_i) = \int S_i(y_i \| \boldsymbol{\theta})
+\pi(\boldsymbol{\theta} \| y) d\boldsymbol{\theta} + U_i \int p_i(y_i \|
+\boldsymbol{\theta}) \pi(\boldsymbol{\theta} \| y) d\boldsymbol{\theta}
+\tag{8}
+
+Given a sample of T draws, \\\boldsymbol{\theta}^{(t)}\\\_{t=1}^T, from
+the posterior via MCMC, these integrals are estimated using Monte Carlo
+averages of the survival and mass functions:
+
+\widehat{S}\_i^{\text{post}}(y_i) = \frac{1}{T} \sum\_{t=1}^T S_i(y_i \|
+\boldsymbol{\theta}^{(t)}) \quad \text{and} \quad
+\widehat{p}\_i^{\text{post}}(y_i) = \frac{1}{T} \sum\_{t=1}^T p_i(y_i \|
+\boldsymbol{\theta}^{(t)}) \tag{9}
+
+The estimated posterior RSP is simply their randomized combination:
+
+\widehat{\text{RSP}}\_i^{\text{post}}(y_i) =
+\widehat{S}\_i^{\text{post}}(y_i) + U_i \\
+\widehat{p}\_i^{\text{post}}(y_i) \tag{10}
+
+The **posterior Z-residual** is then derived by transforming this
+averaged probability:
+
+z_i^{\text{post}}(y_i) =
+-\Phi^{-1}(\widehat{\text{RSP}}\_i^{\text{post}}(y_i)) \tag{11}
+
+While simple to compute, this approach involves the double-use of data.
+However, by standardizing the procedure as “summarize first, then test,”
+the Z-residuals remain asymptotically N(0,1) and hypothesis test
+p-values are asymptotically Uniform(0,1).
+
+#### 2.2.2 Importance-Sampling Cross-Validatory (ISCV) Z-residuals
+
+To provide a more rigorous diagnostic that avoids double-use, we
+consider leave-one-out cross-validation (LOOCV). The **cross-validatory
+RSP**, \text{RSP}\_i^{\text{cv}}(y_i), is averaged over the posterior
+conditioned on all data *except* y_i, denoted y\_{-i}:
+
+\text{RSP}\_i^{\text{cv}}(y_i) = \int S_i(y_i \| \boldsymbol{\theta})
+\pi(\boldsymbol{\theta} \| y\_{-i}) d\boldsymbol{\theta} + U_i \int
+p_i(y_i \| \boldsymbol{\theta}) \pi(\boldsymbol{\theta} \| y\_{-i})
+d\boldsymbol{\theta} \tag{12}
+
+Re-running the MCMC analysis n times to calculate this directly is
+computationally prohibitive. Instead, `Zresidual` efficiently
+approximates it using the full-data posterior sample via importance
+sampling. The importance weights are given by the ratio of the target
+LOO posterior to the full-data posterior, which simplifies to the
+inverse of the likelihood of the left-out observation:
+
+w_i^{\text{IS}}(\boldsymbol{\theta}) = \frac{1}{f_i(y_i \|
+\boldsymbol{\theta})} \propto \frac{\pi(\boldsymbol{\theta} \|
+y\_{-i})}{\pi(\boldsymbol{\theta} \| y)} \tag{13}
+
+Using these weights, we compute the **ISCV survival and mass functions**
+as weighted Monte Carlo averages:
+
+\widehat{S}\_i^{\text{iscv}}(y_i) = \frac{\sum\_{t=1}^T S_i(y_i \|
+\boldsymbol{\theta}^{(t)})
+w_i^{\text{IS}}(\boldsymbol{\theta}^{(t)})}{\sum\_{t=1}^T
+w_i^{\text{IS}}(\boldsymbol{\theta}^{(t)})} \tag{14}
+\widehat{p}\_i^{\text{iscv}}(y_i) = \frac{\sum\_{t=1}^T p_i(y_i \|
+\boldsymbol{\theta}^{(t)})
+w_i^{\text{IS}}(\boldsymbol{\theta}^{(t)})}{\sum\_{t=1}^T
+w_i^{\text{IS}}(\boldsymbol{\theta}^{(t)})} \tag{15}
+
+The estimated ISCV RSP combines these weighted components:
+
+\widehat{\text{RSP}}\_i^{\text{iscv}}(y_i) =
+\widehat{S}\_i^{\text{iscv}}(y_i) + U_i \\
+\widehat{p}\_i^{\text{iscv}}(y_i) \tag{16}
+
+Finally, the **ISCV Z-residual** is defined as:
+
+z_i^{\text{iscv}}(y_i) =
+-\Phi^{-1}(\widehat{\text{RSP}}\_i^{\text{iscv}}(y_i)) \tag{17}
+
+Similar to deleted residuals in OLS, ISCV Z-residuals typically exhibit
+a variance slightly greater than 1, offering heightened sensitivity to
+influential outliers and model misspecification.
+
+## 3 A Unified Input: The `log_pointpred` Architecture
+
+To make `Zresidual` universally applicable across diverse modeling
+packages, it relies on a unified input structure. Whether you are
+analyzing a Bayesian shared frailty model or a frequentist GLM, the core
+algorithm requires only the pointwise predictive likelihoods and
+survival probabilities.
+
+To extend `Zresidual` to a new model class or family, developers or
+users only need to provide a function (conventionally named
+`log_pointpred_<class>_<family>`) that accepts a fitted model and data,
+and returns a list containing exactly three elements:
+
+1.  **`log_surv`**: An M \times N numeric matrix of the log-survival
+    probabilities (\log S_i(y_i \| \boldsymbol{\theta})), where M is the
+    number of posterior draws (M=1 for frequentist models) and N is the
+    number of observations.
+
+    > **Note**
+    >
+    > Note: For right-censored observations (y_i where \delta_i = 0),
+    > the probability of surviving strictly past the censoring time is
+    > zero (S_i(y_i) = 0). Consequently, the corresponding entries in
+    > the `log_surv` matrix should be set to `-Inf`.
+
+2.  **`log_like`**: An M \times N numeric matrix of the observation-wise
+    log-likelihoods. Crucially, the definition of the likelihood is not
+    always a model-wide specification; it depends on whether the
+    *specific* observation y_i acts as a discrete or continuous point.
+    For the m-th posterior draw, it is defined as:
+
+    \text{log\\like} (\boldsymbol{\theta}^{(m)},y_i) = \begin{cases}
+    \log p_i(y_i \| \boldsymbol{\theta}^{(m)}), & \text{if } y_i \text{
+    is discrete or right-censored} \\ \log f_i(y_i \|
+    \boldsymbol{\theta}^{(m)}), & \text{if } y_i \text{ is continuous or
+    uncensored} \end{cases}
+
+    > **Understanding the Shifting Role of `log_like`**
+    >
+    > The exact mathematical function of the `log_like` matrix shifts
+    > depending on the observation type and the residual estimation
+    > method:
+    >
+    > **1. Posterior and frequentist Z-residuals on Training or Test
+    > Data**
+    >
+    > - **For Discrete/Censored Data:** The `log_like` is **strictly
+    >   required**. It supplies the \log(p_i(y_i \|
+    >   \boldsymbol{\theta})) term necessary to calculate the Randomized
+    >   Survival Probability (RSP).
+    > - **For Continuous Data:** The `log_like` has **no effect**.
+    >   Because the true probability mass of a continuous point is zero,
+    >   the RSP calculation ignores this matrix entirely and relies
+    >   solely on the survival function.
+    >
+    > **2. Bayesian ISCV Z-residuals on Training Data**
+    >
+    > - **For Discrete/Censored Data:** The `log_like` is **strictly
+    >   required** and plays a **dual role**. It is used to calculate
+    >   the RSP *and* it serves as the likelihood to derive the
+    >   importance-sampling weights (w_i \propto 1/p_i(y_i \|
+    >   \boldsymbol{\theta})).
+    > - **For Continuous Data:** The `log_like` is **strictly
+    >   required**. While it is ignored for the RSP calculation itself,
+    >   the continuous PDF \log(f_i(y_i \| \boldsymbol{\theta})) is
+    >   mathematically essential to calculate the importance weights
+    >   (w_i \propto 1/f_i(y_i \| \boldsymbol{\theta})) to approximate
+    >   the leave-one-out posterior.
+    >
+    > | Residual Type | Discrete / Censored y_i | Continuous/Uncensored y_i |
+    > |:---|:---|:---|
+    > | **Posterior / Frequentist** | **Required** (\log(p_i(y_i\|\boldsymbol{\theta}))) | **Not required** (\log(f_i(y_i \|\boldsymbol{\theta}))) |
+    > | **Bayesian ISCV** | **Required** (\log(p_i(y_i\|\boldsymbol{\theta}))) | **Required** (\log(f_i(y_i \|\boldsymbol{\theta}))) |
+    >
+    > Table 1: **Summary of `log_like` Requirements**
+
+3.  **`is_discrete`**: An integer vector of length N where `1` indicates
+    y_i is discrete/censored, and `0` indicates it is
+    continuous/uncensored. This tells the package exactly how to
+    interpret the corresponding column in the `log_like` matrix on an
+    observation-by-observation basis.
+
+By isolating the model-specific predictive extraction into this single
+function, `Zresidual` can automatically handle the randomization,
+integration, cross-validation, and statistical testing under the hood.
+
+## 4 `Zresidual()` with User-defined `log_pointpred` Function
+
+While `Zresidual` comes with built-in analytical routing for standard
+models, its architecture is deliberately designed to be fully
+extensible. If you are working with a specialized model class or a niche
+distribution family, you can easily write your own predictive extractor
+without touching the package’s internal code.
+
+There are two ways to apply your custom function to the diagnostic
+pipeline:
+
+### 4.1 Direct Argument Passing (The Quick Way)
+
+If you have written a custom extraction function (e.g.,
+`my_custom_log_pointpred`), you do not need to follow any special naming
+rules. You can bypass the package’s internal routing entirely by passing
+your function directly to the `log_pointpred` argument:
+
+``` r
+
+z_custom <- Zresidual(fit, data = my_data, log_pointpred = my_custom_log_pointpred)
+```
+
+### 4.2 Auto-Detection via Naming Convention (The Integrated Way)
+
+If you are working extensively with a specific model type and want
+`Zresidual` to automatically apply your function every time you pass
+that model class, you can use the package’s auto-detection feature.
+
+When you call `Zresidual(fit)`, the package internally constructs an
+expected function name based on the model’s class and family. To find
+out exactly what function name `Zresidual` is looking for, use the
+[`required_log_pointpred()`](https://tiw150.github.io/Zresidual/reference/required_log_pointpred.md)
+helper function:
+
+``` r
+
+# Example: A negative binomial GLM from the MASS package
+fit_nb <- MASS::glm.nb(Days ~ Eth * Age, data = MASS::quine)
+
+# Ask Zresidual what function name it expects
+required_log_pointpred(fit_nb)
+#> [1] "log_pointpred_negbin_Negative_Binomial"
+```
+
+If you define a function with that exact name in your global
+environment, the next time you run `Zresidual(fit_nb)` (without the
+`log_pointpred` argument), the package will automatically detect your
+function and use it.
+
+### 4.3 Contributing to `Zresidual` Using Github
+
+If you write a highly optimized, analytical `log_pointpred` function for
+a new model class or family, we highly encourage you to contribute it to
+the official package! Relying on exact mathematical formulas is always
+faster and more precise than relying on the simulation fallback.
+
+Here is the standard workflow for submitting your function to the
+package via a GitHub Pull Request (PR):
+
+1.  **Fork and Branch:** Fork the `Zresidual` repository on GitHub to
+    your own account, then clone it to your local machine. Create a new
+    branch specifically for your feature (e.g.,
+    `git checkout -b feature/add-negbin-support`).
+2.  **Add Your Function:** Place your new
+    `log_pointpred_<class>_<family>` function into a relevant `.R`
+    script within the package’s `R/` directory. Ensure it strictly
+    returns the required three-element list (`log_surv`, `log_like`, and
+    `is_discrete`).
+3.  **Validate via True DGP Simulation:** Before submitting, rigorously
+    verify your math. Simulate multiple datasets from a known true Data
+    Generating Process (DGP) and fit the correctly specified model to
+    each. Compute the Z-residuals for these models using your new
+    analytical function. If your function is mathematically correct, the
+    resulting diagnostic test p-values across all iterations should be
+    close to a uniform distribution.
+4.  **Submit a Pull Request:** Commit your code, push it to your fork,
+    and open a Pull Request against the main `Zresidual` repository.
+    Include a brief description of the family you added and note that
+    you successfully validated its uniformity via DGP simulation.
+
+## References
+
+- Feng, C., Li, L., Sadeghpour, A., 2020. A comparison of residual
+  diagnosis tools for diagnosing regression models for count data. *BMC
+  Medical Research Methodology* 20, 175.
+  <https://doi.org/10.1186/s12874-020-01055-2> (OA).
+
+- Li L, Wu T, Feng C. Model diagnostics for censored regression via
+  randomized survival probabilities. *Statistics in Medicine*. 2021; 40:
+  1482–1497. <https://doi.org/10.1002/sim.8852>; [Reprint
+  version](https://longhaisk.github.io/doc/1911.00198v4.pdf)
+
+- Wu, T., Li, L., & Feng, C. (2024). Z-residual diagnostic tool for
+  assessing covariate functional form in shared frailty models. *Journal
+  of Applied Statistics*, 52(1), 28–58.
+  <https://doi.org/10.1080/02664763.2024.2355551>; [Reprint
+  version](https://longhaisk.github.io/doc/jas_z_residual_nolinear.pdf)
+
+- Wu, T., Feng, C., & Li, L. (2024). Cross-Validatory Z-Residual for
+  Diagnosing Shared Frailty Models. *The American Statistician*, 79(2),
+  198–211. <https://doi.org/10.1080/00031305.2024.2421370>; [Reprint
+  version](NA)

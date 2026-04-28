@@ -2,7 +2,7 @@
 % Please edit documentation in R/surv_residuals.R
 \name{surv_residuals}
 \alias{surv_residuals}
-\title{Residuals for supported survival models}
+\title{Compute residual diagnostics for supported survival models}
 \usage{
 surv_residuals(
   fit.object,
@@ -11,80 +11,37 @@ surv_residuals(
 )
 }
 \arguments{
-\item{fit.object}{A fitted model object. Currently, only
-\code{\link[survival]{coxph}} and \code{\link[survival]{survreg}} objects
-are supported. Cox models may optionally include a shared frailty term
-(e.g., \code{frailty(group)}).}
+\item{fit.object}{A fitted survival model object.}
 
-\item{data}{A \code{data.frame} containing the variables needed to evaluate
-residuals for \code{fit.object}. It must contain the survival response and
-all covariates (and, for shared frailty models, the grouping factor)
-appearing in the model formula.}
+\item{data}{A data frame containing the variables needed to evaluate
+residuals.}
 
-\item{residual.type}{Character string specifying the type of residual to
-compute. Valid values depend on the underlying model and residual
-function, but for Cox models typically include:
-\code{"censored Z-residual"}, \code{"Cox-Snell"},
-\code{"martingale"}, and \code{"deviance"}. The default is the full
-vector \code{c("censored Z-residual", "Cox-Snell", "martingale",
-  "deviance")}, which is typically resolved via \code{match.arg()} in the
-underlying residual functions.}
+\item{residual.type}{Character string specifying the residual type.}
 }
 \value{
-An object containing residuals, as returned by the corresponding
-lower-level function:
-\itemize{
-\item \code{residual.coxph()} or \code{residual.coxph.frailty()} for
-Cox / shared frailty Cox models, or
-\item \code{residual.survreg()} for parametric survival models.
-}
-The basic structure (numeric vector or matrix) and attributes are preserved
-from the underlying function, but the returned object is assigned an
-additional class \code{"zresid"} on top of its original classes.
+A residual object whose structure depends on \code{residual.type}. The result
+is usually numeric with attributes used by downstream plotting functions.
 }
 \description{
-High-level wrapper to compute residuals for supported survival models,
-with a unified interface. Depending on the model type and presence of a
-shared frailty term, this function dispatches to:
-\itemize{
-\item \code{residual.coxph()} for standard Cox proportional hazards models,
-\item \code{residual.coxph.frailty()} for shared frailty Cox models, and
-\item \code{residual.survreg()} for parametric survival models fitted
-with \code{\link[survival]{survreg}}.
-}
-}
-\details{
-This function is intended as a convenience entry point for users of the
-package: it automatically routes to the appropriate residual computation
-for the given model type and adds the class \code{"zresid"} to the result.
-This extra class can be used by downstream plotting or diagnostic
-functions (e.g., \code{plot.zresid()}).
+Unified wrapper for residual diagnostics from supported survival models.
+Depending on the fitted model class, the function dispatches internally to
+the appropriate residual computation for Cox models, shared-frailty Cox
+models, or parametric survival regression models.
 }
 \examples{
-\dontrun{
-  library(survival)
+if (requireNamespace("survival", quietly = TRUE)) {
+  set.seed(1)
+  n <- 30
+  x <- rnorm(n)
+  t_event <- rexp(n, rate = exp(0.3 * x))
+  t_cens  <- rexp(n, rate = 0.5)
+  status  <- as.integer(t_event <= t_cens)
+  time    <- pmin(t_event, t_cens)
+  dat <- data.frame(time = time, status = status, x = x)
 
-  ## Cox PH model
-  fit_cox <- coxph(Surv(time, status) ~ age + sex, data = lung)
-  r1 <- surv_residuals(fit_cox, data = lung,
-                  residual.type = "censored Z-residual")
-
-  ## Shared frailty Cox model
-  lung$inst <- factor(lung$inst)
-  fit_frail <- coxph(Surv(time, status) ~ age + sex + frailty(inst),
-                     data = lung)
-  r2 <- surv_residuals(fit_frail, data = lung,
-                  residual.type = "Cox-Snell")
-
-  ## Parametric survival model (Weibull)
-  fit_weib <- survreg(Surv(time, status) ~ age + sex, data = lung,
-                      dist = "weibull")
-  r3 <- surv_residuals(fit_weib, data = lung,
-                  residual.type = "censored Z-residual")
+  fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
+  r <- surv_residuals(fit, data = dat, residual.type = "martingale")
+  head(as.vector(r))
 }
-}
-\seealso{
-\code{\link[survival]{coxph}}, \code{\link[survival]{survreg}},
-\code{residual.coxph}, \code{residual.coxph.frailty},
-\code{residual.survreg}
+
 }

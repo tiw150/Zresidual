@@ -1,122 +1,75 @@
-#' Residuals for supported survival models
+#' Compute residual diagnostics for supported survival models
 #'
-#' High-level wrapper to compute residuals for supported survival models,
-#' with a unified interface. Depending on the model type and presence of a
-#' shared frailty term, this function dispatches to:
-#' \itemize{
-#'   \item \code{residual.coxph()} for standard Cox proportional hazards models,
-#'   \item \code{residual.coxph.frailty()} for shared frailty Cox models, and
-#'   \item \code{residual.survreg()} for parametric survival models fitted
-#'         with \code{\link[survival]{survreg}}.
-#' }
+#' @description
+#' Unified wrapper for residual diagnostics from supported survival models.
+#' Depending on the fitted model class, the function dispatches internally to
+#' the appropriate residual computation for Cox models, shared-frailty Cox
+#' models, or parametric survival regression models.
 #'
-#'
-#' @param fit.object A fitted model object. Currently, only
-#'   \code{\link[survival]{coxph}} and \code{\link[survival]{survreg}} objects
-#'   are supported. Cox models may optionally include a shared frailty term
-#'   (e.g., \code{frailty(group)}).
-#' @param data A \code{data.frame} containing the variables needed to evaluate
-#'   residuals for \code{fit.object}. It must contain the survival response and
-#'   all covariates (and, for shared frailty models, the grouping factor)
-#'   appearing in the model formula.
-#' @param residual.type Character string specifying the type of residual to
-#'   compute. Valid values depend on the underlying model and residual
-#'   function, but for Cox models typically include:
-#'   \code{"censored Z-residual"}, \code{"Cox-Snell"},
-#'   \code{"martingale"}, and \code{"deviance"}. The default is the full
-#'   vector \code{c("censored Z-residual", "Cox-Snell", "martingale",
-#'   "deviance")}, which is typically resolved via \code{match.arg()} in the
-#'   underlying residual functions.
-#'
-#' @details
-#' This function is intended as a convenience entry point for users of the
-#' package: it automatically routes to the appropriate residual computation
-#' for the given model type and adds the class \code{"zresid"} to the result.
-#' This extra class can be used by downstream plotting or diagnostic
-#' functions (e.g., \code{plot.zresid()}).
+#' @param fit.object A fitted survival model object.
+#' @param data A data frame containing the variables needed to evaluate
+#'   residuals.
+#' @param residual.type Character string specifying the residual type.
 #'
 #' @return
-#' An object containing residuals, as returned by the corresponding
-#' lower-level function:
-#' \itemize{
-#'   \item \code{residual.coxph()} or \code{residual.coxph.frailty()} for
-#'         Cox / shared frailty Cox models, or
-#'   \item \code{residual.survreg()} for parametric survival models.
-#' }
-#' The basic structure (numeric vector or matrix) and attributes are preserved
-#' from the underlying function, but the returned object is assigned an
-#' additional class \code{"zresid"} on top of its original classes.
-#'
-#' @seealso
-#' \code{\link[survival]{coxph}}, \code{\link[survival]{survreg}},
-#' \code{residual.coxph}, \code{residual.coxph.frailty},
-#' \code{residual.survreg}
+#' A residual object whose structure depends on \code{residual.type}. The result
+#' is usually numeric with attributes used by downstream plotting functions.
 #'
 #' @examples
-#' \dontrun{
-#'   library(survival)
+#' if (requireNamespace("survival", quietly = TRUE)) {
+#'   set.seed(1)
+#'   n <- 30
+#'   x <- rnorm(n)
+#'   t_event <- rexp(n, rate = exp(0.3 * x))
+#'   t_cens  <- rexp(n, rate = 0.5)
+#'   status  <- as.integer(t_event <= t_cens)
+#'   time    <- pmin(t_event, t_cens)
+#'   dat <- data.frame(time = time, status = status, x = x)
 #'
-#'   ## Cox PH model
-#'   fit_cox <- coxph(Surv(time, status) ~ age + sex, data = lung)
-#'   r1 <- surv_residuals(fit_cox, data = lung,
-#'                   residual.type = "censored Z-residual")
-#'
-#'   ## Shared frailty Cox model
-#'   lung$inst <- factor(lung$inst)
-#'   fit_frail <- coxph(Surv(time, status) ~ age + sex + frailty(inst),
-#'                      data = lung)
-#'   r2 <- surv_residuals(fit_frail, data = lung,
-#'                   residual.type = "Cox-Snell")
-#'
-#'   ## Parametric survival model (Weibull)
-#'   fit_weib <- survreg(Surv(time, status) ~ age + sex, data = lung,
-#'                       dist = "weibull")
-#'   r3 <- surv_residuals(fit_weib, data = lung,
-#'                   residual.type = "censored Z-residual")
+#'   fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
+#'   r <- surv_residuals(fit, data = dat, residual.type = "martingale")
+#'   head(as.vector(r))
 #' }
-#' @export surv_residuals
-surv_residuals <- function(fit.object,data,
+#'
+#' @export
+surv_residuals <- function(fit.object, data,
                            residual.type = c("censored Z-residual", "Cox-Snell",
-                                        "martingale", "deviance"))
-{
-  # Required packages:
-  # if (!requireNamespace("pacman")) {
-  #   install.packages("pacman")
-  # }
-  # pacman::p_load("survival", "stringr", "glmmTMB", "actuar")
-
-  form <- fit.object$call
-
-  get_object_name <- gsub(".*[(]([^.]+)[,].*", "\\1", form)[1]
-
-  # the coxph function in the survival package
-  if (get_object_name == "coxph") {
+                                             "martingale", "deviance")) {
+  residual.type <- match.arg(residual.type)
+  
+  if (inherits(fit.object, "coxph")) {
     frailty_terms <- attr(fit.object$terms, "specials")$frailty
-
-    if (!is.null(frailty_terms)) {
-      resid_fun <-
-        residual.coxph.frailty(
-          fit_coxph = fit.object,
-          traindata = data,
-          newdata = data,
-          residual.type = residual.type
-        )
-
-    } else
-      resid_fun <- residual.coxph(fit_coxph = fit.object,
-                                  newdata = data,
-                                  residual.type = residual.type)
-  }
-
-  # the survreg function in the survival package
-  if (get_object_name == "survreg") {
+    
+    if (!is.null(frailty_terms) && length(frailty_terms) > 0L) {
+      resid_fun <- residual.coxph.frailty(
+        fit_coxph = fit.object,
+        traindata = data,
+        newdata = data,
+        residual.type = residual.type
+      )
+    } else {
+      resid_fun <- residual.coxph(
+        fit_coxph = fit.object,
+        newdata = data,
+        residual.type = residual.type
+      )
+    }
+    
+  } else if (inherits(fit.object, "survreg")) {
     resid_fun <- residual.survreg(
       survreg_fit = fit.object,
       newdata = data,
       residual.type = residual.type
     )
+    
+  } else {
+    stop(
+      "surv_residuals() currently supports objects of class 'coxph' and 'survreg'.",
+      call. = FALSE
+    )
   }
-
+  
   class(resid_fun) <- c("survresid", class(resid_fun))
   resid_fun
 }
+

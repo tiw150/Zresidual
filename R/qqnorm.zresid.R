@@ -1,78 +1,67 @@
-#' Normal Q-Q Plot for Z-Residuals with Outlier Detection and Normality Diagnostics
+#' Normal Q-Q plot for Z-residuals
 #'
-#' Produces a normal Q-Q plot for Z-residuals, with optional Shapiro–Wilk normality testing,
-#' automatic handling of non-finite values, optional axis compression for very large residuals,
-#' and visual annotation of detected outliers (indices refer to the original observation order).
+#' Produces a normal Q-Q plot for one or more columns of a \code{"zresid"}
+#' object. Optional metadata supplied through \code{info} (or stored in
+#' attributes of \code{y}) are used only to fill legacy plotting attributes such
+#' as \code{"type"}.
 #'
-#' This diagnostic is designed for checking the normality assumption of Z-residuals obtained
-#' from Bayesian predictive model checks (posterior, LOOCV, ISCV, etc.).
+#' The method can optionally report a Shapiro-Wilk normality diagnostic, mark
+#' observations with large absolute residuals, and visually compress extreme
+#' values when they would otherwise dominate the plot.
 #'
-#' @usage
-#' \method{qqnorm}{zresid}(
-#'   y,
-#'   info = NULL,
-#'   irep = 1,
-#'   diagnosis.test = "SW",
-#'   main.title = ifelse(is.null(attr(y, "type")),
-#'                       "Normal Q-Q Plot",
-#'                       paste("Normal Q-Q Plot -", attr(y, "type"))),
-#'   xlab = "Theoretical Quantiles",
-#'   ylab = "Sample Quantiles",
-#'   outlier.return = TRUE,
-#'   outlier.value = 3.5,
-#'   outlier.set = list(),
-#'   my.mar = c(5, 4, 4, 6) + 0.1,
-#'   legend.settings = list(),
-#'   clip.extreme = TRUE,
-#'   clip.threshold = 6,
-#'   ...
-#' )
+#' @param y A numeric matrix of Z-residuals, typically returned by
+#'   \code{\link{Zresidual}}, with one column per residual replicate.
+#' @param zcov Optional metadata, typically returned by \code{\link{Zcov}}.
+#' @param info Legacy alias for \code{zcov}.
+#'   When provided, it is used to fill missing legacy attributes such as
+#'   \code{"type"}.
+#' @param irep Integer vector specifying which column(s) of \code{y} to plot.
+#' @param diagnosis.test Character string specifying the normality diagnostic to
+#'   display. Currently \code{"SW"} is supported.
+#' @param main.title Main title of the plot. If omitted, a default title is
+#'   constructed from \code{attr(y, "type")}, when available.
+#' @param xlab Label for the x-axis.
+#' @param ylab Label for the y-axis.
+#' @param outlier.return Logical; if \code{TRUE}, mark observations with
+#'   \code{|Z| > outlier.value} and invisibly return their indices.
+#' @param outlier.value Numeric threshold used to define outliers.
+#' @param outlier.set A named list of graphical arguments passed to
+#'   \code{\link[graphics]{symbols}} and \code{\link[graphics]{text}} when
+#'   annotating outliers.
+#' @param my.mar Numeric vector passed to \code{\link[graphics]{par}(mar = ...)}.
+#' @param legend.settings Optional named list used to modify the default legend
+#'   settings.
+#' @param clip.extreme Logical; if \code{TRUE}, very large residuals are
+#'   visually clipped to improve readability.
+#' @param clip.threshold Numeric threshold used when \code{clip.extreme = TRUE}.
+#' @param ... Additional graphical arguments passed to
+#'   \code{\link[graphics]{plot}}.
 #'
-#' @param y A numeric matrix of Z-residuals where each column corresponds to an iteration/draw.
-#'   The function may use attribute \code{"type"} to build default titles.
+#' @return Invisibly returns a list with component \code{outliers}, containing
+#' the indices of observations flagged as outliers for the plotted replicate.
+#' The main effect of the function is the Q-Q plot.
 #'
-#' @param info Optional metadata (typically output of \code{Zcov()} or an equivalent list).
-#'   When provided (or attached via \code{attr(y,"info")}/\code{attr(y,"zcov")}/\code{attr(y,"Zcov")}),
-#'   this method can fill legacy attributes (e.g., \code{"type"}) for compatibility.
+#' @examples
+#' if (requireNamespace("survival", quietly = TRUE)) {
+#'   set.seed(1)
+#'   n <- 30
+#'   x <- rnorm(n)
+#'   t_event <- rexp(n, rate = exp(0.3 * x))
+#'   t_cens  <- rexp(n, rate = 0.4)
+#'   status  <- as.integer(t_event <= t_cens)
+#'   time    <- pmin(t_event, t_cens)
+#'   dat <- data.frame(time = time, status = status, x = x)
 #'
-#' @param irep Integer or integer vector selecting which column(s) of \code{y} to plot.
-#'
-#' @param diagnosis.test Character string indicating the normality test to perform.
-#'   Currently supports \code{"SW"} (Shapiro–Wilk). If helper \code{sw.test.zresid()} exists,
-#'   it will be used; otherwise a fallback \code{shapiro.test()} is applied per column.
-#'
-#' @param main.title Main title of the plot. If missing, it is automatically constructed using
-#'   \code{attr(y, "type")}.
-#'
-#' @param xlab,ylab Axis labels for the Q-Q plot.
-#'
-#' @param outlier.return Logical; if \code{TRUE}, the function prints and returns outlier indices.
-#'
-#' @param outlier.value Numeric threshold used to classify an observation as an outlier based on
-#'   \code{|Z| > outlier.value}. Default is \code{3.5}.
-#'
-#' @param outlier.set Optional named list of graphical parameters passed to \code{symbols()} and
-#'   \code{text()} for customizing outlier circles/labels.
-#'
-#' @param my.mar Numeric vector passed to \code{par(mar = ...)}.
-#'
-#' @param legend.settings Optional named list to override default legend appearance.
-#'
-#' @param clip.extreme Logical. If \code{TRUE}, very large residuals are visually compressed
-#'   onto the plot boundary (with optional axis break marks if available).
-#'
-#' @param clip.threshold Numeric. Threshold for extreme-value clipping (default 6).
-#'
-#' @param ... Additional graphical arguments passed to \code{plot()} (for Q-Q points).
-#'
-#' @return Invisibly returns a list with:
-#' \describe{
-#'   \item{outliers}{Integer vector of detected outlier indices (original observation indices).}
+#'   fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
+#'   z <- Zresidual(fit, data=dat, nrep = 1, seed = 1)
+#'   qqnorm(z)
 #' }
 #'
+#' @seealso \code{\link{Zresidual}}, \code{\link{Zcov}}
+#'
 #' @method qqnorm zresid
-#' @export qqnorm.zresid
-qqnorm.zresid <- function(y, info = NULL, irep = 1, diagnosis.test = "SW",
+#' @export
+qqnorm.zresid <- function(y, zcov = NULL, info = NULL, irep = 1, diagnosis.test = "SW",
                           main.title = ifelse(is.null(attr(y, "type")),
                                               "Normal Q-Q Plot",
                                               paste("Normal Q-Q Plot -", attr(y, "type"))),
@@ -84,7 +73,7 @@ qqnorm.zresid <- function(y, info = NULL, irep = 1, diagnosis.test = "SW",
   Zresidual <- y
   
   # ---- Compatibility layer: support "new" format where metadata is separated (e.g., from Zcov()) ----
-  info0 <- info
+  info0 <- if (!is.null(zcov)) zcov else info
   if (is.null(info0)) {
     info0 <- attr(Zresidual, "info")
     if (is.null(info0)) info0 <- attr(Zresidual, "zcov")
@@ -204,18 +193,26 @@ qqnorm.zresid <- function(y, info = NULL, irep = 1, diagnosis.test = "SW",
     # Outliers defined on ORIGINAL index (after non-finite replacement for plotting)
     id.outlier <- which(abs(z) > outlier.value & !is.na(z))
     
+    ############revise###################
     # Q-Q data (order-statistic based)
     qq <- stats::qqnorm(z, plot.it = FALSE)
     x_values <- qq$x
     y_values <- qq$y
     
-    # Map original indices -> QQ positions
-    ord <- order(z, na.last = NA)          # indices of sorted z (drops NA)
-    pos_out <- match(id.outlier, ord)      # positions in QQ vectors
+    # # Map original indices -> QQ positions
+    # ord <- order(z, na.last = NA)          # indices of sorted z (drops NA)
+    # pos_out <- match(id.outlier, ord)      # positions in QQ vectors
+    # pos_out <- pos_out[!is.na(pos_out)]
+    # x_out <- if (length(pos_out)) x_values[pos_out] else numeric(0)
+    # y_out <- if (length(pos_out)) y_values[pos_out] else numeric(0)
+    
+    keep_idx <- which(!is.na(z))
+    pos_out <- match(id.outlier, keep_idx)
     pos_out <- pos_out[!is.na(pos_out)]
+    
     x_out <- if (length(pos_out)) x_values[pos_out] else numeric(0)
     y_out <- if (length(pos_out)) y_values[pos_out] else numeric(0)
-    
+    #################end#####################################
     # Determine if we need compression for extremes
     ymax <- suppressWarnings(max(y_values, na.rm = TRUE))
     ymin <- suppressWarnings(min(y_values, na.rm = TRUE))
@@ -333,8 +330,8 @@ qqnorm.zresid <- function(y, info = NULL, irep = 1, diagnosis.test = "SW",
       do.call(graphics::text,    c(list(x = x_out, y = y_out_plot), text.args))
     }
     
-    if (isTRUE(outlier.return)) {
-      cat("Outlier Indices :", id.outlier, "\n")
+    if (isTRUE(outlier.return)  && length(id.outlier)) {
+      message("Outlier Indices : ", paste(id.outlier, collapse = ", "))
       invisible(list(outliers = id.outlier))
     }
   }

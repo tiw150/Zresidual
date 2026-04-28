@@ -1,113 +1,63 @@
-#' Boxplot of Z-Residuals
+#' Boxplot diagnostics for Z-residuals
 #'
-#' Produces a boxplot of Z-residuals grouped by binned x-axis values (e.g., fitted
-#' values / linear predictors, covariates, or any user-specified vector such as time).
-#' This diagnostic plot supports count-data models (e.g., Bayesian hurdle, zero-truncated)
-#' by visualizing residual distribution, detecting outliers, and reporting normality
-#' diagnostics using Shapiro-Wilk, ANOVA, or Bartlett-type tests for Z-residuals.
+#' Produces boxplots of Z-residuals grouped by binned x-axis values. The x-axis
+#' variable can be a linear predictor, a model covariate, or a user-supplied
+#' vector. Optional metadata supplied through \code{info} (or stored in
+#' attributes of \code{x}) are used to fill legacy plotting attributes such as
+#' \code{"covariates"}, \code{"linear.pred"}, and \code{"type"}.
 #'
-#' @usage
-#' \method{boxplot}{zresid}(
-#'   x,
-#'   info = NULL,
-#'   irep = 1,
-#'   x_axis_var = "lp",
-#'   num.bin = 10,
-#'   normality.test = c("SW", "AOV", "BL"),
-#'   k.test = 10,
-#'   main.title = paste("Z-residual Boxplot -", attr(x, "type")),
-#'   outlier.return = FALSE,
-#'   outlier.value = 3.5,
-#'   ...
-#' )
+#' This plot is useful for checking whether the distribution of Z-residuals
+#' changes systematically across fitted values or covariates.
 #'
-#' @param x
-#' A numeric matrix of Z-residuals with one column per MCMC iteration (or replicate),
-#' of class `"zresid"`. The method may use attributes such as `"type"`, `"zero_id"`,
-#' `"covariates"`, and `"linear.pred"` if present.
+#' @param x A numeric matrix of Z-residuals, typically returned by
+#'   \code{\link{Zresidual}}, with one column per residual replicate.
+#' @param zcov Optional metadata, typically returned by \code{\link{Zcov}}.
+#' @param info Legacy alias for \code{zcov}.
+#' @param irep Integer vector specifying which column(s) of \code{x} to plot.
+#' @param x_axis_var Variable used for grouping on the x-axis. It may be
+#'   \code{"lp"}, \code{"covariate"}, a covariate name stored in
+#'   \code{attr(x, "covariates")}, a length-\eqn{n} vector, or a function
+#'   returning such a vector.
+#' @param num.bin Integer giving the number of bins used when the x-axis variable
+#'   is numeric.
+#' @param normality.test Character vector specifying which diagnostic p-values
+#'   to display. Supported values are \code{"SW"}, \code{"AOV"}, and
+#'   \code{"BL"}.
+#' @param k.test Integer controlling grouping used by the diagnostic tests.
+#' @param main.title Main title of the plot. If omitted, a default title is
+#'   constructed from \code{attr(x, "type")}, when available.
+#' @param outlier.return Logical; if \code{TRUE}, invisibly return the indices of
+#'   observations with \code{|Z| > outlier.value}.
+#' @param outlier.value Numeric threshold used to define outliers.
+#' @param ... Additional graphical arguments passed to plotting functions.
 #'
-#' @param info
-#' Optional metadata (typically output of `Zcov()` or an equivalent list). When provided,
-#' this method can fill legacy attributes (e.g., `"covariates"`, `"linear.pred"`, `"zero_id"`,
-#' `"type"`) to remain compatible with older plot workflows.
-#'
-#' @param irep
-#' Integer vector indicating which columns of `x` to plot. Default is `1`.
-#'
-#' @param x_axis_var
-#' Specifies x-axis values for binning. Supported inputs:
-#' \itemize{
-#'   \item A keyword: `"lp"` or `"covariate"`.
-#'   \item A covariate name present in `attr(x, "covariates")`.
-#'   \item A length-\eqn{n} vector (numeric / `Date` / `POSIXct` / factor / character), e.g., time.
-#'   \item A function `function(z, info) ...` returning a length-\eqn{n} vector; optionally it can return
-#'         `list(values = <vector>, label = <character>)` to set an automatic x-axis label.
-#' }
-#'
-#' @param num.bin
-#' Integer. Number of bins used for grouping numeric x-axis values. Defaults to `10`.
-#' For factor-like x-axis values, binning is not applied (levels are used directly).
-#'
-#' @param normality.test
-#' Character vector specifying which normality tests to report:
-#' \itemize{
-#'   \item `"SW"` - Shapiro-Wilk test for Z-residuals.
-#'   \item `"AOV"` - ANOVA-based test for variance/mean structure.
-#'   \item `"BL"` - Bartlett-type test for variance homogeneity.
-#' }
-#' Defaults to `c("SW","AOV","BL")`.
-#'
-#' @param k.test
-#' Integer. Number of groups to use for ANOVA/Bartlett-type tests. Default is `10`.
-#'
-#' @param main.title
-#' Character. Main title of the plot. Default includes model type automatically if available.
-#'
-#' @param outlier.return
-#' Logical. If `TRUE`, returns the index of Z-residual values exceeding the threshold
-#' defined by `outlier.value`. Default is `FALSE`.
-#'
-#' @param outlier.value
-#' Numeric. Threshold for defining outliers based on absolute Z-residual magnitude.
-#' Default is `3.5`.
-#'
-#' @param ...
-#' Additional graphical parameters passed to `plot()` or `legend()`.
-#'
-#' @details
-#' The function generates boxplots of Z-residuals across binned x-axis values, which helps
-#' detect lack of fit, heteroscedasticity, and model misspecification.
-#'
-#' Infinite and non-finite residuals are automatically replaced with a maximal finite value
-#' (with preserved sign), and a warning message is displayed.
-#'
-#' Normality diagnostics are displayed in the plot legend. Internally, the function calls:
-#' `sw.test.zresid()`, `aov.test.zresid()`, and `bartlett.test.zresid()`.
-#' If `x_axis_var` is non-numeric (e.g., `Date`, `POSIXct`, factor), some tests may return `NA`.
-#'
-#' @return
-#' If `outlier.return = TRUE`, returns a list containing:
-#' \itemize{
-#'   \item `outliers` - vector of indices where `|Zresidual| > outlier.value`.
-#' }
-#' Otherwise, returns `NULL` (invisible) and produces a diagnostic plot.
+#' @return Invisibly returns a list with component \code{outliers}, containing
+#' the indices of observations flagged as outliers for the plotted replicate.
+#' The main effect of the function is the boxplot.
 #'
 #' @examples
-#' \dontrun{
-#' boxplot.zresid(zres)                       # default: binned linear predictor
-#' boxplot.zresid(zres, x_axis_var = "age")   # plot against a covariate
-#' boxplot.zresid(zres, x_axis_var = timevec) # plot against time (length n)
-#' box.out <- boxplot.zresid(zres, outlier.return = TRUE)
+#' if (requireNamespace("survival", quietly = TRUE)) {
+#'   set.seed(1)
+#'   n <- 30
+#'   x <- rnorm(n)
+#'   t_event <- rexp(n, rate = exp(0.3 * x))
+#'   t_cens  <- rexp(n, rate = 0.4)
+#'   status  <- as.integer(t_event <= t_cens)
+#'   time    <- pmin(t_event, t_cens)
+#'   dat <- data.frame(time = time, status = status, x = x)
+#'
+#'   fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
+#'   z <- Zresidual(fit,data=dat, nrep = 1, seed = 1)
+#'   info <- Zcov(fit, data = dat)
+#'
+#'   boxplot(z, info = info, x_axis_var = "lp")
 #' }
 #'
-#' @seealso
-#' \code{\link[graphics]{plot}}, \code{\link[graphics]{boxplot}},
-#' \code{\link[graphics]{legend}},
-#' \code{sw.test.zresid}, \code{aov.test.zresid}, \code{bartlett.test.zresid}
+#' @seealso \code{\link{Zresidual}}, \code{\link{Zcov}}
 #'
 #' @method boxplot zresid
 #' @export
-boxplot.zresid <- function(x, info = NULL, irep = 1,
+boxplot.zresid <- function(x, zcov = NULL, info = NULL, irep = 1,
                            x_axis_var = "lp",
                            num.bin = 10,
                            normality.test = c("SW", "AOV", "BL"), k.test = 10,
@@ -122,7 +72,7 @@ boxplot.zresid <- function(x, info = NULL, irep = 1,
   xlab_from_xaxis <- NULL
   
   # ---- Compatibility layer: support "new" format where metadata is separated (e.g., from Zcov()) ----
-  info0 <- info
+  info0 <- if (!is.null(zcov)) zcov else info
   if (is.null(info0)) {
     info0 <- attr(Zresidual, "info")
     if (is.null(info0)) info0 <- attr(Zresidual, "zcov")
@@ -222,7 +172,7 @@ boxplot.zresid <- function(x, info = NULL, irep = 1,
         fv2 <- log(fv)
         message("Too few effective bins; fitted values converted to log for binning.")
       } else {
-        fv2 <- stats::rank(fv, na.last = "keep", ties.method = "average")
+        fv2 <- base::rank(fv, na.last = "keep", ties.method = "average")
         message("Too few effective bins and non-positive values exist; using rank transform for binning.")
       }
       bin <- droplevels(cut(fv2, num.bin))
@@ -327,7 +277,7 @@ boxplot.zresid <- function(x, info = NULL, irep = 1,
       ), test.legend))
       
       if (outlier.return) {
-        cat("Outlier Indices:", id.outlier, "\n")
+        message("Outlier Indices : ", paste(id.outlier, collapse = ", "))
         invisible(list(outliers = id.outlier))
       }
       next
@@ -387,7 +337,7 @@ boxplot.zresid <- function(x, info = NULL, irep = 1,
     }
     
     if (outlier.return) {
-      cat("Outlier Indices:", id.outlier, "\n")
+      message("Outlier Indices : ", paste(id.outlier, collapse = ", "))
       invisible(list(outliers = id.outlier))
     }
   }

@@ -1,119 +1,75 @@
-#' Plot Z-Residuals for Bayesian and Frequentist Count / Hurdle / Zero / Survival Models
+#' Scatterplot diagnostics for Z-residuals
 #'
-#' @description
-#' Produces diagnostic scatterplots of Z-residuals for a wide range of model
-#' types, including hurdle models, zero models, count models, and survival models.
+#' Produces scatterplots of Z-residuals against observation index, linear
+#' predictors, model covariates, or a user-supplied x-axis variable. Optional
+#' metadata supplied through \code{info} (or stored in attributes of
+#' \code{x}) are used to fill legacy plotting attributes such as
+#' \code{"covariates"}, \code{"linear.pred"}, \code{"zero_id"}, and
+#' \code{"censored.status"}.
 #'
-#' This method supports plotting Z-residuals against index, covariates, linear predictors,
-#' or any user-specified x-axis vector (e.g., time).
+#' Depending on the metadata available, the plot can distinguish zero versus
+#' positive observations for hurdle-type models, or censored versus uncensored
+#' observations for survival models.
 #'
-#' @usage
-#' \method{plot}{zresid}(
-#'   x,
-#'   info = NULL,
-#'   irep = 1:ncol(x),
-#'   ylab = "Z-Residual",
-#'   normality.test = c("SW", "AOV", "BL"),
-#'   k.test = 10,
-#'   x_axis_var = "index",
-#'   main.title = ifelse(is.null(attr(x, "type")),
-#'                       "Z-residual Scatterplot",
-#'                       paste("Z-residual Scatterplot -", attr(x, "type"))),
-#'   outlier.return = TRUE,
-#'   outlier.value = 3.5,
-#'   category = NULL,
-#'   outlier.set = list(),
-#'   xlab = NULL,
-#'   my.mar = c(5, 4, 4, 6) + 0.1,
-#'   add_lowess = FALSE,
-#'   ...
-#' )
-#'
-#' @param x
-#' A numeric matrix of Z-residuals (dimensions: \eqn{n \times m}) of class `"zresid"`.
-#' The method may use attributes such as `"type"`, `"zero_id"`, `"censored.status"`,
-#' `"covariates"`, and `"linear.pred"` if present.
-#'
-#' @param info
-#' Optional metadata (typically the output of `Zcov()` or an equivalent list).
-#' When provided, this method can fill legacy attributes (e.g., `"covariates"`, `"linear.pred"`,
-#' `"zero_id"`, `"censored.status"`, `"type"`) without changing the plotting behavior.
-#'
-#' @param irep
-#' A vector specifying which residual column(s) to plot. Defaults to all columns.
-#'
+#' @param x A numeric matrix of Z-residuals, typically returned by
+#'   \code{\link{Zresidual}}, with one column per residual replicate.
+#' @param zcov Optional metadata, typically returned by \code{\link{Zcov}}.
+#' @param info Legacy alias for \code{zcov}.
+#' @param irep Integer vector specifying which column(s) of \code{x} to plot.
 #' @param ylab Label for the y-axis.
+#' @param normality.test Character vector specifying which diagnostic p-values
+#'   to display. Supported values are \code{"SW"}, \code{"AOV"}, and
+#'   \code{"BL"}.
+#' @param k.test Integer controlling grouping used by the diagnostic tests.
+#' @param x_axis_var Variable used on the x-axis. It may be one of
+#'   \code{"index"}, \code{"lp"}, \code{"covariate"}, a covariate name stored
+#'   in \code{attr(x, "covariates")}, a length-\eqn{n} vector, or a function
+#'   returning such a vector.
+#' @param main.title Main title of the plot. If omitted, a default title is
+#'   constructed from \code{attr(x, "type")}, when available.
+#' @param outlier.return Logical; if \code{TRUE}, mark observations with
+#'   \code{|Z| > outlier.value} (and non-finite residuals) and invisibly return
+#'   their indices.
+#' @param outlier.value Numeric threshold used to define outliers.
+#' @param category Optional grouping variable of length \eqn{n} used to modify
+#'   point appearance.
+#' @param outlier.set A named list of graphical arguments passed to
+#'   \code{\link[graphics]{symbols}} and \code{\link[graphics]{text}} when
+#'   annotating outliers.
+#' @param xlab Label for the x-axis. If \code{NULL}, an automatic label is used.
+#' @param my.mar Numeric vector passed to \code{\link[graphics]{par}(mar = ...)}.
+#' @param add_lowess Logical; if \code{TRUE}, add a LOWESS smooth when the x-axis
+#'   is numeric.
+#' @param ... Additional graphical arguments passed to plotting functions.
 #'
-#' @param normality.test
-#' Character vector specifying which normality tests to compute per iteration:
-#' `"SW"` (Shapiro-Wilk), `"AOV"` (ANOVA-based), `"BL"` (Bartlett-based).
-#' Note: if `x_axis_var` is non-numeric (e.g., `Date`, `POSIXct`, factor), some tests
-#' may return `NA` or be skipped depending on helper implementations.
+#' @return Invisibly returns a list with component \code{outliers}, containing
+#' the indices of observations flagged as outliers for the plotted replicate.
+#' The main effect of the function is the diagnostic scatterplot.
 #'
-#' @param k.test
-#' Bin size used by normality tests when grouping a continuous x-axis predictor.
+#' @examples
+#' if (requireNamespace("survival", quietly = TRUE)) {
+#'   set.seed(1)
+#'   n <- 30
+#'   x <- rnorm(n)
+#'   t_event <- rexp(n, rate = exp(0.3 * x))
+#'   t_cens  <- rexp(n, rate = 0.4)
+#'   status  <- as.integer(t_event <= t_cens)
+#'   time    <- pmin(t_event, t_cens)
+#'   dat <- data.frame(time = time, status = status, x = x)
 #'
-#' @param x_axis_var
-#' Specifies x-axis values. Supported inputs:
-#' \itemize{
-#'   \item A keyword: `"index"`, `"lp"`, or `"covariate"`.
-#'   \item A covariate name present in `attr(x, "covariates")`.
-#'   \item A length-\eqn{n} vector (numeric / `Date` / `POSIXct` / factor / character), e.g., time.
-#'   \item A function `function(z, info) ...` returning a length-\eqn{n} vector; optionally it can return
-#'         `list(values = <vector>, label = <character>)` to set an automatic x-axis label.
+#'   fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
+#'   z <- Zresidual(fit, data=dat, nrep = 1, seed = 1)
+#'   info <- Zcov(fit, data = dat)
+#'
+#'   plot(z, info = info, x_axis_var = "index")
+#'   plot(z, info = info, x_axis_var = "lp")
 #' }
 #'
-#' @param main.title Plot title. Defaults to a type-based informative title if available.
+#' @seealso \code{\link{Zresidual}}, \code{\link{Zcov}}
 #'
-#' @param outlier.return
-#' If `TRUE`, prints outlier indices to console and returns them invisibly.
-#'
-#' @param outlier.value
-#' Threshold above which a residual is flagged as an outlier. Defaults to `3.5`.
-#'
-#' @param category
-#' Optional vector categorizing observations (length \eqn{n}), used for coloring/shaping points.
-#'
-#' @param outlier.set
-#' A named list of arguments passed to `symbols()` / `text()` for marking and labeling outliers.
-#'
-#' @param xlab
-#' Label for the x-axis. If given as `tex("...")`, it will be interpreted via `latex2exp` if installed.
-#'
-#' @param my.mar
-#' Plot margins passed to `par(mar = ...)`.
-#'
-#' @param add_lowess
-#' Logical. If `TRUE`, add a LOWESS smooth (only applicable when x is numeric / `Date` / `POSIXct`;
-#' otherwise the smooth may be skipped).
-#'
-#' @param ...
-#' Additional graphical arguments passed to `plot()`, `legend()`, `symbols()`, and `text()`.
-#'
-#' @details
-#' S3 method for objects of class `"zresid"`.
-#'
-#' Model-type behavior:
-#' \itemize{
-#'   \item Hurdle models: zeros and counts can be colored differently.
-#'   \item Survival models: censored and uncensored observations can be separated.
-#' }
-#'
-#' Outliers are defined as \eqn{|Z| > outlier.value} or non-finite values.
-#'
-#' @return
-#' Invisibly returns (when `outlier.return = TRUE`) a list with:
-#' \describe{
-#'   \item{outliers}{Integer vector of outlier indices.}
-#' }
-#' Otherwise returns `NULL`. Always produces a scatterplot.
-#'
-#' @note
-#' This function temporarily modifies graphical parameters and restores them on exit.
-#'
-#' @exportS3Method graphics::plot zresid
-#' @export plot.zresid
-plot.zresid <- function(x, info = NULL, irep = 1:ncol(x), ylab = "Z-Residual",
+#' @method plot zresid
+#' @export
+plot.zresid <- function(x, zcov = NULL, info = NULL, irep = 1, ylab = "Z-Residual",
                         normality.test = c("SW", "AOV", "BL"), k.test = 10,
                         x_axis_var = "index",
                         main.title = ifelse(is.null(attr(x, "type")),
@@ -129,7 +85,7 @@ plot.zresid <- function(x, info = NULL, irep = 1:ncol(x), ylab = "Z-Residual",
   xlab_from_xaxis <- NULL
   
   # ---- Compatibility layer: support "new" format where metadata is separated (e.g., from Zcov()) ----
-  info0 <- info
+  info0 <- if (!is.null(zcov)) zcov else info
   if (is.null(info0)) {
     info0 <- attr(Zresidual, "info")
     if (is.null(info0)) info0 <- attr(Zresidual, "zcov")
@@ -142,13 +98,18 @@ plot.zresid <- function(x, info = NULL, irep = 1:ncol(x), ylab = "Z-Residual",
   }
   
   .map_type_from_info <- function(info) {
-    if (!is.null(info$type)) return(info$type)
+    # Prefer explicit component type from Zcov()
+    if (!is.null(info$type) && length(info$type) >= 1L && nzchar(as.character(info$type)[1])) {
+      return(as.character(info$type)[1])
+    }
+    
     kind <- info$y_type_kind
-    if (is.null(kind)) return(NULL)
+    if (is.null(kind) || length(kind) == 0L) return(NULL)
+    kind <- as.character(kind[1])
+    
     if (identical(kind, "censor")) return("survival")
-    if (identical(kind, "hurdle")) return("hurdle")
     if (identical(kind, "trunc"))  return("count")
-    if (identical(kind, "plain"))  return(NULL)
+    if (identical(kind, "hurdle")) return("hurdle")
     NULL
   }
   
@@ -268,46 +229,43 @@ plot.zresid <- function(x, info = NULL, irep = 1:ncol(x), ylab = "Z-Residual",
     graphics::par(xpd = TRUE)
     
     usr <- graphics::par("usr")
-    x_anchor <- usr[2] + (usr[2] - usr[1]) * 0.02
-    y_top    <- usr[4]
+    xlog <- graphics::par("xlog") 
+    
+    if (xlog) {
+      x_anchor <- 10^(usr[2] + (usr[2] - usr[1]) * 0.02)
+    } else {
+      x_anchor <- usr[2] + (usr[2] - usr[1]) * 0.02
+    }
+    y_top <- usr[4]
     
     lg1 <- NULL
     if (!is.null(legend.args)) {
       la <- legend.args
-      la$plot  <- NULL
-      la$inset <- NULL
-      la$x <- NULL
-      la$y <- NULL
-      la$xpd <- TRUE
+      la$plot <- FALSE
+      la$x <- x_anchor
+      la$y <- y_top
+      la$xjust <- 0
+      la$yjust <- 1
       
-      lg1 <- do.call(graphics::legend, c(
-        list(x = x_anchor, y = y_top, xjust = 0, yjust = 1, plot = FALSE),
-        la
-      ))
+      lg1 <- do.call(graphics::legend, la)
       
-      do.call(graphics::legend, c(
-        list(x = x_anchor, y = y_top, xjust = 0, yjust = 1),
-        la
-      ))
+      la$plot <- TRUE
+      do.call(graphics::legend, la)
     }
     
     if (!is.null(test.legend)) {
       tl <- test.legend
-      tl$plot  <- NULL
-      tl$inset <- NULL
-      tl$x <- NULL
-      tl$y <- NULL
       tl$xpd <- TRUE
       tl$bg <- "white"
       tl$box.col <- NA
       
-      x2 <- x_anchor
-      y2 <- y_top
-      
       if (!is.null(lg1)) {
         gap <- graphics::strheight("M", units = "user") * gap_factor
-        x2  <- lg1$rect$left
-        y2  <- lg1$rect$top - lg1$rect$h - gap
+        x2 <- x_anchor 
+        y2 <- lg1$rect$top - lg1$rect$h - gap
+      } else {
+        x2 <- x_anchor
+        y2 <- y_top
       }
       
       do.call(graphics::legend, c(
@@ -315,14 +273,18 @@ plot.zresid <- function(x, info = NULL, irep = 1:ncol(x), ylab = "Z-Residual",
         tl
       ))
     }
-    
     invisible(NULL)
   }
   
   #####################
+  #####################
   unique.cats <- NULL
   default.legend.title <- NULL
   type <- attr(Zresidual, "type")
+  
+  # FIX: normalize type to a single string or NULL (avoid length-0 errors)
+  if (is.null(type) || length(type) == 0L || !nzchar(type[1])) type <- NULL else type <- as.character(type[1])
+  
   zero.id <- attr(Zresidual, "zero_id")
   
   legend_colors <- NULL
@@ -347,7 +309,7 @@ plot.zresid <- function(x, info = NULL, irep = 1:ncol(x), ylab = "Z-Residual",
     col <- "black"
     pch <- 1
     
-  } else if (type == "survival") {
+  } else if (identical(type, "survival")) {
     unique.cats <- c("Uncensored", "Censored")
     censored <- attr(Zresidual, "censored.status")
     col <- c("blue","red")[censored + 1]
@@ -356,7 +318,7 @@ plot.zresid <- function(x, info = NULL, irep = 1:ncol(x), ylab = "Z-Residual",
     legend_pchs   <- c(3, 2)
     
   } else {
-    if (type == "hurdle") {
+    if (identical(type, "hurdle")) {
       legend_labels <- c("count", "zero")
       legend_colors <- c("blue", "red")
       legend_pchs   <- c(3, 2)
@@ -371,11 +333,51 @@ plot.zresid <- function(x, info = NULL, irep = 1:ncol(x), ylab = "Z-Residual",
       col <- "blue"; pch <- 3
       legend_colors <- "blue"; legend_pchs <- 3
       
-    } else if (type %in% c("zero")) {
-      unique.cats <- type
-      col <- "red"; pch <- 2
-      legend_colors <- "red"; legend_pchs <- 2
+    } else if (type %in% c("zero", "logistic")) {
       
+      n <- NROW(Zresidual)
+      
+      # y_type must come from `info` (preferred). fallback only for old objects.
+      yt <- NULL
+      fam_info <- NULL
+      if (!is.null(info) && is.list(info)) {
+        if (!is.null(info$y_type) && length(info$y_type) == n) yt <- info$y_type
+        if (!is.null(info$family)) fam_info <- as.character(info$family)[1]
+      }
+      if (is.null(yt)) {
+        yt <- attr(Zresidual, "y_type")
+        if (!is.null(yt) && length(yt) != n) yt <- NULL
+      }
+      if (is.null(yt)) {
+        stop("plot.zresid (zero/logistic): cannot find y_type. Pass `info = Zcov(...)` aligned with this Zresidual.",
+             call. = FALSE)
+      }
+      
+      is_hurdle <- !is.null(fam_info) && grepl("^hurdle(_|$)", fam_info)
+      
+      if (is_hurdle) {
+        # hurdle: yt==0 => zero, yt==1 => count
+        legend_labels <- c("count", "zero")
+        legend_colors <- c("blue", "red")
+        legend_pchs   <- c(3, 2)
+        codes <- c(1L, 0L)  # order must match legend_labels above
+        
+      } else {
+        # bernoulli: be faithful to binary code 0/1
+        legend_labels <- c("0", "1")
+        legend_colors <- c("blue", "red")
+        legend_pchs   <- c(3, 2)
+        codes <- c(0L, 1L)
+      }
+      
+      idx <- match(as.integer(yt), codes)
+      if (anyNA(idx)) {
+        stop("plot.zresid (zero/logistic): y_type contains values outside expected codes.", call. = FALSE)
+      }
+      
+      col <- legend_colors[idx]
+      pch <- legend_pchs[idx]
+      unique.cats <- legend_labels
     } else {
       col <- "red"; pch <- 2
       legend_colors <- "red"; legend_pchs <- 2
@@ -520,7 +522,7 @@ plot.zresid <- function(x, info = NULL, irep = 1:ncol(x), ylab = "Z-Residual",
       abline(h = c(hlines, -hlines), lty = 3, col = "grey")
       
       if (outlier.return && !identical(id.outlier, integer(0))) {
-        cat("Outlier Indices(", attr(Zresidual, "type"), "):", id.outlier, "\n", sep = " ")
+        message("Outlier Indices : ", paste(id.outlier, collapse = ", "))
         invisible(list(outliers = id.outlier))
       }
       next
@@ -666,7 +668,7 @@ plot.zresid <- function(x, info = NULL, irep = 1:ncol(x), ylab = "Z-Residual",
     abline(h = c(hlines, -hlines), lty = 3, col = "grey")
     
     if (outlier.return && !identical(id.outlier, integer(0))) {
-      cat("Outlier Indices(", attr(Zresidual, "type"), "):", id.outlier, "\n", sep = " ")
+      message("Outlier Indices : ", paste(id.outlier, collapse = ", "))
       invisible(list(outliers = id.outlier))
     }
   }

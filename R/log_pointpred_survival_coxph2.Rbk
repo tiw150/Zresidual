@@ -1,0 +1,74 @@
+log_pointpred_survival_coxph <- function(fit, data, ...) {
+  if (!requireNamespace("survival", quietly = TRUE)) {
+    stop("log_pointpred_survival_coxph requires package 'survival'.", call. = FALSE)
+  }
+  
+  if (missing(data) || is.null(data)) {
+    stop("log_pointpred_survival_coxph: `data` must be provided.", call. = FALSE)
+  }
+  
+  mf_new <- model.frame.coxph(fit, data = data)
+  mm_new <- model.matrix.coxph(fit, data = mf_new)
+  
+  Y_new <- mf_new[[1]]
+  if (!inherits(Y_new, "Surv")) {
+    stop("log_pointpred_survival_coxph: response is not a Surv object.", call. = FALSE)
+  }
+  
+  y_mat <- as.matrix(Y_new)
+  if (ncol(y_mat) == 2L) {
+    time <- y_mat[, 1]
+    status <- as.integer(y_mat[, 2])
+  } else if (ncol(y_mat) == 3L) {
+    time <- y_mat[, 2]
+    status <- as.integer(y_mat[, 3])
+  } else {
+    stop("log_pointpred_survival_coxph: unsupported Surv format.", call. = FALSE)
+  }
+  
+  n <- length(time)
+  
+  bh <- survival::basehaz(fit, centered = FALSE)
+  if (nrow(bh) < 1L) {
+    stop("log_pointpred_survival_coxph: basehaz returned empty result.", call. = FALSE)
+  }
+  
+  if ("strata" %in% names(bh)) {
+    stop("log_pointpred_survival_coxph: stratified coxph is not supported.", call. = FALSE)
+  }
+  
+  lp <- as.vector(mm_new %*% fit$coefficients)
+  off <- stats::model.offset(mf_new)
+  if (!is.null(off)) {
+    lp <- lp + off
+  }
+  
+  eta <- exp(lp)
+  
+  # Base interval lookup
+  idx_after <- findInterval(time, bh$time)
+  H_after <- ifelse(idx_after > 0L, bh$hazard[idx_after], 0)
+  
+  logS_after <- -eta * H_after
+  is_event <- (status == 1L)
+  
+  # Unified Truncated Representation: Y = min(T, C)
+  # 1. log_like is the survival probability S(t) for EVERYONE.
+  # This serves as the correct point mass for censored data, 
+  # and provides "Survival-Only" cross-validation weights for events.
+  log_like <- logS_after
+  
+  # 2. log_surv is the tail probability.
+  # For continuous events, it is S(t). 
+  # For discrete censored observations, the tail beyond the point mass is 0 (-Inf).
+  log_surv <- logS_after
+  log_surv[!is_event] <- -Inf
+  
+  is_discrete <- as.integer(!is_event)
+  
+  list(
+    log_surv = matrix(log_surv, nrow = 1L, ncol = n),
+    log_like = matrix(log_like, nrow = 1L, ncol = n),
+    is_discrete = matrix(is_discrete, nrow = 1L, ncol = n)
+  )
+}

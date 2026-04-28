@@ -1,0 +1,544 @@
+---
+title: "Demo of Component-wise Z-residual Diagnosis for Bayesian Hurdle Models"
+date: today
+format:
+  html:
+    toc: false
+    number-sections: true
+    format-links: false
+    page-layout: full
+    code-fold: true
+    html-math-method: mathjax
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+  eval: false
+crossref:
+      eq-prefix: "Equation"
+editor_options: 
+  chunk_output_type: console
+bibliography: ref.bib
+link-citations: true      # for HTML
+vignette: >
+  %\VignetteIndexEntry{Z-residual Diagnosis for Bayesian Hurdle Models}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+ fig.width = 7, fig.height = 5, fig.align = "center"
+)
+set.seed(123)
+
+# Define the global toggles to force regeneration of computations
+force_rerun <- FALSE 
+force_refit <- FALSE   # Controls data simulation and model fitting
+
+if (identical(Sys.getenv("IN_PKGDOWN"), "true")) {
+  force_recalcz <- FALSE  # Turn off for the website build
+} else {
+  force_recalcz <- TRUE   # Leave on for normal execution
+}
+
+# Unified directory for data, models, and plot assets
+model_dir <- "resources/brms_hurdle_models"
+dir.create(model_dir, recursive = TRUE, showWarnings = FALSE)
+```
+
+## Installing Zresidual and Required Packages
+
+### Installing Z-residual from Source (Developer Use)
+
+```{r}
+#| label: install-locally
+#| eval: false
+#| include: true
+# For developer use to refresh the local installation
+remove.packages("Zresidual")
+devtools::document()
+devtools::install()
+```
+
+### Installing Z-residual from GitHub
+
+```{r}
+# if (!requireNamespace("Zresidual", quietly = TRUE)) {
+#   if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")
+#   remotes::install_github("tiw150/Zresidual", upgrade = "never", dependencies = TRUE)
+# }
+```
+
+```{r}
+library(Zresidual)
+```
+
+### Intalling and Loading R Packages used in this Demo
+```{r loading-packages}
+# Vector of required packages explicitly used in this demo
+pkgs <- c(
+  "brms",           # For model fitting (brm, hurdle_negbinomial, etc.)
+  "distributions3", # For simulating truncated data (rztnbinom)
+  "cmdstanr",       # Backend for brms
+  "dplyr",          # For data manipulation and piping (%>%)
+  "gt",             # For formatting the statistical tests table
+  "gifski"          # For rendering the animated diagnostic plots
+)
+
+missing_pkgs <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]
+if (length(missing_pkgs)) {
+  message("Installing missing packages: ", paste(missing_pkgs, collapse = ", "))
+  install.packages(missing_pkgs, dependencies = TRUE)
+}
+
+invisible(lapply(pkgs, function(p) {
+  suppressPackageStartupMessages(library(p, character.only = TRUE))
+}))
+
+nc <- parallel::detectCores(logical = FALSE)
+if (!is.na(nc) && nc > 1) options(mc.cores = nc - 1)
+```
+```{r, echo=FALSE}
+# Shortcuts for abbreviations
+abbr <- function(short, full) {paste0('<abbr title="', full, '">', short, '</abbr>')}
+RPP <- abbr("RPP", "Randomized Predictive P-value")
+PMF <- abbr("PMF", "Probability Mass Function")
+HNB <- abbr("HNB", "Hurdle Negative Binomial")
+HP <- abbr("HP", "Hurdle Poisson")
+SW <- abbr("SW", "Shapiro-Wilk")
+ANOVA <- abbr("ANOVA", "Analysis of Variance")
+BL <- abbr("BL", "Bartlett's")
+```
+
+## Introduction
+
+This vignette demonstrates how to use the `Zresidual` package to compute component-wise Z-residuals for diagnosing Bayesian hurdle models [@Mullahy1986-em]. Based on the output from the `brms` package in R [@Burkner2017-brms], Z-residuals can be calculated separately for the zero, count, and overall hurdle components to reveal potential model misspecifications. 
+
+To systematically illustrate this, we simulate 100 datasets from a Hurdle Negative Binomial model and fit two models to each: a correctly specified `r HNB` model and a misspecified `r HP` model. We evaluate a single dataset comprehensively using visualizations, and then leverage all 100 datasets to examine the sampling distribution of our diagnostic p-values.
+
+## Definitions of Component-wise Z-residuals for Bayesian Hurdle Models
+
+This section demonstrates the definiotns of component-wise posterior predictive quantities including the posterior predictive `r PMF`, survival function, and `r RPP` for Bayesian hurdle models. Hurdle models consist of two parts:
+<ul>
+  <li>A **logistic component** modeling the probability of structural zeros.</li>
+  <li>A **count component** modeling positive counts using a zero-truncated distribution.</li>
+</ul>
+
+Let $C_i \in \{0, 1\}$, where $C_i = 1$ indicates a non-zero value, and $C_i = 0$ indicates a zero value for the $i^\text{th}$ observations. If $C_i=1$, the corresponding count model then operates on $y_i^+ \in \{1, 2, \dots\}$, i.e., the positive counts only.
+
+Using Bayesian estimation (e.g., via the `brms` package), we draw $T$ samples from the posterior distribution. Let  $\theta^{(t)}$ denote the $t^\text{th}$ posterior draw, including component-specific parameters like:
+<ul>
+  <li>$\pi^o_i$ : the zero probability,</li>
+  <li>$\mu_i^{(t)}, \phi^{(t)}$ : parameters for the count component.</li>
+</ul>
+
+For a given observation $y_i^\text{obs}$, the component-wise posterior predictive `r PMF` and survival functions are defined below.
+
+#### **Hurdle Model:**
+$$
+p_i^{\text{post}, \pi^o_irdle}(y_i^\text{obs}) = \frac{1}{T} \sum_{t=1}^T
+\begin{cases} 
+{\pi^o_i}^{(t)} & \text{if } y_i^\text{obs} = 0, \\
+(1 - {\pi^o_i}^{(t)}) \cdot\frac{p_i^\text{UT}(y_i^\text{obs} | \theta^{(t)})}{1 - p_i^\text{UT}(0 | \theta^{(t)})} & \text{if } y_i^\text{obs} =1, 2, \ldots,\\
+0 & \text{otherwise.}
+\end{cases}  
+$$
+
+$$
+S_i^{\text{post}, \pi^o_irdle}(y_i^\text{obs}) = \frac{1}{T} \sum_{t=1}^T 
+\begin{cases}
+1 & \text{if } y_i^\text{obs} < 0, \\
+1-{\pi^o_i}^{(t)} & \text{if } 0 \le y_i^\text{obs} < 1, \\
+(1 - {\pi^o_i}^{(t)}) \cdot \frac{S_i^\text{UT}(y_i^\text{obs} \mid \theta^{(t)})}{1-p_i^\text{UT}(0 \mid \theta^{(t)})} & \text{if } y_i^\text{obs} \ge 1. 
+\end{cases}
+$$
+
+#### **Logistic Component:**
+$$
+p_i^{\text{post}, \text{logit}}(c_i^\text{obs}) = \frac{1}{T} \sum_{t=1}^T 
+\begin{cases}
+{\pi^o_i}^{(t)} & \text{if } c_i^\text{obs} = 0, \\
+1 - {\pi^o_i}^{(t)} & \text{if } c_i^\text{obs} = 1,\\
+0 & \text{otherwise.}
+\end{cases}
+$$ {#eq-componentwise_logistic_pmf}
+
+$$
+S_i^{\text{post}, \text{logit}}(c_i^\text{obs}) = \frac{1}{T} \sum_{t=1}^T 
+\begin{cases}
+1 & \text{if } c_i^\text{obs} < 0, \\
+1-{\pi^o_i}^{(t)} & \text{if } 0 \le c_i^\text{obs} < 1, \\
+0, & \text{if } c_i^\text{obs} \ge 1. 
+\end{cases}
+$$ {#eq-componentwise_logistic_survival}
+
+#### **Count Compoenent:**
+$$
+p_i^{\text{post},\text{count}}({y_i^+}^\text{obs}) = \frac{1}{T} \sum_{t=1}^T 
+\begin{cases}
+    \frac{p_i^\text{UT}({y_i^+}^\text{obs} \mid \theta^{(t)})}{1 - p_i^\text{UT}(0 \mid \theta^{(t)})}, & \text{ for } {y_i^{+}}^\text{obs} = 1,2,\ldots,\\
+    0 & \text{ otherwise.}
+\end{cases}
+$$ {#eq-componentwise_count_pmf}
+
+
+$$
+S_i^{\text{post}, \text{count}}({y_i^+}^\text{obs}) = \frac{1}{T} \sum_{t=1}^T 
+\begin{cases}
+    1 & \text{ if } {y_i^+}^\text{obs} < 1 \\
+    \frac{S_i^\text{UT}({y_i^+}^\text{obs} \mid \theta^{(t)})}{1-p_i^\text{UT}(0 \mid \theta^{(t)})}, & \text{ if } {y_i^+}^\text{obs} \ge 1
+\end{cases}
+$$ {#eq-componentwise_count_survival}
+
+where $p_i^\text{UT}(. \mid \theta^{(t)})$ and $S_i^\text{UT}(. \mid \theta^{(t)})$ denote the `r PMF` and survival function of the untruncated count distribution.
+
+For any observed value $y_i^\text{obs}$, we define:
+$$
+\text{rsp}_i(y_i^\text{obs} | \theta^{(t)}) = S_i(y_i^\text{obs} | \theta^{(t)}) + U_i \times p_i(y_i^\text{obs} | \theta^{(t)})
+$${#eq-post_rsp}
+where $U_i \sim \text{Uniform}(0,1)$. Then, the Z-residual of a discrete response variable is:
+$$
+z_i = -\Phi^{-1}(\text{rsp}_i(y_i^\text{obs}|\theta)) \sim N(0, 1)
+$$ {#eq-z_residual}
+
+## Preparation: Data Simulation and Model Caching
+
+We simulate 100 datasets from a Hurdle Negative Binomial (`r HNB`) process. For each dataset, we fit two models:
+1. **Correct Model:** Hurdle Negative Binomial (`family = hurdle_negbinomial()`).
+2. **Misspecified Model:** Hurdle Poisson (`r HP`), approximated by forcing a very tight prior on the shape parameter (`prior("normal(1000, 1)")`), which causes the negative binomial to heavily resemble a Poisson distribution, restricting overdispersion.
+
+Because MCMC sampling is computationally expensive, we execute and cache these 200 model fits to disk.
+
+```{r prep-data-and-models}
+#| code-fold: true
+#| message: false
+#| warning: false
+# n_sim <- 100
+# n_sample <- 100 
+# sim_data <- vector("list", n_sim)
+
+# for(i in 1:n_sim) {
+  
+#   data_file <- paste0(model_dir, "/data_sim_", i, ".rds")
+#   wrong_model_file <- paste0(model_dir, "/wrong_sim_", i, ".rds")
+#   correct_model_file <- paste0(model_dir, "/correct_sim_", i, ".rds")
+  
+#   # --- 1. Check and Handle Data ---
+#   if (!force_refit && file.exists(data_file)) {
+#     sim_data[[i]] <- readRDS(data_file)
+#   } else {
+#     x <- rnorm(n_sample)
+#     z <- rnorm(n_sample)
+    
+#     # Hurdle (zero) part
+#     logit_p <- -1 - 1 * x
+#     p_zero <- exp(logit_p) / (1 + exp(logit_p))
+#     zeros <- rbinom(n_sample, 1, p_zero)
+    
+#     # Count (non-zero) part
+#     # FIX: Lowered intercept and slope to prevent exp() overflow
+#     log_mu <- 1.5 + 2 * x 
+#     mu <- exp(log_mu)
+#     size <- 6
+    
+#     # Generate from zero-truncated negative binomial
+#     prob <- size / (size + mu)
+#     y <- (1 - zeros) * distributions3::rztnbinom(n_sample, size, prob)
+    
+#     dat_i <- data.frame(y = y, x = x, z = z)
+#     sim_data[[i]] <- dat_i
+#     saveRDS(dat_i, file = data_file)
+#   }
+  
+#   # --- 2. Check and Fit Misspecified Model (HP Approx) ---
+#   if (force_refit || !file.exists(wrong_model_file)) {
+#     tryCatch({
+#       brm(
+#         bf(y ~ x + z, hu ~ x + z), 
+#         family = hurdle_negbinomial(), 
+#         prior = prior("normal(1000, 1)", class = "shape"),
+#         data = sim_data[[i]],
+#         backend = "cmdstanr",
+#         file = paste0(model_dir, "/wrong_sim_", i), 
+#         refresh = 0,
+#         cores = 4,
+#         # Optional: tighten control parameters for the tricky prior
+#         control = list(adapt_delta = 0.95) 
+#       )
+#     }, error = function(e) {
+#       message(sprintf("Iteration %d: Wrong model failed to fit - %s", i, e$message))
+#     })
+#   }
+  
+#   # --- 3. Check and Fit Correct Model (HNB) ---
+#   if (force_refit || !file.exists(correct_model_file)) {
+#     tryCatch({
+#       brm(
+#         bf(y ~ x + z, hu ~ x + z), 
+#         family = hurdle_negbinomial(), 
+#         data = sim_data[[i]],
+#         backend = "cmdstanr",
+#         file = paste0(model_dir, "/correct_sim_", i), 
+#         refresh = 0,
+#         cores = 4
+#       )
+#     }, error = function(e) {
+#       message(sprintf("Iteration %d: Correct model failed to fit - %s", i, e$message))
+#     })
+#   }
+# }
+
+```
+
+## Single Dataset Evaluation
+
+Let's load the first dataset to demonstrate `Zresidual` directly. We compute Z-residuals for both models separately across the logistic (zero), count, and overall hurdle components using the `"post"` summary method. Notice that `type` and `mcmc_summarize` are passed directly as arguments to `Zresidual()`.
+
+```{r load-single-data}
+dat <- readRDS(paste0(model_dir, "/data_sim_1.rds"))
+
+fit_correct <- brm(bf(y ~ x + z, hu ~ x + z), family = hurdle_negbinomial(), data = dat, backend = "cmdstanr", file = paste0(model_dir, "/correct_sim_1"))
+
+fit_wrong <- brm(bf(y ~ x + z, hu ~ x + z), family = hurdle_negbinomial(), prior = prior("normal(1000, 1)", class = "shape"), data = dat, backend = "cmdstanr", file = paste0(model_dir, "/wrong_sim_1"))
+```
+
+### Computing Z-residuals
+
+```{r calc-zres}
+# Correct Model (HNB) Z-residuals
+zres_c_hurdle <- Zresidual(fit_correct, data = dat,  mcmc_summarize = "post", randomized = TRUE, nrep = 10)
+zres_c_count  <- Zresidual(fit_correct, data = dat, type = "count",  mcmc_summarize = "post", randomized = TRUE, nrep = 10)
+zres_c_zero   <- Zresidual(fit_correct, data = dat, type = "zero",   mcmc_summarize = "post", randomized = TRUE, nrep = 10)
+
+zcov_c_hurdle <- Zcov(fit_correct, data = dat)
+zcov_c_count  <- Zcov(fit_correct, data = dat, type = "count")
+zcov_c_zero   <- Zcov(fit_correct, data = dat, type = "zero")
+
+# Misspecified Model (HP) Z-residuals
+zres_w_hurdle <- Zresidual(fit_wrong, data = dat, mcmc_summarize = "post", randomized = TRUE, nrep = 10)
+zres_w_count  <- Zresidual(fit_wrong, data = dat, type = "count",  mcmc_summarize = "post", randomized = TRUE, nrep = 10)
+zres_w_zero   <- Zresidual(fit_wrong, data = dat, type = "zero",   mcmc_summarize = "post", randomized = TRUE, nrep = 10)
+
+zcov_w_hurdle <- Zcov(fit_wrong, data = dat)
+zcov_w_count  <- Zcov(fit_wrong, data = dat, type = "count")
+zcov_w_zero   <- Zcov(fit_wrong, data = dat, type = "zero")
+```
+
+### True Model Diagnostics (HNB)
+
+The following animations show component-wise QQ plots over 10 randomized replicates for the correctly specified model. 
+
+```{r}
+#| label: fig-qqplot-animation_hnb
+#| fig-cap: "True Model: Z-residual Q–Q plots (animation over 10 randomization replicates). Left to right: Zero, Count, Hurdle components."
+#| fig-align: center
+#| code-summary: "GIF Generation Code (Folded)"
+#| code-fold: true
+
+gif_qq_path_c <- file.path(model_dir, "hnb_qqplot_anim.gif")
+
+if (force_rerun || !file.exists(gif_qq_path_c)) {
+  gifski::save_gif(
+    expr = {
+      for (i in 1:10) {
+        par(mfrow = c(1, 3))
+        qqnorm.zresid(zres_c_zero,  info = zcov_c_zero,   irep = i, main = "Zero Component")
+        qqnorm.zresid(zres_c_count, info = zcov_c_count,  irep = i, main = "Count Component")
+        qqnorm.zresid(zres_c_hurdle,info = zcov_c_hurdle, irep = i, main = "Hurdle Overall")
+      }
+    },
+    gif_file = gif_qq_path_c, width = 900, height = 320, res = 96, delay = 0.8
+  )
+}
+
+knitr::include_graphics(gif_qq_path_c)
+```
+
+As expected, all residual points align cleanly with the 45-degree normal reference line.
+
+
+```{r}
+#| label: fig-scatter-resid_hp
+#| fig-cap: "Misspecified Model: Z-residual Scatterplots. Left to right: Zero, Count, and Hurdle components. The red dashed line represents the expected mean of zero."
+#| fig-align: center
+#| code-summary: "Scatterplot Generation Code (Folded)"
+#| code-fold: true
+
+# Set up a 1x3 grid to match the Q-Q plot layout
+par(mfrow = c(1, 3), mar = c(4, 4, 3, 1))
+
+# 1. Zero Component Scatterplot
+plot(zres_c_zero,  info = zcov_c_zero,
+     main = "Zero Component", 
+     xlab = "Observation Index", 
+     ylab = "Z-residuals", 
+     pch = 16, 
+     col = rgb(0.2, 0.4, 0.6, alpha = 0.5))
+abline(h = 0, col = "red", lty = 2, lwd = 2)
+
+# 2. Count Component Scatterplot
+plot(zres_c_count,  info = zcov_c_count,
+     main = "Count Component", 
+     xlab = "Observation Index", 
+     ylab = "Z-residuals", 
+     pch = 16, 
+     col = rgb(0.2, 0.4, 0.6, alpha = 0.5))
+abline(h = 0, col = "red", lty = 2, lwd = 2)
+
+# 3. Hurdle Overall Scatterplot
+plot(zres_c_hurdle,  info = zcov_c_hurdle,
+     category=zcov_c_hurdle$y_type,
+     main = "Hurdle Overall", 
+     xlab = "Observation Index", 
+     ylab = "Z-residuals")
+abline(h = 0, col = "red", lty = 2, lwd = 2)
+
+# Reset plotting parameters
+par(mfrow = c(1, 1))
+```
+
+### Misspecified Model Diagnostics (HP)
+
+When we fit the `r HP` model to the `r HNB` data, we expect the zero component to be fine (since the logistic function is identical), but the count and overall hurdle components to show overdispersion misspecification.
+
+```{r}
+#| label: fig-qqplot-animation_hp
+#| fig-cap: "Misspecified Model: Z-residual Q–Q plots. Left to right: Zero, Count, Hurdle components. Notice the heavy tails in Count and Hurdle components."
+#| fig-align: center
+#| code-summary: "GIF Generation Code (Folded)"
+#| code-fold: true
+
+gif_qq_path_w <- file.path(model_dir, "hp_qqplot_anim.gif")
+
+if (force_rerun || !file.exists(gif_qq_path_w)) {
+  gifski::save_gif(
+    expr = {
+      for (i in 1:10) {
+        par(mfrow = c(1, 3))
+        qqnorm.zresid(zres_w_zero,  info = zcov_w_zero,   irep = i, main = "Zero Component")
+        qqnorm.zresid(zres_w_count, info = zcov_w_count,  irep = i, main = "Count Component")
+        qqnorm.zresid(zres_w_hurdle,info = zcov_w_hurdle, irep = i, main = "Hurdle Overall")
+      }
+    },
+    gif_file = gif_qq_path_w, width = 900, height = 320, res = 96, delay = 0.8
+  )
+}
+
+knitr::include_graphics(gif_qq_path_w)
+```
+
+The component-wise approach clearly isolates the error: the zero-component matches the data, while the count-component displays severe S-curve deviations typical of unmodeled variance (overdispersion).
+
+
+### Statistical Test Comparisons
+
+We evaluate the models computationally by summarizing the `r SW`, `r ANOVA`, and `r BL` tests across components.
+
+```{r stat-tables}
+#| code-fold: true
+
+# Function to extract mean p-values across replicates
+get_pvals <- function(zres, zcov) {
+  c(
+    SW = mean(as.numeric(sw.test.zresid(zres))),
+    AOV = mean(as.numeric(aov.test.zresid(zres, X = "lp", zcov = zcov))),
+    BL = mean(as.numeric(bartlett.test.zresid(zres, X = "lp", zcov = zcov)))
+  )
+}
+
+res_c_zero <- get_pvals(zres_c_zero, zcov_c_zero)
+res_c_count <- get_pvals(zres_c_count, zcov_c_count)
+res_c_hurdle <- get_pvals(zres_c_hurdle, zcov_c_hurdle)
+
+res_w_zero <- get_pvals(zres_w_zero, zcov_w_zero)
+res_w_count <- get_pvals(zres_w_count, zcov_w_count)
+res_w_hurdle <- get_pvals(zres_w_hurdle, zcov_w_hurdle)
+
+table_df <- data.frame(
+  Component = c("Logistic (Zero)", "Count (+)", "Overall Hurdle"),
+  HNB_SW = c(res_c_zero["SW"], res_c_count["SW"], res_c_hurdle["SW"]),
+  HNB_AOV = c(res_c_zero["AOV"], res_c_count["AOV"], res_c_hurdle["AOV"]),
+  HNB_BL = c(res_c_zero["BL"], res_c_count["BL"], res_c_hurdle["BL"]),
+  HP_SW = c(res_w_zero["SW"], res_w_count["SW"], res_w_hurdle["SW"]),
+  HP_AOV = c(res_w_zero["AOV"], res_w_count["AOV"], res_w_hurdle["AOV"]),
+  HP_BL = c(res_w_zero["BL"], res_w_count["BL"], res_w_hurdle["BL"])
+)
+
+table_df %>%
+  gt() %>%
+  tab_spanner(label = "Correct (HNB) p-values", columns = starts_with("HNB_")) %>%
+  tab_spanner(label = "Misspecified (HP) p-values", columns = starts_with("HP_")) %>%
+  cols_label(
+    HNB_SW = "Shapiro-Wilk", HNB_AOV = "ANOVA", HNB_BL = "Bartlett",
+    HP_SW = "Shapiro-Wilk", HP_AOV = "ANOVA", HP_BL = "Bartlett"
+  ) %>%
+  fmt_number(columns = -Component, decimals = 4) %>%
+  cols_align(align = "center", columns = everything()) %>%
+  tab_style(
+    style = cell_text(weight = "bold", color = "red"),
+    locations = cells_body(columns = starts_with("HP_"), rows = Component != "Logistic (Zero)")
+  ) %>%
+  tab_options(table.width = pct(100), table.font.size = px(14))
+```
+
+The table confirms our visual inspection. The correctly specified HNB model yields uniformly high p-values across all tests and components. For the misspecified HP model, the Logistic (Zero) component remains valid, but the Count component triggers massively significant failures, appropriately failing the overall Hurdle tests.
+
+## Checking the Sampling Distribution of ANOVA tests
+
+To prove this behavior isn't an artifact of our single chosen dataset, we analyze the sampling distribution of the `r ANOVA` p-values across all 100 simulated datasets. 
+
+Since the misspecification lies solely in the variance of the non-zero outcomes, we isolate the `Zresidual(..., type="count")` diagnostics for this analysis.
+
+```{r ana-replication-verify-anova}
+#| code-fold: true
+#| results: hide
+#| message: false
+#| warning: false
+
+ana_res_file <- paste0(model_dir, "/ana_pvalues.rds")
+
+if (!force_recalcz && file.exists(ana_res_file)) {
+  res <- readRDS(ana_res_file)
+  p_c <- res$p_c
+  p_w <- res$p_w
+} else {
+  p_c <- numeric(n_sim)
+  p_w <- numeric(n_sim)
+  
+  for(i in 1:n_sim) {
+    dat_sim <- readRDS(paste0(model_dir, "/data_sim_", i, ".rds"))
+    
+    # Extract Misspecified Model (HP)
+    fit_w_sim <- brm(bf(y ~ x + z, hu ~ x + z), family = hurdle_negbinomial(), prior = prior("normal(1000, 1)", class = "shape"), data = dat_sim, backend = "cmdstanr", file = paste0(model_dir, "/wrong_sim_", i), refresh = 0)
+    z_w_sim <- Zresidual(fit_w_sim, data = dat_sim, type = "count", mcmc_summarize = "post", randomized = TRUE, nrep = 1)
+    zcov_w_sim <- Zcov(fit_w_sim, data = dat_sim, type = "count")
+    p_w[i] <- as.numeric(aov.test.zresid(z_w_sim, X = "lp", zcov = zcov_w_sim))
+    
+    # Extract Correct Model (HNB)
+    fit_c_sim <- brm(bf(y ~ x + z, hu ~ x + z), family = hurdle_negbinomial(), data = dat_sim, backend = "cmdstanr", file = paste0(model_dir, "/correct_sim_", i), refresh = 0)
+    z_c_sim <- Zresidual(fit_c_sim, data = dat_sim, type = "count", mcmc_summarize = "post", randomized = TRUE, nrep = 1)
+    zcov_c_sim <- Zcov(fit_c_sim, data = dat_sim, type = "count")
+    p_c[i] <- as.numeric(aov.test.zresid(z_c_sim, X = "lp", zcov = zcov_c_sim))
+  }
+  
+  saveRDS(list(p_c = p_c, p_w = p_w), ana_res_file)
+}
+```
+
+```{r ana-replication-hists}
+#| fig-width: 10
+#| fig-height: 5
+#| code-fold: true
+
+par(mfrow = c(1, 2))
+hist(p_c, main = "Correct (HNB): Count Component P-values", xlab = "p-value", col = "lightblue", breaks = 10)
+abline(h = n_sim / 10, col = "red", lty = 2, lwd = 2)
+
+hist(p_w, main = "Misspecified (HP): Count Component P-values", xlab = "p-value", col = "salmon", breaks = 10)
+```
+
+The resulting histograms validate the methodology: the correctly specified model generates uniformly distributed p-values across datasets, while the component-wise test on the misspecified model correctly and consistently flags the overdispersion defect with low p-values.
+
+## References

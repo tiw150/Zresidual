@@ -51,21 +51,19 @@
 #' \code{residual.coxph}, \code{residual.coxph.frailty},
 #' \code{residual.survreg}, \code{\link[survival]{Surv}},
 #' \code{\link[survival]{survfit}}
-#'
 #' @examples
-#' \dontrun{
-#'  library(survival)
-#'
-#'  data(lung)
-#'  fit <- coxph(Surv(time, status) ~ age + sex, data = lung)
-#'  cs_resid <- residual.coxph(fit, newdata = lung,  residual.type = "Cox-Snell")
-#'
-#'  ## Cox–Snell residual plot
-#'  plot(cs_resid) # The user can now call plot() directly
-#'
-#'  ## Return indices of large residuals
-#'  out <- plot(cs_resid, outlier.return = TRUE)
-#'  out$outliers
+#' if (requireNamespace("survival", quietly = TRUE)) {
+#'   set.seed(1)
+#'   n <- 30
+#'   x <- rnorm(n)
+#'   t_event <- rexp(n, rate = exp(0.2 * x))
+#'   t_cens  <- rexp(n, rate = 0.5)
+#'   status  <- as.integer(t_event <= t_cens)
+#'   time    <- pmin(t_event, t_cens)
+#'   dat <- data.frame(time = time, status = status, x = x)
+#'   fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
+#'   r <- surv_residuals(fit, data = dat, residual.type = "Cox-Snell")
+#'   plot(r)
 #' }
 #' @method plot cs.residual
 #' @export plot.cs.residual

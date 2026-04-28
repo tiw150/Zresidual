@@ -2,37 +2,43 @@
 % Please edit documentation in R/bartlett.test.zresid.R
 \name{bartlett.test.zresid}
 \alias{bartlett.test.zresid}
-\title{Bartlett test p-values for each column of a Z-residual matrix}
+\title{Bartlett variance test for Z-residuals}
 \usage{
 \method{bartlett.test}{zresid}(x, X = c("lp", "covariate"), k.bl = 10, zcov = NULL, ...)
 }
 \arguments{
-\item{x}{A numeric matrix of Z-residuals (n x p). Class "zresid" is allowed.}
+\item{x}{A numeric vector or matrix of Z-residuals.}
 
-\item{X}{X-axis specification. One of:
-\itemize{
-\item "index", "lp", "covariate"
-\item a covariate name in \code{zcov$covariates}
-\item a user-supplied vector of length nrow(x)
-}}
+\item{X}{X-axis specification or grouping variable.}
 
-\item{k.bl}{Integer. Number of bins for numeric covariates (default 10).}
+\item{k.bl}{Maximum number of bins for numeric \code{X}.}
 
-\item{zcov}{Optional metadata returned by Zcov(). Should contain:
-\itemize{
-\item \code{linear_pred} (or \code{linear.pred})
-\item \code{covariates} (data.frame)
-}}
+\item{zcov}{Optional metadata returned by \code{\link{Zcov}}.}
 
 \item{...}{Reserved for forward compatibility.}
 }
 \value{
-A numeric vector of Bartlett-test p-values, length = ncol(x).
+A numeric vector of p-values.
 }
 \description{
-Plan A (Zresidual + metadata separated):
-\itemize{
-\item Provide covariates / linear predictor via \code{zcov} returned by Zcov().
-\item Backward compatible with legacy attributes on Zresidual.
+Computes a Bartlett-style diagnostic p-value for each column of a Z-residual
+matrix against an index, linear predictor, covariate, or user-supplied
+grouping variable.
 }
+\examples{
+if (requireNamespace("survival", quietly = TRUE)) {
+  set.seed(1)
+  n <- 30
+  x <- rnorm(n)
+  t_event <- rexp(n, rate = exp(0.2 * x))
+  t_cens  <- rexp(n, rate = 0.5)
+  status  <- as.integer(t_event <= t_cens)
+  time    <- pmin(t_event, t_cens)
+  dat <- data.frame(time = time, status = status, x = x)
+  fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
+  z <- Zresidual(fit, data=dat, nrep = 2, seed = 1)
+  info <- Zcov(fit, data = dat)
+  bartlett.test.zresid(z, X = "lp", zcov = info)
+}
+
 }

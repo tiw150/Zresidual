@@ -3,111 +3,110 @@
 ## All functions
 
 - [`CV.Zresidual()`](https://tiw150.github.io/Zresidual/reference/CV.Zresidual.md)
-  : Cross-validated Z-residual diagnostics (generic)
-- [`CV.Zresidual(`*`<coxph>`*`)`](https://tiw150.github.io/Zresidual/reference/CV.Zresidual.coxph.md)
-  : Cross-validated Z-residuals for Cox proportional hazards models
-- [`CV.Zresidual(`*`<survreg>`*`)`](https://tiw150.github.io/Zresidual/reference/CV.Zresidual.survreg.md)
-  : Cross-validated Z-residuals for parametric survival regression
-  models
+  : Cross-validated Z-residuals
+
+- [`Zcov()`](https://tiw150.github.io/Zresidual/reference/Zcov.md) :
+  Extract aligned model metadata for Z-residual diagnostics
+
 - [`Zresidual()`](https://tiw150.github.io/Zresidual/reference/Zresidual.md)
-  : Compute Z-residuals via an S3 generic
-- [`Zresidual(`*`<bernoulli.brms>`*`)`](https://tiw150.github.io/Zresidual/reference/Zresidual.bernoulli.brms.md)
-  : Z-residuals for Bernoulli models fitted with brms
-- [`Zresidual(`*`<coxph.survival>`*`)`](https://tiw150.github.io/Zresidual/reference/Zresidual.coxph.survival.md)
-  : Z-residuals for Cox proportional hazards models (survival package)
-- [`Zresidual(`*`<hurdle_negbinomial.brms>`*`)`](https://tiw150.github.io/Zresidual/reference/Zresidual.hurdle_negbinomial.brms.md)
-  : Z-residuals for hurdle negative binomial models fitted with brms
-- [`Zresidual(`*`<hurdle_poisson.brms>`*`)`](https://tiw150.github.io/Zresidual/reference/Zresidual.hurdle_poisson.brms.md)
-  : Z-residuals for hurdle Poisson models fitted with brms
-- [`Zresidual(`*`<negbinomial.brms>`*`)`](https://tiw150.github.io/Zresidual/reference/Zresidual.negbinomial.brms.md)
-  : Z-residuals for negative binomial models fitted with brms
-- [`Zresidual(`*`<poisson.brms>`*`)`](https://tiw150.github.io/Zresidual/reference/Zresidual.poisson.brms.md)
-  : Z-residuals for Poisson models fitted with brms
-- [`Zresidual(`*`<survreg.survival>`*`)`](https://tiw150.github.io/Zresidual/reference/Zresidual.survreg.survival.md)
-  : Z-residuals for parametric survival regression models (survival)
+  : Compute Z-residuals from predictive tail probabilities
+
 - [`aov.test.zresid()`](https://tiw150.github.io/Zresidual/reference/aov.test.zresid.md)
-  : A function to calculate ANOVA of Zresidual
+  : ANOVA test diagnostic test for Z-residuals
+
 - [`bartlett.test(`*`<zresid>`*`)`](https://tiw150.github.io/Zresidual/reference/bartlett.test.zresid.md)
-  : A function to calculate Bartlett of Zresidual
+  : Bartlett variance test for Z-residuals
+
 - [`boxplot(`*`<zresid>`*`)`](https://tiw150.github.io/Zresidual/reference/boxplot.zresid.md)
-  : Boxplot of Z-Residuals
-- [`dhurdlenb()`](https://tiw150.github.io/Zresidual/reference/dhurdlenb.md)
-  : Probability Mass Function of the Hurdle Negative Binomial
-  Distribution
-- [`dhurdlepois()`](https://tiw150.github.io/Zresidual/reference/dhurdlepois.md)
-  : Probability Mass Function of the Hurdle Poisson Distribution
-- [`dtruncnb()`](https://tiw150.github.io/Zresidual/reference/dtruncnb.md)
-  : Probability Mass Function of the Zero-Truncated Negative Binomial
-  Distribution
-- [`dtruncpois()`](https://tiw150.github.io/Zresidual/reference/dtruncpois.md)
-  : Probability Mass Function of the Zero-Truncated Poisson Distribution
+  : Boxplot diagnostics for Z-residuals
+
 - [`gof.censored.zresidual()`](https://tiw150.github.io/Zresidual/reference/gof.censored.zresidual.md)
   : Goodness-of-fit test for censored Z-residuals
-- [`iscv_logrpp()`](https://tiw150.github.io/Zresidual/reference/iscv_logrpp.md)
-  : Compute Log Randomized Predictive p-values using ISCV Method
+
+- [`hpc()`](https://tiw150.github.io/Zresidual/reference/hpc.md) :
+  Holdout predictive checks for count models
+
+- [`dhurdlenb()`](https://tiw150.github.io/Zresidual/reference/hurdlenb.md)
+  [`phurdlenb()`](https://tiw150.github.io/Zresidual/reference/hurdlenb.md)
+  : Hurdle negative binomial distribution
+
+- [`dhurdlepois()`](https://tiw150.github.io/Zresidual/reference/hurdlepois.md)
+  [`phurdlepois()`](https://tiw150.github.io/Zresidual/reference/hurdlepois.md)
+  : Hurdle Poisson distribution
+
 - [`log_diff_exp()`](https://tiw150.github.io/Zresidual/reference/log_diff_exp.md)
   : A function to compute the logarithm of the difference between the
   exponentials of two log values.
-- [`log_pred_dist_HNB()`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_HNB.md)
-  : Compute Log Predictive Distributions for a Hurdle Negative Binomial
-  Model of a 'brms' Fit
-- [`log_pred_dist_HP()`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_HP.md)
-  : Compute Log Predictive Distributions for a Hurdle Poisson Model of a
-  'brms' Fit
-- [`log_pred_dist_NB()`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_NB.md)
-  : Compute Log Predictive Distributions for a Negative Binomial Model
-  of a 'brms' Fit
-- [`log_pred_dist_TNB()`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_TNB.md)
-  : Compute Log Predictive Distributions for a Truncated Negative
-  Binomial Model of a 'brms' Fit
-- [`log_pred_dist_TP()`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_TP.md)
-  : Compute Log Predictive Distributions for a Truncated Poisson Model
-  of a 'brms' Fit
-- [`log_pred_dist_bern()`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_bern.md)
-  : Compute Log Predictive Distributions for Logistic Regression of a
-  'brms' Fit
-- [`log_pred_dist_pois()`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_pois.md)
-  : Compute Log Predictive Distributions for a Poisson Model of a 'brms'
-  Fit
-- [`log_pred_dist_zero()`](https://tiw150.github.io/Zresidual/reference/log_pred_dist_zero.md)
-  : A function to calculate log predictive distribution (pmf and cdf) of
-  logistic component of a 'brm' fit
-- [`phurdlenb()`](https://tiw150.github.io/Zresidual/reference/phurdlenb.md)
-  : Cumulative Distribution Function of the Hurdle Negative Binomial
-  Distribution
-- [`phurdlepois()`](https://tiw150.github.io/Zresidual/reference/phurdlepois.md)
-  : Cumulative Distribution Function of the Hurdle Poisson Distribution
+
+- [`log_pointpred_glm_binomial()`](https://tiw150.github.io/Zresidual/reference/log_pointpred_glm_binomial.md)
+  : Predictive quantities for glm Binomial models
+
+- [`log_pointpred_glm_gamma()`](https://tiw150.github.io/Zresidual/reference/log_pointpred_glm_gamma.md)
+  : Predictive quantities for glm Gamma models
+
+- [`log_pointpred_glm_gaussian()`](https://tiw150.github.io/Zresidual/reference/log_pointpred_glm_gaussian.md)
+  :
+
+  Compute observation-wise predictive quantities for a fitted Gaussian
+  [`stats::glm`](https://rdrr.io/r/stats/glm.html) model on a
+  user-supplied dataset.
+
+- [`log_pointpred_glm_poisson()`](https://tiw150.github.io/Zresidual/reference/log_pointpred_glm_poisson.md)
+  : Predictive quantities for glm Poisson models
+
+- [`log_pointpred_survival_coxph.penal()`](https://tiw150.github.io/Zresidual/reference/log_pointpred_survival_coxph.penal.md)
+  : Predictive quantities for survival::coxph with frailty
+
+- [`log_summary_pred()`](https://tiw150.github.io/Zresidual/reference/log_summary_pred.md)
+  : Extract and summarize MCMC predictive tail probabilities
+
 - [`plot(`*`<cs.residual>`*`)`](https://tiw150.github.io/Zresidual/reference/plot.cs.residual.md)
   : Cox–Snell residual plot for survival models
+
 - [`plot(`*`<dev.resid>`*`)`](https://tiw150.github.io/Zresidual/reference/plot.dev.resid.md)
   : Plot deviance residuals for survival models
+
 - [`plot(`*`<martg.resid>`*`)`](https://tiw150.github.io/Zresidual/reference/plot.martg.resid.md)
   : Plot martingale residuals for survival models
+
 - [`plot(`*`<zresid>`*`)`](https://tiw150.github.io/Zresidual/reference/plot.zresid.md)
-  : Plot Z-Residuals for Bayesian and Frequentist Count / Hurdle / Zero
-  / Survival Models
-- [`post_logmpp()`](https://tiw150.github.io/Zresidual/reference/post_logmpp.md)
-  : Compute Posterior Log Middle-value Predictive p-values (Log-MPP)
-- [`post_logrpp()`](https://tiw150.github.io/Zresidual/reference/post_logrpp.md)
-  : Compute Posterior Log Randomized Predictive p-values (Log-RPP)
-- [`posterior.pred()`](https://tiw150.github.io/Zresidual/reference/posterior.pred.md)
-  : Extract Posterior Predicted Parameters from a Hurdle or Count Model
-- [`ptruncnb()`](https://tiw150.github.io/Zresidual/reference/ptruncnb.md)
-  : Cumulative Distribution Function (CDF) of Zero-Truncated Negative
-  Binomial Distribution
-- [`ptruncpois()`](https://tiw150.github.io/Zresidual/reference/ptruncpois.md)
-  : Cumulative Distribution Function (CDF) of Zero-Truncated Poisson
-  Distribution
-- [`pvalue.min()`](https://tiw150.github.io/Zresidual/reference/pvalue.min.md)
-  : A function to calculate the min p-value
+  : Scatterplot diagnostics for Z-residuals
+
+- [`ppc()`](https://tiw150.github.io/Zresidual/reference/ppc.md) :
+  Posterior predictive checks for count models
+
+- [`print(`*`<predcheck>`*`)`](https://tiw150.github.io/Zresidual/reference/print.predcheck.md)
+  : Print a predictive-check summary
+
+- [`print(`*`<resid>`*`)`](https://tiw150.github.io/Zresidual/reference/print.resid.md)
+  : Print a residual vector
+
+- [`print(`*`<zresid>`*`)`](https://tiw150.github.io/Zresidual/reference/print.zresid.md)
+  [`print(`*`<cvzresid>`*`)`](https://tiw150.github.io/Zresidual/reference/print.zresid.md)
+  : Print methods for Z-residual objects
+
 - [`qqnorm(`*`<zresid>`*`)`](https://tiw150.github.io/Zresidual/reference/qqnorm.zresid.md)
-  : Normal Q-Q Plot for Z-Residuals with Outlier Detection and Normality
-  Diagnostics
-- [`sf.test.zresid()`](https://tiw150.github.io/Zresidual/reference/sf.test.zresid.md)
-  : A function to calculate Shapiro-Francia test of Zresidual
+  : Normal Q-Q plot for Z-residuals
+
+- [`required_log_pointpred()`](https://tiw150.github.io/Zresidual/reference/required_log_pointpred.md)
+  : Resolve or Identify Required point-wise predictive Functions
+
+- [`sf_test.zresid()`](https://tiw150.github.io/Zresidual/reference/sf_test.zresid.md)
+  : Shapiro-Francia normality test for Z-residuals
+
 - [`surv_residuals()`](https://tiw150.github.io/Zresidual/reference/surv_residuals.md)
-  : Residuals for supported survival models
+  : Compute residual diagnostics for supported survival models
+
 - [`sw.test.zresid()`](https://tiw150.github.io/Zresidual/reference/sw.test.zresid.md)
-  : Shapiro-Wilk Normality Test for Z-Residuals
-- [`test.var.bartl()`](https://tiw150.github.io/Zresidual/reference/test.var.bartl.md)
-  : Bartlett Test for Homogeneity of Variances of Z-Residual
+  : Shapiro-Wilk normality test for Z-residuals
+
+- [`dtruncnb()`](https://tiw150.github.io/Zresidual/reference/truncnb.md)
+  [`ptruncnb()`](https://tiw150.github.io/Zresidual/reference/truncnb.md)
+  : Zero-truncated negative binomial distribution
+
+- [`dtruncpois()`](https://tiw150.github.io/Zresidual/reference/truncpois.md)
+  [`ptruncpois()`](https://tiw150.github.io/Zresidual/reference/truncpois.md)
+  : Zero-truncated Poisson distribution
+
+- [`upper_bound_pvalue()`](https://tiw150.github.io/Zresidual/reference/upper_bound_pvalue.md)
+  : Distribution-free upper-bound p-value from replicated p-values

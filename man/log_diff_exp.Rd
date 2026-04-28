@@ -11,6 +11,9 @@ log_diff_exp(la, lb)
 
 \item{lb}{A log value.}
 }
+\value{
+The logarithm of exp(la) - exp(lb) when la >= lb; otherwise NaN.
+}
 \description{
 A function to compute the logarithm of the difference between the exponentials of two log values.
 }
