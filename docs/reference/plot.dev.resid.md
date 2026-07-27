@@ -1,10 +1,8 @@
 # Plot deviance residuals for survival models
 
-Produce diagnostic plots for deviance residuals from survival models,
-with the option to plot against the observation index, the linear
-predictor, or a selected covariate. The function expects a vector (or
-one-column matrix) of deviance residuals with attributes attached by the
-residual computation functions in this package.
+Draws a ggplot2 diagnostic plot against observation index, linear
+predictor, or a selected covariate. The original LOWESS and external
+`is.outlier` behavior are retained.
 
 ## Usage
 
@@ -15,7 +13,10 @@ plot(
   ylab = "Deviance Residual",
   x_axis_var = c("index", "lp", "covariate"),
   main.title = "Deviance Residual Plot",
-  outlier.return = FALSE,
+  outlier.return = TRUE,
+  point.args = list(),
+  smooth.args = list(),
+  theme = ggplot2::theme_bw(),
   ...
 )
 ```
@@ -24,103 +25,44 @@ plot(
 
 - x:
 
-  Numeric vector (or one-column matrix) of deviance residuals, typically
-  returned by one of the residual functions in this package with
-  `residual.type = "deviance"`. It must carry the attributes
-  `"censored.status"`, `"linear.pred"`, and `"covariates"` as described
-  above.
+  A deviance residual object with `censored.status`, `linear.pred`, and
+  `covariates` attributes as required by the selected x-axis.
 
 - ylab:
 
-  Character string for the y-axis label. Default is
-  `"Deviance Residual"`.
+  Y-axis label.
 
 - x_axis_var:
 
-  Character string controlling the x-axis. Must be one of `"index"`,
-  `"lp"`, `"covariate"`, or the name of a covariate contained in
-  `attr(x, "covariates")`. The default is effectively `"lp"` if
-  `x_axis_var` is not supplied.
+  `"index"`, `"lp"`, `"covariate"`, or a covariate name.
 
 - main.title:
 
-  Character string for the main plot title. Default is
-  `"Deviance Residual Plot"`.
+  Plot title.
 
 - outlier.return:
 
-  Logical; if `TRUE`, attempted outliers (as indicated by an external
-  logical vector `is.outlier` in the calling environment) are
-  highlighted in the plot and their indices are returned invisibly. If
-  `FALSE` (default), no outlier indices are returned. Note that this
-  function does not compute outliers internally: it assumes that a
-  logical vector `is.outlier` of the same length as `x` is available if
-  outlier highlighting is desired.
+  Whether to use the calling environment's logical `is.outlier` vector
+  and return its indices.
+
+- point.args:
+
+  Named arguments for
+  [`ggplot2::geom_point()`](https://ggplot2.tidyverse.org/reference/geom_point.html).
+
+- smooth.args:
+
+  Named arguments for the LOWESS `geom_line()`.
+
+- theme:
+
+  A ggplot2 theme.
 
 - ...:
 
-  Additional arguments passed to the underlying plotting functions.
+  Additional plotting arguments.
 
 ## Value
 
-The function is primarily called for its side-effect of producing a
-plot. If `outlier.return = TRUE`, it prints the indices of outlying
-points to the console and invisibly returns a list with component
-`outliers`, containing the indices where `is.outlier` is `TRUE`.
-Otherwise, it returns `NULL` invisibly.
-
-## Details
-
-The input `x` is typically obtained from
-[`residual.coxph()`](https://tiw150.github.io/Zresidual/reference/residual.coxph.md),
-[`residual.coxph.frailty()`](https://tiw150.github.io/Zresidual/reference/residual.coxph.frailty.md),
-or
-[`residual.survreg()`](https://tiw150.github.io/Zresidual/reference/residual.survreg.md)
-with `residual.type = "deviance"`.
-
-The `x_axis_var` argument controls the x-axis:
-
-- `"index"`: plot deviance residuals against observation index.
-
-- `"lp"`: plot deviance residuals against the linear predictor
-  (attribute `"linear.pred"`).
-
-- `"covariate"`: prompt the user and print the available covariate names
-  to the console.
-
-- a character string matching one of the covariate names in
-  `attr(x, "covariates")`: plot deviance residuals against that
-  covariate.
-
-In the `"lp"` and covariate cases, a LOWESS smooth is added to the plot
-to highlight systematic patterns in the residuals.
-
-Non-finite deviance residuals are detected and truncated to lie slightly
-beyond the largest finite residual, with a message printed to alert the
-user that there may be problems with the model fit. Censored and
-uncensored observations are distinguished by color and plotting symbol
-in all display modes.
-
-## See also
-
-`residual.coxph`, `residual.coxph.frailty`, `residual.survreg`,
-[`Surv`](https://rdrr.io/pkg/survival/man/Surv.html),
-[`survfit`](https://rdrr.io/pkg/survival/man/survfit.html)
-
-## Examples
-
-``` r
-if (requireNamespace("survival", quietly = TRUE)) {
-  set.seed(1)
-  n <- 30
-  x <- rnorm(n)
-  t_event <- rexp(n, rate = exp(0.2 * x))
-  t_cens  <- rexp(n, rate = 0.5)
-  status  <- as.integer(t_event <= t_cens)
-  time    <- pmin(t_event, t_cens)
-  dat <- data.frame(time = time, status = status, x = x)
-  fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
-  r <- surv_residuals(fit, data = dat, residual.type = "deviance")
-  plot(r)
-}
-```
+Invisibly returns `NULL`, or `list(outliers = ...)` when
+`outlier.return = TRUE`, matching the original method.

@@ -1,338 +1,604 @@
 #' Normal Q-Q plot for Z-residuals
 #'
-#' Produces a normal Q-Q plot for one or more columns of a \code{"zresid"}
-#' object. Optional metadata supplied through \code{info} (or stored in
-#' attributes of \code{y}) are used only to fill legacy plotting attributes such
-#' as \code{"type"}.
-#'
-#' The method can optionally report a Shapiro-Wilk normality diagnostic, mark
-#' observations with large absolute residuals, and visually compress extreme
-#' values when they would otherwise dominate the plot.
+#' Produces a ggplot2 normal Q-Q plot for one or more columns of a
+#' \code{"zresid"} object. The Shapiro-Wilk diagnostic, outlier annotation,
+#' extreme-value compression, reference lines, and axis-break marks retain the
+#' behavior of the original plotting method.
 #'
 #' @param y A numeric matrix of Z-residuals, typically returned by
 #'   \code{\link{Zresidual}}, with one column per residual replicate.
 #' @param zcov Optional metadata, typically returned by \code{\link{Zcov}}.
 #' @param info Legacy alias for \code{zcov}.
-#'   When provided, it is used to fill missing legacy attributes such as
-#'   \code{"type"}.
 #' @param irep Integer vector specifying which column(s) of \code{y} to plot.
-#' @param diagnosis.test Character string specifying the normality diagnostic to
-#'   display. Currently \code{"SW"} is supported.
-#' @param main.title Main title of the plot. If omitted, a default title is
-#'   constructed from \code{attr(y, "type")}, when available.
+#' @param diagnosis.test Character string specifying the normality diagnostic.
+#'   Currently \code{"SW"} is supported.
+#' @param main.title Main title of the plot.
 #' @param xlab Label for the x-axis.
 #' @param ylab Label for the y-axis.
-#' @param outlier.return Logical; if \code{TRUE}, mark observations with
-#'   \code{|Z| > outlier.value} and invisibly return their indices.
-#' @param outlier.value Numeric threshold used to define outliers.
-#' @param outlier.set A named list of graphical arguments passed to
-#'   \code{\link[graphics]{symbols}} and \code{\link[graphics]{text}} when
-#'   annotating outliers.
-#' @param my.mar Numeric vector passed to \code{\link[graphics]{par}(mar = ...)}.
-#' @param legend.settings Optional named list used to modify the default legend
-#'   settings.
-#' @param clip.extreme Logical; if \code{TRUE}, very large residuals are
-#'   visually clipped to improve readability.
-#' @param clip.threshold Numeric threshold used when \code{clip.extreme = TRUE}.
-#' @param ... Additional graphical arguments passed to
-#'   \code{\link[graphics]{plot}}.
+#' @param outlier.return Logical; mark and return observations satisfying the
+#'   outlier rule when \code{TRUE}.
+#' @param outlier.value Numeric absolute-residual outlier threshold.
+#' @param outlier.set Named list controlling outlier annotation. Supported
+#'   ggplot settings are \code{colour}, \code{size}, \code{label_colour},
+#'   \code{label_size}, and \code{label}.
+#' @param outlier.label.xpad Numeric padding added to the right x-axis limit.
+#' @param my.mar Retained for source compatibility; ggplot themes control plot
+#'   margins.
+#' @param legend.settings Named list modifying the line legend. Supported names
+#'   include \code{position}, \code{text_size}, and \code{title_size}.
+#' @param clip.extreme Logical; visually compress extreme residuals.
+#' @param clip.threshold Numeric clipping threshold.
+#' @param interactive Logical; convert each ggplot using
+#'   \code{plotly::ggplotly()} when \code{TRUE}.
+#' @param theme A ggplot2 theme.
+#' @param ... Additional named arguments passed to the QQ-point
+#'   \code{geom_point()} layer.
 #'
-#' @return Invisibly returns a list with component \code{outliers}, containing
-#' the indices of observations flagged as outliers for the plotted replicate.
-#' The main effect of the function is the Q-Q plot.
-#'
-#' @examples
-#' if (requireNamespace("survival", quietly = TRUE)) {
-#'   set.seed(1)
-#'   n <- 30
-#'   x <- rnorm(n)
-#'   t_event <- rexp(n, rate = exp(0.3 * x))
-#'   t_cens  <- rexp(n, rate = 0.4)
-#'   status  <- as.integer(t_event <= t_cens)
-#'   time    <- pmin(t_event, t_cens)
-#'   dat <- data.frame(time = time, status = status, x = x)
-#'
-#'   fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
-#'   z <- Zresidual(fit, data=dat, nrep = 1, seed = 1)
-#'   qqnorm(z)
-#' }
-#'
-#' @seealso \code{\link{Zresidual}}, \code{\link{Zcov}}
+#' @return Invisibly returns a list containing \code{outliers} and
+#'   \code{plots}. A single selected replication produces one ggplot in
+#'   \code{plots}; multiple selected replications are printed sequentially,
+#'   matching the original method.
 #'
 #' @method qqnorm zresid
 #' @export
-qqnorm.zresid <- function(y, zcov = NULL, info = NULL, irep = 1, diagnosis.test = "SW",
-                          main.title = ifelse(is.null(attr(y, "type")),
-                                              "Normal Q-Q Plot",
-                                              paste("Normal Q-Q Plot -", attr(y, "type"))),
-                          xlab = "Theoretical Quantiles", ylab = "Sample Quantiles",
-                          outlier.return = TRUE, outlier.value = 3.5, outlier.set = list(),
-                          my.mar = c(5, 4, 4, 6) + 0.1, legend.settings = list(),
-                          clip.extreme = TRUE, clip.threshold = 6, ...) {
-  
-  Zresidual <- y
-  
-  # ---- Compatibility layer: support "new" format where metadata is separated (e.g., from Zcov()) ----
+qqnorm.zresid <- function(y,
+                          zcov = NULL,
+                          info = NULL,
+                          irep = 1,
+                          diagnosis.test = "SW",
+                          main.title = ifelse(
+                            is.null(attr(y, "type")),
+                            "Normal Q-Q Plot",
+                            paste("Normal Q-Q Plot -", attr(y, "type"))
+                          ),
+                          xlab = "Theoretical Quantiles",
+                          ylab = "Sample Quantiles",
+                          outlier.return = TRUE,
+                          outlier.value = 3.5,
+                          outlier.set = list(),
+                          outlier.label.xpad = 0.5,
+                          my.mar = c(5, 4, 4, 6) + 0.1,
+                          legend.settings = list(),
+                          clip.extreme = TRUE,
+                          clip.threshold = 6,
+                          interactive = FALSE,
+                          theme = ggplot2::theme_bw(),
+                          ...) {
+  Zresidual <- if (is.null(dim(y))) matrix(y, ncol = 1L) else as.matrix(y)
+
   info0 <- if (!is.null(zcov)) zcov else info
   if (is.null(info0)) {
-    info0 <- attr(Zresidual, "info")
-    if (is.null(info0)) info0 <- attr(Zresidual, "zcov")
-    if (is.null(info0)) info0 <- attr(Zresidual, "Zcov")
+    info0 <- attr(y, "info")
+    if (is.null(info0)) info0 <- attr(y, "zcov")
+    if (is.null(info0)) info0 <- attr(y, "Zcov")
   }
-  
-  .fill_attr_if_missing <- function(obj, nm, value) {
-    if (is.null(attr(obj, nm)) && !is.null(value)) attr(obj, nm) <- value
-    obj
+
+  .map_type_from_info <- function(info_object) {
+    if (is.null(info_object)) return(NULL)
+    if (!is.null(info_object$type)) return(info_object$type)
+    switch(
+      as.character(info_object$y_type_kind)[1L],
+      censor = "survival",
+      hurdle = "hurdle",
+      trunc = "count",
+      plain = NULL,
+      NULL
+    )
   }
-  
-  .map_type_from_info <- function(info) {
-    if (!is.null(info$type)) return(info$type)
-    kind <- info$y_type_kind
-    if (is.null(kind)) return(NULL)
-    if (identical(kind, "censor")) return("survival")
-    if (identical(kind, "hurdle")) return("hurdle")
-    if (identical(kind, "trunc"))  return("count")
-    if (identical(kind, "plain"))  return(NULL)
+
+  residual_type <- attr(y, "type")
+  if (is.null(residual_type)) residual_type <- .map_type_from_info(info0)
+  if (missing(main.title)) {
+    main.title <- if (is.null(residual_type)) {
+      "Normal Q-Q Plot"
+    } else {
+      paste("Normal Q-Q Plot -", residual_type)
+    }
+  }
+
+  .safe_sw_pvalue <- function(z_column) {
+    finite_z <- z_column[is.finite(z_column)]
+    if (length(finite_z) < 3L) return(NA_real_)
+    result <- try(stats::shapiro.test(finite_z)$p.value, silent = TRUE)
+    if (inherits(result, "try-error")) NA_real_ else result
+  }
+
+  .get_sw_vector <- function(z_matrix) {
+    if (exists("sw.test.zresid", mode = "function")) {
+      result <- try(sw.test.zresid(z_matrix), silent = TRUE)
+      if (!inherits(result, "try-error")) return(result)
+    }
+    apply(z_matrix, 2L, .safe_sw_pvalue)
+  }
+
+  outlier.label.xpad <- suppressWarnings(as.numeric(outlier.label.xpad)[1L])
+  if (!is.finite(outlier.label.xpad) || outlier.label.xpad < 0) {
+    outlier.label.xpad <- 0.5
+  }
+  if (!is.numeric(outlier.value) || length(outlier.value) != 1L ||
+      is.na(outlier.value) || outlier.value <= 0) {
+    stop("qqnorm.zresid: outlier.value must be one positive number.", call. = FALSE)
+  }
+  if (!is.numeric(clip.threshold) || length(clip.threshold) != 1L ||
+      is.na(clip.threshold) || clip.threshold <= 0) {
+    stop("qqnorm.zresid: clip.threshold must be one positive number.", call. = FALSE)
+  }
+
+  irep <- unique(as.integer(irep))
+  irep <- irep[!is.na(irep) & irep >= 1L & irep <= NCOL(Zresidual)]
+  if (!length(irep)) stop("irep does not select any valid column in y.", call. = FALSE)
+
+  diagnosis.test <- if (missing(diagnosis.test) || is.null(diagnosis.test)) {
+    "SW"
+  } else {
+    diagnosis.test
+  }
+  test_vector <- if (identical(diagnosis.test, "SW")) {
+    .get_sw_vector(Zresidual)
+  } else {
     NULL
   }
-  
-  if (!is.null(info0)) {
-    if (is.null(attr(Zresidual, "type"))) {
-      attr(Zresidual, "type") <- .map_type_from_info(info0)
+
+  dots <- list(...)
+  old_names <- c(col = "colour", pch = "shape", cex = "size")
+  for (old_name in names(old_names)) {
+    if (!is.null(dots[[old_name]]) && is.null(dots[[old_names[[old_name]]]])) {
+      dots[[old_names[[old_name]]]] <- dots[[old_name]]
+      dots[[old_name]] <- NULL
     }
   }
-  
-  if (missing(main.title)) {
-    main.title <- ifelse(is.null(attr(Zresidual, "type")),
-                         "Normal Q-Q Plot",
-                         paste("Normal Q-Q Plot -", attr(Zresidual, "type")))
-  }
-  
-  # ---- helpers ----
-  .safe_sw_pvalue <- function(zcol) {
-    zf <- zcol[is.finite(zcol)]
-    if (length(zf) < 3) return(NA_real_)
-    out <- try(stats::shapiro.test(zf)$p.value, silent = TRUE)
-    if (inherits(out, "try-error")) NA_real_ else out
-  }
-  
-  .get_sw_vec <- function(Z) {
-    # Prefer package helper if present
-    if (exists("sw.test.zresid", mode = "function")) {
-      tt <- try(sw.test.zresid(Z), silent = TRUE)
-      if (!inherits(tt, "try-error")) return(tt)
-    }
-    apply(Z, 2, .safe_sw_pvalue)
-  }
-  
-  .draw_legends_outside_right <- function(leg1, leg2, gap_factor = 0.8) {
-    old_xpd <- graphics::par("xpd")
-    on.exit(graphics::par(xpd = old_xpd), add = TRUE)
-    graphics::par(xpd = TRUE)
-    
-    usr <- graphics::par("usr")
-    x_anchor <- usr[2] + (usr[2] - usr[1]) * 0.02
-    y_top <- usr[4]
-    
-    lg1 <- NULL
-    if (!is.null(leg1)) {
-      lg1 <- do.call(graphics::legend, c(list(x = x_anchor, y = y_top, xjust = 0, yjust = 1, plot = FALSE), leg1))
-      do.call(graphics::legend, c(list(x = x_anchor, y = y_top, xjust = 0, yjust = 1), leg1))
-    }
-    
-    if (!is.null(leg2)) {
-      x2 <- x_anchor
-      y2 <- y_top
-      if (!is.null(lg1)) {
-        gap <- graphics::strheight("M", units = "user") * gap_factor
-        x2 <- lg1$rect$left
-        y2 <- lg1$rect$top - lg1$rect$h - gap
-      }
-      do.call(graphics::legend, c(list(x = x2, y = y2, xjust = 0, yjust = 1), leg2))
-    }
-  }
-  
-  # Optional axis break (plotrix::axis.break) if available
-  .axis_break <- NULL
-  if (exists("axis.break", mode = "function")) {
-    .axis_break <- get("axis.break", mode = "function")
-  } else if (requireNamespace("plotrix", quietly = TRUE)) {
-    .axis_break <- plotrix::axis.break
-  }
-  
-  # ---- input checks ----
-  irep <- unique(as.integer(irep))
-  irep <- irep[irep >= 1 & irep <= ncol(Zresidual)]
-  if (!length(irep)) stop("irep does not select any valid column in `y`.")
-  
-  # ---- normality test vector (column-wise) ----
-  test_vec <- NULL
-  diagnosis.test <- if (missing(diagnosis.test) || is.null(diagnosis.test)) "SW" else diagnosis.test
-  if (identical(diagnosis.test, "SW")) {
-    test_vec <- .get_sw_vec(Zresidual)
-  }
-  
-  for (col_id in irep) {
-    graphics::par(mar = my.mar)
-    
-    z <- Zresidual[, col_id]
-    
-    # Track non-finite before replacement
+  point_arguments <- utils::modifyList(
+    list(shape = 1, size = 2, colour = "black", na.rm = TRUE),
+    dots
+  )
+
+  outlier_defaults <- list(
+    colour = "red",
+    size = 4,
+    label_colour = "red",
+    label_size = 3,
+    label = TRUE
+  )
+  outlier_options <- utils::modifyList(outlier_defaults, outlier.set)
+
+  plots <- vector("list", length(irep))
+  names(plots) <- paste0("Replicate ", irep)
+  outliers <- stats::setNames(vector("list", length(irep)), names(plots))
+
+  for (position in seq_along(irep)) {
+    column_id <- irep[position]
+    z <- Zresidual[, column_id]
+
     id_nonfinite <- which(!is.finite(z) & !is.na(z))
     id_nan <- which(is.nan(z))
-    
-    if (length(id_nonfinite) > 0L) {
-      # Replace Inf/-Inf with large finite values near max finite magnitude
-      finite_abs_max <- suppressWarnings(max(abs(z[is.finite(z)]), na.rm = TRUE))
-      if (!is.finite(finite_abs_max)) finite_abs_max <- 0
-      z[id_nonfinite] <- sign(z[id_nonfinite]) * (finite_abs_max + 0.1)
+    if (length(id_nonfinite)) {
+      finite_max <- suppressWarnings(max(abs(z[is.finite(z)]), na.rm = TRUE))
+      if (!is.finite(finite_max)) finite_max <- 0
+      z[id_nonfinite] <- sign(z[id_nonfinite]) * (finite_max + 0.1)
       message("Non-finite Zresiduals exist! The model or the fitting process has a problem!")
     }
-    if (length(id_nan) > 0L) message("NaNs exist! The model or the fitting process has a problem!")
-    
-    # Outliers defined on ORIGINAL index (after non-finite replacement for plotting)
-    id.outlier <- which(abs(z) > outlier.value & !is.na(z))
-    
-    ############revise###################
-    # Q-Q data (order-statistic based)
-    qq <- stats::qqnorm(z, plot.it = FALSE)
-    x_values <- qq$x
-    y_values <- qq$y
-    
-    # # Map original indices -> QQ positions
-    # ord <- order(z, na.last = NA)          # indices of sorted z (drops NA)
-    # pos_out <- match(id.outlier, ord)      # positions in QQ vectors
-    # pos_out <- pos_out[!is.na(pos_out)]
-    # x_out <- if (length(pos_out)) x_values[pos_out] else numeric(0)
-    # y_out <- if (length(pos_out)) y_values[pos_out] else numeric(0)
-    
-    keep_idx <- which(!is.na(z))
-    pos_out <- match(id.outlier, keep_idx)
-    pos_out <- pos_out[!is.na(pos_out)]
-    
-    x_out <- if (length(pos_out)) x_values[pos_out] else numeric(0)
-    y_out <- if (length(pos_out)) y_values[pos_out] else numeric(0)
-    #################end#####################################
-    # Determine if we need compression for extremes
+    if (length(id_nan)) {
+      message("NaNs exist! The model or the fitting process has a problem!")
+    }
+
+    id_outlier <- which(abs(z) > outlier.value & !is.na(z))
+    outliers[[position]] <- id_outlier
+
+    qq_values <- stats::qqnorm(z, plot.it = FALSE)
+    x_values <- qq_values$x
+    y_values <- qq_values$y
+
+    # Preserve the original observation-to-QQ-position mapping.
+    kept_indices <- which(!is.na(z))
+    outlier_positions <- match(id_outlier, kept_indices)
+    outlier_positions <- outlier_positions[!is.na(outlier_positions)]
+
     ymax <- suppressWarnings(max(y_values, na.rm = TRUE))
     ymin <- suppressWarnings(min(y_values, na.rm = TRUE))
-    need_clip <- isTRUE(clip.extreme) && (is.finite(ymax) && (ymax > clip.threshold) ||
-                                            is.finite(ymin) && (ymin < -clip.threshold))
-    
-    # Build y for plotting (possibly clipped)
+    need_clip <- isTRUE(clip.extreme) &&
+      ((is.finite(ymax) && ymax > clip.threshold) ||
+       (is.finite(ymin) && ymin < -clip.threshold))
+
+    display_threshold <- clip.threshold
+
+    upper <- display_threshold + 0.5
+    lower <- -display_threshold - 0.5
     y_plot <- y_values
     if (need_clip) {
-      upper <- clip.threshold + 0.5
-      lower <- -clip.threshold - 0.5
-      y_plot[y_plot >  clip.threshold] <- upper
+      y_plot[y_plot > clip.threshold] <- upper
       y_plot[y_plot < -clip.threshold] <- lower
     }
-    
-    # --- Base plot (use plot(), not qqnorm()) so we control y clipping correctly ---
-    default_plot_args <- list(x = x_values, y = y_plot,
-                              main = main.title, xlab = xlab, ylab = ylab,
-                              pch = 1)
-    user_args <- list(...)
-    # allow user to override pch/cex/etc
-    plot_args <- modifyList(default_plot_args, user_args)
-    do.call(graphics::plot, plot_args)
-    
-    # Reference lines
-    stats::qqline(z, col = "black", lwd = 1.5)
-    graphics::abline(a = 0, b = 1, col = "green")
-    
-    # Optional axis break marks / labels for clipped extremes
-    if (need_clip) {
-      # annotate actual extremes on y-axis
-      usr <- graphics::par("usr")
-      upper <- clip.threshold + 0.5
-      lower <- -clip.threshold - 0.5
+
+    y_limits <- range(y_plot, finite = TRUE)
+    y_padding <- max(0.15, 0.04 * diff(y_limits))
+    y_limits <- y_limits + c(-y_padding, y_padding)
+
+    plot_data <- data.frame(
+      theoretical = x_values,
+      sample_original = y_values,
+      sample_display = y_plot,
+      qq_position = seq_along(x_values),
+      tooltip = paste0(
+        "Replicate: ", column_id,
+        "<br>Theoretical quantile: ", signif(x_values, 5),
+        "<br>Sample quantile: ", signif(y_values, 5)
+      )
+    )
+
+    x_limits <- range(x_values, finite = TRUE)
+    if (!all(is.finite(x_limits))) x_limits <- c(-3, 3)
+    x_limits[2L] <- x_limits[2L] + outlier.label.xpad
+
+    quartiles_y <- stats::quantile(z, c(0.25, 0.75), na.rm = TRUE, names = FALSE)
+    quartiles_x <- stats::qnorm(c(0.25, 0.75))
+    qq_slope <- diff(quartiles_y) / diff(quartiles_x)
+    qq_intercept <- quartiles_y[1L] - qq_slope * quartiles_x[1L]
+
+    plot <- ggplot2::ggplot(
+      plot_data,
+      ggplot2::aes(
+        x = .data$theoretical,
+        y = .data$sample_display,
+        text = .data$tooltip
+      )
+    )
+    plot <- plot + do.call(ggplot2::geom_point, point_arguments)
+
+    .clip_reference_line <- function(
+    intercept,
+    slope,
+    x_limits,
+    y_limits
+    ) {
+      candidate_x <- c(
+        x_limits,
+        (y_limits - intercept) / slope
+      )
       
-      # Add ticks at clipped positions with labels = true max/min
+      candidate_y <- intercept + slope * candidate_x
+
+      keep <- candidate_x >= x_limits[1L] &
+        candidate_x <= x_limits[2L] &
+        candidate_y >= y_limits[1L] &
+        candidate_y <= y_limits[2L] &
+        is.finite(candidate_x) &
+        is.finite(candidate_y)
+
+      candidate_x <- candidate_x[keep]
+      candidate_y <- candidate_y[keep]
+
+      order_x <- order(candidate_x)
+
+      data.frame(
+        x = candidate_x[order_x][1L],
+        xend = candidate_x[order_x][length(order_x)],
+        y = candidate_y[order_x][1L],
+        yend = candidate_y[order_x][length(order_x)]
+      )
+    }
+    
+    qqline_segment <- .clip_reference_line(
+      intercept = qq_intercept,
+      slope = qq_slope,
+      x_limits = x_limits,
+      y_limits = y_limits
+    )
+    
+    degree45_segment <- .clip_reference_line(
+      intercept = 0,
+      slope = 1,
+      x_limits = x_limits,
+      y_limits = y_limits
+    )
+    
+    reference_data <- rbind(
+      transform(
+        qqline_segment,
+        reference = "qqline"
+      ),
+      transform(
+        degree45_segment,
+        reference = "45\u00B0 line"
+      )
+    )
+    
+    reference_data$reference <- factor(
+      reference_data$reference,
+      levels = c("qqline", "45\u00B0 line")
+    )
+    
+    plot <- plot +
+      ggplot2::geom_segment(
+        data = reference_data,
+        mapping = ggplot2::aes(
+          x = .data$x,
+          xend = .data$xend,
+          y = .data$y,
+          yend = .data$yend,
+          colour = .data$reference,
+          linetype = .data$reference
+        ),
+        inherit.aes = FALSE,
+        linewidth = 0.9,
+        show.legend = TRUE
+      ) +
+      ggplot2::scale_colour_manual(
+        values = c(
+          "qqline" = "#E41A1C",
+          "45\u00B0 line" = "#0066FF"
+        ),
+        breaks = c(
+          "qqline",
+          "45\u00B0 line"
+        ),
+        name = NULL
+      ) +
+      ggplot2::scale_linetype_manual(
+        values = c(
+          "qqline" = "solid",
+          "45\u00B0 line" = "dotdash"
+        ),
+        breaks = c(
+          "qqline",
+          "45\u00B0 line"
+        ),
+        name = NULL
+      ) +
+      ggplot2::guides(
+        colour = ggplot2::guide_legend(order = 1),
+        linetype = ggplot2::guide_legend(order = 1)
+      )
+
+    if (isTRUE(outlier.return) && length(outlier_positions)) {
+      outlier_data <- plot_data[outlier_positions, , drop = FALSE]
+      plot <- plot +
+        ggplot2::geom_point(
+          data = outlier_data,
+          mapping = ggplot2::aes(x = .data$theoretical, y = .data$sample_display),
+          inherit.aes = FALSE,
+          shape = 16,
+          colour = "black",
+          size = 2,
+          na.rm = TRUE
+        ) +
+        ggplot2::geom_point(
+          data = outlier_data,
+          mapping = ggplot2::aes(x = .data$theoretical, y = .data$sample_display),
+          inherit.aes = FALSE,
+          shape = 1,
+          colour = outlier_options$colour,
+          size = outlier_options$size,
+          stroke = 1,
+          na.rm = TRUE
+        )
+      if (isTRUE(outlier_options$label)) {
+        outlier_data$observation <- id_outlier[seq_len(NROW(outlier_data))]
+        plot <- plot + ggplot2::geom_text(
+          data = outlier_data,
+          mapping = ggplot2::aes(
+            x = .data$theoretical,
+            y = .data$sample_display,
+            label = .data$observation
+          ),
+          inherit.aes = FALSE,
+          colour = outlier_options$label_colour,
+          size = outlier_options$label_size,
+          hjust = 0,
+          vjust = 0,
+          nudge_x = 0.08,
+          nudge_y = 0.16,
+          check_overlap = TRUE,
+          na.rm = TRUE
+        )
+      }
+    }
+
+    p_value <- if (!is.null(test_vector) && length(test_vector) >= column_id) {
+      suppressWarnings(as.numeric(test_vector[column_id]))
+    } else {
+      NA_real_
+    }
+    p_value_string <- if (is.finite(p_value)) sprintf("%.2f", p_value) else "NA"
+    test_label <- paste0("P-value:\nZ-", diagnosis.test, " = ", p_value_string)
+    test_data <- data.frame(label = test_label)
+    plot <- plot + ggplot2::geom_text(
+      data = test_data,
+      mapping = ggplot2::aes(x = Inf, y = Inf, label = .data$label),
+      inherit.aes = FALSE,
+      hjust = -0.12,
+      vjust = 1,
+      size = legend.settings$text_size %zresid_or% 3.5,
+      lineheight = 1.15
+    )
+
+    y_breaks <- ggplot2::waiver()
+    y_labels <- ggplot2::waiver()
+    if (need_clip) {
+      base_breaks <- pretty(range(y_plot, finite = TRUE))
+      base_breaks <- base_breaks[base_breaks >= min(y_plot, na.rm = TRUE) &
+                                   base_breaks <= max(y_plot, na.rm = TRUE)]
+      y_breaks <- base_breaks
+      y_labels <- format(base_breaks, trim = TRUE)
+
       if (is.finite(ymax) && ymax > clip.threshold) {
-        graphics::axis(2, at = upper, labels = sprintf("%.1f", ymax), las = 1)
-        graphics::axis(4, at = upper, labels = sprintf("%.1f", ymax), las = 1)
-        if (!is.null(.axis_break)) {
-          .axis_break(2, clip.threshold, style = "slash")
-          .axis_break(4, clip.threshold, style = "slash")
-        }
+        y_breaks <- c(y_breaks, upper)
+        y_labels <- c(y_labels, sprintf("%.1f", ymax))
       }
       if (is.finite(ymin) && ymin < -clip.threshold) {
-        graphics::axis(2, at = lower, labels = sprintf("%.1f", ymin), las = 1)
-        graphics::axis(4, at = lower, labels = sprintf("%.1f", ymin), las = 1)
-        if (!is.null(.axis_break)) {
-          .axis_break(2, -clip.threshold, style = "slash")
-          .axis_break(4, -clip.threshold, style = "slash")
-        }
+        y_breaks <- c(y_breaks, lower)
+        y_labels <- c(y_labels, sprintf("%.1f", ymin))
       }
-    }
-    
-    # --- Legends (outside right) ---
-    test.pv <- if (!is.null(test_vec) && length(test_vec) >= col_id) test_vec[col_id] else NA_real_
-    
-    default.legend1 <- list(
-      legend = c("qqline", "45\u00B0 line"),
-      col = c("black", "green"),
-      lty = c(1, 1),
-      lwd = 1.5,
-      cex = 0.6,
-      bty = "n",
-      seg.len = 1.5,
-      adj = 0
-    )
-    
-    pv_str <- if (is.finite(test.pv)) sprintf("%.2f", test.pv) else "NA"
-    default.legend2 <- list(
-      legend = c(expression(bold("P-value:")),
-                 paste0("Z-", diagnosis.test, " = ", pv_str)),
-      cex = 0.6,
-      bty = "n",
-      adj = 0
-    )
-    
-    legend.args1 <- modifyList(default.legend1, legend.settings)
-    legend.args2 <- modifyList(default.legend2, legend.settings)
-    
-    .draw_legends_outside_right(legend.args1, legend.args2)
-    
-    # --- Outlier annotation (circles + labels) ---
-    if (isTRUE(outlier.return) && length(id.outlier)) {
-      # default outlier settings (need par("usr") after plot)
-      default.outlier <- list(
-        pos = 4,
-        labels = id.outlier,
-        cex = 0.8,
-        col = "red",
-        add = TRUE,
-        inches = FALSE,
-        circles = rep((graphics::par("usr")[2] - graphics::par("usr")[1]) * 0.027, length(id.outlier)),
-        fg = "red"
+      order_breaks <- order(y_breaks)
+      y_breaks <- y_breaks[order_breaks]
+      y_labels <- y_labels[order_breaks]
+
+      x_range <- diff(x_limits)
+      slash_dx <- 0.018 * x_range
+      slash_dy <- 0.12
+      break_rows <- list()
+      if (is.finite(ymax) && ymax > clip.threshold) {
+        break_rows[[length(break_rows) + 1L]] <- data.frame(
+          x = c(x_limits[1L] - slash_dx, x_limits[2L] - slash_dx),
+          xend = c(x_limits[1L] + slash_dx, x_limits[2L] + slash_dx),
+          y = display_threshold - slash_dy,
+          yend = display_threshold + slash_dy
+        )
+      }
+      if (is.finite(ymin) && ymin < -clip.threshold) {
+        break_rows[[length(break_rows) + 1L]] <- data.frame(
+          x = c(x_limits[1L] - slash_dx, x_limits[2L] - slash_dx),
+          xend = c(x_limits[1L] + slash_dx, x_limits[2L] + slash_dx),
+          y = -display_threshold - slash_dy,
+          yend = -display_threshold + slash_dy
+        )
+      }
+
+      break_positions <- numeric(0L)
+      if (is.finite(ymax) && ymax > clip.threshold) {
+        break_positions <- c(break_positions, display_threshold)
+      }
+      if (is.finite(ymin) && ymin < -clip.threshold) {
+        break_positions <- c(break_positions, -display_threshold)
+      }
+      break_positions <- sort(unique(break_positions))
+      border_gap <- slash_dy * 1.35
+
+      vertical_start <- c(
+        y_limits[1L],
+        break_positions + border_gap
       )
-      outlier.args <- modifyList(default.outlier, outlier.set)
-      
-      text.args <- outlier.args[names(outlier.args) %in% names(formals(graphics::text.default))]
-      symbols.args <- outlier.args[names(outlier.args) %in% names(formals(graphics::symbols))]
-      
-      # y positions must match plotted y (clipped if necessary)
-      y_out_plot <- y_out
-      if (need_clip && length(y_out_plot)) {
-        upper <- clip.threshold + 0.5
-        lower <- -clip.threshold - 0.5
-        y_out_plot[y_out_plot >  clip.threshold] <- upper
-        y_out_plot[y_out_plot < -clip.threshold] <- lower
+      vertical_end <- c(
+        break_positions - border_gap,
+        y_limits[2L]
+      )
+      keep_border <- vertical_end > vertical_start
+      vertical_start <- vertical_start[keep_border]
+      vertical_end <- vertical_end[keep_border]
+
+      vertical_border <- data.frame(
+        x = rep(x_limits, each = length(vertical_start)),
+        xend = rep(x_limits, each = length(vertical_start)),
+        y = rep(vertical_start, times = 2L),
+        yend = rep(vertical_end, times = 2L)
+      )
+      horizontal_border <- data.frame(
+        x = x_limits[1L],
+        xend = x_limits[2L],
+        y = y_limits,
+        yend = y_limits
+      )
+
+      plot <- plot +
+        ggplot2::geom_segment(
+          data = vertical_border,
+          mapping = ggplot2::aes(
+            x = .data$x,
+            xend = .data$xend,
+            y = .data$y,
+            yend = .data$yend
+          ),
+          inherit.aes = FALSE,
+          linewidth = 0.7,
+          colour = "black"
+        ) +
+        ggplot2::geom_segment(
+          data = horizontal_border,
+          mapping = ggplot2::aes(
+            x = .data$x,
+            xend = .data$xend,
+            y = .data$y,
+            yend = .data$yend
+          ),
+          inherit.aes = FALSE,
+          linewidth = 0.7,
+          colour = "black"
+        )
+
+      if (length(break_rows)) {
+        break_data <- do.call(rbind, break_rows)
+        plot <- plot + ggplot2::geom_segment(
+          data = break_data,
+          mapping = ggplot2::aes(
+            x = .data$x,
+            xend = .data$xend,
+            y = .data$y,
+            yend = .data$yend
+          ),
+          inherit.aes = FALSE,
+          linewidth = 0.7,
+          colour = "black"
+        )
       }
-      
-      # draw emphasis points
-      graphics::points(x_out, y_out_plot, pch = 16)
-      
-      # circles + labels
-      do.call(graphics::symbols, c(list(x = x_out, y = y_out_plot), symbols.args))
-      do.call(graphics::text,    c(list(x = x_out, y = y_out_plot), text.args))
     }
-    
-    if (isTRUE(outlier.return)  && length(id.outlier)) {
-      message("Outlier Indices : ", paste(id.outlier, collapse = ", "))
-      invisible(list(outliers = id.outlier))
+
+    legend_position <- legend.settings$position %zresid_or% "right"
+    plot <- plot +
+      ggplot2::scale_y_continuous(
+        breaks = y_breaks,
+        labels = y_labels,
+        expand = ggplot2::expansion(mult = 0)
+      ) +
+      ggplot2::coord_cartesian(
+        xlim = x_limits,
+        ylim = y_limits,
+        clip = "off"
+      ) +
+      ggplot2::labs(
+        title = main.title,
+        x = xlab,
+        y = ylab,
+        colour = NULL,
+        linetype = NULL
+      ) +
+      theme +
+      ggplot2::theme(
+        plot.title = ggplot2::element_text(face = "bold", hjust = 0.5),
+        plot.title.position = "panel",
+        axis.title = ggplot2::element_text(face = "bold"),
+        legend.position = legend_position,
+        legend.justification = c(0, 0.45),
+        legend.title = ggplot2::element_text(
+          size = legend.settings$title_size %zresid_or% ggplot2::rel(1)
+        ),
+        legend.text = ggplot2::element_text(
+          size = legend.settings$text_size %zresid_or% ggplot2::rel(0.9)
+        ),
+        plot.margin = ggplot2::margin(8, 8, 8, 8)
+      )
+
+    if (need_clip) {
+      plot <- plot + ggplot2::theme(panel.border = ggplot2::element_blank())
+    }
+
+    attr(plot, "zresid_outliers") <- id_outlier
+    attr(plot, "zresid_sw_pvalue") <- p_value
+    attr(plot, "zresid_clipped") <- need_clip
+    attr(plot, "zresid_display_break") <- if (need_clip) display_threshold else NA_real_
+    attr(plot, "zresid_qq_data") <- plot_data
+    plots[[position]] <- plot
+
+    if (isTRUE(outlier.return) && length(id_outlier)) {
+      message("Outlier Indices : ", paste(id_outlier, collapse = ", "))
+    }
+
+    if (isTRUE(interactive)) {
+      if (!requireNamespace("plotly", quietly = TRUE)) {
+        stop(
+          "interactive = TRUE requires the optional package 'plotly'.",
+          call. = FALSE
+        )
+      }
+      widget <- plotly::ggplotly(plot, tooltip = "text")
+      plots[[position]] <- widget
+      print(widget)
+    } else {
+      print(plot)
     }
   }
+
+  result <- list(
+    outliers = outliers,
+    plots = plots
+  )
+  return(invisible(result))
 }

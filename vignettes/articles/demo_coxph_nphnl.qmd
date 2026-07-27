@@ -9,7 +9,7 @@ format:
 vignette: >
   %\VignetteIndexEntry{Z-residual diagnostics for Cox proportional hazards models}
   %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{quarto::html}
 ---
 
 ```{r setup, include=FALSE}
@@ -55,19 +55,7 @@ if (!requireNamespace("Zresidual", quietly = TRUE)) {
 #| warning: false
 
 library(Zresidual)
-
-pkgs <- c(
-  "survival", "EnvStats", "dplyr", "tibble", "gt", "gifski","MASS"
-)
-
-missing_pkgs <- pkgs[!vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)]
-if (length(missing_pkgs)) {
-  install.packages(missing_pkgs, dependencies = TRUE)
-}
-
-invisible(lapply(pkgs, function(p) {
-  suppressPackageStartupMessages(library(p, character.only = TRUE))
-}))
+library(survival)
 ```
 
 **Additional Helper Functions**
@@ -106,6 +94,20 @@ lwy_cum_martingale <- function(fit, x, B = 1000, seed = 1) {
     high = apply(boot_mat, 2, stats::quantile, probs = 0.975, na.rm = TRUE),
     p = mean(boot_stat >= stat_obs)
   )
+}
+
+# Capture a plotting method's return value while suppressing its automatic
+# print. This is needed only when several ggplot objects are combined.
+capture_zplot <- function(expr) {
+  tmp <- tempfile(fileext = ".pdf")
+  grDevices::pdf(tmp)
+
+  on.exit({
+    grDevices::dev.off()
+    unlink(tmp)
+  }, add = TRUE)
+
+  force(expr)
 }
 ```
 
@@ -177,35 +179,121 @@ zcov_pbc_log <- Zcov(fit_pbc_log, data = pbc2)
 #| message: false
 #| code-fold: true
 
-pbc_combined_path <- file.path(resources_path, "pbc_combined_anim.gif")
+pbc_combined_path <- file.path(
+  resources_path,
+  "pbc_combined_anim_v2.gif"
+)
 
 if (force_rerun || !file.exists(pbc_combined_path)) {
-  gifski::save_gif(
-    expr = {
-      for (i in 1:10) {
-        # Set up a 2x3 grid: 2 rows (models), 3 columns (plot types)
-        par(mfrow = c(2, 3), mar = c(4, 4, 3, 2))
-        
-        # Row 1: Linear Bilirubin Model
-        qqnorm(Z_pbc_linear, irep = i, main = "Q-Q: PBC linear")
-        plot(Z_pbc_linear, info = zcov_pbc_linear, x_axis_var = "lp", irep = i, add_lowess = TRUE,
-             main.title = "Scatter: PBC linear")
-        boxplot(Z_pbc_linear, info = zcov_pbc_linear, x_axis_var = "lp", irep = i,
-                main.title = "Boxplot: PBC linear")
-        
-        # Row 2: Log-Bilirubin Model
-        qqnorm(Z_pbc_log, irep = i, main = "Q-Q: PBC log-bili")
-        plot(Z_pbc_log, info = zcov_pbc_log, x_axis_var = "lp", irep = i, add_lowess = TRUE,
-             main.title = "Scatter: PBC log-bili")
-        boxplot(Z_pbc_log, info = zcov_pbc_log, x_axis_var = "lp", irep = i,
-                main.title = "Boxplot: PBC log-bili")
+  frame_dir <- tempfile("pbc_combined_frames_")
+  dir.create(frame_dir)
+
+  frame_files <- file.path(
+    frame_dir,
+    sprintf("frame_%02d.png", 1:10)
+  )
+
+  for (i in 1:10) {
+    qq_linear <- capture_zplot(
+      qqnorm(
+        Z_pbc_linear,
+        irep = i,
+        main.title = "Q-Q: PBC linear"
+      )
+    )$plots[[1]]
+
+    scatter_linear <- capture_zplot(
+      plot(
+        Z_pbc_linear,
+        zcov = zcov_pbc_linear,
+        x_axis_var = "lp",
+        irep = i,
+        add_lowess = TRUE,
+        main.title = "Scatter: PBC linear"
+      )
+    )
+
+    box_linear <- capture_zplot(
+      boxplot(
+        Z_pbc_linear,
+        zcov = zcov_pbc_linear,
+        x_axis_var = "lp",
+        irep = i,
+        main.title = "Boxplot: PBC linear"
+      )
+    )$plots[[1]]
+
+    qq_log <- capture_zplot(
+      qqnorm(
+        Z_pbc_log,
+        irep = i,
+        main.title = "Q-Q: PBC log-bili"
+      )
+    )$plots[[1]]
+
+    scatter_log <- capture_zplot(
+      plot(
+        Z_pbc_log,
+        zcov = zcov_pbc_log,
+        x_axis_var = "lp",
+        irep = i,
+        add_lowess = TRUE,
+        main.title = "Scatter: PBC log-bili"
+      )
+    )
+
+    box_log <- capture_zplot(
+      boxplot(
+        Z_pbc_log,
+        zcov = zcov_pbc_log,
+        x_axis_var = "lp",
+        irep = i,
+        main.title = "Boxplot: PBC log-bili"
+      )
+    )$plots[[1]]
+
+    grDevices::png(
+      filename = frame_files[i],
+      width = 1350,
+      height = 900,
+      res = 96
+    )
+
+    tryCatch(
+      {
+        gridExtra::grid.arrange(
+          grobs = list(
+            qq_linear,
+            scatter_linear,
+            box_linear,
+            qq_log,
+            scatter_log,
+            box_log
+          ),
+          ncol = 3
+        )
+      },
+      finally = {
+        grDevices::dev.off()
       }
-    },
+    )
+  }
+
+  unlink(pbc_combined_path, force = TRUE)
+
+  gifski::gifski(
+    png_files = frame_files,
     gif_file = pbc_combined_path,
-    width = 1350,   
+    width = 1350,
     height = 900,
     delay = 1,
-    res = 96
+    loop = TRUE
+  )
+
+  unlink(
+    frame_dir,
+    recursive = TRUE,
+    force = TRUE
   )
 }
 
@@ -220,28 +308,103 @@ knitr::include_graphics(pbc_combined_path)
 #| code-fold: true
 #| message: false
 
-pbc_bili_path <- file.path(resources_path, "pbc_bili_anim.gif")
+pbc_bili_path <- file.path(
+  resources_path,
+  "pbc_bili_anim_v2.gif"
+)
 
 if (force_rerun || !file.exists(pbc_bili_path)) {
-  gifski::save_gif(
-    expr = {
-      for (i in 1:10) {
-        par(mfrow = c(2, 2), mar = c(4, 4, 2, 2))
-        plot(Z_pbc_linear,info = zcov_pbc_linear, x_axis_var = "bili", irep = i, add_lowess = TRUE,
-             main.title = "Scatter: linear bili")
-        plot(Z_pbc_log,info = zcov_pbc_log,  x_axis_var = "logbili", irep = i, add_lowess = TRUE,
-             main.title = "Scatter: log(bili)")
-        boxplot(Z_pbc_linear, info = zcov_pbc_linear, x_axis_var = "bili", irep = i,
-                main.title = "Boxplot: linear bili")
-        boxplot(Z_pbc_log, info = zcov_pbc_log, x_axis_var = "logbili", irep = i,
-                main.title = "Boxplot: log(bili)")
+  frame_dir <- tempfile("pbc_bili_frames_")
+  dir.create(frame_dir)
+
+  frame_files <- file.path(
+    frame_dir,
+    sprintf("frame_%02d.png", 1:10)
+  )
+
+  for (i in 1:10) {
+    scatter_linear <- capture_zplot(
+      plot(
+        Z_pbc_linear,
+        zcov = zcov_pbc_linear,
+        x_axis_var = "bili",
+        irep = i,
+        add_lowess = TRUE,
+        main.title = "Scatter: linear bili"
+      )
+    )
+
+    scatter_log <- capture_zplot(
+      plot(
+        Z_pbc_log,
+        zcov = zcov_pbc_log,
+        x_axis_var = "logbili",
+        irep = i,
+        add_lowess = TRUE,
+        main.title = "Scatter: log(bili)"
+      )
+    )
+
+    box_linear <- capture_zplot(
+      boxplot(
+        Z_pbc_linear,
+        zcov = zcov_pbc_linear,
+        x_axis_var = "bili",
+        irep = i,
+        main.title = "Boxplot: linear bili"
+      )
+    )$plots[[1]]
+
+    box_log <- capture_zplot(
+      boxplot(
+        Z_pbc_log,
+        zcov = zcov_pbc_log,
+        x_axis_var = "logbili",
+        irep = i,
+        main.title = "Boxplot: log(bili)"
+      )
+    )$plots[[1]]
+
+    grDevices::png(
+      filename = frame_files[i],
+      width = 900,
+      height = 900,
+      res = 96
+    )
+
+    tryCatch(
+      {
+        gridExtra::grid.arrange(
+          grobs = list(
+            scatter_linear,
+            scatter_log,
+            box_linear,
+            box_log
+          ),
+          ncol = 2
+        )
+      },
+      finally = {
+        grDevices::dev.off()
       }
-    },
+    )
+  }
+
+  unlink(pbc_bili_path, force = TRUE)
+
+  gifski::gifski(
+    png_files = frame_files,
     gif_file = pbc_bili_path,
     width = 900,
     height = 900,
     delay = 1,
-    res = 96
+    loop = TRUE
+  )
+
+  unlink(
+    frame_dir,
+    recursive = TRUE,
+    force = TRUE
   )
 }
 
@@ -294,21 +457,38 @@ abline(v = upper_bound_pvalue(aovbili_pbc_log), col = "red", lwd = 2)
 
 **Summary of Replicated P-values**
 ```{r}
-pbc_summary <- tibble::tibble(
+pbc_summary <- data.frame(
   Model = c("Linear bili", "Log(bili)"),
   AIC = c(AIC(fit_pbc_linear), AIC(fit_pbc_log)),
-  `Score global` = c(score_pbc_linear$table["GLOBAL", "p"], score_pbc_log$table["GLOBAL", "p"]),
-  `Score bili` = c(score_pbc_linear$table["bili", "p"], score_pbc_log$table["logbili", "p"]),
+  `Score global` = c(
+    score_pbc_linear$table["GLOBAL", "p"],
+    score_pbc_log$table["GLOBAL", "p"]
+  ),
+  `Score bili` = c(
+    score_pbc_linear$table["bili", "p"],
+    score_pbc_log$table["logbili", "p"]
+  ),
   `LWY-like bili` = c(lwy_pbc_linear$p, lwy_pbc_log$p),
-  `Z-SW` = c(upper_bound_pvalue(sw_pbc_linear), upper_bound_pvalue(sw_pbc_log)),
-  `Z-AOV-LP` = c(upper_bound_pvalue(aovlp_pbc_linear), upper_bound_pvalue(aovlp_pbc_log)),
-  `Z-AOV-bili` = c(upper_bound_pvalue(aovbili_pbc_linear), upper_bound_pvalue(aovbili_pbc_log))
+  `Z-SW` = c(
+    upper_bound_pvalue(sw_pbc_linear),
+    upper_bound_pvalue(sw_pbc_log)
+  ),
+  `Z-AOV-LP` = c(
+    upper_bound_pvalue(aovlp_pbc_linear),
+    upper_bound_pvalue(aovlp_pbc_log)
+  ),
+  `Z-AOV-bili` = c(
+    upper_bound_pvalue(aovbili_pbc_linear),
+    upper_bound_pvalue(aovbili_pbc_log)
+  ),
+  check.names = FALSE
 )
 
-pbc_summary %>%
-  gt::gt() %>%
-  gt::fmt_number(columns = -Model, decimals = 3) %>%
-  gt::tab_header(title = "PBC model comparison")
+knitr::kable(
+  pbc_summary,
+  digits = 3,
+  caption = "PBC model comparison"
+)
 ```
 
 ## A Simulation Study with Non-linear Cox PH Datasets
@@ -450,21 +630,77 @@ zcov_nonlinear <- Zcov(fit_nonlinear, data = dat_nonlinear)
 #| message: false
 #| results: false
 
-par(mfrow = c(2, 3), mar = c(4, 4, 3, 3), cex = 1.1)
+qq_linear <- capture_zplot(
+  qqnorm(
+    Z_linear,
+    irep = 1,
+    main.title = "Linear Model Q-Q Z-Residuals"
+  )
+)$plots[[1]]
 
-# Row 1: Misspecified Linear Fit
-qqnorm(Z_linear, irep = 1, main = "Linear Model Q-Q Z-Residuals")
-plot(Z_linear, info=zcov_linear, x_axis_var = "lp", irep = 1, add_lowess = TRUE, 
-     main.title = "Linear Model Z-Residuals vs LP")
-plot(Z_linear, info=zcov_linear, x_axis_var = "x2", irep = 1, add_lowess = TRUE, 
-     main.title = "Linear Model Z-Residuals vs x2")
+lp_linear <- capture_zplot(
+  plot(
+    Z_linear,
+    zcov = zcov_linear,
+    x_axis_var = "lp",
+    irep = 1,
+    add_lowess = TRUE,
+    main.title = "Linear Model Z-Residuals vs LP"
+  )
+)
 
-# Row 2: Correctly Specified Nonlinear Fit
-qqnorm(Z_nonlinear, irep = 1, main = "Nonlinear Model Q-Q Z-Residuals")
-plot(Z_nonlinear, info=zcov_nonlinear, x_axis_var = "lp", irep = 1, add_lowess = TRUE, 
-     main.title = "Nonlinear Model Z-Residuals vs LP")
-plot(Z_nonlinear, info=zcov_nonlinear, x_axis_var = "log(x2)", irep = 1, add_lowess = TRUE, 
-     main.title = "Nonlinear Model Z-Residuals vs log(x2)")
+x2_linear <- capture_zplot(
+  plot(
+    Z_linear,
+    zcov = zcov_linear,
+    x_axis_var = "x2",
+    irep = 1,
+    add_lowess = TRUE,
+    main.title = "Linear Model Z-Residuals vs x2"
+  )
+)
+
+qq_nonlinear <- capture_zplot(
+  qqnorm(
+    Z_nonlinear,
+    irep = 1,
+    main.title = "Nonlinear Model Q-Q Z-Residuals"
+  )
+)$plots[[1]]
+
+lp_nonlinear <- capture_zplot(
+  plot(
+    Z_nonlinear,
+    zcov = zcov_nonlinear,
+    x_axis_var = "lp",
+    irep = 1,
+    add_lowess = TRUE,
+    main.title = "Nonlinear Model Z-Residuals vs LP"
+  )
+)
+
+x2_nonlinear <- capture_zplot(
+  plot(
+    Z_nonlinear,
+    zcov = zcov_nonlinear,
+    x_axis_var = "log(x2)",
+    irep = 1,
+    add_lowess = TRUE,
+    main.title = "Nonlinear Model Z-Residuals vs log(x2)"
+  )
+)
+
+gridExtra::grid.arrange(
+  grobs = list(
+    qq_linear,
+    lp_linear,
+    x2_linear,
+    qq_nonlinear,
+    lp_nonlinear,
+    x2_nonlinear
+  ),
+  ncol = 3
+)
 ```
 
 ```{r}
@@ -475,19 +711,36 @@ aovlp_nonlinear  <- aov.test.zresid(Z_nonlinear, X = "lp",zcov = zcov_nonlinear,
 aovx_linear  <- aov.test.zresid(Z_linear, X = "x2",zcov = zcov_linear, k.anova = 10)
 aovx_nonlinear   <- aov.test.zresid(Z_nonlinear, X = "log(x2)",zcov = zcov_nonlinear, k.anova = 10)
 
-sim_linear_summary <- tibble::tibble(
+sim_linear_summary <- data.frame(
   Model = c("Linear Cox-PH", "Nonlinear Cox-PH"),
-  `Score global` = c(score_linear$table["GLOBAL", "p"], score_nonlinear$table["GLOBAL", "p"]),
-  `Score target covariate` = c(score_linear$table["x2", "p"], score_nonlinear$table["log(x2)", "p"]),
-  `Z-SW` = c(upper_bound_pvalue(sw_linear), upper_bound_pvalue(sw_nonlinear)),
-  `Z-AOV-LP` = c(upper_bound_pvalue(aovlp_linear), upper_bound_pvalue(aovlp_nonlinear)),
-  `Z-AOV-target` = c(upper_bound_pvalue(aovx_linear), upper_bound_pvalue(aovx_nonlinear))
+  `Score global` = c(
+    score_linear$table["GLOBAL", "p"],
+    score_nonlinear$table["GLOBAL", "p"]
+  ),
+  `Score target covariate` = c(
+    score_linear$table["x2", "p"],
+    score_nonlinear$table["log(x2)", "p"]
+  ),
+  `Z-SW` = c(
+    upper_bound_pvalue(sw_linear),
+    upper_bound_pvalue(sw_nonlinear)
+  ),
+  `Z-AOV-LP` = c(
+    upper_bound_pvalue(aovlp_linear),
+    upper_bound_pvalue(aovlp_nonlinear)
+  ),
+  `Z-AOV-target` = c(
+    upper_bound_pvalue(aovx_linear),
+    upper_bound_pvalue(aovx_nonlinear)
+  ),
+  check.names = FALSE
 )
 
-sim_linear_summary %>%
-  gt::gt() %>%
-  gt::fmt_number(columns = -Model, decimals = 3) %>%
-  gt::tab_header(title = "Summary of Replicated P-values for the Nonlinear Dataset")
+knitr::kable(
+  sim_linear_summary,
+  digits = 3,
+  caption = "Summary of replicated p-values for the nonlinear dataset"
+)
 ```
 
 ### Checking the Sampling Distribution of Shapiro-Wilk Tests p-values

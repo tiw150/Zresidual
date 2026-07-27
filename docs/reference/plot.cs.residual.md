@@ -1,10 +1,9 @@
-# Cox–Snell residual plot for survival models
+# Cox-Snell residual plot for survival models
 
-Produce a Cox–Snell residual diagnostic plot for survival models, based
-on the cumulative hazard of the Cox–Snell residuals. Under a correctly
-specified model, the Cox–Snell residuals should follow an exponential
-distribution with mean 1, so the nonparametric estimate of the
-cumulative hazard should lie close to the 45-degree line.
+Draws a ggplot2 Cox-Snell residual diagnostic based on the
+Fleming-Harrington estimate of the cumulative hazard. Under a correctly
+specified model, the curve should be close to the 45-degree reference
+line.
 
 ## Usage
 
@@ -14,7 +13,11 @@ plot(
   x,
   ylab = "Cumulative Hazard Function",
   main.title = "Cox-Snell Residuals Scatterplot",
-  outlier.return = FALSE,
+  outlier.return = TRUE,
+  point.args = list(),
+  curve.args = list(),
+  reference.args = list(),
+  theme = ggplot2::theme_bw(),
   ...
 )
 ```
@@ -23,82 +26,44 @@ plot(
 
 - x:
 
-  Numeric vector (or one-column matrix) of Cox–Snell residuals,
-  typically returned by one of the residual functions in this package
-  with `residual.type = "Cox-Snell"`. It must carry the attribute
-  `"censored.status"`, giving the event indicator (1 = event, 0 =
-  censored).
+  Numeric Cox-Snell residual vector or one-column matrix carrying a
+  length-n `censored.status` event-indicator attribute.
 
 - ylab:
 
-  Character string for the y-axis label. Default is
-  `"Cumulative Hazard Function"`.
+  Y-axis label.
 
 - main.title:
 
-  Character string for the main plot title. Default is
-  `"Cox-Snell Residuals Scatterplot"`.
+  Main plot title.
 
 - outlier.return:
 
-  Logical; if `TRUE`, potential outliers are identified using a simple
-  cutoff `|x| > 3.5`. Their indices are printed to the console and
-  returned invisibly. If `FALSE` (default), no outlier indices are
-  returned. Note that the current implementation attempts to highlight
-  outliers using additional plotting calls and assumes access to objects
-  named `Zresidual` and `j` in the calling environment; users may wish
-  to adapt this part of the code for their own workflows.
+  If `TRUE`, mark and return observations satisfying the original
+  `abs(x) > 3.5` rule.
+
+- point.args:
+
+  Named arguments for the KM-point `geom_point()` layer.
+
+- curve.args:
+
+  Named arguments for the cumulative-hazard `geom_step()`.
+
+- reference.args:
+
+  Named arguments for the `y = x` reference segment.
+
+- theme:
+
+  A ggplot2 theme.
 
 - ...:
 
-  Additional arguments passed to
-  [`plot.survfit`](https://rdrr.io/pkg/survival/man/plot.survfit.html)
-  or to the underlying base graphics functions.
+  Additional plotting arguments. Common base arguments `xlab`, `ylab`,
+  `main`, `xlim`, `ylim`, `col`, `pch`, and `cex` are supported.
 
 ## Value
 
-The function is primarily called for its side-effect of producing a
-plot. If `outlier.return = TRUE`, it prints the indices of points
-flagged as outliers (`|x| > 3.5`) and invisibly returns a list with
-component `outliers`, containing these indices. Otherwise, it returns
-`NULL` invisibly.
-
-## Details
-
-The input `x` is typically obtained from the residual functions in this
-package (e.g.,
-[`residual.coxph()`](https://tiw150.github.io/Zresidual/reference/residual.coxph.md),
-[`residual.coxph.frailty()`](https://tiw150.github.io/Zresidual/reference/residual.coxph.frailty.md),
-or
-[`residual.survreg()`](https://tiw150.github.io/Zresidual/reference/residual.survreg.md))
-with `residual.type = "Cox-Snell"`.
-
-Non-finite Cox–Snell residuals are detected and truncated to lie
-slightly beyond the largest finite residual, with a message printed to
-alert the user that there may be problems with the model fit. The
-cumulative hazard is drawn using `fun = "cumhaz"` and compared visually
-to the exponential(1) reference line \\H(t) = t\\.
-
-## See also
-
-`residual.coxph`, `residual.coxph.frailty`, `residual.survreg`,
-[`Surv`](https://rdrr.io/pkg/survival/man/Surv.html),
-[`survfit`](https://rdrr.io/pkg/survival/man/survfit.html)
-
-## Examples
-
-``` r
-if (requireNamespace("survival", quietly = TRUE)) {
-  set.seed(1)
-  n <- 30
-  x <- rnorm(n)
-  t_event <- rexp(n, rate = exp(0.2 * x))
-  t_cens  <- rexp(n, rate = 0.5)
-  status  <- as.integer(t_event <= t_cens)
-  time    <- pmin(t_event, t_cens)
-  dat <- data.frame(time = time, status = status, x = x)
-  fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
-  r <- surv_residuals(fit, data = dat, residual.type = "Cox-Snell")
-  plot(r)
-}
-```
+Invisibly returns `NULL`, or `list(outliers = ...)` when
+`outlier.return = TRUE`, matching the original method.

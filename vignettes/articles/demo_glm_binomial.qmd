@@ -25,7 +25,7 @@ force_rerun <- FALSE
 
 # Prefix string for all saved files
 file_prefix <- "resources/glm_binomial/"
-dir.create(file_prefix, recursive = TRUE)
+dir.create(file_prefix, recursive = TRUE, showWarnings = FALSE)
 
 
 ```
@@ -35,7 +35,6 @@ dir.create(file_prefix, recursive = TRUE)
 #| message: false
 #| warning: false
 
-suppressWarnings(unloadNamespace("Zresidual"))
 library(Zresidual)
 ```
 
@@ -87,40 +86,67 @@ The plots below display the diagnostics for a single set of Z-residuals.
 ```{r}
 #| label: diagnosis-comparison
 #| code-fold: true
-#| fig-width: 12
-#| fig-height: 8
+#| fig-width: 5
+#| fig-height: 4
+#| layout-ncol: 3
 
-# Change this value (1 to 10) to see other replicated plots
+# Change this value from 1 to 10 to inspect another
+# randomized residual replicate.
 i <- 1
 
-# Set up 2 rows (Wrong vs Correct) and 3 columns (QQ, Scatter, Box)
-par(mfrow = c(2, 3), mar = c(4, 4, 3, 1))
+# ------------------------------------------------------------
+# Row 1: misspecified linear model
+# ------------------------------------------------------------
 
-# --- ROW 1: WRONG MODEL (Linear) ---
-# 1. Q-Q Plot
-qqnorm(z_wrong, irep = i, main = "Wrong: Z-Resid Q-Q")
-qqline(as.vector(z_wrong[, i]), col = "red")
+qqnorm(
+  z_wrong,
+  irep = i,
+  main.title = "Wrong: Z-Residual Q-Q"
+)
 
-# 2. Scatter Plot (Note the wave pattern in the residuals)
-plot(z_wrong, x_axis_var = "lp", category = dat$y, 
-     irep = i, add_lowess = TRUE, main = "Wrong: Z-Resid vs LP")
+plot(
+  z_wrong,
+  x_axis_var = "lp",
+  category = dat$y,
+  irep = i,
+  add_lowess = TRUE,
+  main.title = "Wrong: Z-Residual vs LP"
+)
 
-# 3. Boxplot
-boxplot(z_wrong, x_axis_var = "x", num.bin = 10, 
-        irep = i, main = "Wrong: Z-Resid vs X")
+boxplot(
+  z_wrong,
+  x_axis_var = "x",
+  num.bin = 10,
+  irep = i,
+  main.title = "Wrong: Z-Residual vs X"
+)
 
-# --- ROW 2: CORRECT MODEL (Non-linear) ---
-# 1. Q-Q Plot
-qqnorm(z_correct, irep = i, main = "Correct: Z-Resid Q-Q")
-qqline(as.vector(z_correct[, i]), col = "blue")
+# ------------------------------------------------------------
+# Row 2: correctly specified nonlinear model
+# ------------------------------------------------------------
 
-# 2. Scatter Plot (Residuals look like random noise)
-plot(z_correct, x_axis_var = "lp", category = dat$y, 
-     irep = i, add_lowess = TRUE, main = "Correct: Z-Resid vs LP")
+qqnorm(
+  z_correct,
+  irep = i,
+  main.title = "Correct: Z-Residual Q-Q"
+)
 
-# 3. Boxplot
-boxplot(z_correct, x_axis_var = "x", num.bin = 10, 
-        irep = i, main = "Correct: Z-Resid vs X")
+plot(
+  z_correct,
+  x_axis_var = "lp",
+  category = dat$y,
+  irep = i,
+  add_lowess = TRUE,
+  main.title = "Correct: Z-Residual vs LP"
+)
+
+boxplot(
+  z_correct,
+  x_axis_var = "x",
+  num.bin = 10,
+  irep = i,
+  main.title = "Correct: Z-Residual vs X"
+)
 ```
 
 > **Note:** To inspect different realizations of the randomized residuals, change the value of `i` (the `irep` index) in the code chunk above.
@@ -130,36 +156,43 @@ boxplot(z_correct, x_axis_var = "x", num.bin = 10,
 #| label: replicated-p-values-spanned
 #| code-fold: true
 
-library(knitr)
-library(kableExtra)
-
-# 1. Create the data frame 
 res_table <- data.frame(
-  "Replicate" = paste("Rep", 1:ncol(z_wrong)),
-  "SW_W"      = as.numeric(sw.test.zresid(z_wrong)),
-  "AOV_W"     = as.numeric(aov.test.zresid(z_wrong, X = "x")),
-  "BL_W"      = as.numeric(bartlett.test.zresid(z_wrong, X = "x")),
-  "SW_C"      = as.numeric(sw.test.zresid(z_correct)),
-  "AOV_C"     = as.numeric(aov.test.zresid(z_correct, X = "x")),
-  "BL_C"      = as.numeric(bartlett.test.zresid(z_correct, X = "x"))
+  Replicate = paste("Rep", seq_len(ncol(z_wrong))),
+  Wrong_SW = as.numeric(
+    sw.test.zresid(z_wrong)
+  ),
+  Wrong_AOV = as.numeric(
+    aov.test.zresid(z_wrong, X = "x")
+  ),
+  Wrong_Bartlett = as.numeric(
+    bartlett.test.zresid(z_wrong, X = "x")
+  ),
+  Correct_SW = as.numeric(
+    sw.test.zresid(z_correct)
+  ),
+  Correct_AOV = as.numeric(
+    aov.test.zresid(z_correct, X = "x")
+  ),
+  Correct_Bartlett = as.numeric(
+    bartlett.test.zresid(z_correct, X = "x")
+  )
 )
 
-# 2. Render with minimalistic styling and spanning headers
-res_table %>%
-  kable(
-    digits = 4, 
-    # Base column names (the bottom row of the header)
-    col.names = c("Replicate", "SW", "AOV", "Bartlett", "SW", "AOV", "Bartlett"),
-    caption = "Diagnostic Test p-values Across Randomized Replicates",
-    align = "lcccccc"
-  ) %>%
-  kable_styling(
-    bootstrap_options = c("striped", "condensed"), 
-    full_width = FALSE,
-    position = "center"
-  ) %>%
-  # Add the spanning header (the top row)
-  add_header_above(c(" " = 1, "Wrong Model (Linear)" = 3, "Correct Model (Non-linear)" = 3))
+knitr::kable(
+  res_table,
+  digits = 4,
+  col.names = c(
+    "Replicate",
+    "Wrong: SW",
+    "Wrong: AOV",
+    "Wrong: Bartlett",
+    "Correct: SW",
+    "Correct: AOV",
+    "Correct: Bartlett"
+  ),
+  caption = "Diagnostic test p-values across randomized replicates",
+  align = "lcccccc"
+)
 ```
 
 ## 4. Sampling Distribution of AOV Nonlinearity Tests

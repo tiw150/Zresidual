@@ -2,84 +2,48 @@
 % Please edit documentation in R/plot.cs.residual.R
 \name{plot.cs.residual}
 \alias{plot.cs.residual}
-\title{Cox–Snell residual plot for survival models}
+\title{Cox-Snell residual plot for survival models}
 \usage{
 \method{plot}{cs.residual}(
   x,
   ylab = "Cumulative Hazard Function",
   main.title = "Cox-Snell Residuals Scatterplot",
-  outlier.return = FALSE,
+  outlier.return = TRUE,
+  point.args = list(),
+  curve.args = list(),
+  reference.args = list(),
+  theme = ggplot2::theme_bw(),
   ...
 )
 }
 \arguments{
-\item{x}{Numeric vector (or one-column matrix) of Cox–Snell
-residuals, typically returned by one of the residual functions in this
-package with \code{residual.type = "Cox-Snell"}. It must carry the
-attribute \code{"censored.status"}, giving the event indicator
-(1 = event, 0 = censored).}
+\item{x}{Numeric Cox-Snell residual vector or one-column matrix carrying a
+length-n \code{censored.status} event-indicator attribute.}
 
-\item{ylab}{Character string for the y-axis label. Default is
-\code{"Cumulative Hazard Function"}.}
+\item{ylab}{Y-axis label.}
 
-\item{main.title}{Character string for the main plot title. Default is
-\code{"Cox-Snell Residuals Scatterplot"}.}
+\item{main.title}{Main plot title.}
 
-\item{outlier.return}{Logical; if \code{TRUE}, potential outliers are
-identified using a simple cutoff \code{|x| > 3.5}. Their
-indices are printed to the console and returned invisibly. If
-\code{FALSE} (default), no outlier indices are returned. Note that the
-current implementation attempts to highlight outliers using additional
-plotting calls and assumes access to objects named \code{Zresidual} and
-\code{j} in the calling environment; users may wish to adapt this part
-of the code for their own workflows.}
+\item{outlier.return}{If \code{TRUE}, mark and return observations satisfying the
+original \code{abs(x) > 3.5} rule.}
 
-\item{...}{Additional arguments passed to \code{\link[survival]{plot.survfit}}
-or to the underlying base graphics functions.}
+\item{point.args}{Named arguments for the KM-point \code{geom_point()} layer.}
+
+\item{curve.args}{Named arguments for the cumulative-hazard \code{geom_step()}.}
+
+\item{reference.args}{Named arguments for the \code{y = x} reference segment.}
+
+\item{theme}{A ggplot2 theme.}
+
+\item{...}{Additional plotting arguments. Common base arguments \code{xlab},
+\code{ylab}, \code{main}, \code{xlim}, \code{ylim}, \code{col}, \code{pch}, and \code{cex} are supported.}
 }
 \value{
-The function is primarily called for its side-effect of producing a plot.
-If \code{outlier.return = TRUE}, it prints the indices of points flagged
-as outliers (\code{|x| > 3.5}) and invisibly returns a list with
-component \code{outliers}, containing these indices. Otherwise, it returns
-\code{NULL} invisibly.
+Invisibly returns \code{NULL}, or \code{list(outliers = ...)} when
+\code{outlier.return = TRUE}, matching the original method.
 }
 \description{
-Produce a Cox–Snell residual diagnostic plot for survival models, based on
-the cumulative hazard of the Cox–Snell residuals. Under a correctly
-specified model, the Cox–Snell residuals should follow an exponential
-distribution with mean 1, so the nonparametric estimate of the cumulative
-hazard should lie close to the 45-degree line.
-}
-\details{
-The input \code{x} is typically obtained from the residual
-functions in this package (e.g., \code{residual.coxph()},
-\code{residual.coxph.frailty()}, or \code{residual.survreg()}) with
-\code{residual.type = "Cox-Snell"}.
-
-Non-finite Cox–Snell residuals are detected and truncated to lie slightly
-beyond the largest finite residual, with a message printed to alert the
-user that there may be problems with the model fit. The cumulative hazard
-is drawn using \code{fun = "cumhaz"} and compared visually to the
-exponential(1) reference line \eqn{H(t) = t}.
-}
-\examples{
-if (requireNamespace("survival", quietly = TRUE)) {
-  set.seed(1)
-  n <- 30
-  x <- rnorm(n)
-  t_event <- rexp(n, rate = exp(0.2 * x))
-  t_cens  <- rexp(n, rate = 0.5)
-  status  <- as.integer(t_event <= t_cens)
-  time    <- pmin(t_event, t_cens)
-  dat <- data.frame(time = time, status = status, x = x)
-  fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
-  r <- surv_residuals(fit, data = dat, residual.type = "Cox-Snell")
-  plot(r)
-}
-}
-\seealso{
-\code{residual.coxph}, \code{residual.coxph.frailty},
-\code{residual.survreg}, \code{\link[survival]{Surv}},
-\code{\link[survival]{survfit}}
+Draws a ggplot2 Cox-Snell residual diagnostic based on the Fleming-Harrington
+estimate of the cumulative hazard. Under a correctly specified model, the
+curve should be close to the 45-degree reference line.
 }

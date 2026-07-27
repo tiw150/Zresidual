@@ -51,7 +51,7 @@
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
 <dd><p>An object returned by <code><a href="Zresidual.html">Zresidual</a></code> or
-<code><a href="CV.Zresidual.html">CV.Zresidual</a></code>.</p></dd>
+<code><a href="Zresidual_CV.html">Zresidual_CV</a></code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -80,165 +80,14 @@
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>NaNs produced</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              rep1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]  0.12371351</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,] -0.67041677</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,] -0.19062811</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,] -0.80128050</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,] -1.28481542</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,] -0.05743129</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,]  1.07863526</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,]  1.13636031</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,]  0.82803971</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [10,]  2.00589153</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [11,] -1.47962920</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [12,] -0.46345441</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [13,]  0.93241456</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [14,] -0.74446788</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [15,]  0.80593393</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [16,] -0.41092995</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [17,]  0.16649207</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [18,]  0.12665165</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [19,] -0.72677763</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [20,] -0.39131661</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "zresid" "matrix" "array" </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"rsp")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             [,1]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,] 0.45077106</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,] 0.74870393</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,] 0.57559152</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,] 0.78851536</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,] 0.90057160</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,] 0.52289918</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,] 0.14037518</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,] 0.12790290</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,] 0.20382401</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [10,] 0.02243391</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [11,] 0.93051388</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [12,] 0.67848066</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [13,] 0.17556116</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [14,] 0.77170327</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [15,] 0.21014047</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [16,] 0.65943805</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [17,] 0.43388486</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [18,] 0.44960806</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [19,] 0.76631891</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [20,] 0.65221839</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"zcov")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"zcov")$type</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"zcov")$family</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "coxph"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"zcov")$response_name</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "survival::Surv(time, status)"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"zcov")$response</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 0.72757111  0.28351372  0.66879807  0.07709727  0.05564831  0.68191118 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] 1.98911158+ 1.01223997  0.88838648  0.84448489+ 0.02754423  0.29970726 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [13] 1.11565871+ 0.31692237  0.81667448  0.30446482  0.61889571+ 0.62226172 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [19] 0.19942896  0.17934816+</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"zcov")$covariates</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              x</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  -0.62645381</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2   0.18364332</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  -0.83562861</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4   1.59528080</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5   0.32950777</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  -0.82046838</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7   0.48742905</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8   0.73832471</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9   0.57578135</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 -0.30538839</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11  1.51178117</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12  0.38984324</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13 -0.62124058</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14 -2.21469989</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15  1.12493092</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16 -0.04493361</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17 -0.01619026</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18  0.94383621</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19  0.82122120</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20  0.59390132</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"zcov")$linear_pred</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] -0.246552278 -0.002076453 -0.309678266  0.423935715  0.041943368</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [6] -0.305103124  0.089601771  0.165318520  0.116265241 -0.149659287</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [11]  0.398736710  0.060151756 -0.244978999 -0.725862415  0.281990791</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [16] -0.071057729 -0.062383395  0.227338977  0.190335505  0.121733591</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"zcov")$obs_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"zcov")$y_type</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 1 1 1 1 1 1 0 1 1 0 1 1 0 1 1 1 0 1 1 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"zcov")$y_type_kind</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "censor"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"zcov")$y_type_levels</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> censored    event </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        0        1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"zcov")$extra</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"zcov")$extra$time</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 0.72757111 0.28351372 0.66879807 0.07709727 0.05564831 0.68191118</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] 1.98911158 1.01223997 0.88838648 0.84448489 0.02754423 0.29970726</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [13] 1.11565871 0.31692237 0.81667448 0.30446482 0.61889571 0.62226172</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [19] 0.19942896 0.17934816</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"zcov")$extra$status</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 1 1 1 1 1 1 0 1 1 0 1 1 0 1 1 1 0 1 1 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"zcov")$extra$event_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1]  1  2  3  4  5  6  8  9 11 12 14 15 16 18 19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"zcov")$extra$censor_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1]  7 10 13 17 20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"zcov")$extra$type_raw</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"linear.pred")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] -0.246552278 -0.002076453 -0.309678266  0.423935715  0.041943368</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [6] -0.305103124  0.089601771  0.165318520  0.116265241 -0.149659287</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [11]  0.398736710  0.060151756 -0.244978999 -0.725862415  0.281990791</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [16] -0.071057729 -0.062383395  0.227338977  0.190335505  0.121733591</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"linear_pred")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] -0.246552278 -0.002076453 -0.309678266  0.423935715  0.041943368</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [6] -0.305103124  0.089601771  0.165318520  0.116265241 -0.149659287</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [11]  0.398736710  0.060151756 -0.244978999 -0.725862415  0.281990791</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [16] -0.071057729 -0.062383395  0.227338977  0.190335505  0.121733591</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"covariates")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              x</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  -0.62645381</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2   0.18364332</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  -0.83562861</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4   1.59528080</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5   0.32950777</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  -0.82046838</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7   0.48742905</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8   0.73832471</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9   0.57578135</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 -0.30538839</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11  1.51178117</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12  0.38984324</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13 -0.62124058</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14 -2.21469989</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15  1.12493092</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16 -0.04493361</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17 -0.01619026</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18  0.94383621</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19  0.82122120</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20  0.59390132</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"type")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "survival"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"censored.status")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 0 0 0 0 0 0 1 0 0 1 0 0 1 0 0 0 1 0 0 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;zresid&gt; n=20, reps=1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             rep1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]  0.12371351</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,] -0.67041677</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3,] -0.19062811</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4,] -0.80128050</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [5,] -1.28481542</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [6,] -0.05743129</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

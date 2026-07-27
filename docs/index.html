@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Z-residual: Computing and Diagnosing Gaussian-like Residuals • Zresidual</title>
+<title>Z-Residual: Computing and Diagnosing Gaussian-Like Residuals • Zresidual</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
@@ -17,7 +17,7 @@
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><link href="extra.css" rel="stylesheet">
-<meta property="og:title" content="Z-residual: Computing and Diagnosing Gaussian-like Residuals">
+<meta property="og:title" content="Z-Residual: Computing and Diagnosing Gaussian-Like Residuals">
 <meta name="description" content="Provides a unified framework for computing and analyzing Z-residuals across a diverse range of statistical models. The package facilitates model diagnostics by transforming outputs from popular modeling frameworks—including coxph, survreg, glmmTMB, and brms—into standardized Z-residuals. These tools enable researchers to assess model fit, identify outliers, and detect misspecification. In addition to standard residuals, the package implements cross-validatory variants to support robust predictive assessments and model validation workflows.">
 <meta property="og:description" content="Provides a unified framework for computing and analyzing Z-residuals across a diverse range of statistical models. The package facilitates model diagnostics by transforming outputs from popular modeling frameworks—including coxph, survreg, glmmTMB, and brms—into standardized Z-residuals. These tools enable researchers to assess model fit, identify outliers, and detect misspecification. In addition to standard residuals, the package implements cross-validatory variants to support robust predictive assessments and model validation workflows.">
 <meta property="og:image" content="https://tiw150.github.io/Zresidual/logo.png">
@@ -55,35 +55,41 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header">
-<img src="logo.png" class="logo" alt=""><h1 id="zresidual-computing-and-diagnosing-gaussian-like-residuals">Zresidual: Computing and Diagnosing Gaussian-like Residuals<a class="anchor" aria-label="anchor" href="#zresidual-computing-and-diagnosing-gaussian-like-residuals"></a>
+<img src="logo.png" class="logo" alt=""><h1 id="zresidual-an-r-package-for-computing-and-diagnosing-gaussian-like">Zresidual: An R Package for Computing and Diagnosing Gaussian-like<a class="anchor" aria-label="anchor" href="#zresidual-an-r-package-for-computing-and-diagnosing-gaussian-like"></a>
 </h1>
 </div>
+<p>Residuals</p>
 <div class="section level2">
 <h2 id="z-residual">Z-residual<a class="anchor" aria-label="anchor" href="#z-residual"></a>
 </h2>
 <p>The <strong>Zresidual</strong> package implements diagnostic residuals based on the <strong>predictive distribution</strong> of each observation. By utilizing the full probabilistic information of the model, the package generates residuals that are approximately normally distributed, enabling further standard diagnostics for Pearson’s residuals for OLS.</p>
 <p>The foundation of this approach is the <strong>Randomized Survival Probability (RSP)</strong>. For a given observation <span class="math inline">y_i</span>, the RSP represents the value of the predictive cumulative distribution function (CDF) at <span class="math inline">y_i</span>, with a randomization term to ensure continuity for discrete outcomes. It is defined as:</p>
-<p><span class="math display">RSP_i(y_i \mid \theta) = S_i(y_i \mid \theta) + U_i \, p_i(y_i \mid \theta)</span></p>
+<p><span class="math display">\text{RSP}_i(y_i \mid \theta) = S_i(y_i \mid \theta) + U_i \, p_i(y_i \mid \theta)</span></p>
 <p>where <span class="math inline">S_i</span> and <span class="math inline">p_i</span> represent the survival function and probability mass function, respectively, derived from the predictive distribution of <span class="math inline">y_i</span> given covariates <span class="math inline">\mathbf{x}_i</span> and parameters <span class="math inline">\theta</span>. <span class="math inline">U_i \sim \text{Unif}(0,1)</span> is a random uniform variable used to handle discrete outcomes. Under a correctly specified model where the observed data <span class="math inline">y_i</span> arises from the assumed predictive distribution, the RSP follows a <span class="math inline">\text{Unif}(0,1)</span> distribution.</p>
 <p>The <strong>Z-residual</strong> is then derived by transforming the RSP via the inverse standard normal cumulative distribution function:</p>
-<p><span class="math display">z_i^{RSP}(y_i \mid \theta) = -\Phi^{-1}[RSP_i(y_i \mid \theta)]</span></p>
+<p><span class="math display">z_i^{\text{RSP}}(y_i \mid \theta) = -\Phi^{-1}[\text{RSP}_i(y_i \mid \theta)]</span></p>
 <p>Under correct model specification, these residuals follow a standard normal <span class="math inline">N(0,1)</span> distribution. This mapping allows researchers to assess the quality of the predictive distribution—including its mean, variance, and shape—using standard diagnostics for Gaussian OLS.</p>
-<p>In practical applications, the parameter vector <span class="math inline">\theta</span> must be estimated. The package supports two primary paradigms for constructing these residuals:</p>
-<div class="section level4">
-<h4 id="frequentist-models">Frequentist Models<a class="anchor" aria-label="anchor" href="#frequentist-models"></a>
-</h4>
-<p>For frequentist models (e.g., <code>survival</code>, <code>glmmTMB</code>), the package computes residuals by plugging in the estimated parameters <span class="math inline">\hat{\theta}</span>. Furthermore, for <code>coxph</code> models, the package provides cross-validatory Z-residuals to allow for more rigorous validation of survival models within the frequentist framework.</p>
-</div>
-<div class="section level4">
-<h4 id="bayesian-models">Bayesian Models<a class="anchor" aria-label="anchor" href="#bayesian-models"></a>
-</h4>
-<p>For Bayesian models (e.g., <code>brms</code>), the package accounts for parameter uncertainty by integrating over the posterior distribution:</p>
+<p>In practical applications, the parameter vector <span class="math inline">\theta</span> must be estimated. The package supports several paradigms for constructing these residuals and evaluating model fit:</p>
 <ul>
-<li><p><strong>Posterior Z-residuals:</strong> These are obtained by averaging RSPs over the full-data posterior <span class="math inline">f(\theta \mid y)</span>. Although this approach involves “double use of data” since the same observations for both estimation and residual calculation, the z-residuals are asymptotically distributed as <span class="math inline">N(0,1)</span> and the test p-values are asymptotically Uniform <span class="math inline">(0,1)</span> as the approach of “summarize first then test” is used.</p></li>
-<li><p><strong>Importance-Sampling Cross-Validatory (ISCV) Z-residuals:</strong> To provide a more robust diagnostic, the package implements ISCV Z-residuals. This method approximates leave-one-out (LOO) RSPs using importance sampling based on the full-data posterior. As for deleted residuals for OLS, ISCV Z-residuals have variance slightly greater than 1.</p></li>
+<li>
+<strong>Plugging in Point Estimates:</strong> Calculating residuals by fixing <span class="math inline">\theta</span> at a specific value, such as the MLE or posterior mean.</li>
+<li>
+<strong>Posterior Averaging:</strong> Integrating residuals over the posterior distribution of <span class="math inline">\theta</span> given the training data.</li>
+<li>
+<strong>Importance Sampling:</strong> Reweighting MCMC draws from the posterior distribution to estimate residuals.</li>
+<li>
+<strong>Cross-Validation:</strong> Estimating parameters on training folds and calculating residuals on held-out data.</li>
+<li>
+<strong>Out-of-Sample Evaluation:</strong> Passing a new dataset to the argument <code>data</code>.</li>
 </ul>
-<p>The resulting posterior and ISCV Z-residuals are approximately standard normal, enabling a full range of graphical and numerical diagnostics for Bayesian models.</p>
+<p><strong>For more details, see the <a href="articles/get-started.html">Get Started</a> page</strong>.</p>
 </div>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>You can install the development version of this package from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"tiw150/Zresidual"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="supported-models">Supported Models<a class="anchor" aria-label="anchor" href="#supported-models"></a>
@@ -91,7 +97,7 @@
 <p>The <strong>Zresidual</strong> package provides built-in support for objects generated by several prominent R modeling packages. The current implementation includes:</p>
 <ul>
 <li>
-<strong>Custom Models:</strong> Support for any user-defined framework by providing log_cdf and log_pmf arguments to the generic <code>Zresidual</code> method.</li>
+<strong>custom models:</strong> Support for any user-defined framework by providing <code>log_surv</code> and <code>log_like</code> arguments to the generic <code>Zresidual</code> function.</li>
 <li>
 <strong><code>survival</code></strong>: Support for Cox Proportional Hazards models (<code>coxph</code>) and parametric survival models (<code>survreg</code>).</li>
 <li>
@@ -101,22 +107,20 @@
 </ul>
 </div>
 <div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+<h2 id="contributing-to-zresidual-using-github">Contributing to <code>Zresidual</code> Using Github<a class="anchor" aria-label="anchor" href="#contributing-to-zresidual-using-github"></a>
 </h2>
-<p>You can install the development version of this package from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install-deprecated.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"tiw150/Zresidual"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
-</h2>
-<ul>
-<li><p>Feng, C., Li, L., Sadeghpour, A., 2020. A comparison of residual diagnosis tools for diagnosing regression models for count data. BMC Medical Research Methodology 20, 175. <a href="https://doi.org/10.1186/s12874-020-01055-2" class="external-link uri">https://doi.org/10.1186/s12874-020-01055-2</a> (OA).</p></li>
-<li><p>Li L, Wu T, Feng C. Model diagnostics for censored regression via randomized survival probabilities. Statistics in Medicine. 2021; 40: 1482–1497. <a href="https://doi.org/10.1002/sim.8852" class="external-link uri">https://doi.org/10.1002/sim.8852</a>; <a href="https://longhaisk.github.io/doc/1911.00198v4.pdf" class="external-link">Reprint version</a></p></li>
-<li><p>Wu, T., Li, L., &amp; Feng, C. (2024). Z-residual diagnostic tool for assessing covariate functional form in shared frailty models. Journal of Applied Statistics, 52(1), 28–58. <a href="https://doi.org/10.1080/02664763.2024.2355551" class="external-link uri">https://doi.org/10.1080/02664763.2024.2355551</a>; <a href="https://longhaisk.github.io/doc/jas_z_residual_nolinear.pdf" class="external-link">Reprint version</a></p></li>
-<li><p>Wu, T., Feng, C., &amp; Li, L. (2024). Cross-Validatory Z-Residual for Diagnosing Shared Frailty Models. The American Statistician, 79(2), 198–211. <a href="https://doi.org/10.1080/00031305.2024.2421370" class="external-link uri">https://doi.org/10.1080/00031305.2024.2421370</a>; <a href="%22https://longhaisk.github.io/doc/cv_zresidual_final.pdf%22" class="external-link">Reprint version</a></p></li>
-</ul>
+<p>If you write a highly optimized, analytical <code>log_pointpred</code> function for a new model class or family, we highly encourage you to contribute it to the official package! Relying on exact mathematical formulas is always faster and more precise than relying on the simulation fallback.</p>
+<p>Here is the standard workflow for submitting your function to the package via a GitHub Pull Request (PR):</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Fork and Branch:</strong> Fork the <code>Zresidual</code> repository on GitHub to your own account, then clone it to your local machine. Create a new branch specifically for your feature (e.g., <code>git checkout -b feature/add-negbin-support</code>).</li>
+<li>
+<strong>Add Your Function:</strong> Place your new <code>log_pointpred_&lt;class&gt;_&lt;family&gt;</code> function into a relevant <code>.R</code> script within the package’s <code>R/</code> directory. Ensure it strictly returns the required three-element list (<code>log_surv</code>, <code>log_like</code>, and <code>is_discrete</code>).</li>
+<li>
+<strong>Validate via True DGP Simulation:</strong> Before submitting, rigorously verify your math. Simulate multiple datasets from a known true Data Generating Process (DGP) and fit the correctly specified model to each. Compute the Z-residuals for these models using your new analytical function. If your function is mathematically correct, the resulting diagnostic test <span class="math inline">p</span>-values across all iterations should be close to a uniform distribution.</li>
+<li>
+<strong>Submit a Pull Request:</strong> Commit your code, push it to your fork, and open a Pull Request against the main <code>Zresidual</code> repository. Include a brief description of the family you added and note that you successfully validated its uniformity via DGP simulation.</li>
+</ol>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

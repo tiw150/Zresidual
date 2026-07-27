@@ -1,141 +1,284 @@
-#' Create k-fold indices (internal helper)
+# =========================================================
+# Internal cross-validation fold helpers
+# =========================================================
+
+.cv_validate_k <- function(k, n, caller = "cross-validation") {
+  k <- suppressWarnings(as.integer(k))
+
+  if (length(k) != 1L || is.na(k) || k < 2L) {
+    stop(sprintf("%s: `k` must be an integer >= 2.", caller), call. = FALSE)
+  }
+
+  if (n < 2L) {
+    stop(sprintf("%s: at least two observations are required.", caller), call. = FALSE)
+  }
+
+  if (k > n) {
+    stop(sprintf("%s: `k` cannot exceed the number of observations.", caller), call. = FALSE)
+  }
+
+  k
+}
+
+.cv_quantile_bin <- function(x, max_bins = 5L) {
+  x <- as.numeric(x)
+  n <- length(x)
+
+  if (n < 2L || length(unique(x[is.finite(x)])) < 2L) {
+    return(factor(rep("all", n)))
+  }
+
+  n_bins <- min(
+    as.integer(max_bins),
+    max(2L, floor(sqrt(n))),
+    length(unique(x[is.finite(x)]))
+  )
+
+  probs <- seq(0, 1, length.out = n_bins + 1L)
+  breaks <- unique(stats::quantile(x, probs = probs, na.rm = TRUE, type = 8))
+
+  if (length(breaks) < 3L) {
+    return(factor(rep("all", n)))
+  }
+
+  cut(x, breaks = breaks, include.lowest = TRUE, ordered_result = TRUE)
+}
+
+.cv_strata <- function(y, k, censor = NULL) {
+  n <- NROW(y)
+
+  if (inherits(y, "Surv")) {
+    ymat <- as.matrix(y)
+    time <- ymat[, ncol(ymat) - 1L]
+    status <- if (is.null(censor)) ymat[, ncol(ymat)] else censor
+    time_bin <- .cv_quantile_bin(time, max_bins = min(5L, k))
+    return(interaction(factor(status), time_bin, drop = TRUE, lex.order = TRUE))
+  }
+
+  if (!is.null(censor)) {
+    if (length(censor) != n) {
+      stop("kfold_fn: `censor` must have the same length as `y`.", call. = FALSE)
+    }
+
+    if (is.numeric(y)) {
+      y_bin <- .cv_quantile_bin(y, max_bins = min(5L, k))
+    } else {
+      y_bin <- factor(y)
+    }
+
+    return(interaction(factor(censor), y_bin, drop = TRUE, lex.order = TRUE))
+  }
+
+  if (is.numeric(y)) {
+    return(.cv_quantile_bin(y, max_bins = min(5L, k)))
+  }
+
+  factor(y)
+}
+
+.cv_assign_stratified_folds <- function(strata, k) {
+  n <- length(strata)
+  fold_id <- integer(n)
+  fold_size <- integer(k)
+
+  strata_index <- split(seq_len(n), strata, drop = TRUE)
+  strata_index <- strata_index[order(lengths(strata_index), decreasing = TRUE)]
+
+  for (idx in strata_index) {
+    idx <- idx[
+      sample.int(length(idx), size = length(idx), replace = FALSE)
+    ]
+
+    for (obs in idx) {
+      smallest <- which(fold_size == min(fold_size))
+      fid <- if (length(smallest) == 1L) smallest else sample(smallest, 1L)
+      fold_id[obs] <- fid
+      fold_size[fid] <- fold_size[fid] + 1L
+    }
+  }
+
+  if (any(fold_size == 0L)) {
+    stop("kfold_fn: unable to create non-empty folds.", call. = FALSE)
+  }
+
+  fold_id
+}
+
+#' Create stratified k-fold indices
 #'
-#' Generate k-fold cross-validation indices with simple stratification
-#' based on \code{y}.
+#' Generate non-empty cross-validation folds. For survival outcomes,
+#' stratification uses censoring/event status together with quantile groups of
+#' observed follow-up time. Continuous outcomes are stratified using quantile
+#' groups rather than treating every distinct value as a factor level.
 #'
-#' @param y Outcome used for stratification. Can be a \code{Surv} object,
-#'   factor, character, or numeric vector. Numeric vectors are coerced to
-#'   factor.
-#' @param k Integer; number of folds.
-#' @param list Logical; if \code{TRUE}, return a list of index vectors
-#'   for each fold, otherwise return an integer vector of fold labels.
-#' @param returnTrain Logical; when \code{list = TRUE}, return training
-#'   indices instead of test indices.
+#' @param y Outcome used for stratification. It may be a \code{Surv} object,
+#'   factor, character vector, logical vector, or numeric vector.
+#' @param k Number of folds.
+#' @param list Logical; return a list of indices when \code{TRUE}, otherwise an
+#'   integer vector of fold labels.
+#' @param returnTrain Logical; when \code{list = TRUE}, return training indices
+#'   instead of test indices.
+#' @param censor Optional censoring/status vector used with non-\code{Surv}
+#'   outcomes.
 #'
-#' @return A list of index vectors (one per fold) or an integer vector of
-#'   fold labels, depending on \code{list}.
+#' @return A list of index vectors or an integer vector of fold labels.
 #'
 #' @keywords internal
 #' @noRd
+kfold_fn <- function(y,
+                     k,
+                     list = TRUE,
+                     returnTrain = FALSE,
+                     censor = NULL) {
+  n <- NROW(y)
+  k <- .cv_validate_k(k, n, caller = "kfold_fn")
 
+  if (!is.null(censor) && length(censor) != n) {
+    stop("kfold_fn: `censor` must have the same length as `y`.", call. = FALSE)
+  }
 
-kfold_fn<-function (y, k, list = TRUE, returnTrain = FALSE)
-{
-  if (class(y)[1] == "Surv")
-    y <- y[, "time"]
-  if (is.numeric(y)) y<-as.factor(y)
-  # {
-  #   cuts <- floor(length(y)/k)
-  #   if (cuts < 2)
-  #     cuts <- 2
-  #   if (cuts > 5)
-  #     cuts <- 5
-  #   breaks <- unique(quantile(y, probs = seq(0, 1, length = cuts)))
-  #   y <- cut(y, breaks, include.lowest = TRUE)
-  # }
-  if (k < length(y)) {
-    y <- factor(as.character(y))
-    numInClass <- table(y)
-    foldVector <- vector(mode = "integer", length(y))
-    for (i in 1:length(numInClass)) {
-      min_reps <- numInClass[i]%/%k
-      if (min_reps > 0) {
-        spares <- numInClass[i]%%k
-        seqVector <- rep(1:k, min_reps)
-        if (spares > 0)
-          seqVector <- c(seqVector, sample(1:k, spares))
-        foldVector[which(y == names(numInClass)[i])] <- sample(seqVector)
-      }
-      else {
-          foldVector[which(y == names(numInClass)[i])] <-
-            sample(1:k,size = numInClass[i])
-      }
-    }
-    fold_num<-length(table(foldVector))
-    if (fold_num !=k){
-      subsets <- replicate(1,sample(length(y)))
-      fold <- rep(seq_len(k), length.out = length(y))
-      foldVector<-fold[order(subsets)]
-    }
+  strata <- .cv_strata(y = y, k = k, censor = censor)
+  fold_id <- .cv_assign_stratified_folds(strata = strata, k = k)
+
+  if (!isTRUE(list)) return(fold_id)
+
+  out <- lapply(seq_len(k), function(fid) which(fold_id == fid))
+  names(out) <- sprintf("Fold%02d", seq_len(k))
+
+  if (isTRUE(returnTrain)) {
+    all_index <- seq_len(n)
+    out <- lapply(out, function(test_index) setdiff(all_index, test_index))
   }
-  else foldVector <- seq(along = y)
-  if (list) {
-    out <- split(seq(along = y), foldVector)
-    names(out) <- paste("Fold", gsub(" ", "0", format(seq(along = out))),
-                        sep = "")
-    if (returnTrain)
-      out <- lapply(out, function(data, y) y[-data], y = seq(along = y))
-  }
-  else out <- foldVector
+
   out
 }
 
-#' Build k-fold splits with factor/censoring checks (internal)
+.cv_categorical_columns <- function(fix_var) {
+  if (is.null(fix_var) || NCOL(fix_var) == 0L) return(character(0))
+
+  fix_var <- as.data.frame(fix_var)
+  names(fix_var)[vapply(
+    fix_var,
+    function(x) is.factor(x) || is.character(x) || is.logical(x),
+    logical(1L)
+  )]
+}
+
+.cv_validate_categorical_feasibility <- function(fix_var, categorical_names) {
+  if (length(categorical_names) == 0L) return(invisible(TRUE))
+
+  for (name in categorical_names) {
+    x <- as.character(fix_var[[name]])
+    counts <- table(x, useNA = "no")
+    rare <- names(counts)[counts < 2L]
+
+    if (length(rare) > 0L) {
+      stop(
+        sprintf(
+          paste0(
+            "make_fold: categorical variable '%s' contains level(s) with fewer ",
+            "than two observations: %s. Every test-fold level must also be ",
+            "present in its corresponding training fold."
+          ),
+          name,
+          paste(rare, collapse = ", ")
+        ),
+        call. = FALSE
+      )
+    }
+  }
+
+  invisible(TRUE)
+}
+
+.cv_fold_has_known_levels <- function(fold_list, fix_var, categorical_names) {
+  if (length(categorical_names) == 0L) return(TRUE)
+
+  n <- nrow(fix_var)
+  all_index <- seq_len(n)
+
+  for (test_index in fold_list) {
+    train_index <- setdiff(all_index, test_index)
+
+    for (name in categorical_names) {
+      test_levels <- unique(as.character(fix_var[[name]][test_index]))
+      train_levels <- unique(as.character(fix_var[[name]][train_index]))
+      test_levels <- test_levels[!is.na(test_levels)]
+      train_levels <- train_levels[!is.na(train_levels)]
+
+      if (!all(test_levels %in% train_levels)) return(FALSE)
+    }
+  }
+
+  TRUE
+}
+
+#' Build cross-validation folds with categorical-level checks
 #'
-#' Generate a k-fold split that preserves factor levels in training sets
-#' and avoids empty factor-by-censoring cells in each training fold.
+#' Generate stratified test folds and ensure that every categorical level in a
+#' test fold is represented in the corresponding training fold. Frailty group
+#' restrictions are checked separately by the Cox frailty CV backend.
 #'
 #' @param fix_var Matrix or data frame of covariates.
-#' @param y Outcome used to seed the fold assignment (passed to
-#'   \code{kfold_fn}).
-#' @param k Integer; number of folds.
-#' @param censor Vector of censoring/status indicators, same length as \code{y}.
+#' @param y Outcome used for stratification.
+#' @param k Number of folds.
+#' @param censor Censoring/status vector with the same number of observations as
+#'   \code{y}.
+#' @param max_attempts Maximum number of candidate fold assignments.
 #'
-#' @return A list of length \code{k}, each element containing the test indices
-#'   for that fold.
+#' @return A list of test-fold indices.
 #'
 #' @keywords internal
 #' @noRd
+make_fold <- function(fix_var,
+                      y,
+                      k,
+                      censor,
+                      max_attempts = 200L) {
+  fix_var <- as.data.frame(fix_var)
+  n <- NROW(y)
+  k <- .cv_validate_k(k, n, caller = "make_fold")
 
-make_fold<-function(fix_var,y,k,censor)
-{
-  ########Find out which column is factor data
-  col<-as.logical(rep(0,ncol(fix_var)))
-  for(i in 1:ncol(fix_var)){
-    col[i]<-is.factor(fix_var[,i])
+  if (nrow(fix_var) != n) {
+    stop("make_fold: `fix_var` and `y` must contain the same number of observations.", call. = FALSE)
   }
-  categ_col<-which(col==TRUE)
 
-  #######combine fix variable and censor column#####
-  fix_censor<-data.frame(fix_var,censor)
-  fix_censor_col<-ncol(fix_censor)
+  if (length(censor) != n) {
+    stop("make_fold: `censor` must have the same number of observations as `y`.", call. = FALSE)
+  }
 
-  #####make a fold list
-  if(length(categ_col)==0) fold_list<-kfold_fn(y,k)
-  if(length(categ_col)!=0){
-    counter <- 0
-    allfoldisgood<-FALSE
-    while(isFALSE(allfoldisgood)){
-      fold_list<-kfold_fn(y,k)
-      k2<-length(fold_list)
-      if(k2 != k) warning(paste("It cannot get", k, "folds,the fold number is",k2))
-      test_data <- as.list(1:k2)
-      train_data<- as.list(1:k2)
-      foldisgood<-matrix(FALSE,nrow =length(categ_col),ncol =k2)
+  max_attempts <- suppressWarnings(as.integer(max_attempts))
+  if (length(max_attempts) != 1L || is.na(max_attempts) || max_attempts < 1L) {
+    stop("make_fold: `max_attempts` must be a positive integer.", call. = FALSE)
+  }
 
-      train_data_censor<-as.list(1:k2)
-      check_table<-matrix(FALSE,nrow =length(categ_col),ncol =k2)
+  categorical_names <- .cv_categorical_columns(fix_var)
+  .cv_validate_categorical_feasibility(fix_var, categorical_names)
 
-      for(i in 1:length(categ_col)){
-        for(fid in 1:length (fold_list)) {
-          #check factor column in test data within train data
-          test_data[[fid]] <- fix_var[fold_list[[fid]], ,drop=FALSE]
-          train_data[[fid]]<- fix_var[-fold_list[[fid]], ,drop=FALSE]
-          foldisgood[i,fid]<- all(test_data[[fid]][,categ_col[i]]%in%
-                                    train_data[[fid]][,categ_col[i]])
+  for (attempt in seq_len(max_attempts)) {
+    fold_list <- kfold_fn(
+      y = y,
+      k = k,
+      list = TRUE,
+      returnTrain = FALSE,
+      censor = censor
+    )
 
-          #check cross table contain zero or not in r (factor cross with censor)
-          train_data_censor[[fid]] <- fix_censor[-fold_list[[fid]], ,drop=FALSE]
-          check_table[i,fid]<-all(apply(table(train_data_censor[[fid]][,categ_col[i]],
-                                           train_data_censor[[fid]][,fix_censor_col]),
-                                    2,function(x) x!=0))
-        }
-      }
-
-      allfoldisgood<-all(foldisgood,check_table)
-      counter <- counter+1
-      if (counter>500) stop("It cannot get the fold list ")
+    if (.cv_fold_has_known_levels(fold_list, fix_var, categorical_names)) {
+      return(fold_list)
     }
   }
-  fold_list
+
+  stop(
+    sprintf(
+      paste0(
+        "make_fold: unable to construct %d folds after %d attempts while ",
+        "keeping every test-fold categorical level in its training fold. ",
+        "Reduce `k`, combine rare levels, or supply a valid `foldlist`."
+      ),
+      k,
+      max_attempts
+    ),
+    call. = FALSE
+  )
 }

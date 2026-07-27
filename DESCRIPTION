@@ -1,6 +1,6 @@
 Package: Zresidual
 Type: Package
-Title: Z-residual: Computing and Diagnosing Gaussian-like Residuals
+Title: Z-Residual: Computing and Diagnosing Gaussian-Like Residuals
 Version: 0.2.0
 Authors@R: c(person(given = "Tingxuan", family = "Wu", role = c("aut","cre"), 
                     email = "tiw150@mail.usask.ca"),
@@ -12,7 +12,7 @@ Authors@R: c(person(given = "Tingxuan", family = "Wu", role = c("aut","cre"),
                     email = "longhai@math.usask.ca"))
 License: GPL-3
 Description: Provides a unified framework for computing and analyzing Z-residuals across a diverse range of statistical models. The package facilitates model diagnostics by transforming outputs from popular modeling frameworks—including 'coxph', 'survreg', 'glmmTMB', and 'brms'—into standardized Z-residuals. These tools enable researchers to assess model fit, identify outliers, and detect misspecification. In addition to standard residuals, the package implements cross-validatory variants to support robust predictive assessments and model validation workflows.
-URL: https://tiw150.github.io/Zresidual
+URL: https://tiw150.github.io/Zresidual/, https://tiw150.github.io/Zresidual/
 BugReports: https://github.com/tiw150/Zresidual/issues
 Depends: R (>= 3.5.0)
 Imports:
@@ -21,7 +21,8 @@ Imports:
     graphics,
     grDevices,
     methods,
-    utils
+    utils,
+    ggplot2
 Suggests: 
     brms,
     matrixStats,
@@ -53,8 +54,9 @@ Suggests:
     pacman,
     magick,
     plotrix,
-    posterior
-VignetteBuilder: knitr, quarto
+    posterior,
+    plotly
+VignetteBuilder: quarto
 LazyData: true
 RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)

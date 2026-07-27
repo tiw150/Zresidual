@@ -16,7 +16,6 @@ the fly.
 Code
 
 ``` r
-
 if (!dir.exists(model_dir)) {
   dir.create(model_dir, recursive = TRUE)
 }
@@ -62,7 +61,6 @@ structures them into the 1 \times N matrix format expected by
 Code
 
 ``` r
-
 log_pointpred_glm_poisson <- function(fit, data = NULL, ...) {
   
   # 1. Resolve data
@@ -104,7 +102,6 @@ our custom function.
 Code
 
 ``` r
-
 # Retrieve the first dataset from disk
 dat <- readRDS(paste0(model_dir, "/data_sim_1.rds"))
 
@@ -125,13 +122,14 @@ z_correct <- Zresidual(fit_correct, data = dat, randomized = TRUE, nrep = 10, lo
 Code
 
 ``` r
+i <- 1
 
-i <- 1 # Change this value (1 to 10) to see other randomized replicates
-
-par(mfrow = c(2, 3), mar = c(4, 4, 3, 1))
-
-# --- ROW 1: WRONG MODEL (Linear) ---
-qqnorm(z_wrong, irep = i, main = "Wrong: Z-Resid Q-Q")
+# Wrong model
+qqnorm(
+  z_wrong,
+  irep = i,
+  main.title = "Wrong: Z-Residual Q-Q"
+)
 ```
 
     Outlier Indices : 124
@@ -139,32 +137,64 @@ qqnorm(z_wrong, irep = i, main = "Wrong: Z-Resid Q-Q")
 Code
 
 ``` r
-
-plot(z_wrong, x_axis_var = "x", category = dat$y, irep = i, main = "Wrong: Z-Resid vs X")
+plot(
+  z_wrong,
+  x_axis_var = "x",
+  irep = i,
+  add_lowess = TRUE,
+  main.title = "Wrong: Z-Residual vs X"
+)
 ```
 
-    Outlier Indices : 124
+    Outlier indices: 124
 
 Code
 
 ``` r
-
-boxplot(z_wrong, x_axis_var = "lp", irep = i, main = "Wrong: Z-Resid vs LP")
-
-# --- ROW 2: CORRECT MODEL (Explicit Non-linear) ---
-qqnorm(z_correct, irep = i, main = "Correct: Z-Resid Q-Q")
-plot(z_correct, x_axis_var = "x", category = dat$y, irep = i, main = "Correct: Z-Resid vs X")
-boxplot(z_correct, x_axis_var = "lp", irep = i, main = "Correct: Z-Resid vs LP")
+boxplot(
+  z_wrong,
+  x_axis_var = "lp",
+  irep = i,
+  main.title = "Wrong: Z-Residual vs LP"
+)
+# Correct model
+qqnorm(
+  z_correct,
+  irep = i,
+  main.title = "Correct: Z-Residual Q-Q"
+)
+plot(
+  z_correct,
+  x_axis_var = "x",
+  irep = i,
+  add_lowess = TRUE,
+  main.title = "Correct: Z-Residual vs X"
+)
+boxplot(
+  z_correct,
+  x_axis_var = "lp",
+  irep = i,
+  main.title = "Correct: Z-Residual vs LP"
+)
 ```
 
 ![](demo_glm_poisson_files/figure-html/user-diagnosis-plots-1.png)
+
+![](demo_glm_poisson_files/figure-html/user-diagnosis-plots-2.png)
+
+![](demo_glm_poisson_files/figure-html/user-diagnosis-plots-3.png)
+
+![](demo_glm_poisson_files/figure-html/user-diagnosis-plots-4.png)
+
+![](demo_glm_poisson_files/figure-html/user-diagnosis-plots-5.png)
+
+![](demo_glm_poisson_files/figure-html/user-diagnosis-plots-6.png)
 
 **Replicated p-values of the same fitted models**
 
 Code
 
 ``` r
-
 res_table <- data.frame(
   "Replicate" = paste("Rep", 1:ncol(z_wrong)),
   "SW_W"      = as.numeric(sw.test.zresid(z_wrong)),
@@ -175,26 +205,37 @@ res_table <- data.frame(
   "BL_C"      = as.numeric(bartlett.test.zresid(z_correct, X = "lp"))
 )
 
-res_table %>%
-  kable(
-    digits = 4, 
-    col.names = c("Replicate", "SW", "AOV", "Bartlett", "SW", "AOV", "Bartlett"),
-    caption = "Diagnostic Test p-values Across Randomized Replicates",
-    align = "lcccccc"
-  ) %>%
-  kable_styling(
-    bootstrap_options = c("striped", "condensed"), 
-    full_width = FALSE,
-    position = "center"
-  ) %>%
-  add_header_above(c(" " = 1, "Wrong Model (Linear)" = 3, "Correct Model (Non-linear)" = 3))
+knitr::kable(
+  res_table,
+  digits = 4,
+  col.names = c(
+    "Replicate",
+    "Wrong: SW",
+    "Wrong: AOV",
+    "Wrong: Bartlett",
+    "Correct: SW",
+    "Correct: AOV",
+    "Correct: Bartlett"
+  ),
+  caption = "Diagnostic test p-values across randomized replicates",
+  align = "lcccccc"
+)
 ```
 
-[TABLE]
+| Replicate | Wrong: SW | Wrong: AOV | Wrong: Bartlett | Correct: SW | Correct: AOV | Correct: Bartlett |
+|:---|:--:|:--:|:--:|:--:|:--:|:--:|
+| Rep 1 | 0.0007 | 0 | 0.1390 | 0.1962 | 0.0673 | 0.8755 |
+| Rep 2 | 0.0004 | 0 | 0.0710 | 0.8714 | 0.3134 | 0.1863 |
+| Rep 3 | 0.0008 | 0 | 0.0314 | 0.4938 | 0.1151 | 0.7420 |
+| Rep 4 | 0.0004 | 0 | 0.0114 | 0.8762 | 0.4859 | 0.1238 |
+| Rep 5 | 0.0003 | 0 | 0.0267 | 0.9166 | 0.4558 | 0.3259 |
+| Rep 6 | 0.0001 | 0 | 0.0137 | 0.4151 | 0.3968 | 0.3378 |
+| Rep 7 | 0.0018 | 0 | 0.0891 | 0.4294 | 0.4483 | 0.3157 |
+| Rep 8 | 0.0003 | 0 | 0.0247 | 0.6197 | 0.4804 | 0.3020 |
+| Rep 9 | 0.0006 | 0 | 0.0730 | 0.9486 | 0.3489 | 0.8519 |
+| Rep 10 | 0.0060 | 0 | 0.1687 | 0.3064 | 0.5067 | 0.1388 |
 
-Diagnostic Test p-values Across Randomized Replicates {.table .table
-.table-striped .table-condensed .caption-top
-style="width: auto !important; margin-left: auto; margin-right: auto;"}
+Diagnostic test p-values across randomized replicates
 
 ### 2.4 Power Analysis via Sampling Distribution
 
@@ -205,7 +246,6 @@ simulations.
 Code
 
 ``` r
-
 glm_res_file <- "resources/glm_poisson_pvalues.rds"
 
 if (!force_recalcz && file.exists(glm_res_file)) {
@@ -246,7 +286,6 @@ if (!force_recalcz && file.exists(glm_res_file)) {
 Code
 
 ``` r
-
 par(mfrow = c(1, 2))
 hist(p_c, main = "Correct: Model P-values", xlab = "p-value", col = "lightblue", breaks = 10)
 abline(h = n_sim / 10, col = "red", lty = 2)
@@ -285,7 +324,6 @@ handle the covariate extraction and prediction internally.
 Code
 
 ``` r
-
 # Retrieve the first dataset from disk
 dat <- readRDS(paste0(model_dir, "/data_sim_1.rds"))
 
@@ -306,13 +344,14 @@ z_correct <- Zresidual(fit_correct, data = dat, randomized = TRUE, nrep = 10)
 Code
 
 ``` r
+i <- 1
 
-i <- 1 # Change this value (1 to 10) to see other randomized replicates
-
-par(mfrow = c(2, 3), mar = c(4, 4, 3, 1))
-
-# --- ROW 1: WRONG MODEL (Linear) ---
-qqnorm(z_wrong, irep = i, main = "Wrong: Z-Resid Q-Q")
+# Wrong model
+qqnorm(
+  z_wrong,
+  irep = i,
+  main.title = "Wrong: Z-Residual Q-Q"
+)
 ```
 
     Outlier Indices : 124
@@ -320,32 +359,64 @@ qqnorm(z_wrong, irep = i, main = "Wrong: Z-Resid Q-Q")
 Code
 
 ``` r
-
-plot(z_wrong, x_axis_var = "x", category = dat$y, irep = i, main = "Wrong: Z-Resid vs X")
+plot(
+  z_wrong,
+  x_axis_var = "x",
+  irep = i,
+  add_lowess = TRUE,
+  main.title = "Wrong: Z-Residual vs X"
+)
 ```
 
-    Outlier Indices : 124
+    Outlier indices: 124
 
 Code
 
 ``` r
-
-boxplot(z_wrong, x_axis_var = "lp", irep = i, main = "Wrong: Z-Resid vs LP")
-
-# --- ROW 2: CORRECT MODEL (Explicit Non-linear) ---
-qqnorm(z_correct, irep = i, main = "Correct: Z-Resid Q-Q")
-plot(z_correct, x_axis_var = "x", category = dat$y, irep = i, main = "Correct: Z-Resid vs X")
-boxplot(z_correct, x_axis_var = "lp", irep = i, main = "Correct: Z-Resid vs LP")
+boxplot(
+  z_wrong,
+  x_axis_var = "lp",
+  irep = i,
+  main.title = "Wrong: Z-Residual vs LP"
+)
+# Correct model
+qqnorm(
+  z_correct,
+  irep = i,
+  main.title = "Correct: Z-Residual Q-Q"
+)
+plot(
+  z_correct,
+  x_axis_var = "x",
+  irep = i,
+  add_lowess = TRUE,
+  main.title = "Correct: Z-Residual vs X"
+)
+boxplot(
+  z_correct,
+  x_axis_var = "lp",
+  irep = i,
+  main.title = "Correct: Z-Residual vs LP"
+)
 ```
 
 ![](demo_glm_poisson_files/figure-html/builtin-diagnosis-plots-1.png)
+
+![](demo_glm_poisson_files/figure-html/builtin-diagnosis-plots-2.png)
+
+![](demo_glm_poisson_files/figure-html/builtin-diagnosis-plots-3.png)
+
+![](demo_glm_poisson_files/figure-html/builtin-diagnosis-plots-4.png)
+
+![](demo_glm_poisson_files/figure-html/builtin-diagnosis-plots-5.png)
+
+![](demo_glm_poisson_files/figure-html/builtin-diagnosis-plots-6.png)
 
 **Replicated p-values of the same fitted models**
 
 Code
 
 ``` r
-
 res_table <- data.frame(
   "Replicate" = paste("Rep", 1:ncol(z_wrong)),
   "SW_W"      = as.numeric(sw.test.zresid(z_wrong)),
@@ -356,26 +427,37 @@ res_table <- data.frame(
   "BL_C"      = as.numeric(bartlett.test.zresid(z_correct, X = "lp"))
 )
 
-res_table %>%
-  kable(
-    digits = 4, 
-    col.names = c("Replicate", "SW", "AOV", "Bartlett", "SW", "AOV", "Bartlett"),
-    caption = "Diagnostic Test p-values Across Randomized Replicates",
-    align = "lcccccc"
-  ) %>%
-  kable_styling(
-    bootstrap_options = c("striped", "condensed"), 
-    full_width = FALSE,
-    position = "center"
-  ) %>%
-  add_header_above(c(" " = 1, "Wrong Model (Linear)" = 3, "Correct Model (Non-linear)" = 3))
+knitr::kable(
+  res_table,
+  digits = 4,
+  col.names = c(
+    "Replicate",
+    "Wrong: SW",
+    "Wrong: AOV",
+    "Wrong: Bartlett",
+    "Correct: SW",
+    "Correct: AOV",
+    "Correct: Bartlett"
+  ),
+  caption = "Diagnostic test p-values across randomized replicates",
+  align = "lcccccc"
+)
 ```
 
-[TABLE]
+| Replicate | Wrong: SW | Wrong: AOV | Wrong: Bartlett | Correct: SW | Correct: AOV | Correct: Bartlett |
+|:---|:--:|:--:|:--:|:--:|:--:|:--:|
+| Rep 1 | 0.0007 | 0 | 0.1390 | 0.1962 | 0.0673 | 0.8755 |
+| Rep 2 | 0.0004 | 0 | 0.0710 | 0.8714 | 0.3134 | 0.1863 |
+| Rep 3 | 0.0008 | 0 | 0.0314 | 0.4938 | 0.1151 | 0.7420 |
+| Rep 4 | 0.0004 | 0 | 0.0114 | 0.8762 | 0.4859 | 0.1238 |
+| Rep 5 | 0.0003 | 0 | 0.0267 | 0.9166 | 0.4558 | 0.3259 |
+| Rep 6 | 0.0001 | 0 | 0.0137 | 0.4151 | 0.3968 | 0.3378 |
+| Rep 7 | 0.0018 | 0 | 0.0891 | 0.4294 | 0.4483 | 0.3157 |
+| Rep 8 | 0.0003 | 0 | 0.0247 | 0.6197 | 0.4804 | 0.3020 |
+| Rep 9 | 0.0006 | 0 | 0.0730 | 0.9486 | 0.3489 | 0.8519 |
+| Rep 10 | 0.0060 | 0 | 0.1687 | 0.3064 | 0.5067 | 0.1388 |
 
-Diagnostic Test p-values Across Randomized Replicates {.table .table
-.table-striped .table-condensed .caption-top
-style="width: auto !important; margin-left: auto; margin-right: auto;"}
+Diagnostic test p-values across randomized replicates
 
 ### 3.3 Power Analysis via Sampling Distribution
 
@@ -386,7 +468,6 @@ simulations.
 Code
 
 ``` r
-
 glm_builtin_res_file <- "resources/glm_poisson_builtin_pvalues.rds"
 
 if (!force_recalcz && file.exists(glm_builtin_res_file)) {
@@ -421,7 +502,6 @@ if (!force_recalcz && file.exists(glm_builtin_res_file)) {
 Code
 
 ``` r
-
 par(mfrow = c(1, 2))
 hist(p_c, main = "Correct: Model P-values", xlab = "p-value", col = "lightblue", breaks = 10)
 abline(h = n_sim / 10, col = "red", lty = 2)

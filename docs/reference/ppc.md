@@ -1,9 +1,7 @@
-# Posterior predictive checks for count models
+# Posterior predictive checks
 
-Computes posterior predictive check summaries for a fitted count model
-using randomized and mid-point probability integral transform residuals,
-a chi-squared discrepancy, and an optional ANOVA-style residual
-diagnostic.
+Computes posterior predictive checks using the package thin-waist
+bridges: `log_pointpred`, `point_Zcov`, and `postpred_simulate`.
 
 ## Usage
 
@@ -11,11 +9,17 @@ diagnostic.
 ppc(
   fit,
   data,
-  predcheck_pointpred = NULL,
+  log_pointpred = NULL,
+  point_Zcov = NULL,
+  postpred_simulate = NULL,
+  test = NULL,
   x = NULL,
   ndraws = NULL,
   seed = NULL,
+  type = NULL,
+  randomized = TRUE,
   k_anova = 10,
+  k_bl = 10,
   ...
 )
 ```
@@ -30,40 +34,57 @@ ppc(
 
   A data frame used for posterior predictive checking.
 
-- predcheck_pointpred:
+- log_pointpred:
 
-  Optional low-level backend function. This function must accept at
-  least `fit`, `data`, and `draw_ids`, and return a list with components
-  `support`, `family`, `y`, `n`, `ndraws`, `pmf`, `tail`, `rng`, and
-  `moments`.
+  Optional pointwise predictive bridge.
+
+- point_Zcov:
+
+  Optional point-level covariate/moment bridge.
+
+- postpred_simulate:
+
+  Optional posterior predictive simulation bridge.
+
+- test:
+
+  Optional list of Z-residual test specifications.
 
 - x:
 
-  Optional grouping variable for the ANOVA-style diagnostic. This can be
-  either a column name in `data` or a vector of length `nrow(data)`.
+  Optional covariate for the default ANOVA-style diagnostic.
 
 - ndraws:
 
-  Optional number of posterior draws to use. If `NULL`, all available
-  draws are used.
+  Optional number of posterior draws to use.
 
 - seed:
 
-  Optional random seed used for draw subsampling and randomized residual
-  generation.
+  Optional random seed.
+
+- type:
+
+  Optional component selector.
+
+- randomized:
+
+  Logical; if `TRUE`, use randomized residuals for discrete outcomes.
 
 - k_anova:
 
-  Maximum number of bins used when `x` is numeric.
+  Maximum number of bins used when an ANOVA covariate is numeric.
+
+- k_bl:
+
+  Maximum number of bins used when a Bartlett covariate is numeric.
 
 - ...:
 
-  Additional arguments passed to `predcheck_pointpred`.
+  Additional arguments passed to bridge functions.
 
 ## Value
 
-An object of class `"predcheck"` containing the predictive-check summary
-statistics.
+An object of class `"predcheck"`.
 
 ## Examples
 

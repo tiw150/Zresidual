@@ -22,12 +22,11 @@ instantly load these identical models to demonstrate how the three
 Code
 
 ``` r
-
 if (!dir.exists(model_dir)) {
   dir.create(model_dir, recursive = TRUE)
 }
 
-n_sim <- 100
+n_sim <- 20
 n_sample <- 200 
 sim_data <- vector("list", n_sim)
 
@@ -98,7 +97,6 @@ R’s native distribution functions.
 Code
 
 ``` r
-
 log_pointpred_brms_pois <- function(fit, data = NULL, ...) {
   
   # 1. Resolve data
@@ -148,14 +146,12 @@ automatically.
 Code
 
 ``` r
-
 set.seed(123) ## for reproducibility
 ```
 
 Code
 
 ``` r
-
 # Load the first cached dataset and model pair
 dat <- readRDS(paste0(model_dir, "/data_sim_1.rds"))
 
@@ -172,43 +168,53 @@ z_correct <- Zresidual(fit_correct, data = dat, mcmc_summarize = "post", randomi
 Code
 
 ``` r
-
 i <- 1 
-par(mfrow = c(2, 3), mar = c(4, 4, 3, 1))
 
-qqnorm(z_wrong, irep = i, main = "Wrong: Z-Resid Q-Q")
+qqnorm(z_wrong, irep = i, main.title = "Wrong: Z-Resid Q-Q")
+plot( z_wrong,x_axis_var = "x", category = dat$y,irep = i,
+      main.title = "Wrong: Z-Resid vs X",legend.position = "bottom")
 ```
 
-    Outlier Indices : 124
+    Warning in (function (mapping = NULL, data = NULL, stat = "identity", position
+    = "identity", : Ignoring unknown parameters: `legend.position`
 
 Code
 
 ``` r
-
-plot(z_wrong, x_axis_var = "x", category = dat$y, irep = i, main = "Wrong: Z-Resid vs X")
+boxplot(z_wrong, x_axis_var = "lp", irep = i,
+        main.title = "Wrong: Z-Resid vs LP")
+qqnorm(z_correct, irep = i, main.title = "Correct: Z-Resid Q-Q")
+plot(z_correct,x_axis_var = "x", category = dat$y,irep = i,
+     main.title = "Correct: Z-Resid vs X",legend.position = "bottom")
 ```
 
-    Outlier Indices : 124
+    Warning in (function (mapping = NULL, data = NULL, stat = "identity", position
+    = "identity", : Ignoring unknown parameters: `legend.position`
 
 Code
 
 ``` r
-
-boxplot(z_wrong, x_axis_var = "lp", irep = i, main = "Wrong: Z-Resid vs LP")
-
-qqnorm(z_correct, irep = i, main = "Correct: Z-Resid Q-Q")
-plot(z_correct, x_axis_var = "x", category = dat$y, irep = i, main = "Correct: Z-Resid vs X")
-boxplot(z_correct, x_axis_var = "lp", irep = i, main = "Correct: Z-Resid vs LP")
+boxplot(z_correct, x_axis_var = "lp", irep = i,
+        main.title = "Correct: Z-Resid vs LP")
 ```
 
 ![](demo_brms_pois_files/figure-html/user-diagnosis-plots-1.png)
+
+![](demo_brms_pois_files/figure-html/user-diagnosis-plots-2.png)
+
+![](demo_brms_pois_files/figure-html/user-diagnosis-plots-3.png)
+
+![](demo_brms_pois_files/figure-html/user-diagnosis-plots-4.png)
+
+![](demo_brms_pois_files/figure-html/user-diagnosis-plots-5.png)
+
+![](demo_brms_pois_files/figure-html/user-diagnosis-plots-6.png)
 
 **Replicated p-values of the same fitted models**
 
 Code
 
 ``` r
-
 res_table <- data.frame(
   "Replicate" = paste("Rep", 1:ncol(z_wrong)),
   "SW_W"      = as.numeric(sw.test.zresid(z_wrong)),
@@ -234,9 +240,7 @@ res_table %>%
 
 [TABLE]
 
-Diagnostic Test p-values Across Randomized Replicates {.table .table
-.table-striped .table-condensed .caption-top
-style="width: auto !important; margin-left: auto; margin-right: auto;"}
+Diagnostic Test p-values Across Randomized Replicates
 
 ### 2.4 Checking the Sampling Distribution of ANOVA Nonlinearity Tests p-values
 
@@ -249,7 +253,6 @@ pipeline.
 Code
 
 ``` r
-
 user_res_file <- paste0(model_dir, "/user_pvalues.rds")
 
 if (!force_recalcz && file.exists(user_res_file)) {
@@ -277,15 +280,59 @@ if (!force_recalcz && file.exists(user_res_file)) {
 Code
 
 ``` r
+plot_theme <- theme_bw(base_size = 14) +
+  theme(
+    plot.title = element_text(
+      size = 15,
+      face = "bold",
+      hjust = 0.5
+    )
+  )
 
-par(mfrow = c(1, 2))
-hist(p_c, main = "Correct: Model P-values", xlab = "p-value", col = "lightblue", breaks = 10)
-abline(h = n_sim / 10, col = "red", lty = 2)
+p_correct <- ggplot(
+  data.frame(p_value = p_c),
+  aes(x = p_value)
+) +
+  geom_histogram(
+    breaks = seq(0, 1, by = 0.1),
+    fill = "lightblue",
+    colour = "white"
+  ) +
+  geom_hline(
+    yintercept = n_sim / 10,
+    colour = "red",
+    linetype = 2
+  ) +
+  labs(
+    title = "Correct: Model P-values",
+    x = "p-value",
+    y = "Count"
+  ) +
+  plot_theme
 
-hist(p_w, main = "Wrong: Small p-values", xlab = "p-value", col = "salmon", breaks = 10)
+p_wrong <- ggplot(
+  data.frame(p_value = p_w),
+  aes(x = p_value)
+) +
+  geom_histogram(
+    breaks = seq(0, 1, by = 0.1),
+    fill = "salmon",
+    colour = "white"
+  ) +
+  labs(
+    title = "Wrong: Small P-values",
+    x = "p-value",
+    y = "Count"
+  ) +
+  plot_theme
+
+p_correct
+p_wrong
 ```
 
 ![](demo_brms_pois_files/figure-html/user-replication-hists-1.png)
+
+![](demo_brms_pois_files/figure-html/user-replication-hists-2.png)
 
 ## 3 `Zresidual` Using the Simulation-Predictive Method
 
@@ -308,14 +355,12 @@ translation from empirical draws to normalized residuals.
 Code
 
 ``` r
-
 set.seed(123) ## for reproducibility
 ```
 
 Code
 
 ``` r
-
 dat <- readRDS(paste0(model_dir, "/data_sim_1.rds"))
 fit_wrong <- brm(y ~ x, family = poisson(), data = dat, backend = "cmdstanr", file = paste0(model_dir, "/wrong_sim_1"))
 fit_correct <- brm(y ~ sin(x), family = poisson(), data = dat, backend = "cmdstanr", file = paste0(model_dir, "/correct_sim_1"))
@@ -330,59 +375,71 @@ z_correct <- Zresidual(fit_correct, data = dat, pred_method = "simulation", mcmc
 Code
 
 ``` r
-
 i <- 1 
-par(mfrow = c(2, 3), mar = c(4, 4, 3, 1))
 
-qqnorm(z_wrong, irep = i, main = "Wrong: Z-Resid Q-Q")
+qqnorm(z_wrong, irep = i, main.title = "Wrong: Z-Resid Q-Q")
 ```
 
-    Outlier Indices : 117, 190
+    Outlier Indices : 22, 57
 
 Code
 
 ``` r
-
-plot(z_wrong, x_axis_var = "x", category = dat$y, irep = i, main = "Wrong: Z-Resid vs X")
+plot( z_wrong,x_axis_var = "x", category = dat$y,irep = i,
+      main.title = "Wrong: Z-Resid vs X",legend.position = "bottom")
 ```
 
-    Outlier Indices : 117, 190
+    Warning in (function (mapping = NULL, data = NULL, stat = "identity", position
+    = "identity", : Ignoring unknown parameters: `legend.position`
+
+    Outlier indices: 22, 57
 
 Code
 
 ``` r
-
-boxplot(z_wrong, x_axis_var = "lp", irep = i, main = "Wrong: Z-Resid vs LP")
-
-qqnorm(z_correct, irep = i, main = "Correct: Z-Resid Q-Q")
+boxplot(z_wrong, x_axis_var = "lp", irep = i,
+        main.title = "Wrong: Z-Resid vs LP")
+qqnorm(z_correct, irep = i, main.title = "Correct: Z-Resid Q-Q")
 ```
 
-    Outlier Indices : 29
+    Outlier Indices : 43
 
 Code
 
 ``` r
-
-plot(z_correct, x_axis_var = "x", category = dat$y, irep = i, main = "Correct: Z-Resid vs X")
+plot(z_correct,x_axis_var = "x", category = dat$y,irep = i,
+     main.title = "Correct: Z-Resid vs X",legend.position = "bottom")
 ```
 
-    Outlier Indices : 29
+    Warning in (function (mapping = NULL, data = NULL, stat = "identity", position
+    = "identity", : Ignoring unknown parameters: `legend.position`
+
+    Outlier indices: 43
 
 Code
 
 ``` r
-
-boxplot(z_correct, x_axis_var = "lp", irep = i, main = "Correct: Z-Resid vs LP")
+boxplot(z_correct, x_axis_var = "lp", irep = i,
+        main.title = "Correct: Z-Resid vs LP")
 ```
 
 ![](demo_brms_pois_files/figure-html/sim-diagnosis-plots-1.png)
+
+![](demo_brms_pois_files/figure-html/sim-diagnosis-plots-2.png)
+
+![](demo_brms_pois_files/figure-html/sim-diagnosis-plots-3.png)
+
+![](demo_brms_pois_files/figure-html/sim-diagnosis-plots-4.png)
+
+![](demo_brms_pois_files/figure-html/sim-diagnosis-plots-5.png)
+
+![](demo_brms_pois_files/figure-html/sim-diagnosis-plots-6.png)
 
 **Replicated p-values of the same fitted models**
 
 Code
 
 ``` r
-
 res_table <- data.frame(
   "Replicate" = paste("Rep", 1:ncol(z_wrong)),
   "SW_W"      = as.numeric(sw.test.zresid(z_wrong)),
@@ -408,9 +465,7 @@ res_table %>%
 
 [TABLE]
 
-Diagnostic Test p-values Across Randomized Replicates {.table .table
-.table-striped .table-condensed .caption-top
-style="width: auto !important; margin-left: auto; margin-right: auto;"}
+Diagnostic Test p-values Across Randomized Replicates
 
 ### 3.3 Checking the Sampling Distribution of ANOVA Nonlinearity Tests p-values
 
@@ -423,7 +478,6 @@ analytical code.
 Code
 
 ``` r
-
 sim_res_file <- paste0(model_dir, "/sim_pvalues.rds")
 
 if (!force_recalcz && file.exists(sim_res_file)) {
@@ -452,15 +506,59 @@ if (!force_recalcz && file.exists(sim_res_file)) {
 Code
 
 ``` r
+plot_theme <- theme_bw(base_size = 14) +
+  theme(
+    plot.title = element_text(
+      size = 15,
+      face = "bold",
+      hjust = 0.5
+    )
+  )
 
-par(mfrow = c(1, 2))
-hist(p_c, main = "Correct: Model P-values", xlab = "p-value", col = "lightblue", breaks = 10)
-abline(h = n_sim / 10, col = "red", lty = 2, lwd = 2)
+p_correct <- ggplot(
+  data.frame(p_value = p_c),
+  aes(x = p_value)
+) +
+  geom_histogram(
+    breaks = seq(0, 1, by = 0.1),
+    fill = "lightblue",
+    colour = "white"
+  ) +
+  geom_hline(
+    yintercept = n_sim / 10,
+    colour = "red",
+    linetype = 2
+  ) +
+  labs(
+    title = "Correct: Model P-values",
+    x = "p-value",
+    y = "Count"
+  ) +
+  plot_theme
 
-hist(p_w, main = "Wrong: Misspecification P-values", xlab = "p-value", col = "salmon", breaks = 10)
+p_wrong <- ggplot(
+  data.frame(p_value = p_w),
+  aes(x = p_value)
+) +
+  geom_histogram(
+    breaks = seq(0, 1, by = 0.1),
+    fill = "salmon",
+    colour = "white"
+  ) +
+  labs(
+    title = "Wrong: Misspecification P-values",
+    x = "p-value",
+    y = "Count"
+  ) +
+  plot_theme
+
+p_correct
+p_wrong
 ```
 
 ![](demo_brms_pois_files/figure-html/sim-hist-plots-1.png)
+
+![](demo_brms_pois_files/figure-html/sim-hist-plots-2.png)
 
 ## 4 `Zresidual` Using the Built-In Analytical Routing
 
@@ -481,14 +579,12 @@ only the fitted model object and the data.
 Code
 
 ``` r
-
 set.seed(123) ## for reproducibility
 ```
 
 Code
 
 ``` r
-
 dat <- readRDS(paste0(model_dir, "/data_sim_1.rds"))
 fit_wrong <- brm(y ~ x, family = poisson(), data = dat, backend = "cmdstanr", file = paste0(model_dir, "/wrong_sim_1"))
 fit_correct <- brm(y ~ sin(x), family = poisson(), data = dat, backend = "cmdstanr", file = paste0(model_dir, "/correct_sim_1"))
@@ -503,43 +599,53 @@ z_correct <- Zresidual(fit_correct, data = dat, mcmc_summarize = "post", randomi
 Code
 
 ``` r
-
 i <- 1 
-par(mfrow = c(2, 3), mar = c(4, 4, 3, 1))
 
-qqnorm(z_wrong, irep = i, main = "Wrong: Z-Resid Q-Q")
+qqnorm(z_wrong, irep = i, main.title = "Wrong: Z-Resid Q-Q")
+plot( z_wrong,x_axis_var = "x", category = dat$y,irep = i,
+      main.title = "Wrong: Z-Resid vs X",legend.position = "bottom")
 ```
 
-    Outlier Indices : 124
+    Warning in (function (mapping = NULL, data = NULL, stat = "identity", position
+    = "identity", : Ignoring unknown parameters: `legend.position`
 
 Code
 
 ``` r
-
-plot(z_wrong, x_axis_var = "x", category = dat$y, irep = i, main = "Wrong: Z-Resid vs X")
+boxplot(z_wrong, x_axis_var = "lp", irep = i,
+        main.title = "Wrong: Z-Resid vs LP")
+qqnorm(z_correct, irep = i, main.title = "Correct: Z-Resid Q-Q")
+plot(z_correct,x_axis_var = "x", category = dat$y,irep = i,
+     main.title = "Correct: Z-Resid vs X",legend.position = "bottom")
 ```
 
-    Outlier Indices : 124
+    Warning in (function (mapping = NULL, data = NULL, stat = "identity", position
+    = "identity", : Ignoring unknown parameters: `legend.position`
 
 Code
 
 ``` r
-
-boxplot(z_wrong, x_axis_var = "lp", irep = i, main = "Wrong: Z-Resid vs LP")
-
-qqnorm(z_correct, irep = i, main = "Correct: Z-Resid Q-Q")
-plot(z_correct, x_axis_var = "x", category = dat$y, irep = i, main = "Correct: Z-Resid vs X")
-boxplot(z_correct, x_axis_var = "lp", irep = i, main = "Correct: Z-Resid vs LP")
+boxplot(z_correct, x_axis_var = "lp", irep = i,
+        main.title = "Correct: Z-Resid vs LP")
 ```
 
 ![](demo_brms_pois_files/figure-html/ana-diagnosis-plots-1.png)
+
+![](demo_brms_pois_files/figure-html/ana-diagnosis-plots-2.png)
+
+![](demo_brms_pois_files/figure-html/ana-diagnosis-plots-3.png)
+
+![](demo_brms_pois_files/figure-html/ana-diagnosis-plots-4.png)
+
+![](demo_brms_pois_files/figure-html/ana-diagnosis-plots-5.png)
+
+![](demo_brms_pois_files/figure-html/ana-diagnosis-plots-6.png)
 
 **Replicated p-values of the same fitted models**
 
 Code
 
 ``` r
-
 res_table <- data.frame(
   "Replicate" = paste("Rep", 1:ncol(z_wrong)),
   "SW_W"      = as.numeric(sw.test.zresid(z_wrong)),
@@ -565,9 +671,7 @@ res_table %>%
 
 [TABLE]
 
-Diagnostic Test p-values Across Randomized Replicates {.table .table
-.table-striped .table-condensed .caption-top
-style="width: auto !important; margin-left: auto; margin-right: auto;"}
+Diagnostic Test p-values Across Randomized Replicates
 
 ### 4.3 Checking the Sampling Distribution of ANOVA Nonlinearity Tests p-values
 
@@ -579,7 +683,6 @@ models.
 Code
 
 ``` r
-
 ana_res_file <- paste0(model_dir, "/ana_pvalues.rds")
 
 if (!force_recalcz && file.exists(ana_res_file)) {
@@ -609,12 +712,56 @@ if (!force_recalcz && file.exists(ana_res_file)) {
 Code
 
 ``` r
+plot_theme <- theme_bw(base_size = 14) +
+  theme(
+    plot.title = element_text(
+      size = 15,
+      face = "bold",
+      hjust = 0.5
+    )
+  )
 
-par(mfrow = c(1, 2))
-hist(p_c, main = "Correct: Model P-values", xlab = "p-value", col = "lightblue", breaks = 10)
-abline(h = n_sim / 10, col = "red", lty = 2)
+p_correct <- ggplot(
+  data.frame(p_value = p_c),
+  aes(x = p_value)
+) +
+  geom_histogram(
+    breaks = seq(0, 1, by = 0.1),
+    fill = "lightblue",
+    colour = "white"
+  ) +
+  geom_hline(
+    yintercept = n_sim / 10,
+    colour = "red",
+    linetype = 2
+  ) +
+  labs(
+    title = "Correct: Model P-values",
+    x = "p-value",
+    y = "Count"
+  ) +
+  plot_theme
 
-hist(p_w, main = "Wrong: Small p-values", xlab = "p-value", col = "salmon", breaks = 10)
+p_wrong <- ggplot(
+  data.frame(p_value = p_w),
+  aes(x = p_value)
+) +
+  geom_histogram(
+    breaks = seq(0, 1, by = 0.1),
+    fill = "salmon",
+    colour = "white"
+  ) +
+  labs(
+    title = "Wrong: Small P-values",
+    x = "p-value",
+    y = "Count"
+  ) +
+  plot_theme
+
+p_correct
+p_wrong
 ```
 
 ![](demo_brms_pois_files/figure-html/ana-replication-hists-1.png)
+
+![](demo_brms_pois_files/figure-html/ana-replication-hists-2.png)

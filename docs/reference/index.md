@@ -2,14 +2,15 @@
 
 ## All functions
 
-- [`CV.Zresidual()`](https://tiw150.github.io/Zresidual/reference/CV.Zresidual.md)
-  : Cross-validated Z-residuals
-
 - [`Zcov()`](https://tiw150.github.io/Zresidual/reference/Zcov.md) :
-  Extract aligned model metadata for Z-residual diagnostics
+  Extract aligned covariates and optional point-level predictive
+  quantities
 
 - [`Zresidual()`](https://tiw150.github.io/Zresidual/reference/Zresidual.md)
   : Compute Z-residuals from predictive tail probabilities
+
+- [`Zresidual_CV()`](https://tiw150.github.io/Zresidual/reference/Zresidual_CV.md)
+  : Cross-validated Z-residuals
 
 - [`aov.test.zresid()`](https://tiw150.github.io/Zresidual/reference/aov.test.zresid.md)
   : ANOVA test diagnostic test for Z-residuals
@@ -20,11 +21,14 @@
 - [`boxplot(`*`<zresid>`*`)`](https://tiw150.github.io/Zresidual/reference/boxplot.zresid.md)
   : Boxplot diagnostics for Z-residuals
 
+- [`dinvgauss()`](https://tiw150.github.io/Zresidual/reference/dinvgauss.md)
+  : Inverse Gaussian density
+
 - [`gof.censored.zresidual()`](https://tiw150.github.io/Zresidual/reference/gof.censored.zresidual.md)
   : Goodness-of-fit test for censored Z-residuals
 
 - [`hpc()`](https://tiw150.github.io/Zresidual/reference/hpc.md) :
-  Holdout predictive checks for count models
+  Holdout predictive checks
 
 - [`dhurdlenb()`](https://tiw150.github.io/Zresidual/reference/hurdlenb.md)
   [`phurdlenb()`](https://tiw150.github.io/Zresidual/reference/hurdlenb.md)
@@ -60,8 +64,11 @@
 - [`log_summary_pred()`](https://tiw150.github.io/Zresidual/reference/log_summary_pred.md)
   : Extract and summarize MCMC predictive tail probabilities
 
+- [`pinvgauss()`](https://tiw150.github.io/Zresidual/reference/pinvgauss.md)
+  : Inverse Gaussian CDF and survival function
+
 - [`plot(`*`<cs.residual>`*`)`](https://tiw150.github.io/Zresidual/reference/plot.cs.residual.md)
-  : Cox–Snell residual plot for survival models
+  : Cox-Snell residual plot for survival models
 
 - [`plot(`*`<dev.resid>`*`)`](https://tiw150.github.io/Zresidual/reference/plot.dev.resid.md)
   : Plot deviance residuals for survival models
@@ -72,14 +79,35 @@
 - [`plot(`*`<zresid>`*`)`](https://tiw150.github.io/Zresidual/reference/plot.zresid.md)
   : Scatterplot diagnostics for Z-residuals
 
+- [`point_Zcov()`](https://tiw150.github.io/Zresidual/reference/point_Zcov.md)
+  : Extract point-level quantities for predictive checks
+
+- [`postpred_simulate()`](https://tiw150.github.io/Zresidual/reference/postpred_simulate.md)
+  : Simulate posterior predictive draws for predictive checks
+
 - [`ppc()`](https://tiw150.github.io/Zresidual/reference/ppc.md) :
-  Posterior predictive checks for count models
+  Posterior predictive checks
+
+- [`predcheck()`](https://tiw150.github.io/Zresidual/reference/predcheck.md)
+  : Predictive checks
+
+- [`predcheck_chisquare()`](https://tiw150.github.io/Zresidual/reference/predcheck_chisquare.md)
+  : Pearson chi-square predictive check
+
+- [`predcheck_zresid()`](https://tiw150.github.io/Zresidual/reference/predcheck_zresid.md)
+  : Z-residual predictive checks
+
+- [`print(`*`<moment_predcheck>`*`)`](https://tiw150.github.io/Zresidual/reference/print.moment_predcheck.md)
+  : Print a moment predictive-check summary
 
 - [`print(`*`<predcheck>`*`)`](https://tiw150.github.io/Zresidual/reference/print.predcheck.md)
   : Print a predictive-check summary
 
 - [`print(`*`<resid>`*`)`](https://tiw150.github.io/Zresidual/reference/print.resid.md)
   : Print a residual vector
+
+- [`print(`*`<z_predcheck>`*`)`](https://tiw150.github.io/Zresidual/reference/print.z_predcheck.md)
+  : Print a Z-residual predictive-check summary
 
 - [`print(`*`<zresid>`*`)`](https://tiw150.github.io/Zresidual/reference/print.zresid.md)
   [`print(`*`<cvzresid>`*`)`](https://tiw150.github.io/Zresidual/reference/print.zresid.md)

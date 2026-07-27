@@ -18,7 +18,6 @@
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="demo_glm_binomial_files/libs/quarto-html/popper.min.js"></script><script src="demo_glm_binomial_files/libs/quarto-html/tippy.umd.min.js"></script><link href="demo_glm_binomial_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="demo_glm_binomial_files/libs/quarto-html/light-border.css" rel="stylesheet">
-<script src="demo_glm_binomial_files/libs/kePrint-0.0.1/kePrint.js"></script><link href="demo_glm_binomial_files/libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 <!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="Z-residual Diagnostics for glm Logistic Regression">
 <meta property="og:image" content="https://tiw150.github.io/Zresidual/logo.png">
@@ -71,8 +70,7 @@
 
     <div class="cell" data-layout-align="center">
 <details open="" class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">unloadNamespace</a></span><span class="op">(</span><span class="st">"Zresidual"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tiw150.github.io/Zresidual">Zresidual</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tiw150.github.io/Zresidual/">Zresidual</a></span><span class="op">)</span></span></code></pre></div>
 </details>
 </div>
 <section class="level2"><h2 id="simulating-a-non-linear-dataset">1. Simulating a Non-linear Dataset<a class="anchor" aria-label="anchor" href="#simulating-a-non-linear-dataset"></a>
@@ -115,43 +113,98 @@
 </section><section class="level2"><h2 id="diagnostics-with-z-residuals">3. Diagnostics with Z-residuals<a class="anchor" aria-label="anchor" href="#diagnostics-with-z-residuals"></a>
 </h2>
 <p>The plots below display the diagnostics for a single set of Z-residuals.</p>
-<div class="cell" data-layout-align="center">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Change this value (1 to 10) to see other replicated plots</span></span>
+<code class="sourceCode R"><span><span class="co"># Change this value from 1 to 10 to inspect another</span></span>
+<span><span class="co"># randomized residual replicate.</span></span>
 <span><span class="va">i</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
 <span></span>
-<span><span class="co"># Set up 2 rows (Wrong vs Correct) and 3 columns (QQ, Scatter, Box)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>, mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># ------------------------------------------------------------</span></span>
+<span><span class="co"># Row 1: misspecified linear model</span></span>
+<span><span class="co"># ------------------------------------------------------------</span></span>
 <span></span>
-<span><span class="co"># --- ROW 1: WRONG MODEL (Linear) ---</span></span>
-<span><span class="co"># 1. Q-Q Plot</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span><span class="va">z_wrong</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Wrong: Z-Resid Q-Q"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqline</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="va">z_wrong</span><span class="op">[</span>, <span class="va">i</span><span class="op">]</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span></span>
+<span>  <span class="va">z_wrong</span>,</span>
+<span>  irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>  main.title <span class="op">=</span> <span class="st">"Wrong: Z-Residual Q-Q"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">z_wrong</span>,</span>
+<span>  x_axis_var <span class="op">=</span> <span class="st">"lp"</span>,</span>
+<span>  category <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">y</span>,</span>
+<span>  irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>  add_lowess <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  main.title <span class="op">=</span> <span class="st">"Wrong: Z-Residual vs LP"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span></span>
+<span>  <span class="va">z_wrong</span>,</span>
+<span>  x_axis_var <span class="op">=</span> <span class="st">"x"</span>,</span>
+<span>  num.bin <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>  main.title <span class="op">=</span> <span class="st">"Wrong: Z-Residual vs X"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># ------------------------------------------------------------</span></span>
+<span><span class="co"># Row 2: correctly specified nonlinear model</span></span>
+<span><span class="co"># ------------------------------------------------------------</span></span>
 <span></span>
-<span><span class="co"># 2. Scatter Plot (Note the wave pattern in the residuals)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">z_wrong</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, category <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">y</span>, </span>
-<span>     irep <span class="op">=</span> <span class="va">i</span>, add_lowess <span class="op">=</span> <span class="cn">TRUE</span>, main <span class="op">=</span> <span class="st">"Wrong: Z-Resid vs LP"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># 3. Boxplot</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">z_wrong</span>, x_axis_var <span class="op">=</span> <span class="st">"x"</span>, num.bin <span class="op">=</span> <span class="fl">10</span>, </span>
-<span>        irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Wrong: Z-Resid vs X"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># --- ROW 2: CORRECT MODEL (Non-linear) ---</span></span>
-<span><span class="co"># 1. Q-Q Plot</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span><span class="va">z_correct</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Correct: Z-Resid Q-Q"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqline</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="va">z_correct</span><span class="op">[</span>, <span class="va">i</span><span class="op">]</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># 2. Scatter Plot (Residuals look like random noise)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">z_correct</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, category <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">y</span>, </span>
-<span>     irep <span class="op">=</span> <span class="va">i</span>, add_lowess <span class="op">=</span> <span class="cn">TRUE</span>, main <span class="op">=</span> <span class="st">"Correct: Z-Resid vs LP"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># 3. Boxplot</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">z_correct</span>, x_axis_var <span class="op">=</span> <span class="st">"x"</span>, num.bin <span class="op">=</span> <span class="fl">10</span>, </span>
-<span>        irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Correct: Z-Resid vs X"</span><span class="op">)</span></span></code></pre></div>
-</details><div class="cell-output-display">
+<span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span></span>
+<span>  <span class="va">z_correct</span>,</span>
+<span>  irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>  main.title <span class="op">=</span> <span class="st">"Correct: Z-Residual Q-Q"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">z_correct</span>,</span>
+<span>  x_axis_var <span class="op">=</span> <span class="st">"lp"</span>,</span>
+<span>  category <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">y</span>,</span>
+<span>  irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>  add_lowess <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  main.title <span class="op">=</span> <span class="st">"Correct: Z-Residual vs LP"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span></span>
+<span>  <span class="va">z_correct</span>,</span>
+<span>  x_axis_var <span class="op">=</span> <span class="st">"x"</span>,</span>
+<span>  num.bin <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>  main.title <span class="op">=</span> <span class="st">"Correct: Z-Residual vs X"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</details><div class="cell quarto-layout-panel" data-layout-align="center" data-layout-ncol="3">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
 <div class="quarto-figure quarto-figure-center">
-<figure><p><img src="demo_glm_binomial_files/figure-html/diagnosis-comparison-1.png" class="quarto-figure quarto-figure-center" width="1152"></p>
+<figure><p><img src="demo_glm_binomial_files/figure-html/diagnosis-comparison-1.png" class="quarto-figure quarto-figure-center" width="480"></p>
 </figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_glm_binomial_files/figure-html/diagnosis-comparison-2.png" class="quarto-figure quarto-figure-center" width="480"></p>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_glm_binomial_files/figure-html/diagnosis-comparison-3.png" class="quarto-figure quarto-figure-center" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_glm_binomial_files/figure-html/diagnosis-comparison-4.png" class="quarto-figure quarto-figure-center" width="480"></p>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_glm_binomial_files/figure-html/diagnosis-comparison-5.png" class="quarto-figure quarto-figure-center" width="480"></p>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_glm_binomial_files/figure-html/diagnosis-comparison-6.png" class="quarto-figure quarto-figure-center" width="480"></p>
+</figure>
+</div>
 </div>
 </div>
 </div>
@@ -161,68 +214,64 @@
 <p><strong>Replicated p-values of the same fitted models</strong></p>
 <div class="cell" data-layout-align="center">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://haozhu233.github.io/kableExtra/" class="external-link">kableExtra</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># 1. Create the data frame </span></span>
-<span><span class="va">res_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  <span class="st">"Replicate"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Rep"</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">z_wrong</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  <span class="st">"SW_W"</span>      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="../reference/sw.test.zresid.html">sw.test.zresid</a></span><span class="op">(</span><span class="va">z_wrong</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  <span class="st">"AOV_W"</span>     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="../reference/aov.test.zresid.html">aov.test.zresid</a></span><span class="op">(</span><span class="va">z_wrong</span>, X <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  <span class="st">"BL_W"</span>      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="../reference/bartlett.test.zresid.html">bartlett.test.zresid</a></span><span class="op">(</span><span class="va">z_wrong</span>, X <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  <span class="st">"SW_C"</span>      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="../reference/sw.test.zresid.html">sw.test.zresid</a></span><span class="op">(</span><span class="va">z_correct</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  <span class="st">"AOV_C"</span>     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="../reference/aov.test.zresid.html">aov.test.zresid</a></span><span class="op">(</span><span class="va">z_correct</span>, X <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  <span class="st">"BL_C"</span>      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="../reference/bartlett.test.zresid.html">bartlett.test.zresid</a></span><span class="op">(</span><span class="va">z_correct</span>, X <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">res_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  Replicate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Rep"</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">z_wrong</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  Wrong_SW <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="../reference/sw.test.zresid.html">sw.test.zresid</a></span><span class="op">(</span><span class="va">z_wrong</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  Wrong_AOV <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="../reference/aov.test.zresid.html">aov.test.zresid</a></span><span class="op">(</span><span class="va">z_wrong</span>, X <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  Wrong_Bartlett <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="../reference/bartlett.test.zresid.html">bartlett.test.zresid</a></span><span class="op">(</span><span class="va">z_wrong</span>, X <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  Correct_SW <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="../reference/sw.test.zresid.html">sw.test.zresid</a></span><span class="op">(</span><span class="va">z_correct</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  Correct_AOV <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="../reference/aov.test.zresid.html">aov.test.zresid</a></span><span class="op">(</span><span class="va">z_correct</span>, X <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  Correct_Bartlett <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="../reference/bartlett.test.zresid.html">bartlett.test.zresid</a></span><span class="op">(</span><span class="va">z_correct</span>, X <span class="op">=</span> <span class="st">"x"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 2. Render with minimalistic styling and spanning headers</span></span>
-<span><span class="va">res_table</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
-<span>    digits <span class="op">=</span> <span class="fl">4</span>, </span>
-<span>    <span class="co"># Base column names (the bottom row of the header)</span></span>
-<span>    col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Replicate"</span>, <span class="st">"SW"</span>, <span class="st">"AOV"</span>, <span class="st">"Bartlett"</span>, <span class="st">"SW"</span>, <span class="st">"AOV"</span>, <span class="st">"Bartlett"</span><span class="op">)</span>,</span>
-<span>    caption <span class="op">=</span> <span class="st">"Diagnostic Test p-values Across Randomized Replicates"</span>,</span>
-<span>    align <span class="op">=</span> <span class="st">"lcccccc"</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/kable_styling.html" class="external-link">kable_styling</a></span><span class="op">(</span></span>
-<span>    bootstrap_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"striped"</span>, <span class="st">"condensed"</span><span class="op">)</span>, </span>
-<span>    full_width <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>    position <span class="op">=</span> <span class="st">"center"</span></span>
-<span>  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="co"># Add the spanning header (the top row)</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/add_header_above.html" class="external-link">add_header_above</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">" "</span> <span class="op">=</span> <span class="fl">1</span>, <span class="st">"Wrong Model (Linear)"</span> <span class="op">=</span> <span class="fl">3</span>, <span class="st">"Correct Model (Non-linear)"</span> <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
+<span>  <span class="va">res_table</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Replicate"</span>,</span>
+<span>    <span class="st">"Wrong: SW"</span>,</span>
+<span>    <span class="st">"Wrong: AOV"</span>,</span>
+<span>    <span class="st">"Wrong: Bartlett"</span>,</span>
+<span>    <span class="st">"Correct: SW"</span>,</span>
+<span>    <span class="st">"Correct: AOV"</span>,</span>
+<span>    <span class="st">"Correct: Bartlett"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  caption <span class="op">=</span> <span class="st">"Diagnostic test p-values across randomized replicates"</span>,</span>
+<span>  align <span class="op">=</span> <span class="st">"lcccccc"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output-display">
-<table class="table table table-striped table-condensed caption-top" style="width: auto !important; margin-left: auto; margin-right: auto;">
-<caption>Diagnostic Test p-values Across Randomized Replicates</caption>
+<table class="table caption-top">
+<caption>Diagnostic test p-values across randomized replicates</caption>
 <colgroup>
+<col style="width: 10%">
+<col style="width: 11%">
+<col style="width: 12%">
+<col style="width: 17%">
+<col style="width: 13%">
 <col style="width: 14%">
-<col style="width: 14%">
-<col style="width: 14%">
-<col style="width: 14%">
-<col style="width: 14%">
-<col style="width: 14%">
-<col style="width: 14%">
+<col style="width: 19%">
 </colgroup>
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th" style="text-align: left; empty-cells: hide; border-bottom: hidden;"></th>
-<th colspan="3" data-quarto-table-cell-role="th" style="text-align: center; border-bottom: hidden; padding-bottom: 0; padding-left: 3px; padding-right: 3px;"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Wrong Model (Linear)
-</div></th>
-<th colspan="3" data-quarto-table-cell-role="th" style="text-align: center; border-bottom: hidden; padding-bottom: 0; padding-left: 3px; padding-right: 3px;"><div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Correct Model (Non-linear)
-</div></th>
-</tr>
-<tr class="even">
-<th style="text-align: left;" data-quarto-table-cell-role="th">Replicate</th>
-<th style="text-align: center;" data-quarto-table-cell-role="th">SW</th>
-<th style="text-align: center;" data-quarto-table-cell-role="th">AOV</th>
-<th style="text-align: center;" data-quarto-table-cell-role="th">Bartlett</th>
-<th style="text-align: center;" data-quarto-table-cell-role="th">SW</th>
-<th style="text-align: center;" data-quarto-table-cell-role="th">AOV</th>
-<th style="text-align: center;" data-quarto-table-cell-role="th">Bartlett</th>
-</tr>
-</thead>
+<thead><tr class="header">
+<th style="text-align: left;">Replicate</th>
+<th style="text-align: center;">Wrong: SW</th>
+<th style="text-align: center;">Wrong: AOV</th>
+<th style="text-align: center;">Wrong: Bartlett</th>
+<th style="text-align: center;">Correct: SW</th>
+<th style="text-align: center;">Correct: AOV</th>
+<th style="text-align: center;">Correct: Bartlett</th>
+</tr></thead>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Rep 1</td>

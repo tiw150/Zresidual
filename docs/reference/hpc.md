@@ -1,9 +1,7 @@
-# Holdout predictive checks for count models
+# Holdout predictive checks
 
-Computes holdout predictive check summaries for a fitted count model on
-a new dataset. The returned summaries use the same discrepancy measures
-as [`ppc()`](https://tiw150.github.io/Zresidual/reference/ppc.md), but
-are evaluated on `newdata`.
+Computes holdout predictive checks on a new dataset using the same
+thin-waist predictive-check infrastructure as `ppc`.
 
 ## Usage
 
@@ -11,11 +9,17 @@ are evaluated on `newdata`.
 hpc(
   fit,
   newdata,
-  predcheck_pointpred = NULL,
+  log_pointpred = NULL,
+  point_Zcov = NULL,
+  postpred_simulate = NULL,
+  test = NULL,
   x = NULL,
   ndraws = NULL,
   seed = NULL,
+  type = NULL,
+  randomized = TRUE,
   k_anova = 10,
+  k_bl = 10,
   ...
 )
 ```
@@ -30,41 +34,57 @@ hpc(
 
   A data frame used for holdout predictive checking.
 
-- predcheck_pointpred:
+- log_pointpred:
 
-  Optional low-level backend function. This function must accept at
-  least `fit`, `data`, and `draw_ids`, and return a list with components
-  `support`, `family`, `y`, `n`, `ndraws`, `pmf`, `tail`, `rng`, and
-  `moments`.
+  Optional pointwise predictive bridge.
+
+- point_Zcov:
+
+  Optional point-level covariate/moment bridge.
+
+- postpred_simulate:
+
+  Optional posterior predictive simulation bridge.
+
+- test:
+
+  Optional list of Z-residual test specifications.
 
 - x:
 
-  Optional grouping variable for the ANOVA-style diagnostic. This can be
-  either a column name in `newdata` or a vector of length
-  `nrow(newdata)`.
+  Optional covariate for the default ANOVA-style diagnostic.
 
 - ndraws:
 
-  Optional number of posterior draws to use. If `NULL`, all available
-  draws are used.
+  Optional number of posterior draws to use.
 
 - seed:
 
-  Optional random seed used for draw subsampling and randomized residual
-  generation.
+  Optional random seed.
+
+- type:
+
+  Optional component selector.
+
+- randomized:
+
+  Logical; if `TRUE`, use randomized residuals for discrete outcomes.
 
 - k_anova:
 
-  Maximum number of bins used when `x` is numeric.
+  Maximum number of bins used when an ANOVA covariate is numeric.
+
+- k_bl:
+
+  Maximum number of bins used when a Bartlett covariate is numeric.
 
 - ...:
 
-  Additional arguments passed to `predcheck_pointpred`.
+  Additional arguments passed to bridge functions.
 
 ## Value
 
-An object of class `"predcheck"` containing the predictive-check summary
-statistics.
+An object of class `"predcheck"`.
 
 ## Examples
 

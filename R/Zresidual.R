@@ -89,7 +89,7 @@ Zresidual <- function(fit = NULL,
     
     # --- ISCV Sample Size Check ---
     if (mcmc_summarize == "iscv" && !is.null(fit)) {
-      n_fit <- tryCatch(nobs(fit), error = function(e) NULL)
+      n_fit <- tryCatch(stats::nobs(fit), error = function(e) NULL)
       n_data <- NROW(data)
       
       if (!is.null(n_fit) && n_fit != n_data) {

@@ -26,14 +26,12 @@ knitr::opts_chunk$set(
 force_refit <- FALSE   # Controls data simulation (fits for glm are instantaneous)
 force_recalcz <- FALSE  # Controls Z-residual calculations for power analysis
 
-suppressWarnings(unloadNamespace("Zresidual"))
+#suppressWarnings(unloadNamespace("Zresidual"))
 library(Zresidual)
-library(knitr)
-library(kableExtra)
 
 # We use the same directory as the brms demo to reuse the exact same datasets
-model_dir <- "resources/brms_poission_models"
-dir.create(model_dir, recursive = TRUE)
+model_dir <- "resources/brms_poisson_models"
+dir.create(model_dir, recursive = TRUE, showWarnings = FALSE)
 
 ```
 
@@ -148,22 +146,55 @@ z_correct <- Zresidual(fit_correct, data = dat, randomized = TRUE, nrep = 10, lo
 
 ```{r user-diagnosis-plots}
 #| code-fold: true
-#| fig-width: 12
-#| fig-height: 8
+#| fig-width: 5
+#| fig-height: 4
+#| layout-ncol: 3
 
-i <- 1 # Change this value (1 to 10) to see other randomized replicates
+i <- 1
 
-par(mfrow = c(2, 3), mar = c(4, 4, 3, 1))
+# Wrong model
+qqnorm(
+  z_wrong,
+  irep = i,
+  main.title = "Wrong: Z-Residual Q-Q"
+)
 
-# --- ROW 1: WRONG MODEL (Linear) ---
-qqnorm(z_wrong, irep = i, main = "Wrong: Z-Resid Q-Q")
-plot(z_wrong, x_axis_var = "x", category = dat$y, irep = i, main = "Wrong: Z-Resid vs X")
-boxplot(z_wrong, x_axis_var = "lp", irep = i, main = "Wrong: Z-Resid vs LP")
+plot(
+  z_wrong,
+  x_axis_var = "x",
+  irep = i,
+  add_lowess = TRUE,
+  main.title = "Wrong: Z-Residual vs X"
+)
 
-# --- ROW 2: CORRECT MODEL (Explicit Non-linear) ---
-qqnorm(z_correct, irep = i, main = "Correct: Z-Resid Q-Q")
-plot(z_correct, x_axis_var = "x", category = dat$y, irep = i, main = "Correct: Z-Resid vs X")
-boxplot(z_correct, x_axis_var = "lp", irep = i, main = "Correct: Z-Resid vs LP")
+boxplot(
+  z_wrong,
+  x_axis_var = "lp",
+  irep = i,
+  main.title = "Wrong: Z-Residual vs LP"
+)
+
+# Correct model
+qqnorm(
+  z_correct,
+  irep = i,
+  main.title = "Correct: Z-Residual Q-Q"
+)
+
+plot(
+  z_correct,
+  x_axis_var = "x",
+  irep = i,
+  add_lowess = TRUE,
+  main.title = "Correct: Z-Residual vs X"
+)
+
+boxplot(
+  z_correct,
+  x_axis_var = "lp",
+  irep = i,
+  main.title = "Correct: Z-Residual vs LP"
+)
 ```
 
 **Replicated p-values of the same fitted models**
@@ -180,19 +211,21 @@ res_table <- data.frame(
   "BL_C"      = as.numeric(bartlett.test.zresid(z_correct, X = "lp"))
 )
 
-res_table %>%
-  kable(
-    digits = 4, 
-    col.names = c("Replicate", "SW", "AOV", "Bartlett", "SW", "AOV", "Bartlett"),
-    caption = "Diagnostic Test p-values Across Randomized Replicates",
-    align = "lcccccc"
-  ) %>%
-  kable_styling(
-    bootstrap_options = c("striped", "condensed"), 
-    full_width = FALSE,
-    position = "center"
-  ) %>%
-  add_header_above(c(" " = 1, "Wrong Model (Linear)" = 3, "Correct Model (Non-linear)" = 3))
+knitr::kable(
+  res_table,
+  digits = 4,
+  col.names = c(
+    "Replicate",
+    "Wrong: SW",
+    "Wrong: AOV",
+    "Wrong: Bartlett",
+    "Correct: SW",
+    "Correct: AOV",
+    "Correct: Bartlett"
+  ),
+  caption = "Diagnostic test p-values across randomized replicates",
+  align = "lcccccc"
+)
 ```
 
 ### Power Analysis via Sampling Distribution
@@ -290,22 +323,55 @@ z_correct <- Zresidual(fit_correct, data = dat, randomized = TRUE, nrep = 10)
 
 ```{r builtin-diagnosis-plots}
 #| code-fold: true
-#| fig-width: 12
-#| fig-height: 8
+#| fig-width: 5
+#| fig-height: 4
+#| layout-ncol: 3
 
-i <- 1 # Change this value (1 to 10) to see other randomized replicates
+i <- 1
 
-par(mfrow = c(2, 3), mar = c(4, 4, 3, 1))
+# Wrong model
+qqnorm(
+  z_wrong,
+  irep = i,
+  main.title = "Wrong: Z-Residual Q-Q"
+)
 
-# --- ROW 1: WRONG MODEL (Linear) ---
-qqnorm(z_wrong, irep = i, main = "Wrong: Z-Resid Q-Q")
-plot(z_wrong, x_axis_var = "x", category = dat$y, irep = i, main = "Wrong: Z-Resid vs X")
-boxplot(z_wrong, x_axis_var = "lp", irep = i, main = "Wrong: Z-Resid vs LP")
+plot(
+  z_wrong,
+  x_axis_var = "x",
+  irep = i,
+  add_lowess = TRUE,
+  main.title = "Wrong: Z-Residual vs X"
+)
 
-# --- ROW 2: CORRECT MODEL (Explicit Non-linear) ---
-qqnorm(z_correct, irep = i, main = "Correct: Z-Resid Q-Q")
-plot(z_correct, x_axis_var = "x", category = dat$y, irep = i, main = "Correct: Z-Resid vs X")
-boxplot(z_correct, x_axis_var = "lp", irep = i, main = "Correct: Z-Resid vs LP")
+boxplot(
+  z_wrong,
+  x_axis_var = "lp",
+  irep = i,
+  main.title = "Wrong: Z-Residual vs LP"
+)
+
+# Correct model
+qqnorm(
+  z_correct,
+  irep = i,
+  main.title = "Correct: Z-Residual Q-Q"
+)
+
+plot(
+  z_correct,
+  x_axis_var = "x",
+  irep = i,
+  add_lowess = TRUE,
+  main.title = "Correct: Z-Residual vs X"
+)
+
+boxplot(
+  z_correct,
+  x_axis_var = "lp",
+  irep = i,
+  main.title = "Correct: Z-Residual vs LP"
+)
 ```
 
 **Replicated p-values of the same fitted models**
@@ -322,19 +388,21 @@ res_table <- data.frame(
   "BL_C"      = as.numeric(bartlett.test.zresid(z_correct, X = "lp"))
 )
 
-res_table %>%
-  kable(
-    digits = 4, 
-    col.names = c("Replicate", "SW", "AOV", "Bartlett", "SW", "AOV", "Bartlett"),
-    caption = "Diagnostic Test p-values Across Randomized Replicates",
-    align = "lcccccc"
-  ) %>%
-  kable_styling(
-    bootstrap_options = c("striped", "condensed"), 
-    full_width = FALSE,
-    position = "center"
-  ) %>%
-  add_header_above(c(" " = 1, "Wrong Model (Linear)" = 3, "Correct Model (Non-linear)" = 3))
+knitr::kable(
+  res_table,
+  digits = 4,
+  col.names = c(
+    "Replicate",
+    "Wrong: SW",
+    "Wrong: AOV",
+    "Wrong: Bartlett",
+    "Correct: SW",
+    "Correct: AOV",
+    "Correct: Bartlett"
+  ),
+  caption = "Diagnostic test p-values across randomized replicates",
+  align = "lcccccc"
+)
 ```
 
 ### Power Analysis via Sampling Distribution

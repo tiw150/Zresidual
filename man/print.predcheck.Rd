@@ -15,6 +15,5 @@
 The input object, invisibly.
 }
 \description{
-Prints the main summary statistics stored in an object of class
-\code{"predcheck"}.
+Print a predictive-check summary
 }

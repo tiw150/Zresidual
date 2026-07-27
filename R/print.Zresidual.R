@@ -4,7 +4,7 @@
 #' Compact print methods for \code{"zresid"} and \code{"cvzresid"} objects.
 #'
 #' @param x An object returned by \code{\link{Zresidual}} or
-#'   \code{\link{CV.Zresidual}}.
+#'   \code{\link{Zresidual_CV}}.
 #' @param ... Further arguments passed to \code{print()}.
 #'
 #' @return The input object, invisibly.

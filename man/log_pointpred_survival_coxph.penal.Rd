@@ -7,13 +7,18 @@
 log_pointpred_survival_coxph.penal(fit, data, traindata, ...)
 }
 \arguments{
-\item{fit}{A fitted coxph object (usually class coxph.penal).}
+\item{fit}{A fitted coxph object, usually inheriting from coxph.penal.}
 
-\item{data}{The new data to evaluate.}
+\item{data}{New data to evaluate.}
 
-\item{traindata}{The original data used to fit the model (required for baseline hazard).}
+\item{traindata}{Training data used to fit the model. This is required for
+reconstructing the baseline cumulative hazard.}
 
 \item{...}{Additional arguments passed from Zresidual.}
+}
+\value{
+A list containing log-survival probabilities, log-likelihood
+contributions, discreteness indicators, and linear predictors.
 }
 \description{
 Predictive quantities for survival::coxph with frailty

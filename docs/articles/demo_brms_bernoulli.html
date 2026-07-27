@@ -86,7 +86,7 @@
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">model_dir</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="va">n_sim</span> <span class="op">&lt;-</span> <span class="fl">100</span></span>
+<span><span class="va">n_sim</span> <span class="op">&lt;-</span> <span class="fl">20</span></span>
 <span><span class="va">n_sample</span> <span class="op">&lt;-</span> <span class="fl">200</span> </span>
 <span><span class="va">sim_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span><span class="st">"list"</span>, <span class="va">n_sim</span><span class="op">)</span></span>
 <span></span>
@@ -215,22 +215,58 @@
 </section><section class="level3" data-number="2.3"><h3 data-number="2.3" id="diagnostics-with-z-residuals">
 <span class="header-section-number">2.3</span> Diagnostics with Z-residuals<a class="anchor" aria-label="anchor" href="#diagnostics-with-z-residuals"></a>
 </h3>
-<div class="cell" data-layout-align="center">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">i</span> <span class="op">&lt;-</span> <span class="fl">1</span> </span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>, mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span><span class="va">z_wrong</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Wrong: Z-Resid Q-Q"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">z_wrong</span>, x_axis_var <span class="op">=</span> <span class="st">"x"</span>, category <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">y</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Wrong: Z-Resid vs X"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">z_wrong</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Wrong: Z-Resid vs LP"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span><span class="va">z_correct</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Correct: Z-Resid Q-Q"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">z_correct</span>, x_axis_var <span class="op">=</span> <span class="st">"x"</span>, category <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">y</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Correct: Z-Resid vs X"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">z_correct</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Correct: Z-Resid vs LP"</span><span class="op">)</span></span></code></pre></div>
-</details><div class="cell-output-display">
+<span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span><span class="va">z_wrong</span>, irep <span class="op">=</span> <span class="va">i</span>, main.title <span class="op">=</span> <span class="st">"Wrong: Z-Resid Q-Q"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">z_wrong</span>, x_axis_var <span class="op">=</span> <span class="st">"x"</span>, category <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">y</span>, irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>     main.title <span class="op">=</span> <span class="st">"Wrong: Z-Resid vs X"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">z_wrong</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>        main.title <span class="op">=</span> <span class="st">"Wrong: Z-Resid vs LP"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span><span class="va">z_correct</span>, irep <span class="op">=</span> <span class="va">i</span>, main.title <span class="op">=</span> <span class="st">"Correct: Z-Resid Q-Q"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">z_correct</span>, x_axis_var <span class="op">=</span> <span class="st">"x"</span>, category <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">y</span>, irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>     main.title <span class="op">=</span> <span class="st">"Correct: Z-Resid vs X"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">z_correct</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>        main.title <span class="op">=</span> <span class="st">"Correct: Z-Resid vs LP"</span><span class="op">)</span></span></code></pre></div>
+</details><div class="cell quarto-layout-panel" data-layout-ncol="3" data-layout-align="center">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
 <div class="quarto-figure quarto-figure-center">
-<figure><p><img src="demo_brms_bernoulli_files/figure-html/user-diagnosis-plots-1.png" class="quarto-figure quarto-figure-center" width="1152"></p>
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/user-diagnosis-plots-1.png" class="quarto-figure quarto-figure-center" width="1350"></p>
 </figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/user-diagnosis-plots-2.png" class="quarto-figure quarto-figure-center" width="1350"></p>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/user-diagnosis-plots-3.png" class="quarto-figure quarto-figure-center" width="1350"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/user-diagnosis-plots-4.png" class="quarto-figure quarto-figure-center" width="1350"></p>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/user-diagnosis-plots-5.png" class="quarto-figure quarto-figure-center" width="1350"></p>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/user-diagnosis-plots-6.png" class="quarto-figure quarto-figure-center" width="1350"></p>
+</figure>
+</div>
 </div>
 </div>
 </div>
@@ -293,93 +329,93 @@ Correct Model (Non-linear)
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Rep 1</td>
-<td style="text-align: center;">0.1412</td>
-<td style="text-align: center;">0.6258</td>
-<td style="text-align: center;">0.1363</td>
-<td style="text-align: center;">0.4440</td>
-<td style="text-align: center;">0.3102</td>
-<td style="text-align: center;">0.5018</td>
+<td style="text-align: center;">0.2029</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.0007</td>
+<td style="text-align: center;">0.2616</td>
+<td style="text-align: center;">0.5505</td>
+<td style="text-align: center;">0.4633</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Rep 2</td>
-<td style="text-align: center;">0.4265</td>
-<td style="text-align: center;">0.5670</td>
-<td style="text-align: center;">0.2339</td>
-<td style="text-align: center;">0.4613</td>
-<td style="text-align: center;">0.7773</td>
-<td style="text-align: center;">0.7327</td>
+<td style="text-align: center;">0.6657</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.3516</td>
+<td style="text-align: center;">0.7214</td>
+<td style="text-align: center;">0.4046</td>
+<td style="text-align: center;">0.0992</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Rep 3</td>
-<td style="text-align: center;">0.8820</td>
-<td style="text-align: center;">0.6906</td>
-<td style="text-align: center;">0.4550</td>
-<td style="text-align: center;">0.2783</td>
-<td style="text-align: center;">0.3673</td>
-<td style="text-align: center;">0.1949</td>
+<td style="text-align: center;">0.5743</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.0526</td>
+<td style="text-align: center;">0.5418</td>
+<td style="text-align: center;">0.2918</td>
+<td style="text-align: center;">0.8342</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Rep 4</td>
-<td style="text-align: center;">0.8777</td>
-<td style="text-align: center;">0.7717</td>
-<td style="text-align: center;">0.0808</td>
-<td style="text-align: center;">0.6124</td>
-<td style="text-align: center;">0.9803</td>
-<td style="text-align: center;">0.8032</td>
+<td style="text-align: center;">0.6356</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.3337</td>
+<td style="text-align: center;">0.4665</td>
+<td style="text-align: center;">0.5769</td>
+<td style="text-align: center;">0.1051</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Rep 5</td>
-<td style="text-align: center;">0.8148</td>
-<td style="text-align: center;">0.8852</td>
-<td style="text-align: center;">0.3387</td>
-<td style="text-align: center;">0.2573</td>
-<td style="text-align: center;">0.8350</td>
-<td style="text-align: center;">0.4029</td>
+<td style="text-align: center;">0.5931</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.3643</td>
+<td style="text-align: center;">0.0466</td>
+<td style="text-align: center;">0.0639</td>
+<td style="text-align: center;">0.7476</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Rep 6</td>
-<td style="text-align: center;">0.9917</td>
-<td style="text-align: center;">0.9671</td>
-<td style="text-align: center;">0.8700</td>
-<td style="text-align: center;">0.3938</td>
-<td style="text-align: center;">0.9821</td>
-<td style="text-align: center;">0.1458</td>
+<td style="text-align: center;">0.9626</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.0283</td>
+<td style="text-align: center;">0.5052</td>
+<td style="text-align: center;">0.1208</td>
+<td style="text-align: center;">0.8803</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Rep 7</td>
-<td style="text-align: center;">0.8992</td>
-<td style="text-align: center;">0.8916</td>
-<td style="text-align: center;">0.5281</td>
-<td style="text-align: center;">0.8148</td>
-<td style="text-align: center;">0.6312</td>
-<td style="text-align: center;">0.9059</td>
+<td style="text-align: center;">0.7518</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.0434</td>
+<td style="text-align: center;">0.9648</td>
+<td style="text-align: center;">0.1155</td>
+<td style="text-align: center;">0.6406</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Rep 8</td>
-<td style="text-align: center;">0.8744</td>
-<td style="text-align: center;">0.2698</td>
-<td style="text-align: center;">0.7026</td>
-<td style="text-align: center;">0.1646</td>
-<td style="text-align: center;">0.8039</td>
-<td style="text-align: center;">0.9879</td>
+<td style="text-align: center;">0.6017</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.8767</td>
+<td style="text-align: center;">0.6710</td>
+<td style="text-align: center;">0.2687</td>
+<td style="text-align: center;">0.9162</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Rep 9</td>
-<td style="text-align: center;">0.3631</td>
-<td style="text-align: center;">0.6188</td>
-<td style="text-align: center;">0.0773</td>
-<td style="text-align: center;">0.3867</td>
-<td style="text-align: center;">0.9930</td>
-<td style="text-align: center;">0.3693</td>
+<td style="text-align: center;">0.6875</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.0545</td>
+<td style="text-align: center;">0.4187</td>
+<td style="text-align: center;">0.0320</td>
+<td style="text-align: center;">0.9094</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Rep 10</td>
-<td style="text-align: center;">0.9485</td>
-<td style="text-align: center;">0.6634</td>
-<td style="text-align: center;">0.6355</td>
-<td style="text-align: center;">0.9643</td>
-<td style="text-align: center;">0.6901</td>
-<td style="text-align: center;">0.3276</td>
+<td style="text-align: center;">0.6898</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.3575</td>
+<td style="text-align: center;">0.5848</td>
+<td style="text-align: center;">0.4385</td>
+<td style="text-align: center;">0.2473</td>
 </tr>
 </tbody>
 </table>
@@ -415,17 +451,73 @@ Correct Model (Non-linear)
 <span><span class="op">}</span></span></code></pre></div>
 </details>
 </div>
-<div class="cell" data-layout-align="center">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">p_c</span>, main <span class="op">=</span> <span class="st">"Correct: Model P-values"</span>, xlab <span class="op">=</span> <span class="st">"p-value"</span>, col <span class="op">=</span> <span class="st">"lightblue"</span>, breaks <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>h <span class="op">=</span> <span class="va">n_sim</span> <span class="op">/</span> <span class="fl">10</span>, col <span class="op">=</span> <span class="st">"red"</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">p_correct</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>p_value <span class="op">=</span> <span class="va">p_c</span><span class="op">)</span>,</span>
+<span>  <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">p_value</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_histogram</span><span class="op">(</span></span>
+<span>    breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, by <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>,</span>
+<span>    fill <span class="op">=</span> <span class="st">"lightblue"</span>,</span>
+<span>    colour <span class="op">=</span> <span class="st">"white"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_hline</span><span class="op">(</span></span>
+<span>    yintercept <span class="op">=</span> <span class="va">n_sim</span> <span class="op">/</span> <span class="fl">10</span>,</span>
+<span>    colour <span class="op">=</span> <span class="st">"red"</span>,</span>
+<span>    linetype <span class="op">=</span> <span class="fl">2</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">labs</span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Correct: Model P-values"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"p-value"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Count"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme_bw</span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">14</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme</span><span class="op">(</span></span>
+<span>    plot.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span></span>
+<span>      size <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>      face <span class="op">=</span> <span class="st">"bold"</span>,</span>
+<span>      hjust <span class="op">=</span> <span class="fl">0.5</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">p_w</span>, main <span class="op">=</span> <span class="st">"Wrong: Small p-values"</span>, xlab <span class="op">=</span> <span class="st">"p-value"</span>, col <span class="op">=</span> <span class="st">"salmon"</span>, breaks <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-</details><div class="cell-output-display">
+<span><span class="va">p_wrong</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>p_value <span class="op">=</span> <span class="va">p_w</span><span class="op">)</span>,</span>
+<span>  <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">p_value</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_histogram</span><span class="op">(</span></span>
+<span>    breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, by <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>,</span>
+<span>    fill <span class="op">=</span> <span class="st">"salmon"</span>,</span>
+<span>    colour <span class="op">=</span> <span class="st">"white"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">labs</span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Wrong: Small P-values"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"p-value"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Count"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme_bw</span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">14</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme</span><span class="op">(</span></span>
+<span>    plot.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span></span>
+<span>      size <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>      face <span class="op">=</span> <span class="st">"bold"</span>,</span>
+<span>      hjust <span class="op">=</span> <span class="fl">0.5</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">p_correct</span></span>
+<span><span class="va">p_wrong</span></span></code></pre></div>
+</details><div class="cell quarto-layout-panel" data-layout-ncol="2" data-layout-align="center">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <div class="quarto-figure quarto-figure-center">
-<figure><p><img src="demo_brms_bernoulli_files/figure-html/user-replication-hists-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/user-replication-hists-1.png" class="quarto-figure quarto-figure-center" width="1500"></p>
 </figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/user-replication-hists-2.png" class="quarto-figure quarto-figure-center" width="1500"></p>
+</figure>
+</div>
 </div>
 </div>
 </div>
@@ -457,36 +549,80 @@ Correct Model (Non-linear)
 </section><section class="level3" data-number="3.2"><h3 data-number="3.2" id="diagnostics-with-z-residuals-1">
 <span class="header-section-number">3.2</span> Diagnostics with Z-residuals<a class="anchor" aria-label="anchor" href="#diagnostics-with-z-residuals-1"></a>
 </h3>
-<div class="cell" data-layout-align="center">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">i</span> <span class="op">&lt;-</span> <span class="fl">1</span> </span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>, mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span><span class="va">z_wrong</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Wrong: Z-Resid Q-Q"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">z_wrong</span>, x_axis_var <span class="op">=</span> <span class="st">"x"</span>, category <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">y</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Wrong: Z-Resid vs X"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">z_wrong</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Wrong: Z-Resid vs LP"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span><span class="va">z_correct</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Correct: Z-Resid Q-Q"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span><span class="va">z_wrong</span>, irep <span class="op">=</span> <span class="va">i</span>, main.title <span class="op">=</span> <span class="st">"Wrong: Z-Resid Q-Q"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output cell-output-stderr">
-<pre><code>Outlier Indices : 95</code></pre>
+<pre><code>Outlier Indices : 124</code></pre>
 </div>
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">z_correct</span>, x_axis_var <span class="op">=</span> <span class="st">"x"</span>, category <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">y</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Correct: Z-Resid vs X"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">z_wrong</span>, x_axis_var <span class="op">=</span> <span class="st">"x"</span>, category <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">y</span>, irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>     main.title <span class="op">=</span> <span class="st">"Wrong: Z-Resid vs X"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output cell-output-stderr">
-<pre><code>Outlier Indices : 95</code></pre>
+<pre><code>Outlier indices: 124</code></pre>
 </div>
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">z_correct</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Correct: Z-Resid vs LP"</span><span class="op">)</span></span></code></pre></div>
-</details><div class="cell-output-display">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">z_wrong</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>        main.title <span class="op">=</span> <span class="st">"Wrong: Z-Resid vs LP"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span><span class="va">z_correct</span>, irep <span class="op">=</span> <span class="va">i</span>, main.title <span class="op">=</span> <span class="st">"Correct: Z-Resid Q-Q"</span><span class="op">)</span></span></code></pre></div>
+</details><div class="cell-output cell-output-stderr">
+<pre><code>Outlier Indices : 55, 135, 189</code></pre>
+</div>
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">z_correct</span>, x_axis_var <span class="op">=</span> <span class="st">"x"</span>, category <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">y</span>, irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>     main.title <span class="op">=</span> <span class="st">"Correct: Z-Resid vs X"</span><span class="op">)</span></span></code></pre></div>
+</details><div class="cell-output cell-output-stderr">
+<pre><code>Outlier indices: 55, 135, 189</code></pre>
+</div>
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">z_correct</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>        main.title <span class="op">=</span> <span class="st">"Correct: Z-Resid vs LP"</span><span class="op">)</span></span></code></pre></div>
+</details><div class="cell quarto-layout-panel" data-layout-ncol="3" data-layout-align="center">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
 <div class="quarto-figure quarto-figure-center">
-<figure><p><img src="demo_brms_bernoulli_files/figure-html/sim-diagnosis-plots-1.png" class="quarto-figure quarto-figure-center" width="1152"></p>
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/sim-diagnosis-plots-1.png" class="quarto-figure quarto-figure-center" width="1350"></p>
 </figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/sim-diagnosis-plots-2.png" class="quarto-figure quarto-figure-center" width="1350"></p>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/sim-diagnosis-plots-3.png" class="quarto-figure quarto-figure-center" width="1350"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/sim-diagnosis-plots-4.png" class="quarto-figure quarto-figure-center" width="1350"></p>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/sim-diagnosis-plots-5.png" class="quarto-figure quarto-figure-center" width="1350"></p>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/sim-diagnosis-plots-6.png" class="quarto-figure quarto-figure-center" width="1350"></p>
+</figure>
+</div>
 </div>
 </div>
 </div>
 <p><strong>Replicated p-values of the same fitted models</strong></p>
 <div class="cell" data-layout-align="center">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb16"><pre class="downlit sourceCode r">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Replicate"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Rep"</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">z_wrong</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  <span class="st">"SW_W"</span>      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="../reference/sw.test.zresid.html">sw.test.zresid</a></span><span class="op">(</span><span class="va">z_wrong</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -543,93 +679,93 @@ Correct Model (Non-linear)
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Rep 1</td>
-<td style="text-align: center;">0.8926</td>
-<td style="text-align: center;">0.2308</td>
-<td style="text-align: center;">0.8422</td>
 <td style="text-align: center;">0.0000</td>
-<td style="text-align: center;">0.6529</td>
-<td style="text-align: center;">0.0009</td>
+<td style="text-align: center;">0.0000</td>
+<td style="text-align: center;">0.0028</td>
+<td style="text-align: center;">0.0000</td>
+<td style="text-align: center;">0.0793</td>
+<td style="text-align: center;">0.0000</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Rep 2</td>
+<td style="text-align: center;">0.5478</td>
 <td style="text-align: center;">0.0000</td>
-<td style="text-align: center;">0.3527</td>
-<td style="text-align: center;">0.0379</td>
-<td style="text-align: center;">0.0555</td>
-<td style="text-align: center;">0.6809</td>
-<td style="text-align: center;">0.8527</td>
+<td style="text-align: center;">0.4120</td>
+<td style="text-align: center;">0.0000</td>
+<td style="text-align: center;">0.9105</td>
+<td style="text-align: center;">0.3847</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Rep 3</td>
 <td style="text-align: center;">0.0000</td>
-<td style="text-align: center;">0.5071</td>
-<td style="text-align: center;">0.0038</td>
-<td style="text-align: center;">0.5058</td>
-<td style="text-align: center;">0.9781</td>
-<td style="text-align: center;">0.9772</td>
+<td style="text-align: center;">0.0000</td>
+<td style="text-align: center;">0.0000</td>
+<td style="text-align: center;">0.0000</td>
+<td style="text-align: center;">0.2029</td>
+<td style="text-align: center;">0.0135</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Rep 4</td>
 <td style="text-align: center;">0.0000</td>
-<td style="text-align: center;">0.1120</td>
-<td style="text-align: center;">0.3957</td>
-<td style="text-align: center;">0.6004</td>
-<td style="text-align: center;">0.6934</td>
-<td style="text-align: center;">0.9048</td>
+<td style="text-align: center;">0.0029</td>
+<td style="text-align: center;">0.0000</td>
+<td style="text-align: center;">0.3327</td>
+<td style="text-align: center;">0.4728</td>
+<td style="text-align: center;">0.8006</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Rep 5</td>
+<td style="text-align: center;">0.0113</td>
 <td style="text-align: center;">0.0000</td>
-<td style="text-align: center;">0.8289</td>
-<td style="text-align: center;">0.0176</td>
-<td style="text-align: center;">0.1791</td>
-<td style="text-align: center;">0.4124</td>
-<td style="text-align: center;">0.8073</td>
+<td style="text-align: center;">0.1631</td>
+<td style="text-align: center;">0.4977</td>
+<td style="text-align: center;">0.1717</td>
+<td style="text-align: center;">0.3215</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Rep 6</td>
-<td style="text-align: center;">0.9445</td>
-<td style="text-align: center;">0.0634</td>
-<td style="text-align: center;">0.0547</td>
+<td style="text-align: center;">0.5101</td>
 <td style="text-align: center;">0.0000</td>
-<td style="text-align: center;">0.6784</td>
-<td style="text-align: center;">0.1156</td>
+<td style="text-align: center;">0.0559</td>
+<td style="text-align: center;">0.2662</td>
+<td style="text-align: center;">0.5862</td>
+<td style="text-align: center;">0.4210</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Rep 7</td>
-<td style="text-align: center;">0.6278</td>
-<td style="text-align: center;">0.0193</td>
-<td style="text-align: center;">0.7057</td>
-<td style="text-align: center;">0.5936</td>
-<td style="text-align: center;">0.9169</td>
-<td style="text-align: center;">0.4877</td>
+<td style="text-align: center;">0.2426</td>
+<td style="text-align: center;">0.0000</td>
+<td style="text-align: center;">0.0016</td>
+<td style="text-align: center;">0.0000</td>
+<td style="text-align: center;">0.1476</td>
+<td style="text-align: center;">0.0024</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Rep 8</td>
+<td style="text-align: center;">0.0398</td>
 <td style="text-align: center;">0.0000</td>
-<td style="text-align: center;">0.0493</td>
-<td style="text-align: center;">0.1746</td>
+<td style="text-align: center;">0.0467</td>
 <td style="text-align: center;">0.0000</td>
-<td style="text-align: center;">0.9386</td>
-<td style="text-align: center;">0.0005</td>
+<td style="text-align: center;">0.1022</td>
+<td style="text-align: center;">0.0006</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Rep 9</td>
 <td style="text-align: center;">0.0000</td>
-<td style="text-align: center;">0.1953</td>
-<td style="text-align: center;">0.0147</td>
-<td style="text-align: center;">0.2345</td>
-<td style="text-align: center;">0.8214</td>
-<td style="text-align: center;">0.5087</td>
+<td style="text-align: center;">0.0000</td>
+<td style="text-align: center;">0.0000</td>
+<td style="text-align: center;">0.0000</td>
+<td style="text-align: center;">0.1148</td>
+<td style="text-align: center;">0.0070</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Rep 10</td>
+<td style="text-align: center;">0.3854</td>
 <td style="text-align: center;">0.0000</td>
-<td style="text-align: center;">0.5132</td>
-<td style="text-align: center;">0.0000</td>
-<td style="text-align: center;">0.0000</td>
-<td style="text-align: center;">0.2876</td>
-<td style="text-align: center;">0.0076</td>
+<td style="text-align: center;">0.0224</td>
+<td style="text-align: center;">0.6415</td>
+<td style="text-align: center;">0.3964</td>
+<td style="text-align: center;">0.8095</td>
 </tr>
 </tbody>
 </table>
@@ -640,7 +776,7 @@ Correct Model (Non-linear)
 </h3>
 <p>Batching this approach confirms that the simulation fallback is statistically valid. It generates the identical expected behaviors (uniform distributions for correct models, skewed distributions for structural misspecifications) without requiring a single line of custom analytical code.</p>
 <div class="cell" data-layout-align="center">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb17"><pre class="downlit sourceCode r">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sim_res_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">model_dir</span>, <span class="st">"/sim_pvalues.rds"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="va">force_recalcz</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">sim_res_file</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
@@ -666,17 +802,68 @@ Correct Model (Non-linear)
 <span><span class="op">}</span></span></code></pre></div>
 </details>
 </div>
-<div class="cell" data-layout-align="center">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">p_c</span>, main <span class="op">=</span> <span class="st">"Correct: Model P-values"</span>, xlab <span class="op">=</span> <span class="st">"p-value"</span>, col <span class="op">=</span> <span class="st">"lightblue"</span>, breaks <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>h <span class="op">=</span> <span class="va">n_sim</span> <span class="op">/</span> <span class="fl">10</span>, col <span class="op">=</span> <span class="st">"red"</span>, lty <span class="op">=</span> <span class="fl">2</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">plot_theme</span> <span class="op">&lt;-</span> <span class="fu">theme_bw</span><span class="op">(</span>base_size <span class="op">=</span> <span class="fl">14</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme</span><span class="op">(</span></span>
+<span>    plot.title <span class="op">=</span> <span class="fu">element_text</span><span class="op">(</span></span>
+<span>      size <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>      face <span class="op">=</span> <span class="st">"bold"</span>,</span>
+<span>      hjust <span class="op">=</span> <span class="fl">0.5</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">p_w</span>, main <span class="op">=</span> <span class="st">"Wrong: Misspecification P-values"</span>, xlab <span class="op">=</span> <span class="st">"p-value"</span>, col <span class="op">=</span> <span class="st">"salmon"</span>, breaks <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-</details><div class="cell-output-display">
+<span><span class="va">p_correct</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>p_value <span class="op">=</span> <span class="va">p_c</span><span class="op">)</span>,</span>
+<span>  <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">p_value</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_histogram</span><span class="op">(</span></span>
+<span>    breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, by <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>,</span>
+<span>    fill <span class="op">=</span> <span class="st">"lightblue"</span>,</span>
+<span>    colour <span class="op">=</span> <span class="st">"white"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_hline</span><span class="op">(</span></span>
+<span>    yintercept <span class="op">=</span> <span class="va">n_sim</span> <span class="op">/</span> <span class="fl">10</span>,</span>
+<span>    colour <span class="op">=</span> <span class="st">"red"</span>,</span>
+<span>    linetype <span class="op">=</span> <span class="fl">2</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">labs</span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Correct: Model P-values"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"p-value"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Count"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="va">plot_theme</span></span>
+<span></span>
+<span><span class="va">p_wrong</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>p_value <span class="op">=</span> <span class="va">p_w</span><span class="op">)</span>,</span>
+<span>  <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">p_value</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_histogram</span><span class="op">(</span></span>
+<span>    breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, by <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>,</span>
+<span>    fill <span class="op">=</span> <span class="st">"salmon"</span>,</span>
+<span>    colour <span class="op">=</span> <span class="st">"white"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">labs</span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Wrong: Misspecification P-values"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"p-value"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Count"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="va">plot_theme</span></span>
+<span></span>
+<span><span class="va">p_correct</span></span>
+<span><span class="va">p_wrong</span></span></code></pre></div>
+</details><div class="cell quarto-layout-panel" data-layout-ncol="2" data-layout-align="center">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <div class="quarto-figure quarto-figure-center">
-<figure><p><img src="demo_brms_bernoulli_files/figure-html/sim-hist-plots-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/sim-hist-plots-1.png" class="quarto-figure quarto-figure-center" width="1500"></p>
 </figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/sim-hist-plots-2.png" class="quarto-figure quarto-figure-center" width="1500"></p>
+</figure>
+</div>
 </div>
 </div>
 </div>
@@ -690,12 +877,12 @@ Correct Model (Non-linear)
 </h3>
 <p>The simplest—and generally fastest—way to use <code>Zresidual</code> is to provide only the fitted model object and the data.</p>
 <div class="cell" data-layout-align="center">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb19"><pre class="downlit sourceCode r">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span> <span class="co">## for reproducibility</span></span></code></pre></div>
 </details>
 </div>
 <div class="cell" data-layout-align="center">
-<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb20"><pre class="downlit sourceCode r">
+<details open="" class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">model_dir</span>, <span class="st">"/data_sim_1.rds"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">fit_wrong</span> <span class="op">&lt;-</span> <span class="fu">brm</span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span>, family <span class="op">=</span> <span class="fu">bernoulli</span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span>, file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">model_dir</span>, <span class="st">"/wrong_sim_1"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">fit_correct</span> <span class="op">&lt;-</span> <span class="fu">brm</span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, family <span class="op">=</span> <span class="fu">bernoulli</span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">dat</span>, backend <span class="op">=</span> <span class="st">"cmdstanr"</span>, file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">model_dir</span>, <span class="st">"/correct_sim_1"</span><span class="op">)</span><span class="op">)</span></span>
@@ -708,28 +895,64 @@ Correct Model (Non-linear)
 </section><section class="level3" data-number="4.2"><h3 data-number="4.2" id="diagnostics-with-z-residuals-2">
 <span class="header-section-number">4.2</span> Diagnostics with Z-residuals<a class="anchor" aria-label="anchor" href="#diagnostics-with-z-residuals-2"></a>
 </h3>
-<div class="cell" data-layout-align="center">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb21"><pre class="downlit sourceCode r">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">i</span> <span class="op">&lt;-</span> <span class="fl">1</span> </span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>, mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span><span class="va">z_wrong</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Wrong: Z-Resid Q-Q"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">z_wrong</span>, x_axis_var <span class="op">=</span> <span class="st">"x"</span>, category <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">y</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Wrong: Z-Resid vs X"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">z_wrong</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Wrong: Z-Resid vs LP"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span><span class="va">z_correct</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Correct: Z-Resid Q-Q"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">z_correct</span>, x_axis_var <span class="op">=</span> <span class="st">"x"</span>, category <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">y</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Correct: Z-Resid vs X"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">z_correct</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Correct: Z-Resid vs LP"</span><span class="op">)</span></span></code></pre></div>
-</details><div class="cell-output-display">
+<span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span><span class="va">z_wrong</span>, irep <span class="op">=</span> <span class="va">i</span>, main.title <span class="op">=</span> <span class="st">"Wrong: Z-Resid Q-Q"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">z_wrong</span>, x_axis_var <span class="op">=</span> <span class="st">"x"</span>, category <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">y</span>, irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>     main.title <span class="op">=</span> <span class="st">"Wrong: Z-Resid vs X"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">z_wrong</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>        main.title <span class="op">=</span> <span class="st">"Wrong: Z-Resid vs LP"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span><span class="va">z_correct</span>, irep <span class="op">=</span> <span class="va">i</span>, main.title <span class="op">=</span> <span class="st">"Correct: Z-Resid Q-Q"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">z_correct</span>, x_axis_var <span class="op">=</span> <span class="st">"x"</span>, category <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">y</span>, irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>     main.title <span class="op">=</span> <span class="st">"Correct: Z-Resid vs X"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">z_correct</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>        main.title <span class="op">=</span> <span class="st">"Correct: Z-Resid vs LP"</span><span class="op">)</span></span></code></pre></div>
+</details><div class="cell quarto-layout-panel" data-layout-ncol="3" data-layout-align="center">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
 <div class="quarto-figure quarto-figure-center">
-<figure><p><img src="demo_brms_bernoulli_files/figure-html/ana-diagnosis-plots-1.png" class="quarto-figure quarto-figure-center" width="1152"></p>
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/ana-diagnosis-plots-1.png" class="quarto-figure quarto-figure-center" width="1350"></p>
 </figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/ana-diagnosis-plots-2.png" class="quarto-figure quarto-figure-center" width="1350"></p>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/ana-diagnosis-plots-3.png" class="quarto-figure quarto-figure-center" width="1350"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/ana-diagnosis-plots-4.png" class="quarto-figure quarto-figure-center" width="1350"></p>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/ana-diagnosis-plots-5.png" class="quarto-figure quarto-figure-center" width="1350"></p>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/ana-diagnosis-plots-6.png" class="quarto-figure quarto-figure-center" width="1350"></p>
+</figure>
+</div>
 </div>
 </div>
 </div>
 <p><strong>Replicated p-values of the same fitted models</strong></p>
 <div class="cell" data-layout-align="center">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb22"><pre class="downlit sourceCode r">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res_table</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Replicate"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Rep"</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">z_wrong</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  <span class="st">"SW_W"</span>      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="../reference/sw.test.zresid.html">sw.test.zresid</a></span><span class="op">(</span><span class="va">z_wrong</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -786,93 +1009,93 @@ Correct Model (Non-linear)
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">Rep 1</td>
-<td style="text-align: center;">0.1412</td>
-<td style="text-align: center;">0.6258</td>
-<td style="text-align: center;">0.1363</td>
-<td style="text-align: center;">0.4440</td>
-<td style="text-align: center;">0.3102</td>
-<td style="text-align: center;">0.5018</td>
+<td style="text-align: center;">0.2029</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.0007</td>
+<td style="text-align: center;">0.2616</td>
+<td style="text-align: center;">0.5505</td>
+<td style="text-align: center;">0.4633</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Rep 2</td>
-<td style="text-align: center;">0.4265</td>
-<td style="text-align: center;">0.5670</td>
-<td style="text-align: center;">0.2339</td>
-<td style="text-align: center;">0.4613</td>
-<td style="text-align: center;">0.7773</td>
-<td style="text-align: center;">0.7327</td>
+<td style="text-align: center;">0.6657</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.3516</td>
+<td style="text-align: center;">0.7214</td>
+<td style="text-align: center;">0.4046</td>
+<td style="text-align: center;">0.0992</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Rep 3</td>
-<td style="text-align: center;">0.8820</td>
-<td style="text-align: center;">0.6906</td>
-<td style="text-align: center;">0.4550</td>
-<td style="text-align: center;">0.2783</td>
-<td style="text-align: center;">0.3673</td>
-<td style="text-align: center;">0.1949</td>
+<td style="text-align: center;">0.5743</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.0526</td>
+<td style="text-align: center;">0.5418</td>
+<td style="text-align: center;">0.2918</td>
+<td style="text-align: center;">0.8342</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Rep 4</td>
-<td style="text-align: center;">0.8777</td>
-<td style="text-align: center;">0.7717</td>
-<td style="text-align: center;">0.0808</td>
-<td style="text-align: center;">0.6124</td>
-<td style="text-align: center;">0.9803</td>
-<td style="text-align: center;">0.8032</td>
+<td style="text-align: center;">0.6356</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.3337</td>
+<td style="text-align: center;">0.4665</td>
+<td style="text-align: center;">0.5769</td>
+<td style="text-align: center;">0.1051</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Rep 5</td>
-<td style="text-align: center;">0.8148</td>
-<td style="text-align: center;">0.8852</td>
-<td style="text-align: center;">0.3387</td>
-<td style="text-align: center;">0.2573</td>
-<td style="text-align: center;">0.8350</td>
-<td style="text-align: center;">0.4029</td>
+<td style="text-align: center;">0.5931</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.3643</td>
+<td style="text-align: center;">0.0466</td>
+<td style="text-align: center;">0.0639</td>
+<td style="text-align: center;">0.7476</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Rep 6</td>
-<td style="text-align: center;">0.9917</td>
-<td style="text-align: center;">0.9671</td>
-<td style="text-align: center;">0.8700</td>
-<td style="text-align: center;">0.3938</td>
-<td style="text-align: center;">0.9821</td>
-<td style="text-align: center;">0.1458</td>
+<td style="text-align: center;">0.9626</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.0283</td>
+<td style="text-align: center;">0.5052</td>
+<td style="text-align: center;">0.1208</td>
+<td style="text-align: center;">0.8803</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Rep 7</td>
-<td style="text-align: center;">0.8992</td>
-<td style="text-align: center;">0.8916</td>
-<td style="text-align: center;">0.5281</td>
-<td style="text-align: center;">0.8148</td>
-<td style="text-align: center;">0.6312</td>
-<td style="text-align: center;">0.9059</td>
+<td style="text-align: center;">0.7518</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.0434</td>
+<td style="text-align: center;">0.9648</td>
+<td style="text-align: center;">0.1155</td>
+<td style="text-align: center;">0.6406</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Rep 8</td>
-<td style="text-align: center;">0.8744</td>
-<td style="text-align: center;">0.2698</td>
-<td style="text-align: center;">0.7026</td>
-<td style="text-align: center;">0.1646</td>
-<td style="text-align: center;">0.8039</td>
-<td style="text-align: center;">0.9879</td>
+<td style="text-align: center;">0.6017</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.8767</td>
+<td style="text-align: center;">0.6710</td>
+<td style="text-align: center;">0.2687</td>
+<td style="text-align: center;">0.9162</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Rep 9</td>
-<td style="text-align: center;">0.3631</td>
-<td style="text-align: center;">0.6188</td>
-<td style="text-align: center;">0.0773</td>
-<td style="text-align: center;">0.3867</td>
-<td style="text-align: center;">0.9930</td>
-<td style="text-align: center;">0.3693</td>
+<td style="text-align: center;">0.6875</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.0545</td>
+<td style="text-align: center;">0.4187</td>
+<td style="text-align: center;">0.0320</td>
+<td style="text-align: center;">0.9094</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Rep 10</td>
-<td style="text-align: center;">0.9485</td>
-<td style="text-align: center;">0.6634</td>
-<td style="text-align: center;">0.6355</td>
-<td style="text-align: center;">0.9643</td>
-<td style="text-align: center;">0.6901</td>
-<td style="text-align: center;">0.3276</td>
+<td style="text-align: center;">0.6898</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0.3575</td>
+<td style="text-align: center;">0.5848</td>
+<td style="text-align: center;">0.4385</td>
+<td style="text-align: center;">0.2473</td>
 </tr>
 </tbody>
 </table>
@@ -883,7 +1106,7 @@ Correct Model (Non-linear)
 </h3>
 <p>Our final replication confirms that the native built-in routing produces the exact same robust diagnostic sampling distributions as our custom extraction logic, achieving uniform p-values for properly specified models.</p>
 <div class="cell" data-layout-align="center">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb23"><pre class="downlit sourceCode r">
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ana_res_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">model_dir</span>, <span class="st">"/ana_pvalues.rds"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="va">force_recalcz</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">ana_res_file</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
@@ -910,17 +1133,35 @@ Correct Model (Non-linear)
 <span><span class="op">}</span></span></code></pre></div>
 </details>
 </div>
-<div class="cell" data-layout-align="center">
-<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">p_c</span>, main <span class="op">=</span> <span class="st">"Correct: Model P-values"</span>, xlab <span class="op">=</span> <span class="st">"p-value"</span>, col <span class="op">=</span> <span class="st">"lightblue"</span>, breaks <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>h <span class="op">=</span> <span class="va">n_sim</span> <span class="op">/</span> <span class="fl">10</span>, col <span class="op">=</span> <span class="st">"red"</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">p_correct</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>p_value <span class="op">=</span> <span class="va">p_c</span><span class="op">)</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">p_value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_histogram</span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, by <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>,</span>
+<span>                 fill <span class="op">=</span> <span class="st">"lightblue"</span>, colour <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_hline</span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">n_sim</span> <span class="op">/</span> <span class="fl">10</span>, colour <span class="op">=</span> <span class="st">"red"</span>, linetype <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">labs</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Correct: Model P-values"</span>, x <span class="op">=</span> <span class="st">"p-value"</span>, y <span class="op">=</span> <span class="st">"Count"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">p_w</span>, main <span class="op">=</span> <span class="st">"Wrong: Small p-values"</span>, xlab <span class="op">=</span> <span class="st">"p-value"</span>, col <span class="op">=</span> <span class="st">"salmon"</span>, breaks <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
-</details><div class="cell-output-display">
+<span><span class="va">p_wrong</span> <span class="op">&lt;-</span> <span class="fu">ggplot</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>p_value <span class="op">=</span> <span class="va">p_w</span><span class="op">)</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">p_value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">geom_histogram</span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, by <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>,</span>
+<span>                 fill <span class="op">=</span> <span class="st">"salmon"</span>, colour <span class="op">=</span> <span class="st">"white"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">labs</span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Wrong: Small p-values"</span>, x <span class="op">=</span> <span class="st">"p-value"</span>, y <span class="op">=</span> <span class="st">"Count"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">theme_bw</span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p_correct</span></span>
+<span><span class="va">p_wrong</span></span></code></pre></div>
+</details><div class="cell quarto-layout-panel" data-layout-ncol="2" data-layout-align="center">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
 <div class="quarto-figure quarto-figure-center">
 <figure><p><img src="demo_brms_bernoulli_files/figure-html/ana-replication-hists-1.png" class="quarto-figure quarto-figure-center" width="960"></p>
 </figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure><p><img src="demo_brms_bernoulli_files/figure-html/ana-replication-hists-2.png" class="quarto-figure quarto-figure-center" width="960"></p>
+</figure>
+</div>
 </div>
 </div>
 </div>

@@ -7,14 +7,12 @@
 \method{plot}{zresid}(
   x,
   zcov = NULL,
-  info = NULL,
-  irep = 1,
+  irep = 1L,
   ylab = "Z-Residual",
   normality.test = c("SW", "AOV", "BL"),
-  k.test = 10,
+  k.test = 10L,
   x_axis_var = "index",
-  main.title = ifelse(is.null(attr(x, "type")), "Z-residual Scatterplot",
-    paste("Z-residual Scatterplot -", attr(x, "type"))),
+  main.title = NULL,
   outlier.return = TRUE,
   outlier.value = 3.5,
   category = NULL,
@@ -22,95 +20,88 @@
   xlab = NULL,
   my.mar = c(5, 4, 4, 6) + 0.1,
   add_lowess = FALSE,
+  reference.lines = c(1.96, 3),
+  facet = TRUE,
+  x_scale = c("identity", "log10"),
+  interactive = FALSE,
+  point.args = list(),
+  smooth.args = list(),
+  theme = ggplot2::theme_bw(),
+  legend.position = "inside",
+  legend.nrow = NULL,
   ...
 )
 }
 \arguments{
-\item{x}{A numeric matrix of Z-residuals, typically returned by
-\code{\link{Zresidual}}, with one column per residual replicate.}
+\item{x}{A numeric vector or matrix of Z-residuals. Matrix columns are
+residual replications.}
 
-\item{zcov}{Optional metadata, typically returned by \code{\link{Zcov}}.}
+\item{zcov}{Optional metadata returned by \code{Zcov()}.}
 
-\item{info}{Legacy alias for \code{zcov}.}
-
-\item{irep}{Integer vector specifying which column(s) of \code{x} to plot.}
+\item{irep}{Integer vector selecting residual columns.}
 
 \item{ylab}{Label for the y-axis.}
 
-\item{normality.test}{Character vector specifying which diagnostic p-values
-to display. Supported values are \code{"SW"}, \code{"AOV"}, and
-\code{"BL"}.}
+\item{normality.test}{Any of \code{"SW"}, \code{"AOV"}, and \code{"BL"}.}
 
-\item{k.test}{Integer controlling grouping used by the diagnostic tests.}
+\item{k.test}{Number of groups used by AOV and Bartlett diagnostics.}
 
-\item{x_axis_var}{Variable used on the x-axis. It may be one of
-\code{"index"}, \code{"lp"}, \code{"covariate"}, a covariate name stored
-in \code{attr(x, "covariates")}, a length-\eqn{n} vector, or a function
-returning such a vector.}
+\item{x_axis_var}{\code{"index"}, \code{"lp"}, \code{"covariate"}, a covariate name,
+a length-n vector, or a function of \code{x} and \code{zcov}.}
 
-\item{main.title}{Main title of the plot. If omitted, a default title is
-constructed from \code{attr(x, "type")}, when available.}
+\item{main.title}{Plot title.}
 
-\item{outlier.return}{Logical; if \code{TRUE}, mark observations with
-\code{|Z| > outlier.value} (and non-finite residuals) and invisibly return
-their indices.}
+\item{outlier.return}{Whether to mark and label outliers.}
 
-\item{outlier.value}{Numeric threshold used to define outliers.}
+\item{outlier.value}{Absolute residual threshold for outliers.}
 
-\item{category}{Optional grouping variable of length \eqn{n} used to modify
-point appearance.}
+\item{category}{Optional grouping variable of length n.}
 
-\item{outlier.set}{A named list of graphical arguments passed to
-\code{\link[graphics]{symbols}} and \code{\link[graphics]{text}} when
-annotating outliers.}
+\item{outlier.set}{Named list controlling outlier colour, size, label size,
+and whether labels are shown. Supported names are \code{colour}, \code{size},
+\code{label_colour}, \code{label_size}, and \code{label}.}
 
-\item{xlab}{Label for the x-axis. If \code{NULL}, an automatic label is used.}
+\item{xlab}{Optional x-axis label.}
 
-\item{my.mar}{Numeric vector passed to \code{\link[graphics]{par}(mar = ...)}.}
+\item{my.mar}{Retained for source compatibility; margins are controlled by
+the ggplot theme and this argument is ignored.}
 
-\item{add_lowess}{Logical; if \code{TRUE}, add a LOWESS smooth when the x-axis
-is numeric.}
+\item{add_lowess}{Whether to add the original \code{stats::lowess()} smooth.}
 
-\item{...}{Additional graphical arguments passed to plotting functions.}
+\item{reference.lines}{Numeric horizontal reference lines. Their negatives
+are also drawn.}
+
+\item{facet}{Whether multiple selected replications are shown in facets.
+When \code{FALSE}, replications are overlaid and distinguished by linetype only
+for the LOWESS curves; faceting is recommended.}
+
+\item{x_scale}{Either \code{"identity"} or \code{"log10"}.}
+
+\item{interactive}{If \code{TRUE}, convert the ggplot with \code{plotly::ggplotly()}.}
+
+\item{point.args}{Named list of arguments passed to \code{geom_point()}.}
+
+\item{smooth.args}{Named list of arguments passed to the LOWESS
+\code{geom_line()} layer.}
+
+\item{theme}{A complete or partial ggplot2 theme.}
+
+\item{legend.position}{Legend position passed to \code{ggplot2::theme()}. One of
+\code{"inside"}, \code{"bottom"}, \code{"top"}, \code{"left"}, \code{"right"}, or \code{"none"}.}
+
+\item{legend.nrow}{Optional positive integer giving the number of rows in
+the combined colour-and-shape legend. Use \code{2L} with
+\code{legend.position = "bottom"} for a compact two-row legend.}
+
+\item{...}{Additional named arguments for the main \code{geom_point()} layer.}
 }
 \value{
-Invisibly returns a list with component \code{outliers}, containing
-the indices of observations flagged as outliers for the plotted replicate.
-The main effect of the function is the diagnostic scatterplot.
+A ggplot object, invisibly. With \code{interactive = TRUE}, returns a
+plotly htmlwidget. Diagnostics and outlier indices are stored in the
+\code{zresid_diagnostics} and \code{zresid_outliers} attributes of the ggplot.
 }
 \description{
-Produces scatterplots of Z-residuals against observation index, linear
-predictors, model covariates, or a user-supplied x-axis variable. Optional
-metadata supplied through \code{info} (or stored in attributes of
-\code{x}) are used to fill legacy plotting attributes such as
-\code{"covariates"}, \code{"linear.pred"}, \code{"zero_id"}, and
-\code{"censored.status"}.
-}
-\details{
-Depending on the metadata available, the plot can distinguish zero versus
-positive observations for hurdle-type models, or censored versus uncensored
-observations for survival models.
-}
-\examples{
-if (requireNamespace("survival", quietly = TRUE)) {
-  set.seed(1)
-  n <- 30
-  x <- rnorm(n)
-  t_event <- rexp(n, rate = exp(0.3 * x))
-  t_cens  <- rexp(n, rate = 0.4)
-  status  <- as.integer(t_event <= t_cens)
-  time    <- pmin(t_event, t_cens)
-  dat <- data.frame(time = time, status = status, x = x)
-
-  fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
-  z <- Zresidual(fit, data=dat, nrep = 1, seed = 1)
-  info <- Zcov(fit, data = dat)
-
-  plot(z, info = info, x_axis_var = "index")
-  plot(z, info = info, x_axis_var = "lp")
-}
-
-}
-\seealso{
-\code{\link{Zresidual}}, \code{\link{Zcov}}
+Draws ggplot2 scatterplots of Z-residuals against observation index, a
+linear predictor, a model covariate, or a user-supplied x-axis variable.
+Multiple residual replications are displayed in facets.
 }

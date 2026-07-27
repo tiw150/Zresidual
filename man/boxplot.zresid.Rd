@@ -17,78 +17,53 @@
     paste("Z-residual Boxplot -", attr(x, "type"))),
   outlier.return = FALSE,
   outlier.value = 3.5,
+  interactive = FALSE,
+  theme = ggplot2::theme_bw(),
+  boxplot.args = list(),
   ...
 )
 }
 \arguments{
-\item{x}{A numeric matrix of Z-residuals, typically returned by
-\code{\link{Zresidual}}, with one column per residual replicate.}
+\item{x}{A numeric vector or matrix of Z-residuals, with one column per
+residual replication.}
 
-\item{zcov}{Optional metadata, typically returned by \code{\link{Zcov}}.}
+\item{zcov}{Optional metadata returned by \code{\link{Zcov}}.}
 
 \item{info}{Legacy alias for \code{zcov}.}
 
-\item{irep}{Integer vector specifying which column(s) of \code{x} to plot.}
+\item{irep}{Integer vector selecting residual columns.}
 
-\item{x_axis_var}{Variable used for grouping on the x-axis. It may be
-\code{"lp"}, \code{"covariate"}, a covariate name stored in
-\code{attr(x, "covariates")}, a length-\eqn{n} vector, or a function
-returning such a vector.}
+\item{x_axis_var}{\code{"lp"}, \code{"covariate"}, a covariate name, a
+length-n vector, or a function returning such a vector.}
 
-\item{num.bin}{Integer giving the number of bins used when the x-axis variable
-is numeric.}
+\item{num.bin}{Number of bins for a numeric x-axis variable.}
 
-\item{normality.test}{Character vector specifying which diagnostic p-values
-to display. Supported values are \code{"SW"}, \code{"AOV"}, and
-\code{"BL"}.}
+\item{normality.test}{Any of \code{"SW"}, \code{"AOV"}, and \code{"BL"}.}
 
-\item{k.test}{Integer controlling grouping used by the diagnostic tests.}
+\item{k.test}{Grouping parameter passed to the diagnostic functions.}
 
-\item{main.title}{Main title of the plot. If omitted, a default title is
-constructed from \code{attr(x, "type")}, when available.}
+\item{main.title}{Main plot title.}
 
-\item{outlier.return}{Logical; if \code{TRUE}, invisibly return the indices of
-observations with \code{|Z| > outlier.value}.}
+\item{outlier.return}{Whether to report and return observations satisfying
+the absolute Z-residual outlier rule.}
 
-\item{outlier.value}{Numeric threshold used to define outliers.}
+\item{outlier.value}{Absolute Z-residual outlier threshold.}
 
-\item{...}{Additional graphical arguments passed to plotting functions.}
+\item{interactive}{Convert each plot with \code{plotly::ggplotly()}.}
+
+\item{theme}{A ggplot2 theme.}
+
+\item{boxplot.args}{Named list passed to \code{ggplot2::geom_boxplot()}.}
+
+\item{...}{Additional named boxplot aesthetics. Common base names
+\code{col}, \code{lwd}, and \code{cex} are translated where possible.}
 }
 \value{
-Invisibly returns a list with component \code{outliers}, containing
-the indices of observations flagged as outliers for the plotted replicate.
-The main effect of the function is the boxplot.
+Invisibly returns a list containing \code{outliers} and
+\code{plots}. Multiple selected replications are printed sequentially.
 }
 \description{
-Produces boxplots of Z-residuals grouped by binned x-axis values. The x-axis
-variable can be a linear predictor, a model covariate, or a user-supplied
-vector. Optional metadata supplied through \code{info} (or stored in
-attributes of \code{x}) are used to fill legacy plotting attributes such as
-\code{"covariates"}, \code{"linear.pred"}, and \code{"type"}.
-}
-\details{
-This plot is useful for checking whether the distribution of Z-residuals
-changes systematically across fitted values or covariates.
-}
-\examples{
-if (requireNamespace("survival", quietly = TRUE)) {
-  set.seed(1)
-  n <- 30
-  x <- rnorm(n)
-  t_event <- rexp(n, rate = exp(0.3 * x))
-  t_cens  <- rexp(n, rate = 0.4)
-  status  <- as.integer(t_event <= t_cens)
-  time    <- pmin(t_event, t_cens)
-  dat <- data.frame(time = time, status = status, x = x)
-
-  fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
-  z <- Zresidual(fit,data=dat, nrep = 1, seed = 1)
-  info <- Zcov(fit, data = dat)
-
-  boxplot(z, info = info, x_axis_var = "lp")
-}
-
-}
-\seealso{
-\code{\link{Zresidual}}, \code{\link{Zcov}}
+Produces ggplot2 boxplots of Z-residuals grouped by binned x-axis values.
+The original binning rules and SW, AOV, and Bartlett diagnostics are
+retained.
 }

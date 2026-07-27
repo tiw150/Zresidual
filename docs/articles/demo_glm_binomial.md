@@ -3,8 +3,6 @@
 Code
 
 ``` r
-
-suppressWarnings(unloadNamespace("Zresidual"))
 library(Zresidual)
 ```
 
@@ -22,7 +20,6 @@ prevalence \approx 0.5.
 Code
 
 ``` r
-
 n <- 200
 
 x <- runif(n, 0, 10)
@@ -45,7 +42,6 @@ We compare a **Wrong Model** (assuming a linear relationship) against a
 Code
 
 ``` r
-
 # 1. Wrong Model (Linear)
 fit_wrong <- glm(y ~ x, family = binomial(), data = dat)
 
@@ -65,41 +61,71 @@ The plots below display the diagnostics for a single set of Z-residuals.
 Code
 
 ``` r
-
-# Change this value (1 to 10) to see other replicated plots
+# Change this value from 1 to 10 to inspect another
+# randomized residual replicate.
 i <- 1
 
-# Set up 2 rows (Wrong vs Correct) and 3 columns (QQ, Scatter, Box)
-par(mfrow = c(2, 3), mar = c(4, 4, 3, 1))
+# ------------------------------------------------------------
+# Row 1: misspecified linear model
+# ------------------------------------------------------------
 
-# --- ROW 1: WRONG MODEL (Linear) ---
-# 1. Q-Q Plot
-qqnorm(z_wrong, irep = i, main = "Wrong: Z-Resid Q-Q")
-qqline(as.vector(z_wrong[, i]), col = "red")
+qqnorm(
+  z_wrong,
+  irep = i,
+  main.title = "Wrong: Z-Residual Q-Q"
+)
+plot(
+  z_wrong,
+  x_axis_var = "lp",
+  category = dat$y,
+  irep = i,
+  add_lowess = TRUE,
+  main.title = "Wrong: Z-Residual vs LP"
+)
+boxplot(
+  z_wrong,
+  x_axis_var = "x",
+  num.bin = 10,
+  irep = i,
+  main.title = "Wrong: Z-Residual vs X"
+)
+# ------------------------------------------------------------
+# Row 2: correctly specified nonlinear model
+# ------------------------------------------------------------
 
-# 2. Scatter Plot (Note the wave pattern in the residuals)
-plot(z_wrong, x_axis_var = "lp", category = dat$y, 
-     irep = i, add_lowess = TRUE, main = "Wrong: Z-Resid vs LP")
-
-# 3. Boxplot
-boxplot(z_wrong, x_axis_var = "x", num.bin = 10, 
-        irep = i, main = "Wrong: Z-Resid vs X")
-
-# --- ROW 2: CORRECT MODEL (Non-linear) ---
-# 1. Q-Q Plot
-qqnorm(z_correct, irep = i, main = "Correct: Z-Resid Q-Q")
-qqline(as.vector(z_correct[, i]), col = "blue")
-
-# 2. Scatter Plot (Residuals look like random noise)
-plot(z_correct, x_axis_var = "lp", category = dat$y, 
-     irep = i, add_lowess = TRUE, main = "Correct: Z-Resid vs LP")
-
-# 3. Boxplot
-boxplot(z_correct, x_axis_var = "x", num.bin = 10, 
-        irep = i, main = "Correct: Z-Resid vs X")
+qqnorm(
+  z_correct,
+  irep = i,
+  main.title = "Correct: Z-Residual Q-Q"
+)
+plot(
+  z_correct,
+  x_axis_var = "lp",
+  category = dat$y,
+  irep = i,
+  add_lowess = TRUE,
+  main.title = "Correct: Z-Residual vs LP"
+)
+boxplot(
+  z_correct,
+  x_axis_var = "x",
+  num.bin = 10,
+  irep = i,
+  main.title = "Correct: Z-Residual vs X"
+)
 ```
 
 ![](demo_glm_binomial_files/figure-html/diagnosis-comparison-1.png)
+
+![](demo_glm_binomial_files/figure-html/diagnosis-comparison-2.png)
+
+![](demo_glm_binomial_files/figure-html/diagnosis-comparison-3.png)
+
+![](demo_glm_binomial_files/figure-html/diagnosis-comparison-4.png)
+
+![](demo_glm_binomial_files/figure-html/diagnosis-comparison-5.png)
+
+![](demo_glm_binomial_files/figure-html/diagnosis-comparison-6.png)
 
 > **Note:** To inspect different realizations of the randomized
 > residuals, change the value of `i` (the `irep` index) in the code
@@ -110,44 +136,59 @@ boxplot(z_correct, x_axis_var = "x", num.bin = 10,
 Code
 
 ``` r
-
-library(knitr)
-library(kableExtra)
-
-# 1. Create the data frame 
 res_table <- data.frame(
-  "Replicate" = paste("Rep", 1:ncol(z_wrong)),
-  "SW_W"      = as.numeric(sw.test.zresid(z_wrong)),
-  "AOV_W"     = as.numeric(aov.test.zresid(z_wrong, X = "x")),
-  "BL_W"      = as.numeric(bartlett.test.zresid(z_wrong, X = "x")),
-  "SW_C"      = as.numeric(sw.test.zresid(z_correct)),
-  "AOV_C"     = as.numeric(aov.test.zresid(z_correct, X = "x")),
-  "BL_C"      = as.numeric(bartlett.test.zresid(z_correct, X = "x"))
+  Replicate = paste("Rep", seq_len(ncol(z_wrong))),
+  Wrong_SW = as.numeric(
+    sw.test.zresid(z_wrong)
+  ),
+  Wrong_AOV = as.numeric(
+    aov.test.zresid(z_wrong, X = "x")
+  ),
+  Wrong_Bartlett = as.numeric(
+    bartlett.test.zresid(z_wrong, X = "x")
+  ),
+  Correct_SW = as.numeric(
+    sw.test.zresid(z_correct)
+  ),
+  Correct_AOV = as.numeric(
+    aov.test.zresid(z_correct, X = "x")
+  ),
+  Correct_Bartlett = as.numeric(
+    bartlett.test.zresid(z_correct, X = "x")
+  )
 )
 
-# 2. Render with minimalistic styling and spanning headers
-res_table %>%
-  kable(
-    digits = 4, 
-    # Base column names (the bottom row of the header)
-    col.names = c("Replicate", "SW", "AOV", "Bartlett", "SW", "AOV", "Bartlett"),
-    caption = "Diagnostic Test p-values Across Randomized Replicates",
-    align = "lcccccc"
-  ) %>%
-  kable_styling(
-    bootstrap_options = c("striped", "condensed"), 
-    full_width = FALSE,
-    position = "center"
-  ) %>%
-  # Add the spanning header (the top row)
-  add_header_above(c(" " = 1, "Wrong Model (Linear)" = 3, "Correct Model (Non-linear)" = 3))
+knitr::kable(
+  res_table,
+  digits = 4,
+  col.names = c(
+    "Replicate",
+    "Wrong: SW",
+    "Wrong: AOV",
+    "Wrong: Bartlett",
+    "Correct: SW",
+    "Correct: AOV",
+    "Correct: Bartlett"
+  ),
+  caption = "Diagnostic test p-values across randomized replicates",
+  align = "lcccccc"
+)
 ```
 
-[TABLE]
+| Replicate | Wrong: SW | Wrong: AOV | Wrong: Bartlett | Correct: SW | Correct: AOV | Correct: Bartlett |
+|:---|:--:|:--:|:--:|:--:|:--:|:--:|
+| Rep 1 | 0.4311 | 1e-04 | 0.0362 | 0.9523 | 0.6801 | 0.9284 |
+| Rep 2 | 0.1417 | 0e+00 | 0.1499 | 0.1716 | 0.3364 | 0.8800 |
+| Rep 3 | 0.2391 | 0e+00 | 0.6289 | 0.0774 | 0.1593 | 0.0736 |
+| Rep 4 | 0.3432 | 0e+00 | 0.3988 | 0.9138 | 0.4456 | 0.7182 |
+| Rep 5 | 0.6999 | 0e+00 | 0.0286 | 0.2488 | 0.6372 | 0.0643 |
+| Rep 6 | 0.9705 | 0e+00 | 0.0435 | 0.6980 | 0.7856 | 0.5844 |
+| Rep 7 | 0.2113 | 0e+00 | 0.3807 | 0.6245 | 0.9743 | 0.5433 |
+| Rep 8 | 0.9602 | 1e-04 | 0.0991 | 0.3087 | 0.9737 | 0.1598 |
+| Rep 9 | 0.1799 | 0e+00 | 0.1184 | 0.7733 | 0.0656 | 0.0108 |
+| Rep 10 | 0.6822 | 1e-04 | 0.0495 | 0.4092 | 0.1808 | 0.8050 |
 
-Diagnostic Test p-values Across Randomized Replicates {.table .table
-.table-striped .table-condensed .caption-top
-style="width: auto !important; margin-left: auto; margin-right: auto;"}
+Diagnostic test p-values across randomized replicates
 
 ## 4. Sampling Distribution of AOV Nonlinearity Tests
 
@@ -157,7 +198,6 @@ correctly handles the binomial data and produces appropriate p-values.
 Code
 
 ``` r
-
 n_sim <- 100
 sim_file <- paste0(file_prefix, "simulation_results.rds")
 
@@ -196,7 +236,6 @@ if (!force_rerun && file.exists(sim_file)) {
 Code
 
 ``` r
-
 par(mfrow = c(1, 2))
 hist(p_c, main = "Correct: Uniform p-values", xlab = "p-value", col = "lightblue", breaks = 20)
 abline(h = n_sim / 20, col = "red", lty = 2)

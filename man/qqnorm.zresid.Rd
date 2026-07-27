@@ -17,10 +17,13 @@
   outlier.return = TRUE,
   outlier.value = 3.5,
   outlier.set = list(),
+  outlier.label.xpad = 0.5,
   my.mar = c(5, 4, 4, 6) + 0.1,
   legend.settings = list(),
   clip.extreme = TRUE,
   clip.threshold = 6,
+  interactive = FALSE,
+  theme = ggplot2::theme_bw(),
   ...
 )
 }
@@ -30,77 +33,57 @@
 
 \item{zcov}{Optional metadata, typically returned by \code{\link{Zcov}}.}
 
-\item{info}{Legacy alias for \code{zcov}.
-When provided, it is used to fill missing legacy attributes such as
-\code{"type"}.}
+\item{info}{Legacy alias for \code{zcov}.}
 
 \item{irep}{Integer vector specifying which column(s) of \code{y} to plot.}
 
-\item{diagnosis.test}{Character string specifying the normality diagnostic to
-display. Currently \code{"SW"} is supported.}
+\item{diagnosis.test}{Character string specifying the normality diagnostic.
+Currently \code{"SW"} is supported.}
 
-\item{main.title}{Main title of the plot. If omitted, a default title is
-constructed from \code{attr(y, "type")}, when available.}
+\item{main.title}{Main title of the plot.}
 
 \item{xlab}{Label for the x-axis.}
 
 \item{ylab}{Label for the y-axis.}
 
-\item{outlier.return}{Logical; if \code{TRUE}, mark observations with
-\code{|Z| > outlier.value} and invisibly return their indices.}
+\item{outlier.return}{Logical; mark and return observations satisfying the
+outlier rule when \code{TRUE}.}
 
-\item{outlier.value}{Numeric threshold used to define outliers.}
+\item{outlier.value}{Numeric absolute-residual outlier threshold.}
 
-\item{outlier.set}{A named list of graphical arguments passed to
-\code{\link[graphics]{symbols}} and \code{\link[graphics]{text}} when
-annotating outliers.}
+\item{outlier.set}{Named list controlling outlier annotation. Supported
+ggplot settings are \code{colour}, \code{size}, \code{label_colour},
+\code{label_size}, and \code{label}.}
 
-\item{my.mar}{Numeric vector passed to \code{\link[graphics]{par}(mar = ...)}.}
+\item{outlier.label.xpad}{Numeric padding added to the right x-axis limit.}
 
-\item{legend.settings}{Optional named list used to modify the default legend
-settings.}
+\item{my.mar}{Retained for source compatibility; ggplot themes control plot
+margins.}
 
-\item{clip.extreme}{Logical; if \code{TRUE}, very large residuals are
-visually clipped to improve readability.}
+\item{legend.settings}{Named list modifying the line legend. Supported names
+include \code{position}, \code{text_size}, and \code{title_size}.}
 
-\item{clip.threshold}{Numeric threshold used when \code{clip.extreme = TRUE}.}
+\item{clip.extreme}{Logical; visually compress extreme residuals.}
 
-\item{...}{Additional graphical arguments passed to
-\code{\link[graphics]{plot}}.}
+\item{clip.threshold}{Numeric clipping threshold.}
+
+\item{interactive}{Logical; convert each ggplot using
+\code{plotly::ggplotly()} when \code{TRUE}.}
+
+\item{theme}{A ggplot2 theme.}
+
+\item{...}{Additional named arguments passed to the QQ-point
+\code{geom_point()} layer.}
 }
 \value{
-Invisibly returns a list with component \code{outliers}, containing
-the indices of observations flagged as outliers for the plotted replicate.
-The main effect of the function is the Q-Q plot.
+Invisibly returns a list containing \code{outliers} and
+\code{plots}. A single selected replication produces one ggplot in
+\code{plots}; multiple selected replications are printed sequentially,
+matching the original method.
 }
 \description{
-Produces a normal Q-Q plot for one or more columns of a \code{"zresid"}
-object. Optional metadata supplied through \code{info} (or stored in
-attributes of \code{y}) are used only to fill legacy plotting attributes such
-as \code{"type"}.
-}
-\details{
-The method can optionally report a Shapiro-Wilk normality diagnostic, mark
-observations with large absolute residuals, and visually compress extreme
-values when they would otherwise dominate the plot.
-}
-\examples{
-if (requireNamespace("survival", quietly = TRUE)) {
-  set.seed(1)
-  n <- 30
-  x <- rnorm(n)
-  t_event <- rexp(n, rate = exp(0.3 * x))
-  t_cens  <- rexp(n, rate = 0.4)
-  status  <- as.integer(t_event <= t_cens)
-  time    <- pmin(t_event, t_cens)
-  dat <- data.frame(time = time, status = status, x = x)
-
-  fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
-  z <- Zresidual(fit, data=dat, nrep = 1, seed = 1)
-  qqnorm(z)
-}
-
-}
-\seealso{
-\code{\link{Zresidual}}, \code{\link{Zcov}}
+Produces a ggplot2 normal Q-Q plot for one or more columns of a
+\code{"zresid"} object. The Shapiro-Wilk diagnostic, outlier annotation,
+extreme-value compression, reference lines, and axis-break marks retain the
+behavior of the original plotting method.
 }

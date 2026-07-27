@@ -1,23 +1,44 @@
 #' Predictive quantities for survival::coxph with frailty
-#' 
-#' @param fit A fitted coxph object (usually class coxph.penal).
-#' @param data The new data to evaluate.
-#' @param traindata The original data used to fit the model (required for baseline hazard).
+#'
+#' @param fit A fitted coxph object, usually inheriting from coxph.penal.
+#' @param data New data to evaluate.
+#' @param traindata Training data used to fit the model. This is required for
+#'   reconstructing the baseline cumulative hazard.
 #' @param ... Additional arguments passed from Zresidual.
+#'
+#' @return A list containing log-survival probabilities, log-likelihood
+#' contributions, discreteness indicators, and linear predictors.
+#'
 #' @export
-
-
-log_pointpred_survival_coxph.penal  <- function(fit, data, traindata, ...) {
+log_pointpred_survival_coxph.penal <- function(
+    fit,
+    data,
+    traindata,
+    ...
+) {
   if (!requireNamespace("survival", quietly = TRUE)) {
-    stop("log_pointpred_survival_coxph_frailty requires package 'survival'.", call. = FALSE)
+    stop(
+      paste0(
+        "log_pointpred_survival_coxph.penal requires ",
+        "package 'survival'."
+      ),
+      call. = FALSE
+    )
   }
   
-  # Check if both are missing or NULL
-  if ((missing(data) || is.null(data)) && (missing(traindata) || is.null(traindata))) {
-    stop("log_pointpred_survival_coxph_frailty: At least one of `data` or `traindata` must be provided.", call. = FALSE)
+  if (
+    (missing(data) || is.null(data)) &&
+    (missing(traindata) || is.null(traindata))
+  ) {
+    stop(
+      paste0(
+        "log_pointpred_survival_coxph.penal: at least one of ",
+        "`data` or `traindata` must be provided."
+      ),
+      call. = FALSE
+    )
   }
 
-  # If only one is missing, set it equal to the other
   if (missing(data) || is.null(data)) {
     data <- traindata
   }
@@ -25,195 +46,692 @@ log_pointpred_survival_coxph.penal  <- function(fit, data, traindata, ...) {
   if (missing(traindata) || is.null(traindata)) {
     traindata <- data
   }
-  is_surv_mf <- function(x) {
-    is.data.frame(x) && ncol(x) >= 1L && inherits(x[[1]], "Surv") && !is.null(attr(x, "terms"))
-  }
   
-  make_mf <- function(dat) {
-    if (is_surv_mf(dat)) return(dat)
-    stats::model.frame(fit$terms, dat, xlev = fit$xlevels)
-  }
+  data <- as.data.frame(data)
+  traindata <- as.data.frame(traindata)
   
-  frailty_group_var <- function(fit) {
-    tl <- attr(stats::terms(fit), "term.labels")
-    lab <- tl[grepl("^frailty\\(", tl)]
-    if (length(lab) != 1L) {
-      stop("coxph_frailty: expect exactly one frailty() term.", call. = FALSE)
+  get_frailty_group_var <- function(object) {
+    term_labels <- attr(
+      stats::terms(object),
+      "term.labels"
+    )
+
+    frailty_labels <- term_labels[
+      grepl(
+        "(^|::)frailty\\s*\\(",
+        term_labels
+      )
+    ]
+
+    if (length(frailty_labels) != 1L) {
+      stop(
+        paste0(
+          "coxph_frailty: expected exactly one ",
+          "frailty() term."
+        ),
+        call. = FALSE
+      )
     }
-    m <- regexec("^frailty\\(([^,\\)]+)", lab)
-    g <- regmatches(lab, m)[[1]]
-    if (length(g) < 2L) {
-      stop("coxph_frailty: cannot parse frailty() group variable.", call. = FALSE)
+
+    matched <- regexec(
+      "frailty\\s*\\(([^,\\)]+)",
+      frailty_labels[1L]
+    )
+
+    pieces <- regmatches(
+      frailty_labels[1L],
+      matched
+    )[[1L]]
+
+    if (length(pieces) < 2L) {
+      stop(
+        paste0(
+          "coxph_frailty: cannot parse the ",
+          "frailty group variable."
+        ),
+        call. = FALSE
+      )
     }
-    trimws(g[2])
+
+    group_name <- trimws(pieces[2L])
+    gsub("^`|`$", "", group_name)
   }
   
-  group_var_name <- frailty_group_var(fit)
+  group_var_name <- get_frailty_group_var(fit)
   
   get_group <- function(dat, name, where) {
-    if (!is.data.frame(dat)) {
-      stop(sprintf("coxph_frailty: %s must be a data.frame.", where), call. = FALSE)
-    }
     if (!name %in% names(dat)) {
-      stop(sprintf("coxph_frailty: %s missing group variable '%s'.", where, name), call. = FALSE)
+      stop(
+        sprintf(
+          "coxph_frailty: %s is missing group variable '%s'.",
+          where,
+          name
+        ),
+        call. = FALSE
+      )
     }
+
     dat[[name]]
   }
   
-  group_train_raw <- get_group(traindata, group_var_name, "traindata")
-  group_new_raw <- get_group(data, group_var_name, "data")
+  group_train_raw <- get_group(
+    traindata,
+    group_var_name,
+    "traindata"
+  )
+
+  group_new_raw <- get_group(
+    data,
+    group_var_name,
+    "data"
+  )
   
-  frail_levels <- NULL
-  if (!is.null(fit$frail) && length(fit$frail) && !is.null(names(fit$frail)) && all(nzchar(names(fit$frail)))) {
-    frail_levels <- names(fit$frail)
+  frailty_values <- fit$frail
+
+  if (
+    is.null(frailty_values) ||
+    length(frailty_values) < 1L
+  ) {
+    stop(
+      "coxph_frailty: fitted model contains no frailty estimates.",
+      call. = FALSE
+    )
+  }
+
+  frailty_levels <- NULL
+
+  if (
+    !is.null(names(frailty_values)) &&
+    all(nzchar(names(frailty_values)))
+  ) {
+    frailty_levels <- names(frailty_values)
   }
   
-  if (is.null(frail_levels)) {
-    group_train <- factor(group_train_raw)
+  if (is.null(frailty_levels)) {
+    group_train <- factor(
+      as.character(group_train_raw)
+    )
   } else {
-    group_train <- factor(as.character(group_train_raw), levels = frail_levels)
+    group_train <- factor(
+      as.character(group_train_raw),
+      levels = frailty_levels
+    )
   }
   
   if (anyNA(group_train)) {
-    stop("coxph_frailty: `traindata` contains group levels not present in `fit$frail`.", call. = FALSE)
+    stop(
+      paste0(
+        "coxph_frailty: `traindata` contains group levels ",
+        "not represented in the fitted frailty effects."
+      ),
+      call. = FALSE
+    )
   }
   
-  group_new <- factor(as.character(group_new_raw), levels = levels(group_train))
+  group_new <- factor(
+    as.character(group_new_raw),
+    levels = levels(group_train)
+  )
   
-  traindata[[group_var_name]] <- group_train
-  data[[group_var_name]] <- group_new
-  
-  mf_train <- make_mf(traindata)
-  mm_train <- model.matrix.coxph(fit, data = mf_train)
-  
-  mf_new <- make_mf(data)
-  mm_new <- model.matrix.coxph(fit, data = mf_new)
-  
-  as_counting_surv <- function(Y) {
-    if (!inherits(Y, "Surv")) {
-      stop("coxph_frailty: response is not a Surv object.", call. = FALSE)
-    }
-    Ymat <- as.matrix(Y)
-    if (ncol(Ymat) != 3L) {
-      return(as.matrix(survival::Surv(rep(0, nrow(Ymat)), Ymat[, 1], Ymat[, 2])))
-    }
-    Ymat
+  if (anyNA(group_new)) {
+    unseen_groups <- unique(
+      as.character(
+        group_new_raw[is.na(group_new)]
+      )
+    )
+
+    stop(
+      sprintf(
+        paste0(
+          "coxph_frailty: `data` contains frailty group ",
+          "level(s) absent from `traindata`: %s."
+        ),
+        paste(unseen_groups, collapse = ", ")
+      ),
+      call. = FALSE
+    )
   }
   
-  getchz <- function(Y, explp) {
-    death <- (Y[, ncol(Y)] == 1)
-    dtime <- Y[, ncol(Y) - 1]
-    
-    time <- sort(unique(dtime))
-    if (length(time) < 1L) {
-      return(data.frame(time = numeric(0), cumhaz = numeric(0)))
-    }
-    
-    nevent <- as.vector(rowsum(1 * death, dtime))
-    nrisk <- rev(cumsum(rev(rowsum(explp, dtime))))
-    
-    delta <- if (length(time) >= 2L) min(diff(time)) / 2 else 0.5
-    etime <- c(sort(unique(Y[, 1])), max(Y[, 1]) + delta)
-    
-    indx <- approx(etime, 1:length(etime), time, method = "constant", rule = 2, f = 1)$y
-    
-    esum <- rev(cumsum(rev(rowsum(explp, Y[, 1]))))
-    nrisk <- nrisk - c(esum, 0)[indx]
-    nrisk <- pmax(nrisk, .Machine$double.xmin)
-    
-    cumhaz <- cumsum(nevent / nrisk)
-    data.frame(time = time, cumhaz = cumhaz)
-  }
-  
-  mm_nc <- ncol(mm_train)
-  if (mm_nc != (length(fit$coefficients) + 1L)) {
-    stop("coxph_frailty: cannot identify the frailty group-code column in the design matrix.", call. = FALSE)
-  }
-  
-  fix_var_train <- mm_train[, -mm_nc, drop = FALSE]
   beta <- fit$coefficients
   
-  if (!is.null(names(beta)) && !is.null(colnames(fix_var_train))) {
-    idx <- match(colnames(fix_var_train), names(beta))
-    if (anyNA(idx)) {
-      stop("coxph_frailty: coefficient names do not match training design matrix columns.", call. = FALSE)
+  if (is.null(beta)) {
+    beta <- numeric(0)
+  }
+  
+  if (anyNA(beta) || any(!is.finite(beta))) {
+    stop(
+      paste0(
+        "coxph_frailty: fixed-effect coefficients contain ",
+        "missing or non-finite values."
+      ),
+      call. = FALSE
+    )
+  }
+  
+  # Construct a terms object containing fixed effects only.
+  #
+  # The frailty term must not be evaluated through model.matrix() on
+  # a one-row held-out dataset. In LOOCV, that term has only one
+  # observed level and therefore cannot define contrasts.
+  fixed_terms <- stats::delete.response(
+    stats::terms(fit)
+  )
+
+  frailty_special <- survival::untangle.specials(
+    fixed_terms,
+    "frailty"
+  )
+
+  if (length(frailty_special$terms) > 0L) {
+    fixed_terms <- stats::drop.terms(
+      fixed_terms,
+      dropx = frailty_special$terms,
+      keep.response = FALSE
+    )
+  }
+
+  make_fixed_matrix <- function(dat, where) {
+    fixed_frame <- tryCatch(
+      stats::model.frame(
+        fixed_terms,
+        data = dat,
+        na.action = stats::na.pass,
+        xlev = fit$xlevels
+      ),
+      error = function(e) {
+        stop(
+          sprintf(
+            "coxph_frailty: failed to construct %s fixed-effect model frame: %s",
+            where,
+            conditionMessage(e)
+          ),
+          call. = FALSE
+        )
+      }
+    )
+    
+    if (any(!stats::complete.cases(fixed_frame))) {
+      stop(
+        sprintf(
+          "coxph_frailty: %s contains missing fixed-effect variables.",
+          where
+        ),
+        call. = FALSE
+      )
     }
-    beta_use <- beta[idx]
-  } else {
-    beta_use <- beta
+    
+    fixed_matrix <- tryCatch(
+      stats::model.matrix(
+        fixed_terms,
+        data = fixed_frame,
+        contrasts.arg = fit$contrasts
+      ),
+      error = function(e) {
+        stop(
+          sprintf(
+            "coxph_frailty: failed to construct %s fixed-effect model matrix: %s",
+            where,
+            conditionMessage(e)
+          ),
+          call. = FALSE
+        )
+      }
+    )
+
+    assign_value <- attr(
+      fixed_matrix,
+      "assign"
+    )
+
+    if (!is.null(assign_value)) {
+      fixed_matrix <- fixed_matrix[
+        ,
+        assign_value != 0L,
+        drop = FALSE
+      ]
+    } else if (
+      ncol(fixed_matrix) > 0L &&
+      "(Intercept)" %in% colnames(fixed_matrix)
+    ) {
+      fixed_matrix <- fixed_matrix[
+        ,
+        colnames(fixed_matrix) != "(Intercept)",
+        drop = FALSE
+      ]
+    }
+    
+    if (length(beta) == 0L) {
+      return(
+        matrix(
+          numeric(0),
+          nrow = nrow(dat),
+          ncol = 0L
+        )
+      )
+    }
+    
+    if (
+      is.null(names(beta)) ||
+      is.null(colnames(fixed_matrix))
+    ) {
+      if (ncol(fixed_matrix) != length(beta)) {
+        stop(
+          sprintf(
+            paste0(
+              "coxph_frailty: %s fixed-effect matrix has ",
+              "%d columns, but the fitted model has %d ",
+              "fixed-effect coefficients."
+            ),
+            where,
+            ncol(fixed_matrix),
+            length(beta)
+          ),
+          call. = FALSE
+        )
+      }
+
+      return(fixed_matrix)
+    }
+    
+    coefficient_index <- match(
+      names(beta),
+      colnames(fixed_matrix)
+    )
+    
+    if (anyNA(coefficient_index)) {
+      missing_columns <- names(beta)[
+        is.na(coefficient_index)
+      ]
+
+      stop(
+        sprintf(
+          paste0(
+            "coxph_frailty: %s fixed-effect matrix is missing ",
+            "coefficient column(s): %s."
+          ),
+          where,
+          paste(missing_columns, collapse = ", ")
+        ),
+        call. = FALSE
+      )
+    }
+
+    fixed_matrix[
+      ,
+      coefficient_index,
+      drop = FALSE
+    ]
   }
   
-  lp_fixed_train <- as.vector(fix_var_train %*% beta_use)
-  frail_train <- fit$frail[as.integer(group_train)]
-  frail_train[is.na(frail_train)] <- 0
-  explp_train <- exp(lp_fixed_train + frail_train)
-  
-  Y_train <- as_counting_surv(mf_train[[1]])
-  df_train <- getchz(Y_train, explp_train)
-  
-  if (nrow(df_train) < 1L) {
-    stop("coxph_frailty: failed to construct baseline cumulative hazard.", call. = FALSE)
+  fixed_train <- make_fixed_matrix(
+    traindata,
+    "training"
+  )
+
+  fixed_new <- make_fixed_matrix(
+    data,
+    "new-data"
+  )
+
+  fixed_lp <- function(matrix_value, coefficients) {
+    if (length(coefficients) == 0L) {
+      return(
+        rep(
+          0,
+          nrow(matrix_value)
+        )
+      )
+    }
+
+    as.vector(
+      matrix_value %*% coefficients
+    )
   }
   
-  Y_new <- as_counting_surv(mf_new[[1]])
-  stop_time_new <- Y_new[, 2]
-  status_new <- as.integer(Y_new[, 3])
-  n_new <- nrow(Y_new)
+  lp_fixed_train <- fixed_lp(
+    fixed_train,
+    beta
+  )
+
+  lp_fixed_new <- fixed_lp(
+    fixed_new,
+    beta
+  )
+
+  frailty_train <- as.numeric(
+    frailty_values[
+      as.integer(group_train)
+    ]
+  )
+
+  frailty_new <- as.numeric(
+    frailty_values[
+      as.integer(group_new)
+    ]
+  )
+
+  frailty_train[is.na(frailty_train)] <- 0
+  frailty_new[is.na(frailty_new)] <- 0
+
+  linear_pred_train <- (
+    lp_fixed_train +
+      frailty_train
+  )
+
+  linear_pred_new <- (
+    lp_fixed_new +
+      frailty_new
+  )
+
+  relative_risk_train <- exp(
+    linear_pred_train
+  )
   
-  mm_nc_new <- ncol(mm_new)
-  if (mm_nc_new != (ncol(fix_var_train) + 1L)) {
-    stop("coxph_frailty: newdata design matrix shape mismatch.", call. = FALSE)
+  response_formula <- stats::update.formula(
+    stats::formula(fit),
+    . ~ 1
+  )
+
+  make_surv_response <- function(dat, where) {
+    response_frame <- tryCatch(
+      stats::model.frame(
+        response_formula,
+        data = dat,
+        na.action = stats::na.pass
+      ),
+      error = function(e) {
+        stop(
+          sprintf(
+            "coxph_frailty: failed to construct %s response: %s",
+            where,
+            conditionMessage(e)
+          ),
+          call. = FALSE
+        )
+      }
+    )
+
+    response <- stats::model.response(
+      response_frame
+    )
+
+    if (!inherits(response, "Surv")) {
+      stop(
+        sprintf(
+          "coxph_frailty: %s response is not a Surv object.",
+          where
+        ),
+        call. = FALSE
+      )
+    }
+
+    response
   }
   
-  fix_var_new <- mm_new[, -mm_nc_new, drop = FALSE]
-  if (!is.null(colnames(fix_var_train)) && !is.null(colnames(fix_var_new))) {
-    fix_var_new <- fix_var_new[, colnames(fix_var_train), drop = FALSE]
+  as_counting_surv <- function(response) {
+    response_matrix <- as.matrix(response)
+
+    if (ncol(response_matrix) == 2L) {
+      return(
+        as.matrix(
+          survival::Surv(
+            rep(0, nrow(response_matrix)),
+            response_matrix[, 1L],
+            response_matrix[, 2L]
+          )
+        )
+      )
+    }
+
+    if (ncol(response_matrix) == 3L) {
+      return(response_matrix)
+    }
+
+    stop(
+      "coxph_frailty: unsupported Surv response structure.",
+      call. = FALSE
+    )
+  }
+
+  response_train <- make_surv_response(
+    traindata,
+    "training"
+  )
+
+  response_new <- make_surv_response(
+    data,
+    "new-data"
+  )
+
+  y_train <- as_counting_surv(
+    response_train
+  )
+
+  y_new <- as_counting_surv(
+    response_new
+  )
+
+  get_cumulative_hazard <- function(y, relative_risk) {
+    death <- (
+      y[, ncol(y)] == 1
+    )
+
+    stop_time <- y[, ncol(y) - 1L]
+
+    event_times <- sort(
+      unique(stop_time)
+    )
+
+    if (length(event_times) < 1L) {
+      return(
+        data.frame(
+          time = numeric(0),
+          cumhaz = numeric(0)
+        )
+      )
+    }
+
+    number_events <- as.vector(
+      rowsum(
+        as.integer(death),
+        stop_time
+      )
+    )
+
+    number_at_risk <- rev(
+      cumsum(
+        rev(
+          rowsum(
+            relative_risk,
+            stop_time
+          )
+        )
+      )
+    )
+
+    time_increment <- if (length(event_times) >= 2L) {
+      min(diff(event_times)) / 2
+    } else {
+      0.5
+    }
+
+    entry_times <- c(
+      sort(unique(y[, 1L])),
+      max(y[, 1L]) + time_increment
+    )
+
+    entry_index <- stats::approx(
+      entry_times,
+      seq_along(entry_times),
+      event_times,
+      method = "constant",
+      rule = 2,
+      f = 1
+    )$y
+
+    entry_risk_sum <- rev(
+      cumsum(
+        rev(
+          rowsum(
+            relative_risk,
+            y[, 1L]
+          )
+        )
+      )
+    )
+
+    number_at_risk <- (
+      number_at_risk -
+        c(entry_risk_sum, 0)[entry_index]
+    )
+
+    number_at_risk <- pmax(
+      number_at_risk,
+      .Machine$double.xmin
+    )
+
+    cumulative_hazard <- cumsum(
+      number_events / number_at_risk
+    )
+
+    data.frame(
+      time = event_times,
+      cumhaz = cumulative_hazard
+    )
   }
   
-  lp_fixed_new <- as.vector(fix_var_new %*% beta_use)
-  frail_new <- fit$frail[as.integer(group_new)]
-  frail_new[is.na(frail_new)] <- 0
+  baseline_hazard <- get_cumulative_hazard(
+    y_train,
+    relative_risk_train
+  )
   
-  eta_new <- exp(lp_fixed_new + frail_new)
-  
-  idx_after <- findInterval(stop_time_new, df_train$time)
-  H_after <- ifelse(idx_after > 0L, df_train$cumhaz[idx_after], 0)
-  
-  is_event <- (status_new == 1L)
-  exact_event <- is_event & idx_after > 0L & df_train$time[idx_after] == stop_time_new
-  if (any(is_event & !exact_event)) {
-    stop("coxph_frailty: some event times were not found in the training baseline hazard grid.", call. = FALSE)
+  if (nrow(baseline_hazard) < 1L) {
+    stop(
+      paste0(
+        "coxph_frailty: failed to construct the baseline ",
+        "cumulative hazard."
+      ),
+      call. = FALSE
+    )
   }
   
-  idx_before <- idx_after
-  idx_before[exact_event] <- idx_before[exact_event] - 1L
-  H_before <- ifelse(idx_before > 0L, df_train$cumhaz[idx_before], 0)
+  stop_time_new <- y_new[, 2L]
+  status_new <- as.integer(
+    y_new[, 3L]
+  )
+
+  n_new <- nrow(y_new)
+
+  risk_multiplier_new <- exp(
+    linear_pred_new
+  )
+
+  index_after <- findInterval(
+    stop_time_new,
+    baseline_hazard$time
+  )
+
+  hazard_after <- numeric(n_new)
   
-  logS_after <- -eta_new * H_after
-  logS_before <- -eta_new * H_before
+  positive_after <- which(
+    index_after > 0L
+  )
+
+  if (length(positive_after) > 0L) {
+    hazard_after[positive_after] <- baseline_hazard$cumhaz[
+      index_after[positive_after]
+    ]
+  }
   
-  log_surv <- logS_after
+  is_event <- (
+    status_new == 1L
+  )
+
+  tolerance <- 1e-7
+  exact_event <- rep(
+    FALSE,
+    n_new
+  )
+
+  event_on_grid <- which(
+    is_event &
+      index_after > 0L
+  )
+
+  if (length(event_on_grid) > 0L) {
+    exact_event[event_on_grid] <- (
+      abs(
+        baseline_hazard$time[
+          index_after[event_on_grid]
+        ] -
+          stop_time_new[event_on_grid]
+      ) <= tolerance
+    )
+  }
+  
+  index_before <- index_after
+  index_before[exact_event] <- (
+    index_before[exact_event] - 1L
+  )
+  
+  hazard_before <- numeric(n_new)
+  
+  positive_before <- which(
+    index_before > 0L
+  )
+  
+  if (length(positive_before) > 0L) {
+    hazard_before[positive_before] <- baseline_hazard$cumhaz[
+      index_before[positive_before]
+    ]
+  }
+  
+  log_survival_after <- (
+    -risk_multiplier_new *
+      hazard_after
+  )
+  
+  log_survival_before <- (
+    -risk_multiplier_new *
+      hazard_before
+  )
+  
+  log_surv <- log_survival_after
   log_surv[!is_event] <- -Inf
   
-  log_like <- logS_after
+  log_like <- log_survival_after
+
   if (any(is_event)) {
-    log_like[is_event] <- log_diff_exp(logS_before[is_event], logS_after[is_event])
+    log_like[is_event] <- log_diff_exp(
+      log_survival_before[is_event],
+      log_survival_after[is_event]
+    )
   }
   
-  is_discrete <- as.integer(!is_event)
+  is_discrete <- as.integer(
+    !is_event
+  )
   
   list(
-    log_surv = matrix(log_surv, nrow = 1L, ncol = n_new),
-    log_like = matrix(log_like, nrow = 1L, ncol = n_new),
-    is_discrete = matrix(is_discrete, nrow = 1L, ncol = n_new)
-  )
-}
-
-log_pointpred_survival_coxph_penal <- function(fit, data, traindata, ...) {
-  log_pointpred_survival_coxph_penal_frailty (
-    fit = fit,
-    data = data,
-    traindata = traindata,
-    ...
+    log_surv = matrix(
+      log_surv,
+      nrow = 1L,
+      ncol = n_new
+    ),
+    log_like = matrix(
+      log_like,
+      nrow = 1L,
+      ncol = n_new
+    ),
+    is_discrete = matrix(
+      is_discrete,
+      nrow = 1L,
+      ncol = n_new
+    ),
+    linear_pred = matrix(
+      linear_pred_new,
+      nrow = 1L,
+      ncol = n_new
+    )
   )
 }

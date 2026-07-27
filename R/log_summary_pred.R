@@ -1,1 +1,0 @@
-## To Tingxuan: I moved it to Zresidual.R

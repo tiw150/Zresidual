@@ -1,16 +1,17 @@
-pandoc: 3.8.3
+pandoc: 3.6.3
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   articles/demo_brms_bernoulli: demo_brms_bernoulli.html
+  articles/demo_brms_hurdle: demo_brms_hurdle.html
   articles/demo_brms_pois: demo_brms_pois.html
-  articles/demo_coxph_frailty: demo_coxph_frailty.html
   articles/demo_coxph_nphnl: demo_coxph_nphnl.html
+  articles/demo_cvz_frailty: demo_cvz_frailty.html
   articles/demo_glm_binomial: demo_glm_binomial.html
   articles/demo_glm_poisson: demo_glm_poisson.html
   get-started: get-started.html
   articles/illus_zresid: illus_zresid.html
-last_built: 2026-04-27T21:37Z
+last_built: 2026-07-24T18:54Z
 urls:
   reference: https://tiw150.github.io/Zresidual/reference
   article: https://tiw150.github.io/Zresidual/articles

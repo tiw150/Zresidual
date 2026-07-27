@@ -297,7 +297,7 @@ and returns a list containing exactly three elements:
     >
     > | Residual Type | Discrete / Censored y_i | Continuous/Uncensored y_i |
     > |:---|:---|:---|
-    > | **Posterior / Frequentist** | **Required** (\log(p_i(y_i\|\boldsymbol{\theta}))) | **Not required** (\log(f_i(y_i \|\boldsymbol{\theta}))) |
+    > | **Posterior/Frequentist/Test** | **Required** (\log(p_i(y_i\|\boldsymbol{\theta}))) | **Not required** (\log(f_i(y_i \|\boldsymbol{\theta}))) |
     > | **Bayesian ISCV** | **Required** (\log(p_i(y_i\|\boldsymbol{\theta}))) | **Required** (\log(f_i(y_i \|\boldsymbol{\theta}))) |
     >
     > Table 1: **Summary of `log_like` Requirements**
@@ -331,7 +331,6 @@ rules. You can bypass the package’s internal routing entirely by passing
 your function directly to the `log_pointpred` argument:
 
 ``` r
-
 z_custom <- Zresidual(fit, data = my_data, log_pointpred = my_custom_log_pointpred)
 ```
 
@@ -348,7 +347,6 @@ out exactly what function name `Zresidual` is looking for, use the
 helper function:
 
 ``` r
-
 # Example: A negative binomial GLM from the MASS package
 fit_nb <- MASS::glm.nb(Days ~ Eth * Age, data = MASS::quine)
 
@@ -414,4 +412,4 @@ package via a GitHub Pull Request (PR):
 - Wu, T., Feng, C., & Li, L. (2024). Cross-Validatory Z-Residual for
   Diagnosing Shared Frailty Models. *The American Statistician*, 79(2),
   198–211. <https://doi.org/10.1080/00031305.2024.2421370>; [Reprint
-  version](NA)
+  version](https://longhaisk.github.io/doc/cv_zresidual_final.pdf)

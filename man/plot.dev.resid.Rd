@@ -9,94 +9,40 @@
   ylab = "Deviance Residual",
   x_axis_var = c("index", "lp", "covariate"),
   main.title = "Deviance Residual Plot",
-  outlier.return = FALSE,
+  outlier.return = TRUE,
+  point.args = list(),
+  smooth.args = list(),
+  theme = ggplot2::theme_bw(),
   ...
 )
 }
 \arguments{
-\item{x}{Numeric vector (or one-column matrix) of deviance
-residuals, typically returned by one of the residual functions in this
-package with \code{residual.type = "deviance"}. It must carry the
-attributes \code{"censored.status"}, \code{"linear.pred"}, and
-\code{"covariates"} as described above.}
+\item{x}{A deviance residual object with \code{censored.status}, \code{linear.pred},
+and \code{covariates} attributes as required by the selected x-axis.}
 
-\item{ylab}{Character string for the y-axis label. Default is
-\code{"Deviance Residual"}.}
+\item{ylab}{Y-axis label.}
 
-\item{x_axis_var}{Character string controlling the x-axis. Must be one of
-\code{"index"}, \code{"lp"}, \code{"covariate"}, or the name of a
-covariate contained in \code{attr(x, "covariates")}.
-The default is effectively \code{"lp"} if \code{x_axis_var} is not supplied.}
+\item{x_axis_var}{\code{"index"}, \code{"lp"}, \code{"covariate"}, or a covariate name.}
 
-\item{main.title}{Character string for the main plot title. Default is
-\code{"Deviance Residual Plot"}.}
+\item{main.title}{Plot title.}
 
-\item{outlier.return}{Logical; if \code{TRUE}, attempted outliers (as
-indicated by an external logical vector \code{is.outlier} in the calling
-environment) are highlighted in the plot and their indices are returned
-invisibly. If \code{FALSE} (default), no outlier indices are returned.
-Note that this function does not compute outliers internally: it assumes
-that a logical vector \code{is.outlier} of the same length as
-\code{x} is available if outlier highlighting is desired.}
+\item{outlier.return}{Whether to use the calling environment's logical
+\code{is.outlier} vector and return its indices.}
 
-\item{...}{Additional arguments passed to the underlying plotting functions.}
+\item{point.args}{Named arguments for \code{ggplot2::geom_point()}.}
+
+\item{smooth.args}{Named arguments for the LOWESS \code{geom_line()}.}
+
+\item{theme}{A ggplot2 theme.}
+
+\item{...}{Additional plotting arguments.}
 }
 \value{
-The function is primarily called for its side-effect of producing a plot.
-If \code{outlier.return = TRUE}, it prints the indices of outlying points
-to the console and invisibly returns a list with component
-\code{outliers}, containing the indices where \code{is.outlier} is
-\code{TRUE}. Otherwise, it returns \code{NULL} invisibly.
+Invisibly returns \code{NULL}, or \code{list(outliers = ...)} when
+\code{outlier.return = TRUE}, matching the original method.
 }
 \description{
-Produce diagnostic plots for deviance residuals from survival models,
-with the option to plot against the observation index, the linear
-predictor, or a selected covariate. The function expects a vector (or
-one-column matrix) of deviance residuals with attributes attached by
-the residual computation functions in this package.
-}
-\details{
-The input \code{x} is typically obtained from
-\code{residual.coxph()}, \code{residual.coxph.frailty()}, or
-\code{residual.survreg()} with \code{residual.type = "deviance"}.
-
-The \code{x_axis_var} argument controls the x-axis:
-\itemize{
-\item \code{"index"}: plot deviance residuals against observation index.
-\item \code{"lp"}: plot deviance residuals against the linear predictor
-(attribute \code{"linear.pred"}).
-\item \code{"covariate"}: prompt the user and print the available
-covariate names to the console.
-\item a character string matching one of the covariate names in
-\code{attr(x, "covariates")}: plot deviance residuals against that covariate.
-}
-
-In the \code{"lp"} and covariate cases, a LOWESS smooth is added to the
-plot to highlight systematic patterns in the residuals.
-
-Non-finite deviance residuals are detected and truncated to lie slightly
-beyond the largest finite residual, with a message printed to alert the
-user that there may be problems with the model fit. Censored and
-uncensored observations are distinguished by color and plotting symbol
-in all display modes.
-}
-\examples{
-if (requireNamespace("survival", quietly = TRUE)) {
-  set.seed(1)
-  n <- 30
-  x <- rnorm(n)
-  t_event <- rexp(n, rate = exp(0.2 * x))
-  t_cens  <- rexp(n, rate = 0.5)
-  status  <- as.integer(t_event <= t_cens)
-  time    <- pmin(t_event, t_cens)
-  dat <- data.frame(time = time, status = status, x = x)
-  fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
-  r <- surv_residuals(fit, data = dat, residual.type = "deviance")
-  plot(r)
-}
-}
-\seealso{
-\code{residual.coxph}, \code{residual.coxph.frailty},
-\code{residual.survreg}, \code{\link[survival]{Surv}},
-\code{\link[survival]{survfit}}
+Draws a ggplot2 diagnostic plot against observation index, linear predictor,
+or a selected covariate. The original LOWESS and external \code{is.outlier}
+behavior are retained.
 }

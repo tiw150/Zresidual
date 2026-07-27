@@ -26,7 +26,7 @@ force_refit <- FALSE   # Controls data simulation and model fitting
 if (identical(Sys.getenv("IN_PKGDOWN"), "true")) {
   force_recalcz <- FALSE  # Turn off for the website build
 } else {
-  force_recalcz <- TRUE   # Leave on for normal execution
+  force_recalcz <- FALSE   # Leave on for normal execution
 }
 
 #suppressWarnings(unloadNamespace("Zresidual"))
@@ -34,10 +34,12 @@ library(Zresidual)
 library(brms)
 library(knitr)
 library(kableExtra)
-
+library(ggplot2)
+library(gridExtra)
+library(ragg)
 #Check if cmdstanr is available
 if (!requireNamespace("cmdstanr", quietly = TRUE)) {
-  stop("This vignette requires the 'cmdstanr' package. Please install it with install.packages('cmdstanr', repos = '[https://stan-dev.github.io/r-packages/](https://stan-dev.github.io/r-packages/)')")
+  install.packages('cmdstanr', repos = "https://stan-dev.github.io/r-packages/")
 }
 
 model_dir <- "resources/brms_poission_models"
@@ -66,7 +68,7 @@ if (!dir.exists(model_dir)) {
   dir.create(model_dir, recursive = TRUE)
 }
 
-n_sim <- 100
+n_sim <- 20
 n_sample <- 200 
 sim_data <- vector("list", n_sim)
 
@@ -198,19 +200,25 @@ z_correct <- Zresidual(fit_correct, data = dat, mcmc_summarize = "post", randomi
 
 ```{r user-diagnosis-plots}
 #| code-fold: true
-#| fig-width: 12
-#| fig-height: 8
+#| fig-width: 4.5
+#| fig-height: 3.5
+#| layout-ncol: 3
+#| dev: ragg_png
+#| dpi: 300
 
 i <- 1 
-par(mfrow = c(2, 3), mar = c(4, 4, 3, 1))
 
-qqnorm(z_wrong, irep = i, main = "Wrong: Z-Resid Q-Q")
-plot(z_wrong, x_axis_var = "x", category = dat$y, irep = i, main = "Wrong: Z-Resid vs X")
-boxplot(z_wrong, x_axis_var = "lp", irep = i, main = "Wrong: Z-Resid vs LP")
+qqnorm(z_wrong, irep = i, main.title = "Wrong: Z-Resid Q-Q")
+plot( z_wrong,x_axis_var = "x", category = dat$y,irep = i,
+      main.title = "Wrong: Z-Resid vs X", legend.position = "bottom", legend.nrow = 2)
+boxplot(z_wrong, x_axis_var = "lp", irep = i,
+        main.title = "Wrong: Z-Resid vs LP")
 
-qqnorm(z_correct, irep = i, main = "Correct: Z-Resid Q-Q")
-plot(z_correct, x_axis_var = "x", category = dat$y, irep = i, main = "Correct: Z-Resid vs X")
-boxplot(z_correct, x_axis_var = "lp", irep = i, main = "Correct: Z-Resid vs LP")
+qqnorm(z_correct, irep = i, main.title = "Correct: Z-Resid Q-Q")
+plot(z_correct,x_axis_var = "x", category = dat$y,irep = i,
+     main.title = "Correct: Z-Resid vs X",legend.position = "bottom")
+boxplot(z_correct, x_axis_var = "lp", irep = i,
+        main.title = "Correct: Z-Resid vs LP")
 ```
 
 **Replicated p-values of the same fitted models**
@@ -275,15 +283,61 @@ if (!force_recalcz && file.exists(user_res_file)) {
 ```
 
 ```{r user-replication-hists}
-#| fig-width: 10
-#| fig-height: 5
 #| code-fold: true
+#| fig-width: 5
+#| fig-height: 4
+#| layout-ncol: 2
+#| dev: ragg_png
+#| dpi: 300
 
-par(mfrow = c(1, 2))
-hist(p_c, main = "Correct: Model P-values", xlab = "p-value", col = "lightblue", breaks = 10)
-abline(h = n_sim / 10, col = "red", lty = 2)
+plot_theme <- theme_bw(base_size = 14) +
+  theme(
+    plot.title = element_text(
+      size = 15,
+      face = "bold",
+      hjust = 0.5
+    )
+  )
 
-hist(p_w, main = "Wrong: Small p-values", xlab = "p-value", col = "salmon", breaks = 10)
+p_correct <- ggplot(
+  data.frame(p_value = p_c),
+  aes(x = p_value)
+) +
+  geom_histogram(
+    breaks = seq(0, 1, by = 0.1),
+    fill = "lightblue",
+    colour = "white"
+  ) +
+  geom_hline(
+    yintercept = n_sim / 10,
+    colour = "red",
+    linetype = 2
+  ) +
+  labs(
+    title = "Correct: Model P-values",
+    x = "p-value",
+    y = "Count"
+  ) +
+  plot_theme
+
+p_wrong <- ggplot(
+  data.frame(p_value = p_w),
+  aes(x = p_value)
+) +
+  geom_histogram(
+    breaks = seq(0, 1, by = 0.1),
+    fill = "salmon",
+    colour = "white"
+  ) +
+  labs(
+    title = "Wrong: Small P-values",
+    x = "p-value",
+    y = "Count"
+  ) +
+  plot_theme
+
+p_correct
+p_wrong
 ```
 
 
@@ -319,19 +373,24 @@ z_correct <- Zresidual(fit_correct, data = dat, pred_method = "simulation", mcmc
 
 ```{r sim-diagnosis-plots}
 #| code-fold: true
-#| fig-width: 12
-#| fig-height: 8
-
+#| fig-width: 4.5
+#| fig-height: 3.5
+#| layout-ncol: 3
+#| dev: ragg_png
+#| dpi: 300
 i <- 1 
-par(mfrow = c(2, 3), mar = c(4, 4, 3, 1))
 
-qqnorm(z_wrong, irep = i, main = "Wrong: Z-Resid Q-Q")
-plot(z_wrong, x_axis_var = "x", category = dat$y, irep = i, main = "Wrong: Z-Resid vs X")
-boxplot(z_wrong, x_axis_var = "lp", irep = i, main = "Wrong: Z-Resid vs LP")
+qqnorm(z_wrong, irep = i, main.title = "Wrong: Z-Resid Q-Q")
+plot( z_wrong,x_axis_var = "x", category = dat$y,irep = i,
+      main.title = "Wrong: Z-Resid vs X",legend.position = "bottom")
+boxplot(z_wrong, x_axis_var = "lp", irep = i,
+        main.title = "Wrong: Z-Resid vs LP")
 
-qqnorm(z_correct, irep = i, main = "Correct: Z-Resid Q-Q")
-plot(z_correct, x_axis_var = "x", category = dat$y, irep = i, main = "Correct: Z-Resid vs X")
-boxplot(z_correct, x_axis_var = "lp", irep = i, main = "Correct: Z-Resid vs LP")
+qqnorm(z_correct, irep = i, main.title = "Correct: Z-Resid Q-Q")
+plot(z_correct,x_axis_var = "x", category = dat$y,irep = i,
+     main.title = "Correct: Z-Resid vs X",legend.position = "bottom")
+boxplot(z_correct, x_axis_var = "lp", irep = i,
+        main.title = "Correct: Z-Resid vs LP")
 ```
 
 **Replicated p-values of the same fitted models**
@@ -398,14 +457,60 @@ if (!force_recalcz && file.exists(sim_res_file)) {
 
 ```{r sim-hist-plots}
 #| code-fold: true
-#| fig-width: 10
-#| fig-height: 5
+#| fig-width: 5
+#| fig-height: 4
+#| layout-ncol: 2
+#| dev: ragg_png
+#| dpi: 300
 
-par(mfrow = c(1, 2))
-hist(p_c, main = "Correct: Model P-values", xlab = "p-value", col = "lightblue", breaks = 10)
-abline(h = n_sim / 10, col = "red", lty = 2, lwd = 2)
+plot_theme <- theme_bw(base_size = 14) +
+  theme(
+    plot.title = element_text(
+      size = 15,
+      face = "bold",
+      hjust = 0.5
+    )
+  )
 
-hist(p_w, main = "Wrong: Misspecification P-values", xlab = "p-value", col = "salmon", breaks = 10)
+p_correct <- ggplot(
+  data.frame(p_value = p_c),
+  aes(x = p_value)
+) +
+  geom_histogram(
+    breaks = seq(0, 1, by = 0.1),
+    fill = "lightblue",
+    colour = "white"
+  ) +
+  geom_hline(
+    yintercept = n_sim / 10,
+    colour = "red",
+    linetype = 2
+  ) +
+  labs(
+    title = "Correct: Model P-values",
+    x = "p-value",
+    y = "Count"
+  ) +
+  plot_theme
+
+p_wrong <- ggplot(
+  data.frame(p_value = p_w),
+  aes(x = p_value)
+) +
+  geom_histogram(
+    breaks = seq(0, 1, by = 0.1),
+    fill = "salmon",
+    colour = "white"
+  ) +
+  labs(
+    title = "Wrong: Misspecification P-values",
+    x = "p-value",
+    y = "Count"
+  ) +
+  plot_theme
+
+p_correct
+p_wrong
 ```
 
 
@@ -441,19 +546,24 @@ z_correct <- Zresidual(fit_correct, data = dat, mcmc_summarize = "post", randomi
 
 ```{r ana-diagnosis-plots}
 #| code-fold: true
-#| fig-width: 12
-#| fig-height: 8
-
+#| fig-width: 4.5
+#| fig-height: 3.5
+#| layout-ncol: 3
+#| dev: ragg_png
+#| dpi: 300
 i <- 1 
-par(mfrow = c(2, 3), mar = c(4, 4, 3, 1))
 
-qqnorm(z_wrong, irep = i, main = "Wrong: Z-Resid Q-Q")
-plot(z_wrong, x_axis_var = "x", category = dat$y, irep = i, main = "Wrong: Z-Resid vs X")
-boxplot(z_wrong, x_axis_var = "lp", irep = i, main = "Wrong: Z-Resid vs LP")
+qqnorm(z_wrong, irep = i, main.title = "Wrong: Z-Resid Q-Q")
+plot( z_wrong,x_axis_var = "x", category = dat$y,irep = i,
+      main.title = "Wrong: Z-Resid vs X",legend.position = "bottom")
+boxplot(z_wrong, x_axis_var = "lp", irep = i,
+        main.title = "Wrong: Z-Resid vs LP")
 
-qqnorm(z_correct, irep = i, main = "Correct: Z-Resid Q-Q")
-plot(z_correct, x_axis_var = "x", category = dat$y, irep = i, main = "Correct: Z-Resid vs X")
-boxplot(z_correct, x_axis_var = "lp", irep = i, main = "Correct: Z-Resid vs LP")
+qqnorm(z_correct, irep = i, main.title = "Correct: Z-Resid Q-Q")
+plot(z_correct,x_axis_var = "x", category = dat$y,irep = i,
+     main.title = "Correct: Z-Resid vs X",legend.position = "bottom")
+boxplot(z_correct, x_axis_var = "lp", irep = i,
+        main.title = "Correct: Z-Resid vs LP")
 ```
 
 **Replicated p-values of the same fitted models**
@@ -520,13 +630,59 @@ if (!force_recalcz && file.exists(ana_res_file)) {
 ```
 
 ```{r ana-replication-hists}
-#| fig-width: 10
-#| fig-height: 5
 #| code-fold: true
+#| fig-width: 5
+#| fig-height: 4
+#| layout-ncol: 2
+#| dev: ragg_png
+#| dpi: 300
 
-par(mfrow = c(1, 2))
-hist(p_c, main = "Correct: Model P-values", xlab = "p-value", col = "lightblue", breaks = 10)
-abline(h = n_sim / 10, col = "red", lty = 2)
+plot_theme <- theme_bw(base_size = 14) +
+  theme(
+    plot.title = element_text(
+      size = 15,
+      face = "bold",
+      hjust = 0.5
+    )
+  )
 
-hist(p_w, main = "Wrong: Small p-values", xlab = "p-value", col = "salmon", breaks = 10)
+p_correct <- ggplot(
+  data.frame(p_value = p_c),
+  aes(x = p_value)
+) +
+  geom_histogram(
+    breaks = seq(0, 1, by = 0.1),
+    fill = "lightblue",
+    colour = "white"
+  ) +
+  geom_hline(
+    yintercept = n_sim / 10,
+    colour = "red",
+    linetype = 2
+  ) +
+  labs(
+    title = "Correct: Model P-values",
+    x = "p-value",
+    y = "Count"
+  ) +
+  plot_theme
+
+p_wrong <- ggplot(
+  data.frame(p_value = p_w),
+  aes(x = p_value)
+) +
+  geom_histogram(
+    breaks = seq(0, 1, by = 0.1),
+    fill = "salmon",
+    colour = "white"
+  ) +
+  labs(
+    title = "Wrong: Small P-values",
+    x = "p-value",
+    y = "Count"
+  ) +
+  plot_theme
+
+p_correct
+p_wrong
 ```

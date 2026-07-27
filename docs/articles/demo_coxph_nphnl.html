@@ -75,27 +75,15 @@
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"Zresidual"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"remotes"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
-<span>  <span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"tiw150/Zresidual"</span>, upgrade <span class="op">=</span> <span class="st">"never"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"tiw150/Zresidual"</span>, upgrade <span class="op">=</span> <span class="st">"never"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </details>
 </div>
 <p><strong>Loading Required Packages</strong></p>
 <div class="cell" data-layout-align="center">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tiw150.github.io/Zresidual">Zresidual</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">pkgs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>  <span class="st">"survival"</span>, <span class="st">"EnvStats"</span>, <span class="st">"dplyr"</span>, <span class="st">"tibble"</span>, <span class="st">"gt"</span>, <span class="st">"gifski"</span>,<span class="st">"MASS"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">missing_pkgs</span> <span class="op">&lt;-</span> <span class="va">pkgs</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">pkgs</span>, <span class="va">requireNamespace</span>, <span class="fu"><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">missing_pkgs</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="va">missing_pkgs</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">pkgs</span>, <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressPackageStartupMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">p</span>, character.only <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tiw150.github.io/Zresidual/">Zresidual</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/therneau/survival" class="external-link">survival</a></span><span class="op">)</span></span></code></pre></div>
 </details>
 </div>
 <p><strong>Additional Helper Functions</strong></p>
@@ -134,6 +122,20 @@
 <span>    high <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">boot_mat</span>, <span class="fl">2</span>, <span class="fu">stats</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span>, probs <span class="op">=</span> <span class="fl">0.975</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>    p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">boot_stat</span> <span class="op">&gt;=</span> <span class="va">stat_obs</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Capture a plotting method's return value while suppressing its automatic</span></span>
+<span><span class="co"># print. This is needed only when several ggplot objects are combined.</span></span>
+<span><span class="va">capture_zplot</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">expr</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">tmp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".pdf"</span><span class="op">)</span></span>
+<span>  <span class="fu">grDevices</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grDevices/pdf.html" class="external-link">pdf</a></span><span class="op">(</span><span class="va">tmp</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/on.exit.html" class="external-link">on.exit</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>    <span class="fu">grDevices</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.off</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">tmp</span><span class="op">)</span></span>
+<span>  <span class="op">}</span>, add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/force.html" class="external-link">force</a></span><span class="op">(</span><span class="va">expr</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </details>
 </div>
@@ -212,35 +214,121 @@
 </h3>
 <div class="cell" data-layout-align="center">
 <details class="code-fold"><summary>GIF generation code (folded)</summary><div class="sourceCode cell-code" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pbc_combined_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">resources_path</span>, <span class="st">"pbc_combined_anim.gif"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">pbc_combined_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span></span>
+<span>  <span class="va">resources_path</span>,</span>
+<span>  <span class="st">"pbc_combined_anim_v2.gif"</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="va">force_rerun</span> <span class="op">||</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">pbc_combined_path</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">gifski</span><span class="fu">::</span><span class="fu"><a href="https://r-rust.r-universe.dev/gifski/reference/gifski.html" class="external-link">save_gif</a></span><span class="op">(</span></span>
-<span>    expr <span class="op">=</span> <span class="op">{</span></span>
-<span>      <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span> <span class="op">{</span></span>
-<span>        <span class="co"># Set up a 2x3 grid: 2 rows (models), 3 columns (plot types)</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>, mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">3</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span>        </span>
-<span>        <span class="co"># Row 1: Linear Bilirubin Model</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span><span class="va">Z_pbc_linear</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Q-Q: PBC linear"</span><span class="op">)</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Z_pbc_linear</span>, info <span class="op">=</span> <span class="va">zcov_pbc_linear</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, irep <span class="op">=</span> <span class="va">i</span>, add_lowess <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>             main.title <span class="op">=</span> <span class="st">"Scatter: PBC linear"</span><span class="op">)</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">Z_pbc_linear</span>, info <span class="op">=</span> <span class="va">zcov_pbc_linear</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, irep <span class="op">=</span> <span class="va">i</span>,</span>
-<span>                main.title <span class="op">=</span> <span class="st">"Boxplot: PBC linear"</span><span class="op">)</span></span>
-<span>        </span>
-<span>        <span class="co"># Row 2: Log-Bilirubin Model</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span><span class="va">Z_pbc_log</span>, irep <span class="op">=</span> <span class="va">i</span>, main <span class="op">=</span> <span class="st">"Q-Q: PBC log-bili"</span><span class="op">)</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Z_pbc_log</span>, info <span class="op">=</span> <span class="va">zcov_pbc_log</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, irep <span class="op">=</span> <span class="va">i</span>, add_lowess <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>             main.title <span class="op">=</span> <span class="st">"Scatter: PBC log-bili"</span><span class="op">)</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">Z_pbc_log</span>, info <span class="op">=</span> <span class="va">zcov_pbc_log</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, irep <span class="op">=</span> <span class="va">i</span>,</span>
-<span>                main.title <span class="op">=</span> <span class="st">"Boxplot: PBC log-bili"</span><span class="op">)</span></span>
+<span>  <span class="va">frame_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="st">"pbc_combined_frames_"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">frame_dir</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">frame_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span></span>
+<span>    <span class="va">frame_dir</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"frame_%02d.png"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">qq_linear</span> <span class="op">&lt;-</span> <span class="fu">capture_zplot</span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span></span>
+<span>        <span class="va">Z_pbc_linear</span>,</span>
+<span>        irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>        main.title <span class="op">=</span> <span class="st">"Q-Q: PBC linear"</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span></span>
+<span>    <span class="va">scatter_linear</span> <span class="op">&lt;-</span> <span class="fu">capture_zplot</span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>        <span class="va">Z_pbc_linear</span>,</span>
+<span>        zcov <span class="op">=</span> <span class="va">zcov_pbc_linear</span>,</span>
+<span>        x_axis_var <span class="op">=</span> <span class="st">"lp"</span>,</span>
+<span>        irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>        add_lowess <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>        main.title <span class="op">=</span> <span class="st">"Scatter: PBC linear"</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span></span>
+<span>    <span class="va">box_linear</span> <span class="op">&lt;-</span> <span class="fu">capture_zplot</span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span></span>
+<span>        <span class="va">Z_pbc_linear</span>,</span>
+<span>        zcov <span class="op">=</span> <span class="va">zcov_pbc_linear</span>,</span>
+<span>        x_axis_var <span class="op">=</span> <span class="st">"lp"</span>,</span>
+<span>        irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>        main.title <span class="op">=</span> <span class="st">"Boxplot: PBC linear"</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span></span>
+<span>    <span class="va">qq_log</span> <span class="op">&lt;-</span> <span class="fu">capture_zplot</span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span></span>
+<span>        <span class="va">Z_pbc_log</span>,</span>
+<span>        irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>        main.title <span class="op">=</span> <span class="st">"Q-Q: PBC log-bili"</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span></span>
+<span>    <span class="va">scatter_log</span> <span class="op">&lt;-</span> <span class="fu">capture_zplot</span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>        <span class="va">Z_pbc_log</span>,</span>
+<span>        zcov <span class="op">=</span> <span class="va">zcov_pbc_log</span>,</span>
+<span>        x_axis_var <span class="op">=</span> <span class="st">"lp"</span>,</span>
+<span>        irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>        add_lowess <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>        main.title <span class="op">=</span> <span class="st">"Scatter: PBC log-bili"</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span></span>
+<span>    <span class="va">box_log</span> <span class="op">&lt;-</span> <span class="fu">capture_zplot</span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span></span>
+<span>        <span class="va">Z_pbc_log</span>,</span>
+<span>        zcov <span class="op">=</span> <span class="va">zcov_pbc_log</span>,</span>
+<span>        x_axis_var <span class="op">=</span> <span class="st">"lp"</span>,</span>
+<span>        irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>        main.title <span class="op">=</span> <span class="st">"Boxplot: PBC log-bili"</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span></span>
+<span>    <span class="fu">grDevices</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grDevices/png.html" class="external-link">png</a></span><span class="op">(</span></span>
+<span>      filename <span class="op">=</span> <span class="va">frame_files</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
+<span>      width <span class="op">=</span> <span class="fl">1350</span>,</span>
+<span>      height <span class="op">=</span> <span class="fl">900</span>,</span>
+<span>      res <span class="op">=</span> <span class="fl">96</span></span>
+<span>    <span class="op">)</span></span>
+<span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span></span>
+<span>      <span class="op">{</span></span>
+<span>        <span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span></span>
+<span>          grobs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>            <span class="va">qq_linear</span>,</span>
+<span>            <span class="va">scatter_linear</span>,</span>
+<span>            <span class="va">box_linear</span>,</span>
+<span>            <span class="va">qq_log</span>,</span>
+<span>            <span class="va">scatter_log</span>,</span>
+<span>            <span class="va">box_log</span></span>
+<span>          <span class="op">)</span>,</span>
+<span>          ncol <span class="op">=</span> <span class="fl">3</span></span>
+<span>        <span class="op">)</span></span>
+<span>      <span class="op">}</span>,</span>
+<span>      finally <span class="op">=</span> <span class="op">{</span></span>
+<span>        <span class="fu">grDevices</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.off</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>      <span class="op">}</span></span>
-<span>    <span class="op">}</span>,</span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">pbc_combined_path</span>, force <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="fu">gifski</span><span class="fu">::</span><span class="fu"><a href="https://r-rust.r-universe.dev/gifski/reference/gifski.html" class="external-link">gifski</a></span><span class="op">(</span></span>
+<span>    png_files <span class="op">=</span> <span class="va">frame_files</span>,</span>
 <span>    gif_file <span class="op">=</span> <span class="va">pbc_combined_path</span>,</span>
-<span>    width <span class="op">=</span> <span class="fl">1350</span>,   </span>
+<span>    width <span class="op">=</span> <span class="fl">1350</span>,</span>
 <span>    height <span class="op">=</span> <span class="fl">900</span>,</span>
 <span>    delay <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>    res <span class="op">=</span> <span class="fl">96</span></span>
+<span>    loop <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span></span>
+<span>    <span class="va">frame_dir</span>,</span>
+<span>    recursive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    force <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
@@ -248,7 +336,7 @@
 </details><div class="cell-output-display">
 <div id="fig-pbc-combined-animation" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-pbc-combined-animation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="resources/coxph_nphnl_results/pbc_combined_anim.gif" class="quarto-figure quarto-figure-center">
+<img src="resources/coxph_nphnl_results/pbc_combined_anim_v2.gif" class="quarto-figure quarto-figure-center">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pbc-combined-animation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure 1: Animated Z-residual diagnostics for the PBC models across 10 randomization replicates. Top row: Linear bilirubin model. Bottom row: Log-bilirubin model. Columns (left to right): Q-Q plot, Scatterplot vs. LP, Boxplot vs. LP.
@@ -260,28 +348,103 @@ Figure 1: Animated Z-residual diagnostics for the PBC models across 10 randomiz
 </h3>
 <div class="cell" data-layout-align="center">
 <details class="code-fold"><summary>GIF generation code (folded)</summary><div class="sourceCode cell-code" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pbc_bili_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">resources_path</span>, <span class="st">"pbc_bili_anim.gif"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">pbc_bili_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span></span>
+<span>  <span class="va">resources_path</span>,</span>
+<span>  <span class="st">"pbc_bili_anim_v2.gif"</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="va">force_rerun</span> <span class="op">||</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files.html" class="external-link">file.exists</a></span><span class="op">(</span><span class="va">pbc_bili_path</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">gifski</span><span class="fu">::</span><span class="fu"><a href="https://r-rust.r-universe.dev/gifski/reference/gifski.html" class="external-link">save_gif</a></span><span class="op">(</span></span>
-<span>    expr <span class="op">=</span> <span class="op">{</span></span>
-<span>      <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span> <span class="op">{</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span>, mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Z_pbc_linear</span>,info <span class="op">=</span> <span class="va">zcov_pbc_linear</span>, x_axis_var <span class="op">=</span> <span class="st">"bili"</span>, irep <span class="op">=</span> <span class="va">i</span>, add_lowess <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>             main.title <span class="op">=</span> <span class="st">"Scatter: linear bili"</span><span class="op">)</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Z_pbc_log</span>,info <span class="op">=</span> <span class="va">zcov_pbc_log</span>,  x_axis_var <span class="op">=</span> <span class="st">"logbili"</span>, irep <span class="op">=</span> <span class="va">i</span>, add_lowess <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>             main.title <span class="op">=</span> <span class="st">"Scatter: log(bili)"</span><span class="op">)</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">Z_pbc_linear</span>, info <span class="op">=</span> <span class="va">zcov_pbc_linear</span>, x_axis_var <span class="op">=</span> <span class="st">"bili"</span>, irep <span class="op">=</span> <span class="va">i</span>,</span>
-<span>                main.title <span class="op">=</span> <span class="st">"Boxplot: linear bili"</span><span class="op">)</span></span>
-<span>        <span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">Z_pbc_log</span>, info <span class="op">=</span> <span class="va">zcov_pbc_log</span>, x_axis_var <span class="op">=</span> <span class="st">"logbili"</span>, irep <span class="op">=</span> <span class="va">i</span>,</span>
-<span>                main.title <span class="op">=</span> <span class="st">"Boxplot: log(bili)"</span><span class="op">)</span></span>
+<span>  <span class="va">frame_dir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span><span class="st">"pbc_bili_frames_"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="va">frame_dir</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">frame_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span></span>
+<span>    <span class="va">frame_dir</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"frame_%02d.png"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">scatter_linear</span> <span class="op">&lt;-</span> <span class="fu">capture_zplot</span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>        <span class="va">Z_pbc_linear</span>,</span>
+<span>        zcov <span class="op">=</span> <span class="va">zcov_pbc_linear</span>,</span>
+<span>        x_axis_var <span class="op">=</span> <span class="st">"bili"</span>,</span>
+<span>        irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>        add_lowess <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>        main.title <span class="op">=</span> <span class="st">"Scatter: linear bili"</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span></span>
+<span>    <span class="va">scatter_log</span> <span class="op">&lt;-</span> <span class="fu">capture_zplot</span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>        <span class="va">Z_pbc_log</span>,</span>
+<span>        zcov <span class="op">=</span> <span class="va">zcov_pbc_log</span>,</span>
+<span>        x_axis_var <span class="op">=</span> <span class="st">"logbili"</span>,</span>
+<span>        irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>        add_lowess <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>        main.title <span class="op">=</span> <span class="st">"Scatter: log(bili)"</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span></span>
+<span>    <span class="va">box_linear</span> <span class="op">&lt;-</span> <span class="fu">capture_zplot</span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span></span>
+<span>        <span class="va">Z_pbc_linear</span>,</span>
+<span>        zcov <span class="op">=</span> <span class="va">zcov_pbc_linear</span>,</span>
+<span>        x_axis_var <span class="op">=</span> <span class="st">"bili"</span>,</span>
+<span>        irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>        main.title <span class="op">=</span> <span class="st">"Boxplot: linear bili"</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span></span>
+<span>    <span class="va">box_log</span> <span class="op">&lt;-</span> <span class="fu">capture_zplot</span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span></span>
+<span>        <span class="va">Z_pbc_log</span>,</span>
+<span>        zcov <span class="op">=</span> <span class="va">zcov_pbc_log</span>,</span>
+<span>        x_axis_var <span class="op">=</span> <span class="st">"logbili"</span>,</span>
+<span>        irep <span class="op">=</span> <span class="va">i</span>,</span>
+<span>        main.title <span class="op">=</span> <span class="st">"Boxplot: log(bili)"</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span></span>
+<span>    <span class="fu">grDevices</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grDevices/png.html" class="external-link">png</a></span><span class="op">(</span></span>
+<span>      filename <span class="op">=</span> <span class="va">frame_files</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>,</span>
+<span>      width <span class="op">=</span> <span class="fl">900</span>,</span>
+<span>      height <span class="op">=</span> <span class="fl">900</span>,</span>
+<span>      res <span class="op">=</span> <span class="fl">96</span></span>
+<span>    <span class="op">)</span></span>
+<span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch</a></span><span class="op">(</span></span>
+<span>      <span class="op">{</span></span>
+<span>        <span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span></span>
+<span>          grobs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>            <span class="va">scatter_linear</span>,</span>
+<span>            <span class="va">scatter_log</span>,</span>
+<span>            <span class="va">box_linear</span>,</span>
+<span>            <span class="va">box_log</span></span>
+<span>          <span class="op">)</span>,</span>
+<span>          ncol <span class="op">=</span> <span class="fl">2</span></span>
+<span>        <span class="op">)</span></span>
+<span>      <span class="op">}</span>,</span>
+<span>      finally <span class="op">=</span> <span class="op">{</span></span>
+<span>        <span class="fu">grDevices</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.html" class="external-link">dev.off</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>      <span class="op">}</span></span>
-<span>    <span class="op">}</span>,</span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">pbc_bili_path</span>, force <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="fu">gifski</span><span class="fu">::</span><span class="fu"><a href="https://r-rust.r-universe.dev/gifski/reference/gifski.html" class="external-link">gifski</a></span><span class="op">(</span></span>
+<span>    png_files <span class="op">=</span> <span class="va">frame_files</span>,</span>
 <span>    gif_file <span class="op">=</span> <span class="va">pbc_bili_path</span>,</span>
 <span>    width <span class="op">=</span> <span class="fl">900</span>,</span>
 <span>    height <span class="op">=</span> <span class="fl">900</span>,</span>
 <span>    delay <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>    res <span class="op">=</span> <span class="fl">96</span></span>
+<span>    loop <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span></span>
+<span>    <span class="va">frame_dir</span>,</span>
+<span>    recursive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    force <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
@@ -289,7 +452,7 @@ Figure 1: Animated Z-residual diagnostics for the PBC models across 10 randomiz
 </details><div class="cell-output-display">
 <div id="fig-pbc-bili-animation" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-pbc-bili-animation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="resources/coxph_nphnl_results/pbc_bili_anim.gif" class="quarto-figure quarto-figure-center">
+<img src="resources/coxph_nphnl_results/pbc_bili_anim_v2.gif" class="quarto-figure quarto-figure-center">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pbc-bili-animation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure 2: Animated bilirubin-specific Z-residual diagnostics for the PBC models. Left column: linear bilirubin model. Right column: log-bilirubin model.
@@ -335,511 +498,84 @@ Figure 3: Histograms of replicated Z-residual test p-values for the PBC models.
 <p><strong>Summary of Replicated P-values</strong></p>
 <div class="cell" data-layout-align="center">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pbc_summary</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">pbc_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  Model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Linear bili"</span>, <span class="st">"Log(bili)"</span><span class="op">)</span>,</span>
 <span>  AIC <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/AIC.html" class="external-link">AIC</a></span><span class="op">(</span><span class="va">fit_pbc_linear</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/stats/AIC.html" class="external-link">AIC</a></span><span class="op">(</span><span class="va">fit_pbc_log</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  `Score global` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">score_pbc_linear</span><span class="op">$</span><span class="va">table</span><span class="op">[</span><span class="st">"GLOBAL"</span>, <span class="st">"p"</span><span class="op">]</span>, <span class="va">score_pbc_log</span><span class="op">$</span><span class="va">table</span><span class="op">[</span><span class="st">"GLOBAL"</span>, <span class="st">"p"</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>  `Score bili` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">score_pbc_linear</span><span class="op">$</span><span class="va">table</span><span class="op">[</span><span class="st">"bili"</span>, <span class="st">"p"</span><span class="op">]</span>, <span class="va">score_pbc_log</span><span class="op">$</span><span class="va">table</span><span class="op">[</span><span class="st">"logbili"</span>, <span class="st">"p"</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>  `Score global` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="va">score_pbc_linear</span><span class="op">$</span><span class="va">table</span><span class="op">[</span><span class="st">"GLOBAL"</span>, <span class="st">"p"</span><span class="op">]</span>,</span>
+<span>    <span class="va">score_pbc_log</span><span class="op">$</span><span class="va">table</span><span class="op">[</span><span class="st">"GLOBAL"</span>, <span class="st">"p"</span><span class="op">]</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  `Score bili` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="va">score_pbc_linear</span><span class="op">$</span><span class="va">table</span><span class="op">[</span><span class="st">"bili"</span>, <span class="st">"p"</span><span class="op">]</span>,</span>
+<span>    <span class="va">score_pbc_log</span><span class="op">$</span><span class="va">table</span><span class="op">[</span><span class="st">"logbili"</span>, <span class="st">"p"</span><span class="op">]</span></span>
+<span>  <span class="op">)</span>,</span>
 <span>  `LWY-like bili` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">lwy_pbc_linear</span><span class="op">$</span><span class="va">p</span>, <span class="va">lwy_pbc_log</span><span class="op">$</span><span class="va">p</span><span class="op">)</span>,</span>
-<span>  `Z-SW` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">sw_pbc_linear</span><span class="op">)</span>, <span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">sw_pbc_log</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  `Z-AOV-LP` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">aovlp_pbc_linear</span><span class="op">)</span>, <span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">aovlp_pbc_log</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  `Z-AOV-bili` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">aovbili_pbc_linear</span><span class="op">)</span>, <span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">aovbili_pbc_log</span><span class="op">)</span><span class="op">)</span></span>
+<span>  `Z-SW` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">sw_pbc_linear</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">sw_pbc_log</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  `Z-AOV-LP` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">aovlp_pbc_linear</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">aovlp_pbc_log</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  `Z-AOV-bili` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">aovbili_pbc_linear</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">aovbili_pbc_log</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">pbc_summary</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/fmt_number.html" class="external-link">fmt_number</a></span><span class="op">(</span>columns <span class="op">=</span> <span class="op">-</span><span class="va">Model</span>, decimals <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/tab_header.html" class="external-link">tab_header</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"PBC model comparison"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
+<span>  <span class="va">pbc_summary</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  caption <span class="op">=</span> <span class="st">"PBC model comparison"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output-display">
-<div id="bduluwullo" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#bduluwullo table {
-  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-#bduluwullo thead, #bduluwullo tbody, #bduluwullo tfoot, #bduluwullo tr, #bduluwullo td, #bduluwullo th {
-  border-style: none;
-}
-
-#bduluwullo p {
-  margin: 0;
-  padding: 0;
-}
-
-#bduluwullo .gt_table {
-  display: table;
-  border-collapse: collapse;
-  line-height: normal;
-  margin-left: auto;
-  margin-right: auto;
-  color: #333333;
-  font-size: 16px;
-  font-weight: normal;
-  font-style: normal;
-  background-color: #FFFFFF;
-  width: auto;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #A8A8A8;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #A8A8A8;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-}
-
-#bduluwullo .gt_caption {
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
-
-#bduluwullo .gt_title {
-  color: #333333;
-  font-size: 125%;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-
-#bduluwullo .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 3px;
-  padding-bottom: 5px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-
-#bduluwullo .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#bduluwullo .gt_bottom_border {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#bduluwullo .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#bduluwullo .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-
-#bduluwullo .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-#bduluwullo .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-#bduluwullo .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-#bduluwullo .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-#bduluwullo .gt_spanner_row {
-  border-bottom-style: hidden;
-}
-
-#bduluwullo .gt_group_heading {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  text-align: left;
-}
-
-#bduluwullo .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#bduluwullo .gt_from_md > :first-child {
-  margin-top: 0;
-}
-
-#bduluwullo .gt_from_md > :last-child {
-  margin-bottom: 0;
-}
-
-#bduluwullo .gt_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-
-#bduluwullo .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#bduluwullo .gt_stub_row_group {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-  vertical-align: top;
-}
-
-#bduluwullo .gt_row_group_first td {
-  border-top-width: 2px;
-}
-
-#bduluwullo .gt_row_group_first th {
-  border-top-width: 2px;
-}
-
-#bduluwullo .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#bduluwullo .gt_first_summary_row {
-  border-top-style: solid;
-  border-top-color: #D3D3D3;
-}
-
-#bduluwullo .gt_first_summary_row.thick {
-  border-top-width: 2px;
-}
-
-#bduluwullo .gt_last_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#bduluwullo .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#bduluwullo .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-
-#bduluwullo .gt_last_grand_summary_row_top {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: double;
-  border-bottom-width: 6px;
-  border-bottom-color: #D3D3D3;
-}
-
-#bduluwullo .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-#bduluwullo .gt_table_body {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#bduluwullo .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#bduluwullo .gt_footnote {
-  margin: 0px;
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#bduluwullo .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#bduluwullo .gt_sourcenote {
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#bduluwullo .gt_left {
-  text-align: left;
-}
-
-#bduluwullo .gt_center {
-  text-align: center;
-}
-
-#bduluwullo .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-#bduluwullo .gt_font_normal {
-  font-weight: normal;
-}
-
-#bduluwullo .gt_font_bold {
-  font-weight: bold;
-}
-
-#bduluwullo .gt_font_italic {
-  font-style: italic;
-}
-
-#bduluwullo .gt_super {
-  font-size: 65%;
-}
-
-#bduluwullo .gt_footnote_marks {
-  font-size: 75%;
-  vertical-align: 0.4em;
-  position: initial;
-}
-
-#bduluwullo .gt_asterisk {
-  font-size: 100%;
-  vertical-align: 0;
-}
-
-#bduluwullo .gt_indent_1 {
-  text-indent: 5px;
-}
-
-#bduluwullo .gt_indent_2 {
-  text-indent: 10px;
-}
-
-#bduluwullo .gt_indent_3 {
-  text-indent: 15px;
-}
-
-#bduluwullo .gt_indent_4 {
-  text-indent: 20px;
-}
-
-#bduluwullo .gt_indent_5 {
-  text-indent: 25px;
-}
-
-#bduluwullo .katex-display {
-  display: inline-flex !important;
-  margin-bottom: 0.75em !important;
-}
-
-#bduluwullo div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
-  height: 0px !important;
-}
-</style>
-<table class="table gt_table caption-top" data-quarto-bootstrap="false">
-<thead>
-<tr class="gt_heading header">
-<td colspan="8" class="gt_heading gt_title gt_font_normal gt_bottom_border">PBC model comparison</td>
-</tr>
-<tr class="gt_col_headings even">
-<th id="Model" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Model</th>
-<th id="AIC" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">AIC</th>
-<th id="Score-global" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Score global</th>
-<th id="Score-bili" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Score bili</th>
-<th id="LWY-like-bili" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">LWY-like bili</th>
-<th id="Z-SW" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Z-SW</th>
-<th id="Z-AOV-LP" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Z-AOV-LP</th>
-<th id="Z-AOV-bili" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Z-AOV-bili</th>
-</tr>
-</thead>
-<tbody class="gt_table_body">
+<table class="table caption-top" style="width:100%;">
+<caption>PBC model comparison</caption>
+<colgroup>
+<col style="width: 14%">
+<col style="width: 10%">
+<col style="width: 15%">
+<col style="width: 12%">
+<col style="width: 16%">
+<col style="width: 7%">
+<col style="width: 10%">
+<col style="width: 12%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: left;">Model</th>
+<th style="text-align: right;">AIC</th>
+<th style="text-align: right;">Score global</th>
+<th style="text-align: right;">Score bili</th>
+<th style="text-align: right;">LWY-like bili</th>
+<th style="text-align: right;">Z-SW</th>
+<th style="text-align: right;">Z-AOV-LP</th>
+<th style="text-align: right;">Z-AOV-bili</th>
+</tr></thead>
+<tbody>
 <tr class="odd">
-<td class="gt_row gt_left" headers="Model">Linear bili</td>
-<td class="gt_row gt_right" headers="AIC">1,579.754</td>
-<td class="gt_row gt_right" headers="Score global">0.095</td>
-<td class="gt_row gt_right" headers="Score bili">0.014</td>
-<td class="gt_row gt_right" headers="LWY-like bili">0.008</td>
-<td class="gt_row gt_right" headers="Z-SW">0.647</td>
-<td class="gt_row gt_right" headers="Z-AOV-LP">0.020</td>
-<td class="gt_row gt_right" headers="Z-AOV-bili">0.000</td>
+<td style="text-align: left;">Linear bili</td>
+<td style="text-align: right;">1579.754</td>
+<td style="text-align: right;">0.095</td>
+<td style="text-align: right;">0.014</td>
+<td style="text-align: right;">0.008</td>
+<td style="text-align: right;">0.647</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.00</td>
 </tr>
 <tr class="even">
-<td class="gt_row gt_left" headers="Model">Log(bili)</td>
-<td class="gt_row gt_right" headers="AIC">1,531.139</td>
-<td class="gt_row gt_right" headers="Score global">0.567</td>
-<td class="gt_row gt_right" headers="Score bili">0.515</td>
-<td class="gt_row gt_right" headers="LWY-like bili">0.737</td>
-<td class="gt_row gt_right" headers="Z-SW">0.624</td>
-<td class="gt_row gt_right" headers="Z-AOV-LP">0.800</td>
-<td class="gt_row gt_right" headers="Z-AOV-bili">0.770</td>
+<td style="text-align: left;">Log(bili)</td>
+<td style="text-align: right;">1531.139</td>
+<td style="text-align: right;">0.567</td>
+<td style="text-align: right;">0.515</td>
+<td style="text-align: right;">0.737</td>
+<td style="text-align: right;">0.624</td>
+<td style="text-align: right;">0.80</td>
+<td style="text-align: right;">0.77</td>
 </tr>
 </tbody>
 </table>
-</div>
 </div>
 </div>
 </section></section><section class="level2"><h2 id="a-simulation-study-with-non-linear-cox-ph-datasets">A Simulation Study with Non-linear Cox PH Datasets<a class="anchor" aria-label="anchor" href="#a-simulation-study-with-non-linear-cox-ph-datasets"></a>
@@ -979,21 +715,77 @@ Figure 3: Histograms of replicated Z-residual test p-values for the PBC models.
 </div>
 <div class="cell" data-layout-align="center">
 <details class="code-fold"><summary>Code</summary><div class="sourceCode cell-code" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>, mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span>, cex <span class="op">=</span> <span class="fl">1.1</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">qq_linear</span> <span class="op">&lt;-</span> <span class="fu">capture_zplot</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span></span>
+<span>    <span class="va">Z_linear</span>,</span>
+<span>    irep <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>    main.title <span class="op">=</span> <span class="st">"Linear Model Q-Q Z-Residuals"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span></span>
-<span><span class="co"># Row 1: Misspecified Linear Fit</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span><span class="va">Z_linear</span>, irep <span class="op">=</span> <span class="fl">1</span>, main <span class="op">=</span> <span class="st">"Linear Model Q-Q Z-Residuals"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Z_linear</span>, info<span class="op">=</span><span class="va">zcov_linear</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, irep <span class="op">=</span> <span class="fl">1</span>, add_lowess <span class="op">=</span> <span class="cn">TRUE</span>, </span>
-<span>     main.title <span class="op">=</span> <span class="st">"Linear Model Z-Residuals vs LP"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Z_linear</span>, info<span class="op">=</span><span class="va">zcov_linear</span>, x_axis_var <span class="op">=</span> <span class="st">"x2"</span>, irep <span class="op">=</span> <span class="fl">1</span>, add_lowess <span class="op">=</span> <span class="cn">TRUE</span>, </span>
-<span>     main.title <span class="op">=</span> <span class="st">"Linear Model Z-Residuals vs x2"</span><span class="op">)</span></span>
+<span><span class="va">lp_linear</span> <span class="op">&lt;-</span> <span class="fu">capture_zplot</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>    <span class="va">Z_linear</span>,</span>
+<span>    zcov <span class="op">=</span> <span class="va">zcov_linear</span>,</span>
+<span>    x_axis_var <span class="op">=</span> <span class="st">"lp"</span>,</span>
+<span>    irep <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>    add_lowess <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    main.title <span class="op">=</span> <span class="st">"Linear Model Z-Residuals vs LP"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Row 2: Correctly Specified Nonlinear Fit</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span><span class="va">Z_nonlinear</span>, irep <span class="op">=</span> <span class="fl">1</span>, main <span class="op">=</span> <span class="st">"Nonlinear Model Q-Q Z-Residuals"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Z_nonlinear</span>, info<span class="op">=</span><span class="va">zcov_nonlinear</span>, x_axis_var <span class="op">=</span> <span class="st">"lp"</span>, irep <span class="op">=</span> <span class="fl">1</span>, add_lowess <span class="op">=</span> <span class="cn">TRUE</span>, </span>
-<span>     main.title <span class="op">=</span> <span class="st">"Nonlinear Model Z-Residuals vs LP"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">Z_nonlinear</span>, info<span class="op">=</span><span class="va">zcov_nonlinear</span>, x_axis_var <span class="op">=</span> <span class="st">"log(x2)"</span>, irep <span class="op">=</span> <span class="fl">1</span>, add_lowess <span class="op">=</span> <span class="cn">TRUE</span>, </span>
-<span>     main.title <span class="op">=</span> <span class="st">"Nonlinear Model Z-Residuals vs log(x2)"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">x2_linear</span> <span class="op">&lt;-</span> <span class="fu">capture_zplot</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>    <span class="va">Z_linear</span>,</span>
+<span>    zcov <span class="op">=</span> <span class="va">zcov_linear</span>,</span>
+<span>    x_axis_var <span class="op">=</span> <span class="st">"x2"</span>,</span>
+<span>    irep <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>    add_lowess <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    main.title <span class="op">=</span> <span class="st">"Linear Model Z-Residuals vs x2"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">qq_nonlinear</span> <span class="op">&lt;-</span> <span class="fu">capture_zplot</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html" class="external-link">qqnorm</a></span><span class="op">(</span></span>
+<span>    <span class="va">Z_nonlinear</span>,</span>
+<span>    irep <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>    main.title <span class="op">=</span> <span class="st">"Nonlinear Model Q-Q Z-Residuals"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span><span class="op">$</span><span class="va">plots</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">lp_nonlinear</span> <span class="op">&lt;-</span> <span class="fu">capture_zplot</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>    <span class="va">Z_nonlinear</span>,</span>
+<span>    zcov <span class="op">=</span> <span class="va">zcov_nonlinear</span>,</span>
+<span>    x_axis_var <span class="op">=</span> <span class="st">"lp"</span>,</span>
+<span>    irep <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>    add_lowess <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    main.title <span class="op">=</span> <span class="st">"Nonlinear Model Z-Residuals vs LP"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">x2_nonlinear</span> <span class="op">&lt;-</span> <span class="fu">capture_zplot</span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>    <span class="va">Z_nonlinear</span>,</span>
+<span>    zcov <span class="op">=</span> <span class="va">zcov_nonlinear</span>,</span>
+<span>    x_axis_var <span class="op">=</span> <span class="st">"log(x2)"</span>,</span>
+<span>    irep <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>    add_lowess <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    main.title <span class="op">=</span> <span class="st">"Nonlinear Model Z-Residuals vs log(x2)"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">gridExtra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange</a></span><span class="op">(</span></span>
+<span>  grobs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    <span class="va">qq_linear</span>,</span>
+<span>    <span class="va">lp_linear</span>,</span>
+<span>    <span class="va">x2_linear</span>,</span>
+<span>    <span class="va">qq_nonlinear</span>,</span>
+<span>    <span class="va">lp_nonlinear</span>,</span>
+<span>    <span class="va">x2_nonlinear</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  ncol <span class="op">=</span> <span class="fl">3</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output-display">
 <div id="fig-sim-nonlinear" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig"><div aria-describedby="fig-sim-nonlinear-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1014,503 +806,74 @@ Figure 4: A comprehensive diagnostic analysis using Z-residuals from simulated 
 <span><span class="va">aovx_linear</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aov.test.zresid.html">aov.test.zresid</a></span><span class="op">(</span><span class="va">Z_linear</span>, X <span class="op">=</span> <span class="st">"x2"</span>,zcov <span class="op">=</span> <span class="va">zcov_linear</span>, k.anova <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="va">aovx_nonlinear</span>   <span class="op">&lt;-</span> <span class="fu"><a href="../reference/aov.test.zresid.html">aov.test.zresid</a></span><span class="op">(</span><span class="va">Z_nonlinear</span>, X <span class="op">=</span> <span class="st">"log(x2)"</span>,zcov <span class="op">=</span> <span class="va">zcov_nonlinear</span>, k.anova <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">sim_linear_summary</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
+<span><span class="va">sim_linear_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  Model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Linear Cox-PH"</span>, <span class="st">"Nonlinear Cox-PH"</span><span class="op">)</span>,</span>
-<span>  `Score global` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">score_linear</span><span class="op">$</span><span class="va">table</span><span class="op">[</span><span class="st">"GLOBAL"</span>, <span class="st">"p"</span><span class="op">]</span>, <span class="va">score_nonlinear</span><span class="op">$</span><span class="va">table</span><span class="op">[</span><span class="st">"GLOBAL"</span>, <span class="st">"p"</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>  `Score target covariate` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">score_linear</span><span class="op">$</span><span class="va">table</span><span class="op">[</span><span class="st">"x2"</span>, <span class="st">"p"</span><span class="op">]</span>, <span class="va">score_nonlinear</span><span class="op">$</span><span class="va">table</span><span class="op">[</span><span class="st">"log(x2)"</span>, <span class="st">"p"</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>  `Z-SW` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">sw_linear</span><span class="op">)</span>, <span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">sw_nonlinear</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  `Z-AOV-LP` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">aovlp_linear</span><span class="op">)</span>, <span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">aovlp_nonlinear</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  `Z-AOV-target` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">aovx_linear</span><span class="op">)</span>, <span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">aovx_nonlinear</span><span class="op">)</span><span class="op">)</span></span>
+<span>  `Score global` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="va">score_linear</span><span class="op">$</span><span class="va">table</span><span class="op">[</span><span class="st">"GLOBAL"</span>, <span class="st">"p"</span><span class="op">]</span>,</span>
+<span>    <span class="va">score_nonlinear</span><span class="op">$</span><span class="va">table</span><span class="op">[</span><span class="st">"GLOBAL"</span>, <span class="st">"p"</span><span class="op">]</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  `Score target covariate` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="va">score_linear</span><span class="op">$</span><span class="va">table</span><span class="op">[</span><span class="st">"x2"</span>, <span class="st">"p"</span><span class="op">]</span>,</span>
+<span>    <span class="va">score_nonlinear</span><span class="op">$</span><span class="va">table</span><span class="op">[</span><span class="st">"log(x2)"</span>, <span class="st">"p"</span><span class="op">]</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  `Z-SW` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">sw_linear</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">sw_nonlinear</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  `Z-AOV-LP` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">aovlp_linear</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">aovlp_nonlinear</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  `Z-AOV-target` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">aovx_linear</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="../reference/upper_bound_pvalue.html">upper_bound_pvalue</a></span><span class="op">(</span><span class="va">aovx_nonlinear</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">sim_linear_summary</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/gt.html" class="external-link">gt</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/fmt_number.html" class="external-link">fmt_number</a></span><span class="op">(</span>columns <span class="op">=</span> <span class="op">-</span><span class="va">Model</span>, decimals <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">gt</span><span class="fu">::</span><span class="fu"><a href="https://gt.rstudio.com/reference/tab_header.html" class="external-link">tab_header</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Summary of Replicated P-values for the Nonlinear Dataset"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span></span>
+<span>  <span class="va">sim_linear_summary</span>,</span>
+<span>  digits <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>  caption <span class="op">=</span> <span class="st">"Summary of replicated p-values for the nonlinear dataset"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 </details><div class="cell-output-display">
-<div id="hstvadbcrl" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#hstvadbcrl table {
-  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-#hstvadbcrl thead, #hstvadbcrl tbody, #hstvadbcrl tfoot, #hstvadbcrl tr, #hstvadbcrl td, #hstvadbcrl th {
-  border-style: none;
-}
-
-#hstvadbcrl p {
-  margin: 0;
-  padding: 0;
-}
-
-#hstvadbcrl .gt_table {
-  display: table;
-  border-collapse: collapse;
-  line-height: normal;
-  margin-left: auto;
-  margin-right: auto;
-  color: #333333;
-  font-size: 16px;
-  font-weight: normal;
-  font-style: normal;
-  background-color: #FFFFFF;
-  width: auto;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #A8A8A8;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #A8A8A8;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-}
-
-#hstvadbcrl .gt_caption {
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
-
-#hstvadbcrl .gt_title {
-  color: #333333;
-  font-size: 125%;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-
-#hstvadbcrl .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 3px;
-  padding-bottom: 5px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-
-#hstvadbcrl .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#hstvadbcrl .gt_bottom_border {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#hstvadbcrl .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#hstvadbcrl .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-
-#hstvadbcrl .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-#hstvadbcrl .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-#hstvadbcrl .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-#hstvadbcrl .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-#hstvadbcrl .gt_spanner_row {
-  border-bottom-style: hidden;
-}
-
-#hstvadbcrl .gt_group_heading {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  text-align: left;
-}
-
-#hstvadbcrl .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#hstvadbcrl .gt_from_md > :first-child {
-  margin-top: 0;
-}
-
-#hstvadbcrl .gt_from_md > :last-child {
-  margin-bottom: 0;
-}
-
-#hstvadbcrl .gt_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-
-#hstvadbcrl .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#hstvadbcrl .gt_stub_row_group {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-  vertical-align: top;
-}
-
-#hstvadbcrl .gt_row_group_first td {
-  border-top-width: 2px;
-}
-
-#hstvadbcrl .gt_row_group_first th {
-  border-top-width: 2px;
-}
-
-#hstvadbcrl .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#hstvadbcrl .gt_first_summary_row {
-  border-top-style: solid;
-  border-top-color: #D3D3D3;
-}
-
-#hstvadbcrl .gt_first_summary_row.thick {
-  border-top-width: 2px;
-}
-
-#hstvadbcrl .gt_last_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#hstvadbcrl .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#hstvadbcrl .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-
-#hstvadbcrl .gt_last_grand_summary_row_top {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: double;
-  border-bottom-width: 6px;
-  border-bottom-color: #D3D3D3;
-}
-
-#hstvadbcrl .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-#hstvadbcrl .gt_table_body {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#hstvadbcrl .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#hstvadbcrl .gt_footnote {
-  margin: 0px;
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#hstvadbcrl .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#hstvadbcrl .gt_sourcenote {
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#hstvadbcrl .gt_left {
-  text-align: left;
-}
-
-#hstvadbcrl .gt_center {
-  text-align: center;
-}
-
-#hstvadbcrl .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-#hstvadbcrl .gt_font_normal {
-  font-weight: normal;
-}
-
-#hstvadbcrl .gt_font_bold {
-  font-weight: bold;
-}
-
-#hstvadbcrl .gt_font_italic {
-  font-style: italic;
-}
-
-#hstvadbcrl .gt_super {
-  font-size: 65%;
-}
-
-#hstvadbcrl .gt_footnote_marks {
-  font-size: 75%;
-  vertical-align: 0.4em;
-  position: initial;
-}
-
-#hstvadbcrl .gt_asterisk {
-  font-size: 100%;
-  vertical-align: 0;
-}
-
-#hstvadbcrl .gt_indent_1 {
-  text-indent: 5px;
-}
-
-#hstvadbcrl .gt_indent_2 {
-  text-indent: 10px;
-}
-
-#hstvadbcrl .gt_indent_3 {
-  text-indent: 15px;
-}
-
-#hstvadbcrl .gt_indent_4 {
-  text-indent: 20px;
-}
-
-#hstvadbcrl .gt_indent_5 {
-  text-indent: 25px;
-}
-
-#hstvadbcrl .katex-display {
-  display: inline-flex !important;
-  margin-bottom: 0.75em !important;
-}
-
-#hstvadbcrl div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
-  height: 0px !important;
-}
-</style>
-<table class="table gt_table caption-top" data-quarto-bootstrap="false">
-<thead>
-<tr class="gt_heading header">
-<td colspan="6" class="gt_heading gt_title gt_font_normal gt_bottom_border">Summary of Replicated P-values for the Nonlinear Dataset</td>
-</tr>
-<tr class="gt_col_headings even">
-<th id="Model" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Model</th>
-<th id="Score-global" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Score global</th>
-<th id="Score-target-covariate" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Score target covariate</th>
-<th id="Z-SW" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Z-SW</th>
-<th id="Z-AOV-LP" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Z-AOV-LP</th>
-<th id="Z-AOV-target" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Z-AOV-target</th>
-</tr>
-</thead>
-<tbody class="gt_table_body">
+<table class="table caption-top">
+<caption>Summary of replicated p-values for the nonlinear dataset</caption>
+<colgroup>
+<col style="width: 20%">
+<col style="width: 16%">
+<col style="width: 28%">
+<col style="width: 7%">
+<col style="width: 11%">
+<col style="width: 16%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: left;">Model</th>
+<th style="text-align: right;">Score global</th>
+<th style="text-align: right;">Score target covariate</th>
+<th style="text-align: right;">Z-SW</th>
+<th style="text-align: right;">Z-AOV-LP</th>
+<th style="text-align: right;">Z-AOV-target</th>
+</tr></thead>
+<tbody>
 <tr class="odd">
-<td class="gt_row gt_left" headers="Model">Linear Cox-PH</td>
-<td class="gt_row gt_right" headers="Score global">0.000</td>
-<td class="gt_row gt_right" headers="Score target covariate">0.000</td>
-<td class="gt_row gt_right" headers="Z-SW">0.477</td>
-<td class="gt_row gt_right" headers="Z-AOV-LP">0.001</td>
-<td class="gt_row gt_right" headers="Z-AOV-target">0.000</td>
+<td style="text-align: left;">Linear Cox-PH</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">0.477</td>
+<td style="text-align: right;">0.001</td>
+<td style="text-align: right;">0</td>
 </tr>
 <tr class="even">
-<td class="gt_row gt_left" headers="Model">Nonlinear Cox-PH</td>
-<td class="gt_row gt_right" headers="Score global">0.195</td>
-<td class="gt_row gt_right" headers="Score target covariate">0.098</td>
-<td class="gt_row gt_right" headers="Z-SW">1.000</td>
-<td class="gt_row gt_right" headers="Z-AOV-LP">1.000</td>
-<td class="gt_row gt_right" headers="Z-AOV-target">1.000</td>
+<td style="text-align: left;">Nonlinear Cox-PH</td>
+<td style="text-align: right;">0.195</td>
+<td style="text-align: right;">0.098</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">1</td>
 </tr>
 </tbody>
 </table>
-</div>
 </div>
 </div>
 </section><section class="level3"><h3 id="checking-the-sampling-distribution-of-shapiro-wilk-tests-p-values">Checking the Sampling Distribution of Shapiro-Wilk Tests p-values<a class="anchor" aria-label="anchor" href="#checking-the-sampling-distribution-of-shapiro-wilk-tests-p-values"></a>

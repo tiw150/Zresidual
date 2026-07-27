@@ -2,16 +2,22 @@
 % Please edit documentation in R/predcheck_top.R
 \name{ppc}
 \alias{ppc}
-\title{Posterior predictive checks for count models}
+\title{Posterior predictive checks}
 \usage{
 ppc(
   fit,
   data,
-  predcheck_pointpred = NULL,
+  log_pointpred = NULL,
+  point_Zcov = NULL,
+  postpred_simulate = NULL,
+  test = NULL,
   x = NULL,
   ndraws = NULL,
   seed = NULL,
+  type = NULL,
+  randomized = TRUE,
   k_anova = 10,
+  k_bl = 10,
   ...
 )
 }
@@ -20,32 +26,37 @@ ppc(
 
 \item{data}{A data frame used for posterior predictive checking.}
 
-\item{predcheck_pointpred}{Optional low-level backend function. This function
-must accept at least \code{fit}, \code{data}, and \code{draw_ids}, and return a list with
-components \code{support}, \code{family}, \code{y}, \code{n}, \code{ndraws}, \code{pmf}, \code{tail}, \code{rng},
-and \code{moments}.}
+\item{log_pointpred}{Optional pointwise predictive bridge.}
 
-\item{x}{Optional grouping variable for the ANOVA-style diagnostic. This can
-be either a column name in \code{data} or a vector of length \code{nrow(data)}.}
+\item{point_Zcov}{Optional point-level covariate/moment bridge.}
 
-\item{ndraws}{Optional number of posterior draws to use. If \code{NULL}, all
-available draws are used.}
+\item{postpred_simulate}{Optional posterior predictive simulation bridge.}
 
-\item{seed}{Optional random seed used for draw subsampling and randomized
-residual generation.}
+\item{test}{Optional list of Z-residual test specifications.}
 
-\item{k_anova}{Maximum number of bins used when \code{x} is numeric.}
+\item{x}{Optional covariate for the default ANOVA-style diagnostic.}
 
-\item{...}{Additional arguments passed to \code{predcheck_pointpred}.}
+\item{ndraws}{Optional number of posterior draws to use.}
+
+\item{seed}{Optional random seed.}
+
+\item{type}{Optional component selector.}
+
+\item{randomized}{Logical; if \code{TRUE}, use randomized residuals for
+discrete outcomes.}
+
+\item{k_anova}{Maximum number of bins used when an ANOVA covariate is numeric.}
+
+\item{k_bl}{Maximum number of bins used when a Bartlett covariate is numeric.}
+
+\item{...}{Additional arguments passed to bridge functions.}
 }
 \value{
-An object of class \code{"predcheck"} containing the predictive-check summary
-statistics.
+An object of class \code{"predcheck"}.
 }
 \description{
-Computes posterior predictive check summaries for a fitted count model using
-randomized and mid-point probability integral transform residuals, a
-chi-squared discrepancy, and an optional ANOVA-style residual diagnostic.
+Computes posterior predictive checks using the package thin-waist bridges:
+\code{log_pointpred}, \code{point_Zcov}, and \code{postpred_simulate}.
 }
 \examples{
 \dontrun{

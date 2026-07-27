@@ -1,7 +1,7 @@
 project:
   type: default
-
 date: last-modified
+
 format:
   html:
     toc: true
@@ -10,6 +10,8 @@ format:
     page-layout: full
     code-fold: true
     html-math-method: mathjax
+    bibliography: ref.bib
+    link-citations: true
     include-in-header:
       text: |
         <style>
@@ -22,10 +24,11 @@ execute:
   message: false
   cache: false
   freeze: false
-  execute-dir: project 
+  # This tells Quarto to look for data/files in the same folder as the .qmd
+  execute-dir: file
 
 crossref:
-  eq-prefix: "Equation"
+  eq-prefix: "Eq."
 
-bibliography: ref.bib
-link-citations: true
+# If ref.bib is one level up (with this YAML), use ../ref.bib
+# If it's in the same folder as the .qmd, leave it as ref.bib

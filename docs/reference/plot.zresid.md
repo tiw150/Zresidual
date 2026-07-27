@@ -1,10 +1,8 @@
 # Scatterplot diagnostics for Z-residuals
 
-Produces scatterplots of Z-residuals against observation index, linear
-predictors, model covariates, or a user-supplied x-axis variable.
-Optional metadata supplied through `info` (or stored in attributes of
-`x`) are used to fill legacy plotting attributes such as `"covariates"`,
-`"linear.pred"`, `"zero_id"`, and `"censored.status"`.
+Draws ggplot2 scatterplots of Z-residuals against observation index, a
+linear predictor, a model covariate, or a user-supplied x-axis variable.
+Multiple residual replications are displayed in facets.
 
 ## Usage
 
@@ -13,14 +11,12 @@ Optional metadata supplied through `info` (or stored in attributes of
 plot(
   x,
   zcov = NULL,
-  info = NULL,
-  irep = 1,
+  irep = 1L,
   ylab = "Z-Residual",
   normality.test = c("SW", "AOV", "BL"),
-  k.test = 10,
+  k.test = 10L,
   x_axis_var = "index",
-  main.title = ifelse(is.null(attr(x, "type")), "Z-residual Scatterplot",
-    paste("Z-residual Scatterplot -", attr(x, "type"))),
+  main.title = NULL,
   outlier.return = TRUE,
   outlier.value = 3.5,
   category = NULL,
@@ -28,6 +24,13 @@ plot(
   xlab = NULL,
   my.mar = c(5, 4, 4, 6) + 0.1,
   add_lowess = FALSE,
+  reference.lines = c(1.96, 3),
+  facet = TRUE,
+  x_scale = c("identity", "log10"),
+  interactive = FALSE,
+  point.args = list(),
+  smooth.args = list(),
+  theme = ggplot2::theme_bw(),
   ...
 )
 ```
@@ -36,22 +39,17 @@ plot(
 
 - x:
 
-  A numeric matrix of Z-residuals, typically returned by
-  [`Zresidual`](https://tiw150.github.io/Zresidual/reference/Zresidual.md),
-  with one column per residual replicate.
+  A numeric vector or matrix of Z-residuals. Matrix columns are residual
+  replications.
 
 - zcov:
 
-  Optional metadata, typically returned by
-  [`Zcov`](https://tiw150.github.io/Zresidual/reference/Zcov.md).
-
-- info:
-
-  Legacy alias for `zcov`.
+  Optional metadata returned by
+  [`Zcov()`](https://tiw150.github.io/Zresidual/reference/Zcov.md).
 
 - irep:
 
-  Integer vector specifying which column(s) of `x` to plot.
+  Integer vector selecting residual columns.
 
 - ylab:
 
@@ -59,100 +57,90 @@ plot(
 
 - normality.test:
 
-  Character vector specifying which diagnostic p-values to display.
-  Supported values are `"SW"`, `"AOV"`, and `"BL"`.
+  Any of `"SW"`, `"AOV"`, and `"BL"`.
 
 - k.test:
 
-  Integer controlling grouping used by the diagnostic tests.
+  Number of groups used by AOV and Bartlett diagnostics.
 
 - x_axis_var:
 
-  Variable used on the x-axis. It may be one of `"index"`, `"lp"`,
-  `"covariate"`, a covariate name stored in `attr(x, "covariates")`, a
-  length-\\n\\ vector, or a function returning such a vector.
+  `"index"`, `"lp"`, `"covariate"`, a covariate name, a length-n vector,
+  or a function of `x` and `zcov`.
 
 - main.title:
 
-  Main title of the plot. If omitted, a default title is constructed
-  from `attr(x, "type")`, when available.
+  Plot title.
 
 - outlier.return:
 
-  Logical; if `TRUE`, mark observations with `|Z| > outlier.value` (and
-  non-finite residuals) and invisibly return their indices.
+  Whether to mark and label outliers.
 
 - outlier.value:
 
-  Numeric threshold used to define outliers.
+  Absolute residual threshold for outliers.
 
 - category:
 
-  Optional grouping variable of length \\n\\ used to modify point
-  appearance.
+  Optional grouping variable of length n.
 
 - outlier.set:
 
-  A named list of graphical arguments passed to
-  [`symbols`](https://rdrr.io/r/graphics/symbols.html) and
-  [`text`](https://rdrr.io/r/graphics/text.html) when annotating
-  outliers.
+  Named list controlling outlier colour, size, label size, and whether
+  labels are shown. Supported names are `colour`, `size`,
+  `label_colour`, `label_size`, and `label`.
 
 - xlab:
 
-  Label for the x-axis. If `NULL`, an automatic label is used.
+  Optional x-axis label.
 
 - my.mar:
 
-  Numeric vector passed to
-  [`par`](https://rdrr.io/r/graphics/par.html)`(mar = ...)`.
+  Retained for source compatibility; margins are controlled by the
+  ggplot theme and this argument is ignored.
 
 - add_lowess:
 
-  Logical; if `TRUE`, add a LOWESS smooth when the x-axis is numeric.
+  Whether to add the original
+  [`stats::lowess()`](https://rdrr.io/r/stats/lowess.html) smooth.
+
+- reference.lines:
+
+  Numeric horizontal reference lines. Their negatives are also drawn.
+
+- facet:
+
+  Whether multiple selected replications are shown in facets. When
+  `FALSE`, replications are overlaid and distinguished by linetype only
+  for the LOWESS curves; faceting is recommended.
+
+- x_scale:
+
+  Either `"identity"` or `"log10"`.
+
+- interactive:
+
+  If `TRUE`, convert the ggplot with
+  [`plotly::ggplotly()`](https://rdrr.io/pkg/plotly/man/ggplotly.html).
+
+- point.args:
+
+  Named list of arguments passed to `geom_point()`.
+
+- smooth.args:
+
+  Named list of arguments passed to the LOWESS `geom_line()` layer.
+
+- theme:
+
+  A complete or partial ggplot2 theme.
 
 - ...:
 
-  Additional graphical arguments passed to plotting functions.
+  Additional named arguments for the main `geom_point()` layer.
 
 ## Value
 
-Invisibly returns a list with component `outliers`, containing the
-indices of observations flagged as outliers for the plotted replicate.
-The main effect of the function is the diagnostic scatterplot.
-
-## Details
-
-Depending on the metadata available, the plot can distinguish zero
-versus positive observations for hurdle-type models, or censored versus
-uncensored observations for survival models.
-
-## See also
-
-[`Zresidual`](https://tiw150.github.io/Zresidual/reference/Zresidual.md),
-[`Zcov`](https://tiw150.github.io/Zresidual/reference/Zcov.md)
-
-## Examples
-
-``` r
-if (requireNamespace("survival", quietly = TRUE)) {
-  set.seed(1)
-  n <- 30
-  x <- rnorm(n)
-  t_event <- rexp(n, rate = exp(0.3 * x))
-  t_cens  <- rexp(n, rate = 0.4)
-  status  <- as.integer(t_event <= t_cens)
-  time    <- pmin(t_event, t_cens)
-  dat <- data.frame(time = time, status = status, x = x)
-
-  fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
-  z <- Zresidual(fit, data=dat, nrep = 1, seed = 1)
-  info <- Zcov(fit, data = dat)
-
-  plot(z, info = info, x_axis_var = "index")
-  plot(z, info = info, x_axis_var = "lp")
-}
-#> Warning: NaNs produced
-
-
-```
+A ggplot object, invisibly. With `interactive = TRUE`, returns a plotly
+htmlwidget. Diagnostics and outlier indices are stored in the
+`zresid_diagnostics` and `zresid_outliers` attributes of the ggplot.

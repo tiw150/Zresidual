@@ -12,17 +12,22 @@ log_pointpred_survival_coxph.penal(fit, data, traindata, ...)
 
 - fit:
 
-  A fitted coxph object (usually class coxph.penal).
+  A fitted coxph object, usually inheriting from coxph.penal.
 
 - data:
 
-  The new data to evaluate.
+  New data to evaluate.
 
 - traindata:
 
-  The original data used to fit the model (required for baseline
-  hazard).
+  Training data used to fit the model. This is required for
+  reconstructing the baseline cumulative hazard.
 
 - ...:
 
   Additional arguments passed from Zresidual.
+
+## Value
+
+A list containing log-survival probabilities, log-likelihood
+contributions, discreteness indicators, and linear predictors.

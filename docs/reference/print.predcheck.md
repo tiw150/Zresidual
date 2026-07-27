@@ -1,7 +1,6 @@
 # Print a predictive-check summary
 
-Prints the main summary statistics stored in an object of class
-`"predcheck"`.
+Print a predictive-check summary
 
 ## Usage
 

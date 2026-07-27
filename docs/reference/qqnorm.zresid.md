@@ -1,9 +1,9 @@
 # Normal Q-Q plot for Z-residuals
 
-Produces a normal Q-Q plot for one or more columns of a `"zresid"`
-object. Optional metadata supplied through `info` (or stored in
-attributes of `y`) are used only to fill legacy plotting attributes such
-as `"type"`.
+Produces a ggplot2 normal Q-Q plot for one or more columns of a
+`"zresid"` object. The Shapiro-Wilk diagnostic, outlier annotation,
+extreme-value compression, reference lines, and axis-break marks retain
+the behavior of the original plotting method.
 
 ## Usage
 
@@ -22,10 +22,13 @@ qqnorm(
   outlier.return = TRUE,
   outlier.value = 3.5,
   outlier.set = list(),
+  outlier.label.xpad = 0.5,
   my.mar = c(5, 4, 4, 6) + 0.1,
   legend.settings = list(),
   clip.extreme = TRUE,
   clip.threshold = 6,
+  interactive = FALSE,
+  theme = ggplot2::theme_bw(),
   ...
 )
 ```
@@ -45,8 +48,7 @@ qqnorm(
 
 - info:
 
-  Legacy alias for `zcov`. When provided, it is used to fill missing
-  legacy attributes such as `"type"`.
+  Legacy alias for `zcov`.
 
 - irep:
 
@@ -54,13 +56,12 @@ qqnorm(
 
 - diagnosis.test:
 
-  Character string specifying the normality diagnostic to display.
-  Currently `"SW"` is supported.
+  Character string specifying the normality diagnostic. Currently `"SW"`
+  is supported.
 
 - main.title:
 
-  Main title of the plot. If omitted, a default title is constructed
-  from `attr(y, "type")`, when available.
+  Main title of the plot.
 
 - xlab:
 
@@ -72,77 +73,56 @@ qqnorm(
 
 - outlier.return:
 
-  Logical; if `TRUE`, mark observations with `|Z| > outlier.value` and
-  invisibly return their indices.
+  Logical; mark and return observations satisfying the outlier rule when
+  `TRUE`.
 
 - outlier.value:
 
-  Numeric threshold used to define outliers.
+  Numeric absolute-residual outlier threshold.
 
 - outlier.set:
 
-  A named list of graphical arguments passed to
-  [`symbols`](https://rdrr.io/r/graphics/symbols.html) and
-  [`text`](https://rdrr.io/r/graphics/text.html) when annotating
-  outliers.
+  Named list controlling outlier annotation. Supported ggplot settings
+  are `colour`, `size`, `label_colour`, `label_size`, and `label`.
+
+- outlier.label.xpad:
+
+  Numeric padding added to the right x-axis limit.
 
 - my.mar:
 
-  Numeric vector passed to
-  [`par`](https://rdrr.io/r/graphics/par.html)`(mar = ...)`.
+  Retained for source compatibility; ggplot themes control plot margins.
 
 - legend.settings:
 
-  Optional named list used to modify the default legend settings.
+  Named list modifying the line legend. Supported names include
+  `position`, `text_size`, and `title_size`.
 
 - clip.extreme:
 
-  Logical; if `TRUE`, very large residuals are visually clipped to
-  improve readability.
+  Logical; visually compress extreme residuals.
 
 - clip.threshold:
 
-  Numeric threshold used when `clip.extreme = TRUE`.
+  Numeric clipping threshold.
+
+- interactive:
+
+  Logical; convert each ggplot using
+  [`plotly::ggplotly()`](https://rdrr.io/pkg/plotly/man/ggplotly.html)
+  when `TRUE`.
+
+- theme:
+
+  A ggplot2 theme.
 
 - ...:
 
-  Additional graphical arguments passed to
-  [`plot`](https://rdrr.io/r/graphics/plot.default.html).
+  Additional named arguments passed to the QQ-point `geom_point()`
+  layer.
 
 ## Value
 
-Invisibly returns a list with component `outliers`, containing the
-indices of observations flagged as outliers for the plotted replicate.
-The main effect of the function is the Q-Q plot.
-
-## Details
-
-The method can optionally report a Shapiro-Wilk normality diagnostic,
-mark observations with large absolute residuals, and visually compress
-extreme values when they would otherwise dominate the plot.
-
-## See also
-
-[`Zresidual`](https://tiw150.github.io/Zresidual/reference/Zresidual.md),
-[`Zcov`](https://tiw150.github.io/Zresidual/reference/Zcov.md)
-
-## Examples
-
-``` r
-if (requireNamespace("survival", quietly = TRUE)) {
-  set.seed(1)
-  n <- 30
-  x <- rnorm(n)
-  t_event <- rexp(n, rate = exp(0.3 * x))
-  t_cens  <- rexp(n, rate = 0.4)
-  status  <- as.integer(t_event <= t_cens)
-  time    <- pmin(t_event, t_cens)
-  dat <- data.frame(time = time, status = status, x = x)
-
-  fit <- survival::coxph(survival::Surv(time, status) ~ x, data = dat)
-  z <- Zresidual(fit, data=dat, nrep = 1, seed = 1)
-  qqnorm(z)
-}
-#> Warning: NaNs produced
-
-```
+Invisibly returns a list containing `outliers` and `plots`. A single
+selected replication produces one ggplot in `plots`; multiple selected
+replications are printed sequentially, matching the original method.

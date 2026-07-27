@@ -11,7 +11,7 @@
 }
 \arguments{
 \item{x}{An object returned by \code{\link{Zresidual}} or
-\code{\link{CV.Zresidual}}.}
+\code{\link{Zresidual_CV}}.}
 
 \item{...}{Further arguments passed to \code{print()}.}
 }
