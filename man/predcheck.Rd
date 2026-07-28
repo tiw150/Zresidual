@@ -63,7 +63,11 @@ algorithm is used for in-sample and holdout evaluation.
 }
 \examples{
 \dontrun{
-ppc_result <- predcheck(fit_full, full_data, data_role = "training")
-hpc_result <- predcheck(fit_training, test_data, data_role = "holdout")
+training_result <- predcheck(
+  fit_full, full_data, data_role = "training"
+)
+holdout_result <- predcheck(
+  fit_training, test_data, data_role = "holdout"
+)
 }
 }

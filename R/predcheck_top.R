@@ -27,8 +27,12 @@
 #' @return An object of class \code{"predcheck"}.
 #' @examples
 #' \dontrun{
-#' ppc_result <- predcheck(fit_full, full_data, data_role = "training")
-#' hpc_result <- predcheck(fit_training, test_data, data_role = "holdout")
+#' training_result <- predcheck(
+#'   fit_full, full_data, data_role = "training"
+#' )
+#' holdout_result <- predcheck(
+#'   fit_training, test_data, data_role = "holdout"
+#' )
 #' }
 #' @export
 predcheck <- function(fit, data,
@@ -46,134 +50,6 @@ predcheck <- function(fit, data,
     postpred_simulate = postpred_simulate, test = test, x = x,
     ndraws = ndraws, seed = seed, type = type,
     randomized = randomized, k_anova = k_anova, k_bl = k_bl, ...
-  )
-}
-
-#' Posterior predictive checks
-#'
-#' @description
-#' Computes posterior predictive checks using the package thin-waist bridges:
-#' \code{log_pointpred}, \code{point_Zcov}, and \code{postpred_simulate}.
-#'
-#' @param fit A fitted model object.
-#' @param data A data frame used for posterior predictive checking.
-#' @param log_pointpred Optional pointwise predictive bridge.
-#' @param point_Zcov Optional point-level covariate/moment bridge.
-#' @param postpred_simulate Optional posterior predictive simulation bridge.
-#' @param test Optional list of Z-residual test specifications.
-#' @param x Optional covariate for the default ANOVA-style diagnostic.
-#' @param ndraws Optional number of posterior draws to use.
-#' @param seed Optional random seed.
-#' @param type Optional component selector.
-#' @param randomized Logical; if \code{TRUE}, use randomized residuals for
-#'   discrete outcomes.
-#' @param k_anova Maximum number of bins used when an ANOVA covariate is numeric.
-#' @param k_bl Maximum number of bins used when a Bartlett covariate is numeric.
-#' @param ... Additional arguments passed to bridge functions.
-#'
-#' @return An object of class \code{"predcheck"}.
-#'
-#' @examples
-#' \dontrun{
-#' res <- ppc(fit = fit_nb, data = dat, x = "depth", ndraws = 500, seed = 1)
-#' print(res)
-#' }
-#'
-#' @export
-ppc <- function(fit,
-                data,
-                log_pointpred = NULL,
-                point_Zcov = NULL,
-                postpred_simulate = NULL,
-                test = NULL,
-                x = NULL,
-                ndraws = NULL,
-                seed = NULL,
-                type = NULL,
-                randomized = TRUE,
-                k_anova = 10,
-                k_bl = 10,
-                ...) {
-  predcheck(
-    fit = fit,
-    data = data,
-    data_role = "training",
-    log_pointpred = log_pointpred,
-    point_Zcov = point_Zcov,
-    postpred_simulate = postpred_simulate,
-    test = test,
-    x = x,
-    ndraws = ndraws,
-    seed = seed,
-    type = type,
-    randomized = randomized,
-    k_anova = k_anova,
-    k_bl = k_bl,
-    ...
-  )
-}
-
-#' Holdout predictive checks
-#'
-#' @description
-#' Computes holdout predictive checks on a new dataset using the same thin-waist
-#' predictive-check infrastructure as \code{ppc}.
-#'
-#' @param fit A fitted model object.
-#' @param newdata A data frame used for holdout predictive checking.
-#' @param log_pointpred Optional pointwise predictive bridge.
-#' @param point_Zcov Optional point-level covariate/moment bridge.
-#' @param postpred_simulate Optional posterior predictive simulation bridge.
-#' @param test Optional list of Z-residual test specifications.
-#' @param x Optional covariate for the default ANOVA-style diagnostic.
-#' @param ndraws Optional number of posterior draws to use.
-#' @param seed Optional random seed.
-#' @param type Optional component selector.
-#' @param randomized Logical; if \code{TRUE}, use randomized residuals for
-#'   discrete outcomes.
-#' @param k_anova Maximum number of bins used when an ANOVA covariate is numeric.
-#' @param k_bl Maximum number of bins used when a Bartlett covariate is numeric.
-#' @param ... Additional arguments passed to bridge functions.
-#'
-#' @return An object of class \code{"predcheck"}.
-#'
-#' @examples
-#' \dontrun{
-#' res <- hpc(fit = fit_nb, newdata = dat_hold, x = "depth", ndraws = 500, seed = 1)
-#' print(res)
-#' }
-#'
-#' @export
-hpc <- function(fit,
-                newdata,
-                log_pointpred = NULL,
-                point_Zcov = NULL,
-                postpred_simulate = NULL,
-                test = NULL,
-                x = NULL,
-                ndraws = NULL,
-                seed = NULL,
-                type = NULL,
-                randomized = TRUE,
-                k_anova = 10,
-                k_bl = 10,
-                ...) {
-  predcheck(
-    fit = fit,
-    data = newdata,
-    data_role = "holdout",
-    log_pointpred = log_pointpred,
-    point_Zcov = point_Zcov,
-    postpred_simulate = postpred_simulate,
-    test = test,
-    x = x,
-    ndraws = ndraws,
-    seed = seed,
-    type = type,
-    randomized = randomized,
-    k_anova = k_anova,
-    k_bl = k_bl,
-    ...
   )
 }
 
