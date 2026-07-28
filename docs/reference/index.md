@@ -2,6 +2,12 @@
 
 ## All functions
 
+- [`BreastCancer`](https://tiw150.github.io/Zresidual/reference/BreastCancer.md)
+  : German Breast Cancer Study Group 2 data
+
+- [`LeukSurv`](https://tiw150.github.io/Zresidual/reference/LeukSurv.md)
+  : Acute myeloid leukemia survival data
+
 - [`Zcov()`](https://tiw150.github.io/Zresidual/reference/Zcov.md) :
   Extract aligned covariates and optional point-level predictive
   quantities
@@ -24,11 +30,11 @@
 - [`dinvgauss()`](https://tiw150.github.io/Zresidual/reference/dinvgauss.md)
   : Inverse Gaussian density
 
+- [`drs`](https://tiw150.github.io/Zresidual/reference/drs.md) :
+  Diabetic Retinopathy Study data
+
 - [`gof.censored.zresidual()`](https://tiw150.github.io/Zresidual/reference/gof.censored.zresidual.md)
   : Goodness-of-fit test for censored Z-residuals
-
-- [`hpc()`](https://tiw150.github.io/Zresidual/reference/hpc.md) :
-  Holdout predictive checks
 
 - [`dhurdlenb()`](https://tiw150.github.io/Zresidual/reference/hurdlenb.md)
   [`phurdlenb()`](https://tiw150.github.io/Zresidual/reference/hurdlenb.md)
@@ -37,6 +43,9 @@
 - [`dhurdlepois()`](https://tiw150.github.io/Zresidual/reference/hurdlepois.md)
   [`phurdlepois()`](https://tiw150.github.io/Zresidual/reference/hurdlepois.md)
   : Hurdle Poisson distribution
+
+- [`kidney`](https://tiw150.github.io/Zresidual/reference/kidney.md) :
+  Kidney catheter infection data
 
 - [`log_diff_exp()`](https://tiw150.github.io/Zresidual/reference/log_diff_exp.md)
   : A function to compute the logarithm of the difference between the
@@ -84,9 +93,6 @@
 
 - [`postpred_simulate()`](https://tiw150.github.io/Zresidual/reference/postpred_simulate.md)
   : Simulate posterior predictive draws for predictive checks
-
-- [`ppc()`](https://tiw150.github.io/Zresidual/reference/ppc.md) :
-  Posterior predictive checks
 
 - [`predcheck()`](https://tiw150.github.io/Zresidual/reference/predcheck.md)
   : Predictive checks
