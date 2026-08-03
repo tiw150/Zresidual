@@ -560,7 +560,7 @@ z_correct <- Zresidual(fit_correct, data = dat, mcmc_summarize = "post", randomi
 #| dpi: 300
 
 
-i <- 1
+i <- 1 
 
 qqnorm(z_wrong, irep = i, main.title = "Wrong: Z-Resid Q-Q")
 plot(z_wrong, x_axis_var = "x", category = dat$y, irep = i,

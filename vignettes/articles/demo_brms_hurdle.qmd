@@ -772,7 +772,7 @@ The table confirms our visual inspection. The correctly specified HNB model yiel
 
 ## Checking the Sampling Distribution of ANOVA tests
 
-To prove this behavior isn't an artifact of our single chosen dataset, we analyze the sampling distribution of the `ANOVA` p-values across all 100 simulated datasets.
+To prove this behavior isn't an artifact of our single chosen dataset, we analyze the sampling distribution of the `ANOVA` p-values across all 100 simulated datasets. 
 
 Since the misspecification lies solely in the variance of the non-zero outcomes, we isolate the `Zresidual(..., type="count")` diagnostics for this analysis.
 

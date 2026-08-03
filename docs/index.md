@@ -54,7 +54,7 @@ residuals and evaluating model fit:
   `data`.
 
 **For more details, see the [Get
-Started](https://tiw150.github.io/Zresidual/articles/get-started.md)
+Started](https://tiw150.github.io/Zresidual/articles/get-started.html)
 page**.
 
 ## Installation

@@ -770,23 +770,23 @@ if (!force_recalcz && file.exists(ana_res_file)) {
 } else {
   p_c <- numeric(n_sim)
   p_w <- numeric(n_sim)
-
+  
   for(i in 1:n_sim) {
     dat_sim <- readRDS(paste0(model_dir, "/data_sim_", i, ".rds"))
-
+    
     # Extract Misspecified Model (HP)
     fit_w_sim <- brm(bf(y ~ x + z, hu ~ x + z), family = hurdle_negbinomial(), prior = prior("normal(1000, 1)", class = "shape"), data = dat_sim, backend = brms_backend, file = paste0(model_dir, "/wrong_sim_", i), refresh = 0)
     z_w_sim <- Zresidual(fit_w_sim, data = dat_sim, type = "count", mcmc_summarize = "post", randomized = TRUE, nrep = 1)
     zcov_w_sim <- Zcov(fit_w_sim, data = dat_sim, type = "count")
     p_w[i] <- as.numeric(aov.test.zresid(z_w_sim, X = "lp", zcov = zcov_w_sim))
-
+    
     # Extract Correct Model (HNB)
     fit_c_sim <- brm(bf(y ~ x + z, hu ~ x + z), family = hurdle_negbinomial(), data = dat_sim, backend = brms_backend, file = paste0(model_dir, "/correct_sim_", i), refresh = 0)
     z_c_sim <- Zresidual(fit_c_sim, data = dat_sim, type = "count", mcmc_summarize = "post", randomized = TRUE, nrep = 1)
     zcov_c_sim <- Zcov(fit_c_sim, data = dat_sim, type = "count")
     p_c[i] <- as.numeric(aov.test.zresid(z_c_sim, X = "lp", zcov = zcov_c_sim))
   }
-
+  
   saveRDS(list(p_c = p_c, p_w = p_w), ana_res_file)
 }
 ```

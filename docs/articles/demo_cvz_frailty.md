@@ -30,14 +30,6 @@ invisible(lapply(pkgs, function(p) {
 }))
 ```
 
-    Warning: package 'Rlab' was built under R version 4.5.2
-
-    Warning: package 'dplyr' was built under R version 4.5.2
-
-    Warning: package 'rlang' was built under R version 4.5.2
-
-    Warning: package 'tidyr' was built under R version 4.5.2
-
 ## Introduction
 
 This vignette explains how to use the `Zresidual` package to calculate
@@ -373,15 +365,15 @@ sf.kidney <- sf_test.zresid(Zresid.kidney)
 sf.kidney.cv <- sf_test.zresid(CVZresid.kidney)
 
 statistic_tests <- data.frame(
-  sw.kidney, sf.kidney,
+  sw.kidney, sf.kidney, 
   sw.kidney.cv, sf.kidney.cv
 )
 
 
-statistic_tests %>%
-  head(10) %>%
-  gt() %>%
-  tab_header(title = "Summary of Residual Tests") %>%
+statistic_tests %>% 
+  head(10) %>% 
+  gt() %>% 
+  tab_header(title = "Summary of Residual Tests") %>% 
   tab_spanner(
     label = "No CV Model",
     columns = c(sw.kidney, sf.kidney)

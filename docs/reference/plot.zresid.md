@@ -31,6 +31,8 @@ plot(
   point.args = list(),
   smooth.args = list(),
   theme = ggplot2::theme_bw(),
+  legend.position = "inside",
+  legend.nrow = NULL,
   ...
 )
 ```
@@ -134,6 +136,19 @@ plot(
 - theme:
 
   A complete or partial ggplot2 theme.
+
+- legend.position:
+
+  Legend position passed to
+  [`ggplot2::theme()`](https://ggplot2.tidyverse.org/reference/theme.html).
+  One of `"inside"`, `"bottom"`, `"top"`, `"left"`, `"right"`, or
+  `"none"`.
+
+- legend.nrow:
+
+  Optional positive integer giving the number of rows in the combined
+  colour-and-shape legend. Use `2L` with `legend.position = "bottom"`
+  for a compact two-row legend.
 
 - ...:
 

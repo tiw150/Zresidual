@@ -33,3 +33,5 @@ Deep-dive demonstrations and model examples.
   Regression](https://tiw150.github.io/Zresidual/articles/demo_glm_binomial.md):
 - [Z-residual Diagnostics for \`glm\` Poisson
   Regression](https://tiw150.github.io/Zresidual/articles/demo_glm_poisson.md):
+- [Z-Residual Diagnostic Tool for Assessing Covariate Functional
+  Form](https://tiw150.github.io/Zresidual/articles/demo_zresid_frailty_model.md):

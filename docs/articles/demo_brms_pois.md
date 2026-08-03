@@ -172,28 +172,12 @@ i <- 1
 
 qqnorm(z_wrong, irep = i, main.title = "Wrong: Z-Resid Q-Q")
 plot( z_wrong,x_axis_var = "x", category = dat$y,irep = i,
-      main.title = "Wrong: Z-Resid vs X",legend.position = "bottom")
-```
-
-    Warning in (function (mapping = NULL, data = NULL, stat = "identity", position
-    = "identity", : Ignoring unknown parameters: `legend.position`
-
-Code
-
-``` r
+      main.title = "Wrong: Z-Resid vs X", legend.position = "bottom", legend.nrow = 2)
 boxplot(z_wrong, x_axis_var = "lp", irep = i,
         main.title = "Wrong: Z-Resid vs LP")
 qqnorm(z_correct, irep = i, main.title = "Correct: Z-Resid Q-Q")
-plot(z_correct,x_axis_var = "x", category = dat$y,irep = i,
+plot(z_correct,x_axis_var = "x", category = dat$y,irep = i, 
      main.title = "Correct: Z-Resid vs X",legend.position = "bottom")
-```
-
-    Warning in (function (mapping = NULL, data = NULL, stat = "identity", position
-    = "identity", : Ignoring unknown parameters: `legend.position`
-
-Code
-
-``` r
 boxplot(z_correct, x_axis_var = "lp", irep = i,
         main.title = "Correct: Z-Resid vs LP")
 ```
@@ -389,9 +373,6 @@ plot( z_wrong,x_axis_var = "x", category = dat$y,irep = i,
       main.title = "Wrong: Z-Resid vs X",legend.position = "bottom")
 ```
 
-    Warning in (function (mapping = NULL, data = NULL, stat = "identity", position
-    = "identity", : Ignoring unknown parameters: `legend.position`
-
     Outlier indices: 22, 57
 
 Code
@@ -407,12 +388,9 @@ qqnorm(z_correct, irep = i, main.title = "Correct: Z-Resid Q-Q")
 Code
 
 ``` r
-plot(z_correct,x_axis_var = "x", category = dat$y,irep = i,
+plot(z_correct,x_axis_var = "x", category = dat$y,irep = i, 
      main.title = "Correct: Z-Resid vs X",legend.position = "bottom")
 ```
-
-    Warning in (function (mapping = NULL, data = NULL, stat = "identity", position
-    = "identity", : Ignoring unknown parameters: `legend.position`
 
     Outlier indices: 43
 
@@ -604,27 +582,11 @@ i <- 1
 qqnorm(z_wrong, irep = i, main.title = "Wrong: Z-Resid Q-Q")
 plot( z_wrong,x_axis_var = "x", category = dat$y,irep = i,
       main.title = "Wrong: Z-Resid vs X",legend.position = "bottom")
-```
-
-    Warning in (function (mapping = NULL, data = NULL, stat = "identity", position
-    = "identity", : Ignoring unknown parameters: `legend.position`
-
-Code
-
-``` r
 boxplot(z_wrong, x_axis_var = "lp", irep = i,
         main.title = "Wrong: Z-Resid vs LP")
 qqnorm(z_correct, irep = i, main.title = "Correct: Z-Resid Q-Q")
-plot(z_correct,x_axis_var = "x", category = dat$y,irep = i,
+plot(z_correct,x_axis_var = "x", category = dat$y,irep = i, 
      main.title = "Correct: Z-Resid vs X",legend.position = "bottom")
-```
-
-    Warning in (function (mapping = NULL, data = NULL, stat = "identity", position
-    = "identity", : Ignoring unknown parameters: `legend.position`
-
-Code
-
-``` r
 boxplot(z_correct, x_axis_var = "lp", irep = i,
         main.title = "Correct: Z-Resid vs LP")
 ```
