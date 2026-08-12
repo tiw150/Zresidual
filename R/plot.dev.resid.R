@@ -54,7 +54,7 @@ plot.dev.resid <- function(x,
 
   if (isTRUE(outlier.return)) {
     indices <- attr(plot, "survival_residual_outliers")
-    cat("Outlier Indices:", indices, "\n")
+    message("Outlier Indices: ", paste(indices, collapse = " "))
     return(invisible(list(outliers = indices)))
   }
   invisible(NULL)

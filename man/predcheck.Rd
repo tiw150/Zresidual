@@ -61,13 +61,3 @@ An object of class \code{"predcheck"}.
 Performs predictive checks on evaluation data. The same computational
 algorithm is used for in-sample and holdout evaluation.
 }
-\examples{
-\dontrun{
-training_result <- predcheck(
-  fit_full, full_data, data_role = "training"
-)
-holdout_result <- predcheck(
-  fit_training, test_data, data_role = "holdout"
-)
-}
-}

@@ -25,15 +25,6 @@
 #' @param k_bl Maximum number of bins for numeric Bartlett covariates.
 #' @param ... Additional arguments passed to bridge functions.
 #' @return An object of class \code{"predcheck"}.
-#' @examples
-#' \dontrun{
-#' training_result <- predcheck(
-#'   fit_full, full_data, data_role = "training"
-#' )
-#' holdout_result <- predcheck(
-#'   fit_training, test_data, data_role = "holdout"
-#' )
-#' }
 #' @export
 predcheck <- function(fit, data,
                       data_role = c("training", "holdout"),

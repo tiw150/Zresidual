@@ -37,32 +37,6 @@
 #'       from \code{survreg_fit$terms} and \code{newdata}.
 #'   }
 #'
-#' @examples
-#' \dontrun{
-#'   library(survival)
-#'
-#'   data(lung)
-#'
-#'   ## Weibull survival regression
-#'   fit_weib <- survreg(Surv(time, status) ~ age + sex,
-#'                       data = lung, dist = "weibull")
-#'
-#'   ## Censored Z-residuals
-#'   r_z <- residual.survreg(fit_weib, newdata = lung,
-#'                           residual.type = "censored Z-residual")
-#'
-#'   ## Cox–Snell residuals
-#'   r_cs <- residual.survreg(fit_weib, newdata = lung,
-#'                            residual.type = "Cox-Snell")
-#'
-#'   ## Martingale residuals
-#'   r_m <- residual.survreg(fit_weib, newdata = lung,
-#'                           residual.type = "martingale")
-#'
-#'   ## Deviance residuals
-#'   r_d <- residual.survreg(fit_weib, newdata = lung,
-#'                           residual.type = "deviance")
-#' }
 #' @keywords internal
 residual.survreg<-function(survreg_fit,newdata,
                            residual.type=c("censored Z-residual", "Cox-Snell",

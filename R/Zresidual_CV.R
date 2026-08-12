@@ -44,30 +44,25 @@
 #' training data.
 #'
 #' @examples
-#' \dontrun{
-#' library(survival)
-#'
 #' lung2 <- stats::na.omit(
 #'   survival::lung[, c("time", "status", "age", "sex", "ph.ecog")]
 #' )
 #'
-#' fit <- survival::coxph(
+#' fit <- survival::survreg(
 #'   survival::Surv(time, status == 2) ~ age + sex + ph.ecog,
-#'   data = lung2
+#'   data = lung2,
+#'   dist = "weibull"
 #' )
 #'
 #' zcv <- Zresidual_CV(
 #'   object = fit,
 #'   data = lung2,
-#'   nfolds = 5,
-#'   nrep = 10,
+#'   nfolds = 2,
+#'   nrep = 2,
 #'   seed = 123
 #' )
 #'
 #' print(zcv)
-#' plot(zcv)
-#' qqnorm(zcv)
-#' }
 #'
 #' @export
 Zresidual_CV <- function(object,

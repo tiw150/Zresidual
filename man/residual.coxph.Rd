@@ -24,7 +24,7 @@ covariates. Residuals are evaluated for the observations in \code{newdata}.}
 compute. Must be one of \code{"censored Z-residual"},
 \code{"Cox-Snell"}, \code{"martingale"}, or \code{"deviance"}. The
 default is the full vector \code{c("censored Z-residual", "Cox-Snell",
-  "martingale", "deviance")}, but in typical use a single value should be
+"martingale", "deviance")}, but in typical use a single value should be
 supplied.}
 }
 \value{
@@ -46,31 +46,5 @@ from \code{fit_coxph$formula} and \code{newdata}.
 Compute several types of residuals (censored Z-residuals, Cox–Snell,
 martingale, and deviance) for Cox proportional hazards models fitted with
 \code{\link[survival]{coxph}}.
-}
-\examples{
-\dontrun{
-  library(survival)
-
-  data(lung)
-
-  ## Cox PH model
-  fit_cox <- coxph(Surv(time, status) ~ age + sex, data = lung)
-
-  ## Censored Z-residuals
-  r_z <- residual.coxph(fit_cox, newdata = lung,
-                        residual.type = "censored Z-residual")
-
-  ## Cox–Snell residuals
-  r_cs <- residual.coxph(fit_cox, newdata = lung,
-                         residual.type = "Cox-Snell")
-
-  ## Martingale residuals
-  r_m <- residual.coxph(fit_cox, newdata = lung,
-                        residual.type = "martingale")
-
-  ## Deviance residuals
-  r_d <- residual.coxph(fit_cox, newdata = lung,
-                        residual.type = "deviance")
-}
 }
 \keyword{internal}

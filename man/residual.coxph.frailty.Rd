@@ -71,33 +71,4 @@ models with many groups (\code{gpnumber > 5}) and few groups
 (\code{gpnumber <= 5}) slightly differently, reflecting how frailty
 coefficients are stored in the fitted \code{coxph} object.
 }
-\examples{
-\dontrun{
-  library(survival)
-
-  data(lung)
-  lung$inst <- factor(lung$inst)
-
-  ## Shared frailty Cox model
-  set.seed(1)
-  idx <- sample(seq_len(nrow(lung)), size = floor(0.7 * nrow(lung)))
-  train_dat <- lung[idx, ]
-  test_dat  <- lung[-idx, ]
-
-  fit_frail <- coxph(Surv(time, status) ~ age + sex + frailty(inst),
-                     data = train_dat)
-
-  ## Censored Z-residuals on the test set
-  r_z <- residual.coxph.frailty(fit_frail,
-                                traindata = train_dat,
-                                newdata   = test_dat,
-                                residual.type = "censored Z-residual")
-
-  ## Cox–Snell residuals
-  r_cs <- residual.coxph.frailty(fit_frail,
-                                 traindata = train_dat,
-                                 newdata   = test_dat,
-                                 residual.type = "Cox-Snell")
-}
-}
 \keyword{internal}

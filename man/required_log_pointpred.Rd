@@ -22,7 +22,7 @@ one of \code{"analytic"} or \code{"simulation"}.}
 \item{type}{Optional character string used as a component selector or variant tag.}
 
 \item{show_names}{Logical; if \code{TRUE}, bypasses the environment search,
-prints the compiled string of expected function names to the console, and
+emits the compiled string of expected function names as a suppressible message and
 returns it invisibly. Defaults to \code{FALSE}.}
 
 \item{...}{Additional arguments (currently ignored).}
@@ -30,7 +30,7 @@ returns it invisibly. Defaults to \code{FALSE}.}
 \value{
 The resolved function object. If no suitable function is found, it returns
 a character string containing the compiled diagnostic message. If
-\code{show_names = TRUE}, it prints the message and returns the string invisibly.
+\code{show_names = TRUE}, it emits the message and returns the string invisibly.
 }
 \description{
 Determines which native point-wise predictive function should be utilized
@@ -43,21 +43,8 @@ is found (or if \code{show_names} is \code{TRUE}), it compiles a descriptive
 message detailing the exact function names expected by the package.
 }
 \examples{
-\dontrun{
-# Example 1: Standard GLM
-fit_glm <- glm(vs ~ mpg, data = mtcars, family = binomial())
+fit_glm <- stats::glm(
+  vs ~ mpg, data = mtcars, family = stats::binomial()
+)
 required_log_pointpred(fit_glm, show_names = TRUE)
-
-# Example 2: Survival Model (coxph)
-library(survival)
-fit_cox <- coxph(Surv(time, status) ~ age + sex, data = lung)
-required_log_pointpred(fit_cox, show_names = TRUE)
-
-# Example 3: Bayesian Model (brms) using pre-compiled package template
-template_path <- system.file("extdata", "brms_template.rds", package = "Zresidual")
-if (file.exists(template_path)) {
-  fit_brm <- readRDS(template_path)
-  required_log_pointpred(fit_brm, show_names = TRUE)
-}
-}
 }

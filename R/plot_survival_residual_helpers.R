@@ -78,10 +78,9 @@ utils::globalVariables(".data")
     covariate_names <- names(covariates)
     if (identical(X, "covariate")) {
       selected <- covariate_names[1L]
-      cat(
+      message(
         "To plot against other covariates, set x_axis_var to the covariate name. Available covariates: ",
-        paste(covariate_names, collapse = ", "), "\n",
-        sep = ""
+        paste(covariate_names, collapse = ", ")
       )
     } else {
       selected <- X

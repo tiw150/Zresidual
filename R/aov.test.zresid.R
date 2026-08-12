@@ -120,9 +120,11 @@ aov.test.zresid <- function(Zresidual,
     cn <- colnames(covs) %||% names(covs)
     
     if (X == "covariate") {
-      # keep legacy behavior: print names, then use the first one
-      cat("To test against other covariates, set X to a covariate name. Available covariates:\n",
-          paste(cn, collapse = ", "), "\n")
+      # keep legacy behavior: report names, then use the first one
+      message(
+        "To test against other covariates, set X to a covariate name. Available covariates:\n",
+        paste(cn, collapse = ", ")
+      )
       if (length(cn) < 1L) stop("No covariates available in zcov$covariates.", call. = FALSE)
       return(covs[[cn[1L]]])
     }

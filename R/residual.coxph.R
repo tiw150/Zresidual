@@ -35,31 +35,6 @@
 #'       from \code{fit_coxph$formula} and \code{newdata}.
 #'   }
 #'
-#' @examples
-#' \dontrun{
-#'   library(survival)
-#'
-#'   data(lung)
-#'
-#'   ## Cox PH model
-#'   fit_cox <- coxph(Surv(time, status) ~ age + sex, data = lung)
-#'
-#'   ## Censored Z-residuals
-#'   r_z <- residual.coxph(fit_cox, newdata = lung,
-#'                         residual.type = "censored Z-residual")
-#'
-#'   ## Cox–Snell residuals
-#'   r_cs <- residual.coxph(fit_cox, newdata = lung,
-#'                          residual.type = "Cox-Snell")
-#'
-#'   ## Martingale residuals
-#'   r_m <- residual.coxph(fit_cox, newdata = lung,
-#'                         residual.type = "martingale")
-#'
-#'   ## Deviance residuals
-#'   r_d <- residual.coxph(fit_cox, newdata = lung,
-#'                         residual.type = "deviance")
-#' }
 #' @keywords internal
 residual.coxph<-function (fit_coxph, newdata,
                           residual.type=c("censored Z-residual", "Cox-Snell",
@@ -201,34 +176,6 @@ residual.coxph<-function (fit_coxph, newdata,
 #'       from \code{fit_coxph$formula} and \code{newdata}.
 #'   }
 #'
-#' @examples
-#' \dontrun{
-#'   library(survival)
-#'
-#'   data(lung)
-#'   lung$inst <- factor(lung$inst)
-#'
-#'   ## Shared frailty Cox model
-#'   set.seed(1)
-#'   idx <- sample(seq_len(nrow(lung)), size = floor(0.7 * nrow(lung)))
-#'   train_dat <- lung[idx, ]
-#'   test_dat  <- lung[-idx, ]
-#'
-#'   fit_frail <- coxph(Surv(time, status) ~ age + sex + frailty(inst),
-#'                      data = train_dat)
-#'
-#'   ## Censored Z-residuals on the test set
-#'   r_z <- residual.coxph.frailty(fit_frail,
-#'                                 traindata = train_dat,
-#'                                 newdata   = test_dat,
-#'                                 residual.type = "censored Z-residual")
-#'
-#'   ## Cox–Snell residuals
-#'   r_cs <- residual.coxph.frailty(fit_frail,
-#'                                  traindata = train_dat,
-#'                                  newdata   = test_dat,
-#'                                  residual.type = "Cox-Snell")
-#' }
 #' @keywords internal
 residual.coxph.frailty <- function (fit_coxph, traindata, newdata,
                                     residual.type=c("censored Z-residual", "Cox-Snell",

@@ -221,9 +221,9 @@ boxplot.zresid <- function(x,
     covariate_names <- names(covariates)
     if (identical(X, "covariate")) {
       selected_covariate <- covariate_names[1L]
-      cat(
+      message(
         "To plot against other covariates, set x_axis_var to a covariate name. Available covariates:\n",
-        paste(covariate_names, collapse = ", "), "\n"
+        paste(covariate_names, collapse = ", ")
       )
     } else {
       selected_covariate <- X

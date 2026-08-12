@@ -27,6 +27,7 @@ axis.break<-function(axis=1,breakpos=NULL,pos=NULL,bgcol="white",breakcol="black
   stop("Improper axis specification."))
  # get the current setting of xpd
  old.xpd<-par("xpd")
+ on.exit(par(xpd=old.xpd), add=TRUE)
  # don't cut the break off at the edge of the plot
  par(xpd=TRUE)
  # correct for logarithmic axes
@@ -120,5 +121,5 @@ axis.break<-function(axis=1,breakpos=NULL,pos=NULL,bgcol="white",breakcol="black
  # draw the segments
  segments(xbegin,ybegin,xend,yend,col=breakcol,lty=1)
  # restore xpd
- par(xpd=FALSE)
+ par(xpd=old.xpd)
 }

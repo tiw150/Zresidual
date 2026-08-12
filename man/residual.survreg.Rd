@@ -48,31 +48,4 @@ Compute several types of residuals (censored Z-residuals, Cox–Snell,
 martingale, and deviance) for accelerated failure time models fitted
 with \code{\link[survival]{survreg}}.
 }
-\examples{
-\dontrun{
-  library(survival)
-
-  data(lung)
-
-  ## Weibull survival regression
-  fit_weib <- survreg(Surv(time, status) ~ age + sex,
-                      data = lung, dist = "weibull")
-
-  ## Censored Z-residuals
-  r_z <- residual.survreg(fit_weib, newdata = lung,
-                          residual.type = "censored Z-residual")
-
-  ## Cox–Snell residuals
-  r_cs <- residual.survreg(fit_weib, newdata = lung,
-                           residual.type = "Cox-Snell")
-
-  ## Martingale residuals
-  r_m <- residual.survreg(fit_weib, newdata = lung,
-                          residual.type = "martingale")
-
-  ## Deviance residuals
-  r_d <- residual.survreg(fit_weib, newdata = lung,
-                          residual.type = "deviance")
-}
-}
 \keyword{internal}

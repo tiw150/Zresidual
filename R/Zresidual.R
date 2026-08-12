@@ -407,34 +407,21 @@ log_summary_pred <- function(fit,
 #'   one of \code{"analytic"} or \code{"simulation"}.
 #' @param type Optional character string used as a component selector or variant tag.
 #' @param show_names Logical; if \code{TRUE}, bypasses the environment search, 
-#'   prints the compiled string of expected function names to the console, and 
+#'   emits the compiled string of expected function names as a suppressible message and
 #'   returns it invisibly. Defaults to \code{FALSE}.
 #' @param ... Additional arguments (currently ignored).
 #'
 #' @return The resolved function object. If no suitable function is found, it returns 
 #'   a character string containing the compiled diagnostic message. If 
-#'   \code{show_names = TRUE}, it prints the message and returns the string invisibly.
+#'   \code{show_names = TRUE}, it emits the message and returns the string invisibly.
 #' 
 #' @export
 #' 
 #' @examples
-#' \dontrun{
-#' # Example 1: Standard GLM
-#' fit_glm <- glm(vs ~ mpg, data = mtcars, family = binomial())
+#' fit_glm <- stats::glm(
+#'   vs ~ mpg, data = mtcars, family = stats::binomial()
+#' )
 #' required_log_pointpred(fit_glm, show_names = TRUE)
-#' 
-#' # Example 2: Survival Model (coxph)
-#' library(survival)
-#' fit_cox <- coxph(Surv(time, status) ~ age + sex, data = lung)
-#' required_log_pointpred(fit_cox, show_names = TRUE)
-#' 
-#' # Example 3: Bayesian Model (brms) using pre-compiled package template
-#' template_path <- system.file("extdata", "brms_template.rds", package = "Zresidual")
-#' if (file.exists(template_path)) {
-#'   fit_brm <- readRDS(template_path)
-#'   required_log_pointpred(fit_brm, show_names = TRUE)
-#' }
-#' }
 required_log_pointpred <- function(fit = NULL, 
                                    pred_method = c("analytic", "simulation"), 
                                    type = NULL, 
@@ -576,7 +563,7 @@ required_log_pointpred <- function(fit = NULL,
   msg <- paste0(msg, "    is_discrete : Integer vector (length N) where 1 = discrete, 0 = continuous.\n")
   
   if (show_names) {
-    cat(msg)
+    message(msg)
     return(invisible(msg))
   }
   

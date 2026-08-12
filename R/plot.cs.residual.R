@@ -277,7 +277,7 @@ plot.cs.residual <- function(x,
 
   if (isTRUE(outlier.return)) {
     if (!length(outlier_indices)) return(invisible(NULL))
-    cat("Outlier Indices:", outlier_indices, "\n")
+    message("Outlier Indices: ", paste(outlier_indices, collapse = " "))
     return(invisible(list(outliers = outlier_indices)))
   }
   invisible(NULL)

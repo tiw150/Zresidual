@@ -11,6 +11,9 @@
 #' @param ndraws Optional number of draws.
 #' @param draw_ids Optional posterior draw indices.
 #' @param ... Additional arguments passed to methods.
+#' @return A matrix with one row per posterior draw or replication and one
+#'   column per retained observation. Each entry is a response value simulated
+#'   from the fitted predictive distribution for use in predictive checks.
 #'
 #' @export
 postpred_simulate <- function(fit,
