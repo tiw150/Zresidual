@@ -1,5 +1,4 @@
-# Zresidual: An R Package for Computing and Diagnosing Gaussian-like
-Residuals
+# Zresidual: An R Package for Computing and Diagnosing Gaussian-like Residuals
 
 
 ## Z-residual
@@ -51,7 +50,7 @@ residuals and evaluating model fit:
 - **Out-of-Sample Evaluation:** Passing a new dataset to the argument
   `data`.
 
-**For more details, see the [Get Started](https://tiw150.github.io/Zresidual/articles/get-started.html)
+**For more details, see the [Get Started](articles/get-started.html)
 page**.
 
 ## Installation
