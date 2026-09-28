@@ -48,3 +48,4 @@
 
 
 ^vignettes/\.math_wrap_config\.json$
+^_extensions$
