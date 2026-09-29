@@ -1,5 +1,5 @@
 ---
-title: "An Shinylive App for Illustrating Z-residuals"
+title: "A Shinylive App for Illustrating Z-residuals"
 author: "[Longhai Li](https://longhaisk.github.io/)"
 engine: knitr
 filters:
