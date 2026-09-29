@@ -22,7 +22,6 @@ renv/
 _freeze/
 _cache/
 .quarto/
-_extensions/
 figure-pdf/
 *.Rproj
 .ipynb_checkpoints/
