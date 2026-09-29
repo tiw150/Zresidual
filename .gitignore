@@ -31,3 +31,6 @@ rsconnect/
 *.rds
 *.RDS
 .positai
+
+# local Quarto renders of articles (pkgdown builds the site copies in docs/)
+vignettes/articles/*.html
