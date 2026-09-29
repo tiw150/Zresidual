@@ -151,7 +151,7 @@ window.Quarto = {
 </section>
 <section id="interactive-animation" class="level2">
 <h2 class="anchored" data-anchor-id="interactive-animation">Interactive Animation</h2>
-<p>The app below replaces the pre-rendered videos. Use the <strong>control panel</strong> at the top to set the <strong>true model</strong> mean (<span class="math inline">\(\mu\)</span>) and the <strong>postulated model</strong> mean, plus the dispersion (negative binomial size), the number of simulated observations, the animation speed and the random seed. Tick <strong>True = Wrong</strong> to force the postulated mean to equal the true mean. Then use the <strong>play controls</strong> (Play, Pause, Next, To end, Reset, or drag the <em>Observation i</em> slider) to watch the transformation of each <span class="math inline">\(y_i\)</span> into <span class="math inline">\(z_i\)</span>.</p>
+<p>The app below replaces the pre-rendered videos. Use the <strong>control panel</strong> at the top to set the <strong>true model</strong> mean (<span class="math inline">\(\mu\)</span>) and the <strong>postulated model</strong> mean, plus the dispersion (negative binomial size), the number of simulated observations, the animation speed and the random seed. Tick <strong>True = Postulated</strong> to force the postulated mean to equal the true mean. Then use the <strong>play controls</strong> (Play, Pause, Next, To end, Reset, or drag the <em>Observation i</em> slider) to watch the transformation of each <span class="math inline">\(y_i\)</span> into <span class="math inline">\(z_i\)</span>.</p>
 <ul>
 <li><strong>Correct specification:</strong> set the postulated mean equal to the true mean (e.g.&nbsp;both <span class="math inline">\(=5\)</span>). The accumulating Z-residuals (red/orange dots) follow the standard normal density.</li>
 <li><strong>Misspecification:</strong> set them apart (e.g.&nbsp;true <span class="math inline">\(\mu=2\)</span>, postulated <span class="math inline">\(\mu=5\)</span>). The observed <span class="math inline">\(y_i\)</span> tend to be smaller than expected, the <span class="math inline">\(RSP\)</span> values are too large, and the Z-residuals drift to the left, signalling that the model overestimates the mean.</li>
@@ -175,7 +175,10 @@ sel &lt;- function(id, label, choices, selected, width = "100px")
   selectInput(id, label, choices, selected, selectize = FALSE, width = width)
 
 ui &lt;- fluidPage(
+  if (exists("useBusyIndicators")) useBusyIndicators(spinners = FALSE, pulse = FALSE),
   tags$head(tags$style(HTML("
+    .recalculating { opacity:1 !important; transition:none !important; }
+    .recalculating::after { display:none !important; }
     .ctrl { background:#f5f7fa; border:1px solid #d5dbe3; border-radius:6px;
             padding:6px 12px 2px 12px; margin-bottom:6px; }
     .ctrl .form-group { display:flex; align-items:center; gap:6px; margin:0 0 4px 0; width:auto !important; }
@@ -183,28 +186,38 @@ ui &lt;- fluidPage(
     .ctrl select, .ctrl input[type=number] { height:26px; padding:1px 4px; font-size:13px; }
     .ctrl .checkbox { margin:0 0 4px 0; }
     .ctrl h5 { margin:0 0 4px 0; font-weight:bold; font-size:13px; color:#555; }
-    .ctrl .btn { width:40px; height:34px; margin:0 6px 4px 0; font-size:18px; line-height:1; padding:0; border-radius:50%; }
+    .ctrl .btn { height:32px; margin:0 4px 4px 0; padding:2px 10px; font-size:13px; }
     .ctrl .irs { width:100%; }
     .ctrl .i-slider .form-group { display:block; }
     .ctrl .i-slider label.control-label { display:none; }
+    .ctrl .inline-row { display:flex; align-items:center; gap:10px; }
+    .ctrl .inline-row .checkbox { margin:0; }
+    .ctrl select:disabled { background:#e9ecef; color:#888; cursor:not-allowed; }
   "))),
+  ## "True = Wrong" locks the postulated mean to the true mean
+  tags$script(HTML("
+    $(document).on('change', '#same', function() {
+      $('#mu_post').prop('disabled', this.checked);
+    });
+  ")),
   div(class = "ctrl",
     fluidRow(
-      column(4, h5("Model"),
-             sel("mu_true", HTML("True &amp;mu;"), seq(0.5, 15, by = 0.5), 2),
-             sel("mu_post", HTML("Wrong &amp;mu;"), seq(0.5, 15, by = 0.5), 5),
+      column(4, h5("NB Model"),
              sel("size", "Dispersion", c(1, 2, 5, 10, 20, 50), 5),
-             checkboxInput("same", "True = Wrong", FALSE)),
+             sel("mu_true", HTML("True &amp;mu;"), seq(0.5, 15, by = 0.5), 2),
+             div(class = "inline-row",
+                 sel("mu_post", HTML("Postulated &amp;mu;"), seq(0.5, 15, by = 0.5), 5),
+                 checkboxInput("same", "Use True Model", FALSE))),
       column(3, h5("Animation"),
              sel("n_sim", "Observations", c(10, 20, 50, 100, 200), 50),
              sel("speed", "Speed", c("Slow" = 2, "Normal" = 1.2, "Fast" = 0.6, "Very fast" = 0.2), 1.2),
              numericInput("seed", "Seed", 2026, width = "100px")),
       column(5, h5("Play"),
-             actionButton("play", "\u25B6", class = "btn-primary", title = "Play"),
-             actionButton("pause", "\u23F8", title = "Pause"),
-             actionButton("nxt", "\u23ED", title = "Next"),
-             actionButton("end", "\u23E9", title = "To the end"),
-             actionButton("reset", "\u23EE", title = "Back to start"),
+             actionButton("play", "\u25B6 Play", class = "btn-primary"),
+             actionButton("pause", "\u23F8 Pause"),
+             actionButton("stop", "\u23F9 Stop", title = "Stop and go back to the first observation"),
+             actionButton("nxt", "Next \u203A", title = "Next observation"),
+             actionButton("end", "End \u00BB", title = "Jump to the last observation"),
              div(class = "i-slider", sliderInput("i", "i", 1, 50, 1, step = 1)))
     )
   ),
@@ -221,12 +234,23 @@ server &lt;- function(input, output, session) {
   running &lt;- reactiveVal(FALSE)
   cur &lt;- reactiveVal(1)
 
+  ## Values pushed to the slider by the server come back as input$i a moment
+  ## later. Those echoes must be ignored, or a stale one (e.g. from a play
+  ## step) overrides a later jump such as "End".
+  sent &lt;- integer(0)
   set_i &lt;- function(v) {
     v &lt;- max(1, min(v, n_sim()))
     cur(v)
-    updateSliderInput(session, "i", value = v)
+    if (!identical(isolate(input$i), v)) {
+      sent &lt;&lt;- c(sent, v)
+      updateSliderInput(session, "i", value = v)
+    }
   }
-  observeEvent(input$i, cur(input$i))
+  observeEvent(input$i, {
+    k &lt;- match(input$i, sent)
+    if (!is.na(k)) sent &lt;&lt;- sent[-seq_len(k)]   # echo of a server update
+    else { running(FALSE); cur(input$i) }      # user dragged the slider
+  })
 
   observeEvent(input$n_sim, {
     updateSliderInput(session, "i", max = n_sim(), value = min(cur(), n_sim()))
@@ -246,7 +270,7 @@ server &lt;- function(input, output, session) {
   observeEvent(input$pause, running(FALSE))
   observeEvent(input$nxt, { running(FALSE); set_i(cur() + 1) })
   observeEvent(input$end, { running(FALSE); set_i(n_sim()) })
-  observeEvent(input$reset, { running(FALSE); set_i(1) })
+  observeEvent(input$stop, { running(FALSE); set_i(1) })
 
   observe({
     if (running()) {
@@ -319,9 +343,13 @@ server &lt;- function(input, output, session) {
     shade_S &lt;- df_post[df_post$x &gt; curr$y, ]
     rect_U &lt;- data.frame(xmin = (curr$y + 0.5) - curr$u, xmax = curr$y + 0.5, ymin = 0,
                          ymax = dnbinom(curr$y, mu = mu_post, size = sz))
+    ## centre the x-axis on the postulated mean so it lines up with z = 0 below;
+    ## the half-width is fixed over all observations so the axis does not jump
     xc &lt;- mu_post
-    xlim_top &lt;- c(max(-0.5, xc - 10), xc + 10)
-    xlim_top &lt;- c(min(xlim_top[1], -0.5), max(xlim_top[2], curr$y + 1))
+    half &lt;- max(xc + 0.5, max(d$y) + 1 - xc,
+                qnbinom(0.995, mu = mu_true, size = sz) - xc,
+                qnbinom(0.995, mu = mu_post, size = sz) - xc)
+    xlim_top &lt;- c(xc - half, xc + half)
     ylim_top &lt;- c(0, max(df_true$prob, df_post$prob) * 1.1)
     common_margin &lt;- theme(plot.margin = unit(c(0.2, 0.5, 0.2, 0.5), "cm"))
 
