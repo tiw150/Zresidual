@@ -9,7 +9,7 @@
 <meta name="author" content="Longhai Li">
 <meta name="dcterms.date" content="2026-09-28">
 
-<title>An Animation for Understanding Z-residuals</title>
+<title>An Shinylive App for Illustrating Z-residuals</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -89,12 +89,12 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#z-residuals" id="toc-z-residuals" class="nav-link active" data-scroll-target="#z-residuals">Z-residuals</a>
+  <li><a href="#what-does-this-app-show" id="toc-what-does-this-app-show" class="nav-link active" data-scroll-target="#what-does-this-app-show">What does this App Show</a></li>
+  <li><a href="#z-residuals" id="toc-z-residuals" class="nav-link" data-scroll-target="#z-residuals">Z-residuals</a>
   <ul class="collapse">
   <li><a href="#rsp" id="toc-rsp" class="nav-link" data-scroll-target="#rsp">RSP</a></li>
   <li><a href="#z-residual" id="toc-z-residual" class="nav-link" data-scroll-target="#z-residual">Z-residual</a></li>
   </ul></li>
-  <li><a href="#interactive-animation" id="toc-interactive-animation" class="nav-link" data-scroll-target="#interactive-animation">Interactive Animation</a></li>
   </ul>
 </nav>
 </div>
@@ -102,7 +102,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">An Animation for Understanding Z-residuals</h1>
+<h1 class="title">An Shinylive App for Illustrating Z-residuals</h1>
 </div>
 
 
@@ -131,45 +131,19 @@ window.Quarto = {
 </header>
 
 
-<section id="z-residuals" class="level2">
-<h2 class="anchored" data-anchor-id="z-residuals">Z-residuals</h2>
-<p>The <strong>Zresidual</strong> package implements diagnostic residuals based on the <strong>predictive distribution</strong> of each observation. By utilizing the full probabilistic information of the model, the package generates residuals that are approximately normally distributed. This allows for standard diagnostic techniques similar to using Pearson residuals in OLS regression.</p>
-<section id="rsp" class="level3">
-<h3 class="anchored" data-anchor-id="rsp">RSP</h3>
-<p>For a given observation <span class="math inline">\(y_i\)</span>, the <strong>Randomized Survival Probability (RSP)</strong>—also known as the randomized probability integral transform—represents the value of the predictive survival function (upper-tail probability) at <span class="math inline">\(y_i\)</span>, adjusted with a randomization term to ensure continuity for discrete outcomes. It is defined as:</p>
-<p><span id="eq-rsp"><span class="math display">\[RSP_i(y_i \mid \theta) = S_i(y_i \mid \theta) + U_i \, p_i(y_i \mid \theta) \tag{1}\]</span></span></p>
-<p>where <span class="math inline">\(S_i\)</span> and <span class="math inline">\(p_i\)</span> represent the survival function and probability mass function, respectively, derived from the predictive distribution of <span class="math inline">\(y_i\)</span> given covariates <span class="math inline">\(\mathbf{x}_i\)</span> and parameters <span class="math inline">\(\theta\)</span>. <span class="math inline">\(U_i \sim \text{Unif}(0,1)\)</span> is a random uniform variable used to smooth discrete outcomes. Under a correctly specified model—where the observed data <span class="math inline">\(y_i\)</span> arises from the assumed predictive distribution—the RSP follows a <span class="math inline">\(\text{Unif}(0,1)\)</span> distribution.</p>
-</section>
-<section id="z-residual" class="level3">
-<h3 class="anchored" data-anchor-id="z-residual">Z-residual</h3>
-<p>The Z-residual (aka <strong>randomized quantile residual</strong>) is derived by transforming the RSP via the inverse survival function of <span class="math inline">\(N(0,1)\)</span>:</p>
-<p><span id="eq-zs"><span class="math display">\[z_i(y_i \mid \theta) = -\Phi^{-1}\left(RSP_i(y_i \mid \theta)\right)= \Psi^{-1}\left(RSP_i(y_i \mid \theta)\right) \tag{2}\]</span></span></p>
-<p>where <span class="math inline">\(\Psi^{-1}(p) = -\Phi^{-1}(p) = \Phi^{-1}(1-p)\)</span> represents the inverse survival function (upper-tailed quantile) of the standard normal distribution <span class="math inline">\(N(0,1)\)</span>.</p>
-<p>In words, the Z-residual is simply the <span class="math inline">\(N(0,1)\)</span> value that shares the same <strong>upper-tail area (RSP)</strong> as the observed <span class="math inline">\(y_i\)</span>. This transformation effectively maps any predictive distribution to the standard normal scale while preserving the tail probabilities. If the model is correct, the resulting Z-residuals follow a standard normal distribution.</p>
-<p><strong>Intuition:</strong> Think of the Z-residual as the <strong>distance to the median</strong>, but <strong>rescaled</strong> to account for skewness and <strong>smoothed</strong> to handle discreteness. This ensures that a residual of <span class="math inline">\(+2\)</span> always implies the same degree of ‘extremeness’, regardless of the original distribution’s shape.</p>
-</section>
-</section>
-<section id="interactive-animation" class="level2">
-<h2 class="anchored" data-anchor-id="interactive-animation">Interactive Animation</h2>
-<p>The app below replaces the pre-rendered videos. Use the <strong>control panel</strong> at the top to set the <strong>true model</strong> mean (<span class="math inline">\(\mu\)</span>) and the <strong>postulated model</strong> mean, plus the dispersion (negative binomial size), the number of simulated observations, the animation speed and the random seed. Tick <strong>True = Postulated</strong> to force the postulated mean to equal the true mean. Then use the <strong>play controls</strong> (Play, Pause, Next, To end, Reset, or drag the <em>Observation i</em> slider) to watch the transformation of each <span class="math inline">\(y_i\)</span> into <span class="math inline">\(z_i\)</span>.</p>
-<ul>
-<li><strong>Correct specification:</strong> set the postulated mean equal to the true mean (e.g.&nbsp;both <span class="math inline">\(=5\)</span>). The accumulating Z-residuals (red/orange dots) follow the standard normal density.</li>
-<li><strong>Misspecification:</strong> set them apart (e.g.&nbsp;true <span class="math inline">\(\mu=2\)</span>, postulated <span class="math inline">\(\mu=5\)</span>). The observed <span class="math inline">\(y_i\)</span> tend to be smaller than expected, the <span class="math inline">\(RSP\)</span> values are too large, and the Z-residuals drift to the left, signalling that the model overestimates the mean.</li>
-</ul>
-<p>The meters compare the <strong>True Model</strong> with the <strong>Postulated Model</strong>. The blue bar in the postulated meter is the <strong>RSP</strong> (upper-tail area): the survival probability <span class="math inline">\(S_i(y_i)\)</span> (dark blue) plus a random fraction <span class="math inline">\(U_i\)</span> of the probability mass <span class="math inline">\(p_i(y_i)\)</span> (light blue).</p>
 <pre class="shinylive-r" data-engine="r"><code>#| '!! shinylive warning !!': |
 #|   shinylive does not work in self-contained HTML documents.
 #|   Please set `embed-resources: false` in your metadata.
 #| standalone: true
-#| viewerHeight: 980
+#| viewerHeight: 820
 #| components: [viewer]
 
 library(shiny)
 library(ggplot2)
 library(cowplot)
 
-col_S &lt;- "#253494"; col_U &lt;- "#41b6c4"; col_Z &lt;- "#225ea8"
-col_curr &lt;- "#d7191c"; col_past &lt;- "#fdae61"; col_rsp_past &lt;- "#80cdc1"
+col_S &lt;- "#68dbed"; col_U &lt;- "#41b6c4"; col_Z &lt;- "#225ea8"
+col_curr &lt;- "#d7191c"; col_past &lt;- "#fdae61"
 
 sel &lt;- function(id, label, choices, selected, width = "100px")
   selectInput(id, label, choices, selected, selectize = FALSE, width = width)
@@ -186,7 +160,7 @@ ui &lt;- fluidPage(
     .ctrl select, .ctrl input[type=number] { height:26px; padding:1px 4px; font-size:13px; }
     .ctrl .checkbox { margin:0 0 4px 0; }
     .ctrl h5 { margin:0 0 4px 0; font-weight:bold; font-size:13px; color:#555; }
-    .ctrl .btn { height:32px; margin:0 4px 4px 0; padding:2px 10px; font-size:13px; }
+    .ctrl .btn { width:40px; height:34px; margin:0 4px 4px 0; padding:0; font-size:16px; line-height:1; }
     .ctrl .irs { width:100%; }
     .ctrl .i-slider .form-group { display:block; }
     .ctrl .i-slider label.control-label { display:none; }
@@ -202,7 +176,7 @@ ui &lt;- fluidPage(
   ")),
   div(class = "ctrl",
     fluidRow(
-      column(4, h5("NB Model"),
+      column(5, h5("NB Model"),
              sel("size", "Dispersion", c(1, 2, 5, 10, 20, 50), 5),
              sel("mu_true", HTML("True &amp;mu;"), seq(0.5, 15, by = 0.5), 2),
              div(class = "inline-row",
@@ -212,16 +186,16 @@ ui &lt;- fluidPage(
              sel("n_sim", "Observations", c(10, 20, 50, 100, 200), 50),
              sel("speed", "Speed", c("Slow" = 2, "Normal" = 1.2, "Fast" = 0.6, "Very fast" = 0.2), 1.2),
              numericInput("seed", "Seed", 2026, width = "100px")),
-      column(5, h5("Play"),
-             actionButton("play", "\u25B6 Play", class = "btn-primary"),
-             actionButton("pause", "\u23F8 Pause"),
-             actionButton("stop", "\u23F9 Stop", title = "Stop and go back to the first observation"),
-             actionButton("nxt", "Next \u203A", title = "Next observation"),
-             actionButton("end", "End \u00BB", title = "Jump to the last observation"),
+      column(4, h5("Play"),
+             actionButton("play", "\u25B6", class = "btn-primary", title = "Play"),
+             actionButton("pause", "\u23F8", title = "Pause"),
+             actionButton("stop", "\u23F9", title = "Stop and go back to the first observation"),
+             actionButton("nxt", "\u203A", title = "Next observation"),
+             actionButton("end", "\u00BB", title = "Jump to the last observation"),
              div(class = "i-slider", sliderInput("i", "i", 1, 50, 1, step = 1)))
     )
   ),
-  plotOutput("plot", height = "760px")
+  plotOutput("plot", height = "600px")
 )
 
 server &lt;- function(input, output, session) {
@@ -298,7 +272,7 @@ server &lt;- function(input, output, session) {
     mu_true &lt;- mu_true(); mu_post &lt;- mu_post(); sz &lt;- size()
     curr &lt;- d[i, ]; past &lt;- d[1:i, ]; past_o &lt;- past[past$id != i, ]
 
-    ## ---- grid for meters
+    ## ---- grid for the NB distributions
     xmax &lt;- ceiling(max(qnbinom(0.995, mu = mu_true, size = sz),
                         qnbinom(0.995, mu = mu_post, size = sz), curr$y)) + 2
     x_nb &lt;- 0:xmax
@@ -307,39 +281,7 @@ server &lt;- function(input, output, session) {
     x_norm &lt;- seq(-6, 6, length.out = 500)
     df_norm &lt;- data.frame(x = x_norm, dens = dnorm(x_norm))
 
-    grid_idx &lt;- x_nb
-    cum_t &lt;- pnbinom(grid_idx, mu = mu_true, size = sz)
-    cum_p &lt;- pnbinom(grid_idx, mu = mu_post, size = sz)
-    mg &lt;- data.frame(y_i = grid_idx,
-                     true_low = c(0, head(cum_t, -1)), true_upp = cum_t,
-                     post_low = c(0, head(cum_p, -1)), post_upp = cum_p)
-    mgl &lt;- mg[(mg$true_upp - mg$true_low) &gt; 0.02 | (mg$post_upp - mg$post_low) &gt; 0.02, ]
-
-    ## ---- A. meters
-    y1 &lt;- 1.4; y2 &lt;- 0.2; h &lt;- 0.6
-    p_meter &lt;- ggplot() +
-      annotate("text", x = -0.05, y = y1 + h/2, label = "True Model:", size = 4, hjust = 1, fontface = "bold") +
-      geom_rect(aes(xmin = 0, xmax = 1, ymin = y1, ymax = y1 + h), fill = "white", color = "black", linewidth = 0.3) +
-      geom_rect(data = mg, aes(xmin = true_low, xmax = true_upp, ymin = y1, ymax = y1 + h,
-                               fill = (y_i == curr$y)), color = "black", linewidth = 0.2) +
-      scale_fill_manual(values = c("FALSE" = "white", "TRUE" = "lightgrey"), guide = "none") +
-      geom_text(data = mgl, aes(x = (true_low + true_upp)/2, y = y1 + h + 0.15, label = y_i), size = 3) +
-      annotate("text", x = -0.05, y = y2 + h/2, label = "Postulated Model:", size = 4, hjust = 1, fontface = "bold") +
-      geom_rect(aes(xmin = 0, xmax = 1, ymin = y2, ymax = y2 + h), fill = "white", color = "black", linewidth = 0.3) +
-      geom_rect(aes(xmin = 1 - curr$S_y, xmax = 1, ymin = y2, ymax = y2 + h), fill = col_S) +
-      geom_rect(aes(xmin = 1 - curr$rsp, xmax = 1 - curr$S_y, ymin = y2, ymax = y2 + h), fill = col_U) +
-      geom_rect(data = mg, aes(xmin = post_low, xmax = post_upp, ymin = y2, ymax = y2 + h),
-                fill = NA, color = "black", linewidth = 0.2) +
-      geom_text(data = mgl, aes(x = (post_low + post_upp)/2, y = y2 + h + 0.15, label = y_i), size = 3) +
-      geom_point(data = past_o, aes(x = 1 - rsp, y = y2 - 0.15), color = col_rsp_past, size = 2) +
-      geom_point(aes(x = 1 - curr$rsp, y = y2 - 0.15), color = col_curr, size = 4) +
-      annotate("text", x = 1 - curr$rsp/2, y = y2 - 0.45,
-               label = paste0("RSP = ", round(curr$rsp, 3)), size = 3.5) +
-      scale_x_continuous(limits = c(-0.35, 1), expand = c(0, 0)) +
-      scale_y_continuous(limits = c(-0.6, 2.5), expand = c(0, 0)) +
-      theme_void() + theme(plot.margin = unit(c(0.5, 0.5, 0.2, 0.5), "cm"))
-
-    ## ---- B. NB plot
+    ## ---- A. NB plot
     shade_S &lt;- df_post[df_post$x &gt; curr$y, ]
     rect_U &lt;- data.frame(xmin = (curr$y + 0.5) - curr$u, xmax = curr$y + 0.5, ymin = 0,
                          ymax = dnbinom(curr$y, mu = mu_post, size = sz))
@@ -351,27 +293,48 @@ server &lt;- function(input, output, session) {
                 qnbinom(0.995, mu = mu_post, size = sz) - xc)
     xlim_top &lt;- c(xc - half, xc + half)
     ylim_top &lt;- c(0, max(df_true$prob, df_post$prob) * 1.1)
+    ## PMF step lines over the whole x-range, including the zero parts,
+    ## so both curves drop to the x-axis at y = -0.5 and in the right tail
+    x_step &lt;- floor(xlim_top[1]):(ceiling(xlim_top[2]) + 1)
+    step_post &lt;- data.frame(x = x_step, prob = dnbinom(x_step, mu = mu_post, size = sz))
+    step_true &lt;- data.frame(x = x_step, prob = dnbinom(x_step, mu = mu_true, size = sz))
+    step_post$xs &lt;- step_true$xs &lt;- pmin(pmax(x_step - 0.5, xlim_top[1]), xlim_top[2])
     common_margin &lt;- theme(plot.margin = unit(c(0.2, 0.5, 0.2, 0.5), "cm"))
+
+    ## stack y_1..y_i as dots; a column that would rise above the PMF curves
+    ## at that value shrinks its dots so the stack stays under the curves
+    H &lt;- session$clientData$output_plot_height
+    if (is.null(H) || H &lt;= 0) H &lt;- 600
+    px_unit &lt;- (H * 1.2 / 2.2 - 80) / ylim_top[2]   # approx. panel pixels per unit of probability
+    d0 &lt;- 8 / px_unit                                # diameter of a full-size dot (about 8 px)
+    env &lt;- pmax(dnbinom(past$y, mu = mu_true, size = sz), dnbinom(past$y, mu = mu_post, size = sz))
+    cnt &lt;- ave(past$id, past$y, FUN = length)
+    step &lt;- pmin(d0, env / cnt)
+    past$ypos &lt;- step * (ave(past$id, past$y, FUN = seq_along) - 0.5)
+    past$dsize &lt;- 2 * step / d0
+    curr_pos &lt;- past[past$id == i, ]
 
     p_nb &lt;- ggplot() +
       geom_rect(data = shade_S, aes(xmin = x - 0.5, xmax = x + 0.5, ymin = 0, ymax = prob, fill = "S")) +
       geom_rect(data = rect_U, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = "U")) +
-      geom_step(data = df_post, aes(x = x - 0.5, y = prob, linetype = "Postulated"), direction = "hv", color = "black", linewidth = 1.2) +
-      geom_step(data = df_true, aes(x = x - 0.5, y = prob, linetype = "True"), direction = "hv", color = "black", linewidth = 0.8) +
-      geom_point(aes(x = curr$y, y = 0), shape = 1, size = 3, stroke = 1.5) +
+      geom_step(data = step_post, aes(x = xs, y = prob, linetype = "Postulated"), direction = "hv", color = "black", linewidth = 1.2) +
+      geom_step(data = step_true, aes(x = xs, y = prob, linetype = "True"), direction = "hv", color = "black", linewidth = 0.8) +
+      geom_point(data = past, aes(x = y, y = ypos, size = dsize), color = "black") +
+      geom_point(data = curr_pos, aes(x = y, y = ypos), shape = 1, size = 3, stroke = 1.5, color = col_curr) +
+      scale_size_identity() +
       scale_fill_manual(name = NULL, values = c("S" = col_S, "U" = col_U),
                         labels = c("S" = expression(S[i](y[i])), "U" = expression(U[i] %*% p[i](y[i])))) +
       scale_linetype_manual(name = NULL, values = c("True" = "solid", "Postulated" = "dashed")) +
       scale_x_continuous(breaks = seq(0, 200, by = 2), expand = c(0, 0)) +
       scale_y_continuous(expand = c(0, 0)) +
       coord_cartesian(xlim = xlim_top, ylim = ylim_top, clip = "off") +
-      labs(title = bquote(paste("NB (True ", mu == .(mu_true), ", Post. ", mu == .(mu_post), "): ", y[i] == .(curr$y))),
+      labs(title = bquote(paste("NB (True ", mu == .(mu_true), ", Post. ", mu == .(mu_post), "): ", y[i] == .(curr$y), ",  RSP = ", .(round(curr$rsp, 3)))),
            y = "Probability", x = expression(y[i])) +
       theme_minimal() + common_margin +
       theme(legend.position = c(0.9, 0.95), legend.justification = c(0, 1),
             legend.background = element_rect(fill = "white", color = NA), legend.box = "vertical")
 
-    ## ---- C. Z plot
+    ## ---- B. Z plot
     shade_norm &lt;- df_norm[df_norm$x &gt;= curr$z, ]
     p_z &lt;- ggplot() +
       geom_line(data = df_norm, aes(x = x, y = dens)) +
@@ -384,11 +347,42 @@ server &lt;- function(input, output, session) {
       theme_minimal() + common_margin
 
     aligned &lt;- align_plots(p_nb, p_z, align = "v", axis = "lr")
-    plot_grid(p_meter, aligned[[1]], aligned[[2]], ncol = 1, rel_heights = c(0.6, 1.2, 1))
+    plot_grid(aligned[[1]], aligned[[2]], ncol = 1, rel_heights = c(1.2, 1))
   }, res = 96)
 }
 
 shinyApp(ui, server)</code></pre>
+<section id="what-does-this-app-show" class="level2">
+<h2 class="anchored" data-anchor-id="what-does-this-app-show">What does this App Show</h2>
+<p>A <strong>Z-residual</strong> turns each observation <span class="math inline">\(y_i\)</span> into a number <span class="math inline">\(z_i\)</span> on the standard normal scale, using the model’s predictive distribution for <span class="math inline">\(y_i\)</span>. If the model is correct, the <span class="math inline">\(z_i\)</span> behave like a sample from <span class="math inline">\(N(0,1)\)</span>; if it is wrong, they drift away from it. The app shows this transformation one observation at a time for count data drawn from a negative binomial (NB) distribution:</p>
+<ol type="1">
+<li><strong>Top panel:</strong> each <span class="math inline">\(y_i\)</span> is drawn from the <strong>true model</strong> (solid line) and stacked as a black dot. The <strong>postulated model</strong> (dashed line) is the model being checked. The blue area under the postulated PMF to the right of <span class="math inline">\(y_i\)</span> is the <strong>RSP</strong>, the randomized upper-tail probability of <span class="math inline">\(y_i\)</span> (see <a href="#eq-rsp" class="quarto-xref">Eq.&nbsp;1</a> below).</li>
+<li><strong>Bottom panel:</strong> the same upper-tail area is marked under the standard normal density. The point where that area begins is the Z-residual <span class="math inline">\(z_i\)</span> (see <a href="#eq-zs" class="quarto-xref">Eq.&nbsp;2</a> below), and the Z-residuals accumulate as orange dots.</li>
+</ol>
+<p>Use the <strong>control panel</strong> to set the true mean (<span class="math inline">\(\mu\)</span>), the postulated mean, the dispersion (NB size), the number of observations, the animation speed and the random seed. Tick <strong>True = Postulated</strong> to make the postulated mean equal the true mean. Then use the <strong>play controls</strong> (Play, Pause, Stop, Next and End, or drag the slider) to step through the observations.</p>
+<ul>
+<li><strong>Correct specification:</strong> set the postulated mean equal to the true mean (e.g.&nbsp;both <span class="math inline">\(=5\)</span>). The stacked observations (black dots) follow the postulated PMF, and the accumulating Z-residuals (orange dots) follow the standard normal density.</li>
+<li><strong>Misspecification:</strong> set them apart (e.g.&nbsp;true <span class="math inline">\(\mu=2\)</span>, postulated <span class="math inline">\(\mu=5\)</span>). The observed <span class="math inline">\(y_i\)</span> tend to be smaller than expected, the <span class="math inline">\(RSP\)</span> values are too large, and the Z-residuals drift to the left, signalling that the model overestimates the mean.</li>
+</ul>
+<p>In the top panel, the blue area under the postulated distribution is the <strong>RSP</strong> (upper-tail area): the survival probability <span class="math inline">\(S_i(y_i)\)</span> (dark blue) plus a random fraction <span class="math inline">\(U_i\)</span> of the probability mass <span class="math inline">\(p_i(y_i)\)</span> (light blue).</p>
+</section>
+<section id="z-residuals" class="level2">
+<h2 class="anchored" data-anchor-id="z-residuals">Z-residuals</h2>
+<p>The <strong>Zresidual</strong> package implements diagnostic residuals based on the <strong>predictive distribution</strong> of each observation. By utilizing the full probabilistic information of the model, the package generates residuals that are approximately normally distributed. This allows for standard diagnostic techniques similar to using Pearson residuals in OLS regression.</p>
+<section id="rsp" class="level3">
+<h3 class="anchored" data-anchor-id="rsp">RSP</h3>
+<p>For a given observation <span class="math inline">\(y_i\)</span>, the <strong>Randomized Survival Probability (RSP)</strong>—also known as the randomized probability integral transform—represents the value of the predictive survival function (upper-tail probability) at <span class="math inline">\(y_i\)</span>, adjusted with a randomization term to ensure continuity for discrete outcomes. It is defined as:</p>
+<p><span id="eq-rsp"><span class="math display">\[RSP_i(y_i \mid \theta) = S_i(y_i \mid \theta) + U_i \, p_i(y_i \mid \theta) \tag{1}\]</span></span></p>
+<p>where <span class="math inline">\(S_i\)</span> and <span class="math inline">\(p_i\)</span> represent the survival function and probability mass function, respectively, derived from the predictive distribution of <span class="math inline">\(y_i\)</span> given covariates <span class="math inline">\(\mathbf{x}_i\)</span> and parameters <span class="math inline">\(\theta\)</span>. <span class="math inline">\(U_i \sim \text{Unif}(0,1)\)</span> is a random uniform variable used to smooth discrete outcomes. Under a correctly specified model—where the observed data <span class="math inline">\(y_i\)</span> arises from the assumed predictive distribution—the RSP follows a <span class="math inline">\(\text{Unif}(0,1)\)</span> distribution.</p>
+</section>
+<section id="z-residual" class="level3">
+<h3 class="anchored" data-anchor-id="z-residual">Z-residual</h3>
+<p>The Z-residual (aka <strong>randomized quantile residual</strong>) is derived by transforming the RSP via the inverse survival function of <span class="math inline">\(N(0,1)\)</span>:</p>
+<p><span id="eq-zs"><span class="math display">\[z_i(y_i \mid \theta) = -\Phi^{-1}\left(RSP_i(y_i \mid \theta)\right)= \Psi^{-1}\left(RSP_i(y_i \mid \theta)\right) \tag{2}\]</span></span></p>
+<p>where <span class="math inline">\(\Psi^{-1}(p) = -\Phi^{-1}(p) = \Phi^{-1}(1-p)\)</span> represents the inverse survival function (upper-tailed quantile) of the standard normal distribution <span class="math inline">\(N(0,1)\)</span>.</p>
+<p>In words, the Z-residual is simply the <span class="math inline">\(N(0,1)\)</span> value that shares the same <strong>upper-tail area (RSP)</strong> as the observed <span class="math inline">\(y_i\)</span>. This transformation effectively maps any predictive distribution to the standard normal scale while preserving the tail probabilities. If the model is correct, the resulting Z-residuals follow a standard normal distribution.</p>
+<p><strong>Intuition:</strong> Think of the Z-residual as the <strong>distance to the median</strong>, but <strong>rescaled</strong> to account for skewness and <strong>smoothed</strong> to handle discreteness. This ensures that a residual of <span class="math inline">\(+2\)</span> always implies the same degree of ‘extremeness’, regardless of the original distribution’s shape.</p>
+</section>
 </section>
 
 </main>
