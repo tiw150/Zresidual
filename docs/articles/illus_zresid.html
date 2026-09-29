@@ -70,7 +70,9 @@
 
 
 
-    <pre class="shinylive-r" data-engine="r"><code><span><span class="co">#| '!! shinylive warning !!': |</span></span>
+    <!-- pkgdown drops Quarto's <head> meta tag, so tell shinylive here that its
+     service worker (shinylive-sw.js) sits next to the built page --><meta name="shinylive:serviceworker_dir" content=".">
+<pre class="shinylive-r" data-engine="r"><code><span><span class="co">#| '!! shinylive warning !!': |</span></span>
 <span><span class="co">#|   shinylive does not work in self-contained HTML documents.</span></span>
 <span><span class="co">#|   Please set `embed-resources: false` in your metadata.</span></span>
 <span><span class="co">#| standalone: true</span></span>

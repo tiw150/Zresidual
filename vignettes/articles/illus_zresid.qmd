@@ -1,6 +1,7 @@
 ---
 title: "An Shinylive App for Illustrating Z-residuals"
 author: "[Longhai Li](https://longhaisk.github.io/)"
+engine: knitr
 filters:
   - shinylive
 format:
@@ -12,6 +13,12 @@ vignette: >
   %\VignetteEngine{quarto::html}
   %\VignetteEncoding{UTF-8}
 ---
+
+```{=html}
+<!-- pkgdown drops Quarto's <head> meta tag, so tell shinylive here that its
+     service worker (shinylive-sw.js) sits next to the built page -->
+<meta name="shinylive:serviceworker_dir" content=".">
+```
 
 ```{shinylive-r}
 #| standalone: true
